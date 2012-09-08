@@ -69,17 +69,17 @@
     <Compile Include="Validation\ValidateArgumentFixture.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Stile.Testing\Stile.Testing.csproj">
       <Project>{77e2400f-633f-477a-9b7c-fc7e1a4c11d9}</Project>
       <Name>Stile.Testing</Name>
     </ProjectReference>
     <ProjectReference Include="..\Stile\Stile.csproj">
-      <Project>{E73EF2E4-3F73-49D1-B3BC-A7FF677E995A}</Project>
+      <Project>{43ea9efc-e83f-4a8f-ba09-ea2f8fb90e65}</Project>
       <Name>Stile</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
