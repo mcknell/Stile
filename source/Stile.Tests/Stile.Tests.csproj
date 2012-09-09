@@ -44,6 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyVersionInfo.cs">
+      <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
+    </Compile>
     <Compile Include="Patterns\Disposables\DisposableFixture.cs" />
     <Compile Include="Patterns\SelfDescribingPredicates\EvaluatorFixture.cs" />
     <Compile Include="Patterns\Traversal\NonrepeatingTraverserFixture.cs" />
