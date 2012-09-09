@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <!-- <owners>$author$</owners> -->
+    <licenseUrl>https://github.com/mcknell/Stile/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/mcknell/Stile</projectUrl>
+    <!-- <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl> -->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Initial port from njamb.codeplex.com.</releaseNotes>
+    <copyright>Copyright 2012</copyright>
+    <tags>C# fluent idiomatic patterns</tags>
+  </metadata>
+</package>
