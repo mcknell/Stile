@@ -15,9 +15,4 @@ namespace Stile.Patterns.SelfDescribingPredicates
         IEvaluation<TSubject> Evaluate(TSubject subject, Func<string, string> formattingCallback = null);
         bool Invoke(TSubject subject);
     }
-
-    public interface IEvaluator<TSubject> : ISelfDescribingPredicate<TSubject>
-    {
-        //IEvaluation<TSubject> Evaluate(TSubject subject, Func<string, string> formattingCallback = null);
-    }
 }

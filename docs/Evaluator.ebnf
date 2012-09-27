@@ -1,0 +1,45 @@
+evaluator ::= 'expected' subject 'would' 'not'? expected-clause 'but' actual-clause
+	(EOL 'because' reason)?
+
+subject ::= subject-description (
+	'.' property 
+	| ' transformed by ' transformation 
+	| ' measured by ' instrument)?  EOL
+
+description ::= comparison-description 
+	| change-description
+	| plural-subject-description 
+	| void-subject-description
+	| event-for-property-change-description
+	| generic-predicate-description
+
+comparison-description ::= 'be ' ('<' | '<=' | '>' | '>=')? expected-value EOL 'but was ' actual-value
+
+change-description ::= 'change ' ('but was always' 
+	| 'to ' expected-value EOL 'but was ') actual-value
+
+plural-subject-description ::= has-description | setwise-description
+
+has-description ::= 'have ' (('all' 
+	| 'one' 
+	| 'no' 
+	| ('at least' 
+		| 'at most' 
+		| 'exactly' 
+		| 'fewer than' 
+		| 'more than') 
+	quantity) 'items satisfying ' predicate) EOL 'but had ' actual-value 
+
+setwise-description ::= ('contain ' | 'be setwise equal to ' | 'be sequence-equal to ') 
+	expected-value EOL 'but was ' actual-value
+
+void-subject-description ::= 'throw exception of type ' exception-type EOL
+	('but it did' 'not'? | 'but it threw ' exception-type)
+
+event-for-property-change-description ::= 'raise a PropertyChanged event for its property ' property EOL
+	('but it raised it for its property ' other-property ' instead'
+	|'but it did not raise a PropertyChanged event at all' (' within ' timeout ' milliseconds')?)
+
+generic-predicate-description ::= 'satisfy' predicate EOL 'but was ' actual-value 
+
+EOL ::= '\r\n' | '<br/>' | ''

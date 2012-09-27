@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{87D17340-6846-46D4-8AA4-3B244FA00F3B}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{E209DC00-8737-4715-8C11-C67E5F2CF70D}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Stile.Tests</RootNamespace>
-    <AssemblyName>Stile.Tests</AssemblyName>
+    <RootNamespace>Stile.DocumentationGeneration</RootNamespace>
+    <AssemblyName>Stile.DocumentationGeneration</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -20,21 +21,17 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\build\packages\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,39 +41,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyVersionInfo.cs">
-      <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
-    </Compile>
-    <Compile Include="Patterns\Lifetimes\Disposables\DisposableFixture.cs" />
-    <Compile Include="Patterns\SelfDescribingPredicates\EvaluatorFixture.cs" />
-    <Compile Include="Patterns\Behavioral\Traversal\NonrepeatingTraverserFixture.cs" />
-    <Compile Include="Patterns\Behavioral\Traversal\TraverserFixture.cs" />
-    <Compile Include="Prototypes\Collections\HashBucketFixture.cs" />
-    <Compile Include="Prototypes\Specifications\PrintableSpecificationFixture.cs" />
-    <Compile Include="Readability\NullFixture.cs" />
-    <Compile Include="Readability\PrintExtensionsFixture.cs" />
-    <Compile Include="Types\Enumerables\UnshiftFixture.cs" />
-    <Compile Include="Types\Equality\EqualityExtensionsFixture.cs" />
+    <Compile Include="Generator.cs" />
+    <Compile Include="ProductionRuleExtensions.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Types\Expressions\ExpressionExtensionsFixture.cs" />
-    <Compile Include="Types\Expressions\ExpressionFormatProviderFixture.cs" />
-    <Compile Include="Types\Expressions\ExpressionPrintingFixture.cs" />
-    <Compile Include="Types\Expressions\Printing\ExpressionParsers\MethodCallExpressionParserFixture.cs" />
-    <Compile Include="Types\Expressions\ExpressionPrinterFixture.cs" />
-    <Compile Include="Types\Reflection\CSharp4TypesFixture.cs" />
-    <Compile Include="Types\Reflection\TypeExtensionsFixture.cs" />
-    <Compile Include="Types\Reflection\TypeExtensionsIsOrDerivesFromFixture.cs" />
-    <Compile Include="Types\Reflection\TypeStringBuilderFixture.cs" />
-    <Compile Include="Patterns\Behavioral\Validation\ValidateArgumentFixture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Stile.Testing\Stile.Testing.csproj">
-      <Project>{77e2400f-633f-477a-9b7c-fc7e1a4c11d9}</Project>
-      <Name>Stile.Testing</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Stile\Stile.csproj">
       <Project>{43ea9efc-e83f-4a8f-ba09-ea2f8fb90e65}</Project>
       <Name>Stile</Name>

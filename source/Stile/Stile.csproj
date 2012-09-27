@@ -45,10 +45,10 @@
       <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="JetBrains.Annotations.cs" />
-    <Compile Include="Patterns\Disposables\Disposable.cs" />
-    <Compile Include="Patterns\FluentInterface\IFluent.cs" />
-    <Compile Include="Patterns\FluentInterface\INegatable.cs" />
-    <Compile Include="Patterns\Lazy\Lazier.cs" />
+    <Compile Include="Patterns\Lifetimes\Disposables\Disposable.cs" />
+    <Compile Include="Patterns\Structural\FluentInterface\IFluent.cs" />
+    <Compile Include="Patterns\Structural\FluentInterface\INegatable.cs" />
+    <Compile Include="Patterns\Lifetimes\Lazy\Lazier.cs" />
     <Compile Include="Patterns\SelfDescribingPredicates\Evaluation.cs" />
     <Compile Include="Patterns\SelfDescribingPredicates\Evaluators\ActualClause.cs" />
     <Compile Include="Patterns\SelfDescribingPredicates\Evaluators\Evaluator.cs" />
@@ -63,13 +63,43 @@
     <Compile Include="Patterns\SelfDescribingPredicates\ExpectEnumerable.cs" />
     <Compile Include="Patterns\SelfDescribingPredicates\IEvaluable.cs" />
     <Compile Include="Patterns\SelfDescribingPredicates\IEvaluation.cs" />
+    <Compile Include="Patterns\SelfDescribingPredicates\IEvaluator.cs" />
     <Compile Include="Patterns\SelfDescribingPredicates\ISelfDescribingPredicate.cs" />
     <Compile Include="Patterns\SelfDescribingPredicates\IVerbTensePair.cs" />
     <Compile Include="Patterns\SelfDescribingPredicates\Negated.cs" />
+    <Compile Include="Prototypes\Collections\HashBucket.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ContextFreeGrammar.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ProductionRule.cs" />
+    <Compile Include="Prototypes\Specifications\Emitting\EmittingEvaluation.cs" />
+    <Compile Include="Prototypes\Specifications\Evaluations\Error.cs" />
+    <Compile Include="Prototypes\Specifications\Evaluations\WrappedResult.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\ActualClause.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Description.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\ExpectationVerb.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\ExpectedClause.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\Terminal.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\DescriptionClause.cs" />
+    <Compile Include="Prototypes\Specifications\ISource.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\PrefixAttribute.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\ProductionRuleExtensions.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\RuleAttribute.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\SymbolAttribute.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\Variable.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\PrintableEvaluation.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Construction\GrammarMetadata\SpecificationRuleAttribute.cs" />
     <Compile Include="Patterns\SelfDescribingPredicates\VerbTensePair.cs" />
-    <Compile Include="Patterns\Traversal\NonrepeatingTraverser.cs" />
-    <Compile Include="Patterns\Traversal\Traverser.cs" />
+    <Compile Include="Prototypes\Specifications\Evaluations\Evaluation.cs" />
+    <Compile Include="Prototypes\Specifications\Bound\BoundEvaluation.cs" />
+    <Compile Include="Prototypes\Specifications\Bound\BoundSpecification.cs" />
+    <Compile Include="Prototypes\Specifications\Emitting\EmittingSpecification.cs" />
+    <Compile Include="Prototypes\Specifications\IEvaluable.cs" />
+    <Compile Include="Prototypes\Specifications\Evaluations\Outcome.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\LazyReadableText.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\PrintableSpecification.cs" />
+    <Compile Include="Patterns\Behavioral\Traversal\NonrepeatingTraverser.cs" />
+    <Compile Include="Patterns\Behavioral\Traversal\Traverser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Prototypes\Specifications\Specification.cs" />
     <Compile Include="Readability\Empty.cs" />
     <Compile Include="Readability\Identity.cs" />
     <Compile Include="Readability\Null.cs" />
@@ -123,9 +153,10 @@
     <Compile Include="Types\Reflection\MethodInfoExtensions.cs" />
     <Compile Include="Types\Reflection\TypeExtensions.cs" />
     <Compile Include="Types\Reflection\TypeStringBuilder.cs" />
-    <Compile Include="Validation\ValidateArgument.cs" />
+    <Compile Include="Patterns\Behavioral\Validation\ValidateArgument.cs" />
     <Compile Include="VersionedLanguage.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

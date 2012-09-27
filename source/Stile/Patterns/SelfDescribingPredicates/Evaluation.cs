@@ -16,9 +16,6 @@ namespace Stile.Patterns.SelfDescribingPredicates
 	{
 		protected static readonly Lazy<string> NullExplanation = Null.String.ToLazy();
 
-		public Evaluation()
-			: this(true, NullExplanation) {}
-
 		protected Evaluation(bool outcome, Lazy<string> lazyReason)
 		{
 			LazyReason = lazyReason;
