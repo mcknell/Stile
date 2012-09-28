@@ -36,7 +36,9 @@ namespace Stile.DocumentationGeneration
 
             IEnumerable<ProductionRule> consolidated = Consolidate(rules);
 
-            string generated = string.Join(Environment.NewLine, consolidated.Select(x => x.ToEBNF(_literalLexicon)));
+            IOrderedEnumerable<ProductionRule> sorted = consolidated.OrderBy(x => x.SortOrder);
+
+            string generated = string.Join(Environment.NewLine, sorted.Select(x => x.ToEBNF(_literalLexicon)));
             return generated;
         }
 
@@ -115,6 +117,14 @@ namespace Stile.DocumentationGeneration
             return lastDifference;
         }
 
+        private static HashBucket<string, ProductionRule> GetInitialRules()
+        {
+            string negated = Variable.Negated.ToString();
+            var initialRules = new HashBucket<string, ProductionRule>
+            {{negated, new ProductionRule(negated, "'not'?") {CanBeInlined = true}}};
+            return initialRules;
+        }
+
         private ProductionRule GetRule([NotNull] MethodBase methodInfo, [NotNull] RuleAttribute attribute)
         {
             string symbol = attribute.SymbolToken ?? methodInfo.Name;
@@ -139,12 +149,17 @@ namespace Stile.DocumentationGeneration
                 }
             }
             var productionRule = new ProductionRule(symbol, symbols) {CanBeInlined = attribute.Inline};
+            // hack to put start symbol at top; would be nice to attempt a topological sort
+            if (attribute.Symbol == Variable.StartSymbol)
+            {
+                productionRule.SortOrder = -1;
+            }
             return productionRule;
         }
 
         private HashBucket<string, ProductionRule> GetRuleCandidates()
         {
-            var rules = new HashBucket<string, ProductionRule>();
+            HashBucket<string, ProductionRule> rules = GetInitialRules();
             foreach (Tuple<MethodBase, RuleAttribute> tuple in GetRuleMethods(_assemblies))
             {
                 ProductionRule rule = GetRule(tuple.Item1, tuple.Item2);
@@ -210,10 +225,11 @@ namespace Stile.DocumentationGeneration
                         list.Remove(rewrite);
                         rewrites++;
 
-                        string pattern = string.Format("({0})", left);
-                        string replacement = string.Format("( {0} )", string.Join(" ", ruleToInline.Right));
-                        List<string> newRight = rewrite.Right.Select(x => Regex.Replace(x, pattern, replacement)).ToList();
-                        list.Add(new ProductionRule(rewrite.Left, newRight));
+                        const string followAWordBoundary = "(?<=\b)";
+                        const string precedeAWordBoundary = "(?=\b)";
+                        string pattern = string.Format("{0}{1}{2}", followAWordBoundary, left, precedeAWordBoundary);
+                        string replacement = string.Join(" ", ruleToInline.Right);
+                        list.Add(rewrite.RewriteRightSideWith(pattern, replacement));
                     }
                     list.Remove(ruleToInline);
                 }

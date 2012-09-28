@@ -20,12 +20,13 @@ namespace Stile.DocumentationGeneration
             {Terminal.DescriptionPrefix.ToString(), "'would'"},
             {Terminal.SubjectPrefix.ToString(), "'expected'"},
             {Terminal.Because.ToString(), "'because'"},
+            {Terminal.Be.ToString(), "'be'"},
             {Variable.SubjectClause.ToString(), "subject-clause"},
             {Variable.ExpectationClause.ToString(), "expectation-clause"},
             {Variable.Specification.ToString(), "specification"},
             {Variable.StartSymbol.ToString(), "output-grammar"},
+            {Variable.ExpectedValue.ToString(), "expected-value"},
             {Variable.Explainer.ToString(), "explain"},
-            {Variable.Negated.ToString(), "'not'?"},
             {Variable.Negated.ToString(), "'not'?"},
         };
 

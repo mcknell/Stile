@@ -1,12 +1,13 @@
 #region License info...
 // Propter for .NET, Copyright 2011-2012 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Propter project on GitHub
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Types.Enumerables;
@@ -26,7 +27,9 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
             string[] badElements = Right.Where(string.IsNullOrWhiteSpace).ToArray();
             if (badElements.Length == Right.Count)
             {
-                throw new ArgumentException("Right side must have at least one element that's not null or whitespace, but had " + string.Join(", ", badElements),
+                throw new ArgumentException(
+                    "Right side must have at least one element that's not null or whitespace, but had "
+                    + string.Join(", ", badElements),
                     "right");
             }
         }
@@ -34,5 +37,14 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
         public bool CanBeInlined { get; set; }
         public string Left { get; private set; }
         public IList<string> Right { get; private set; }
+        public int SortOrder { get; set; }
+
+        public ProductionRule RewriteRightSideWith(string pattern, string replacement)
+        {
+            string wrappedReplacement = string.Format("( {0} )", replacement);
+            List<string> newRight = Right.Select(x => Regex.Replace(x, pattern, wrappedReplacement)).ToList();
+            var rule = new ProductionRule(Left, newRight) {CanBeInlined = CanBeInlined, SortOrder = SortOrder};
+            return rule;
+        }
     }
 }
