@@ -31,6 +31,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
             }
         }
 
+        public bool CanBeInlined { get; set; }
         public string Left { get; private set; }
         public IList<string> Right { get; private set; }
     }

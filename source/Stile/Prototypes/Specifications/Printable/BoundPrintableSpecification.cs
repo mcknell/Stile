@@ -9,10 +9,11 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Bound;
 using Stile.Prototypes.Specifications.Emitting;
 using Stile.Prototypes.Specifications.Evaluations;
+using Stile.Prototypes.Specifications.Printable.Output;
 using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Printable.Output
+namespace Stile.Prototypes.Specifications.Printable
 {
     public class BoundPrintableEvaluation<TResult> : EmittingEvaluation<TResult, LazyReadableText>,
         IBoundEvaluation<TResult>

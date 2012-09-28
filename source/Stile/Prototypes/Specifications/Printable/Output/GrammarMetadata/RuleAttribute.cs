@@ -1,6 +1,6 @@
 ﻿#region License info...
 // Propter for .NET, Copyright 2011-2012 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Propter project on GitHub
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -30,6 +30,7 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
             Symbol = variable;
         }
 
+        public bool Inline { get; set; }
         public Variable Symbol { get; private set; }
         [CanBeNull]
         public string SymbolToken

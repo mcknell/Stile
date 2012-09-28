@@ -27,7 +27,7 @@ namespace Stile.Prototypes.Specifications.Printable
         private readonly IDescription<TResult> _description;
         private readonly string _reason;
 
-        [Rule(Variable.Specification)]
+        [Rule(Variable.Specification, Inline = true)]
         public PrintableSpecification([NotNull] Func<TSubject, TResult> extractor,
             [NotNull] Predicate<TResult> accepter,
             [Symbol] [NotNull] IDescription<TResult> description,

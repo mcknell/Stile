@@ -1,6 +1,6 @@
 ﻿#region License info...
 // Propter for .NET, Copyright 2011-2012 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Propter project on GitHub
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -8,10 +8,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
+using Stile.Types.Comparison;
 using Stile.Types.Enumerables;
 #endregion
 
@@ -38,7 +40,7 @@ namespace Stile.DocumentationGeneration
             return generated;
         }
 
-        private IEnumerable<ProductionRule> Consolidate(HashBucket<string, ProductionRule> rules)
+        private List<ProductionRule> CollapseSameLeftHandSides(HashBucket<string, ProductionRule> rules)
         {
             var list = new List<ProductionRule>();
             foreach (string key in rules.Keys)
@@ -73,6 +75,13 @@ namespace Stile.DocumentationGeneration
                 list.Add(new ProductionRule(key, beginning, middle, end));
             }
             return list;
+        }
+
+        private IEnumerable<ProductionRule> Consolidate(HashBucket<string, ProductionRule> rules)
+        {
+            List<ProductionRule> list = CollapseSameLeftHandSides(rules);
+            IEnumerable<ProductionRule> inlined = Inline(list);
+            return inlined;
         }
 
         private int FindFirstDifference(IList<ProductionRule> rules, int smallestBucket)
@@ -129,7 +138,8 @@ namespace Stile.DocumentationGeneration
                     symbols.Add(parameterName);
                 }
             }
-            return new ProductionRule(symbol, symbols);
+            var productionRule = new ProductionRule(symbol, symbols) {CanBeInlined = attribute.Inline};
+            return productionRule;
         }
 
         private HashBucket<string, ProductionRule> GetRuleCandidates()
@@ -163,6 +173,52 @@ namespace Stile.DocumentationGeneration
                     }
                 }
             }
+        }
+
+        private IEnumerable<ProductionRule> Inline(List<ProductionRule> rules)
+        {
+            IEqualityComparer<ProductionRule> comparer = ComparerHelper.MakeComparer<ProductionRule>((x, y) => x.Left == y.Left);
+            IEnumerable<ProductionRule> distinct = rules.Distinct(comparer);
+            int distinctCount = distinct.Count();
+            if (distinctCount < rules.Count)
+            {
+                throw new ArgumentException(
+                    string.Format("Rules must have distinct left-hand sides, but there were {0} redundancies.",
+                        (rules.Count - distinctCount)));
+            }
+
+            var list = new List<ProductionRule>(rules);
+            int oldListSize;
+            int rewrites;
+            do
+            {
+                oldListSize = list.Count;
+                rewrites = 0;
+                // try to reduce the list
+                List<ProductionRule> canBeInlined = list.Where(x => x.CanBeInlined).ToList();
+                if (canBeInlined.Any() == false)
+                {
+                    break;
+                }
+
+                foreach (ProductionRule ruleToInline in canBeInlined.ToArray())
+                {
+                    string left = ruleToInline.Left;
+                    ProductionRule[] toRewrite = list.Where(x => x.Left != left && x.Right.Any(y => y.Contains(left))).ToArray();
+                    foreach (ProductionRule rewrite in toRewrite)
+                    {
+                        list.Remove(rewrite);
+                        rewrites++;
+
+                        string pattern = string.Format("({0})", left);
+                        string replacement = string.Format("( {0} )", string.Join(" ", ruleToInline.Right));
+                        List<string> newRight = rewrite.Right.Select(x => Regex.Replace(x, pattern, replacement)).ToList();
+                        list.Add(new ProductionRule(rewrite.Left, newRight));
+                    }
+                    list.Remove(ruleToInline);
+                }
+            } while (list.Count < oldListSize || rewrites > 0);
+            return list;
         }
 
         private string Print(IList<string> symbols, int? skip = null, int? take = null)

@@ -1,6 +1,6 @@
 #region License info...
 // Propter for .NET, Copyright 2011-2012 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Propter project on GitHub
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -15,14 +15,23 @@ namespace Stile.DocumentationGeneration
 {
     public static class ProductionRuleExtensions
     {
-        public static readonly Dictionary<string, string> Lexicon = new Dictionary<string, string>
+        public static readonly Dictionary<string, string> DefaultLexicon = new Dictionary<string, string>
         {
             {Terminal.DescriptionPrefix.ToString(), "'would'"},
             {Terminal.SubjectPrefix.ToString(), "'expected'"},
             {Terminal.Because.ToString(), "'because'"},
             {Variable.SubjectClause.ToString(), "subject-clause"},
             {Variable.ExpectationClause.ToString(), "expectation-clause"},
+            {Variable.Specification.ToString(), "specification"},
+            {Variable.StartSymbol.ToString(), "output-grammar"},
         };
+
+        static ProductionRuleExtensions()
+        {
+            Lexicon = DefaultLexicon;
+        }
+
+        public static Dictionary<string, string> Lexicon { get; set; }
 
         public static string Substitute(this IEnumerable<string> symbols, Dictionary<string, string> literalLexicon)
         {
