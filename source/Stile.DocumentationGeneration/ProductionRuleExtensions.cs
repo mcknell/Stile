@@ -24,6 +24,9 @@ namespace Stile.DocumentationGeneration
             {Variable.ExpectationClause.ToString(), "expectation-clause"},
             {Variable.Specification.ToString(), "specification"},
             {Variable.StartSymbol.ToString(), "output-grammar"},
+            {Variable.Explainer.ToString(), "explain"},
+            {Variable.Negated.ToString(), "'not'?"},
+            {Variable.Negated.ToString(), "'not'?"},
         };
 
         static ProductionRuleExtensions()

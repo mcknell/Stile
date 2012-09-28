@@ -15,10 +15,10 @@ using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 
 namespace Stile.Prototypes.Specifications.Printable
 {
-    public class BoundPrintableEvaluation<TResult> : EmittingEvaluation<TResult, LazyReadableText>,
-        IBoundEvaluation<TResult>
+    public class BoundPrintableEvaluation<TSubject, TResult> : EmittingEvaluation<TSubject, TResult, LazyReadableText>,
+        IBoundEvaluation<TSubject, TResult>
     {
-        public BoundPrintableEvaluation([NotNull] IWrappedResult<TResult> wrappedResult, LazyReadableText emitted)
+        public BoundPrintableEvaluation([NotNull] IWrappedResult<TSubject, TResult> wrappedResult, LazyReadableText emitted)
             : base(wrappedResult, emitted) {}
     }
 
@@ -37,17 +37,17 @@ namespace Stile.Prototypes.Specifications.Printable
             _specification = specification.ValidateArgumentIsNotNull();
         }
 
-        public IBoundEvaluation<TResult> Evaluate(TSubject subject)
+        public IBoundEvaluation<TSubject, TResult> Evaluate(TSubject subject)
         {
-            IPrintableEvaluation<TResult> evaluation = _specification.Evaluate(subject);
-            return new BoundEvaluation<TResult>(evaluation.Result);
+            IPrintableEvaluation<TSubject, TResult> evaluation = _specification.Evaluate(subject);
+            return new BoundEvaluation<TSubject, TResult>(evaluation.Result);
         }
 
-        public IBoundEvaluation<TResult> Evaluate()
+        public IBoundEvaluation<TSubject, TResult> Evaluate()
         {
             TSubject subject = _source.Get();
-            IPrintableEvaluation<TResult> evaluation = _specification.Evaluate(subject);
-            return new BoundEvaluation<TResult>(evaluation.Result);
+            IPrintableEvaluation<TSubject, TResult> evaluation = _specification.Evaluate(subject);
+            return new BoundEvaluation<TSubject, TResult>(evaluation.Result);
         }
     }
 }

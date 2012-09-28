@@ -12,19 +12,19 @@ namespace Stile.Prototypes.Specifications.Evaluations
 {
     public interface IEvaluation {}
 
-    public interface IEvaluation<out TResult> : IEvaluation
+    public interface IEvaluation<out TSubject, out TResult> : IEvaluation
     {
         [NotNull]
-        IWrappedResult<TResult> Result { get; }
+        IWrappedResult<TSubject, TResult> Result { get; }
     }
 
-    public class Evaluation<TResult> : IEvaluation<TResult>
+    public class Evaluation<TSubject, TResult> : IEvaluation<TSubject, TResult>
     {
-        public Evaluation([NotNull] IWrappedResult<TResult> wrappedResult)
+        public Evaluation([NotNull] IWrappedResult<TSubject, TResult> wrappedResult)
         {
             Result = wrappedResult.ValidateArgumentIsNotNull();
         }
 
-        public IWrappedResult<TResult> Result { get; private set; }
+        public IWrappedResult<TSubject, TResult> Result { get; private set; }
     }
 }

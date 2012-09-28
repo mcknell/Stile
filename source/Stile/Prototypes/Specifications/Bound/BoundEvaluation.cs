@@ -15,13 +15,13 @@ namespace Stile.Prototypes.Specifications.Bound
 {
     public interface IBoundEvaluation : IEvaluation {}
 
-    public interface IBoundEvaluation<out TResult> : IBoundEvaluation,
-        IEvaluation<TResult> {}
+    public interface IBoundEvaluation<TSubject, out TResult> : IBoundEvaluation,
+        IEvaluation<TSubject, TResult> { }
 
-    public class BoundEvaluation<TResult> : Evaluation<TResult>,
-        IBoundEvaluation<TResult>
+    public class BoundEvaluation<TSubject, TResult> : Evaluation<TSubject, TResult>,
+        IBoundEvaluation<TSubject, TResult>
     {
-        public BoundEvaluation([NotNull] IWrappedResult<TResult> wrappedResult)
+        public BoundEvaluation([NotNull] IWrappedResult<TSubject, TResult> wrappedResult)
             : base(wrappedResult) {}
     }
 }

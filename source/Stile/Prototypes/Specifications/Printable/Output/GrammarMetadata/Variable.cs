@@ -12,5 +12,8 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
         Specification,
         SubjectClause,
         ExpectationClause,
+        Explainer,
+        Negated,
+        ExpectedValue,
     }
 }

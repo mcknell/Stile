@@ -14,13 +14,13 @@ namespace Stile.Prototypes.Specifications.Bound
 {
     public interface IBoundSpecification : ISpecification {}
 
-    public interface IBoundSpecification<in TSubject, out TResult> : IBoundSpecification,
-        ISpecification<TSubject, TResult, IBoundEvaluation<TResult>>
+    public interface IBoundSpecification<TSubject, out TResult> : IBoundSpecification,
+        ISpecification<TSubject, TResult, IBoundEvaluation<TSubject, TResult>>
     {
-        IBoundEvaluation<TResult> Evaluate();
+        IBoundEvaluation<TSubject, TResult> Evaluate();
     }
 
-    public class BoundSpecification<TSubject, TResult> : Specification<TSubject, TResult, IBoundEvaluation<TResult>>,
+    public class BoundSpecification<TSubject, TResult> : Specification<TSubject, TResult, IBoundEvaluation<TSubject, TResult>>,
         IBoundSpecification<TSubject, TResult>
     {
         private readonly ISource<TSubject> _source;
@@ -28,21 +28,21 @@ namespace Stile.Prototypes.Specifications.Bound
         public BoundSpecification([NotNull] ISource<TSubject> source,
             [NotNull] Func<TSubject, TResult> extractor,
             [NotNull] Predicate<TResult> accepter,
-            Func<TResult, Exception, IBoundEvaluation<TResult>> exceptionFilter = null)
+            Func<TResult, Exception, IBoundEvaluation<TSubject, TResult>> exceptionFilter = null)
             : base(extractor, accepter, exceptionFilter)
         {
             _source = source.ValidateArgumentIsNotNull();
         }
 
-        public IBoundEvaluation<TResult> Evaluate()
+        public IBoundEvaluation<TSubject, TResult> Evaluate()
         {
             TSubject subject = _source.Get();
             return Evaluate(subject);
         }
 
-        protected override IBoundEvaluation<TResult> EvaluationFactory(IWrappedResult<TResult> result)
+        protected override IBoundEvaluation<TSubject, TResult> EvaluationFactory(IWrappedResult<TSubject, TResult> result)
         {
-            return new BoundEvaluation<TResult>(result);
+            return new BoundEvaluation<TSubject, TResult>(result);
         }
     }
 }

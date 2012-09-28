@@ -13,7 +13,7 @@ namespace Stile.Prototypes.Specifications
     public interface IEvaluable {}
 
     public interface IEvaluable<in TSubject, out TResult, out TEvaluation> : IEvaluable
-        where TEvaluation : class, IEvaluation<TResult>
+        where TEvaluation : class, IEvaluation<TSubject, TResult>
     {
         [NotNull]
         TEvaluation Evaluate(TSubject subject);

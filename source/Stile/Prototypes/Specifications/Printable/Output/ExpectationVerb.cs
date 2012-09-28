@@ -14,6 +14,9 @@ namespace Stile.Prototypes.Specifications.Printable.Output
     public class ExpectationVerb : IExpectationVerb
     {
         public static readonly ExpectationVerb Be = new ExpectationVerb("be", "was");
+        public static readonly ExpectationVerb NotBe = new ExpectationVerb("not be", "was");
+        public static readonly ExpectationVerb Has = new ExpectationVerb("has", "had");
+        public static readonly ExpectationVerb Have = new ExpectationVerb("have", "had");
 
         public ExpectationVerb(string expected, string actual)
         {

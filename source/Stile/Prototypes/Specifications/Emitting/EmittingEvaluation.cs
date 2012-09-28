@@ -18,18 +18,18 @@ namespace Stile.Prototypes.Specifications.Emitting
         TEmit Emitted { get; }
     }
 
-    public interface IEmittingEvaluation<out TResult, out TEmit> : IEmittingEvaluation<TEmit>,
-        IEvaluation<TResult> {}
+    public interface IEmittingEvaluation<out TSubject, out TResult, out TEmit> : IEmittingEvaluation<TEmit>,
+        IEvaluation<TSubject, TResult> { }
 
-    public class EmittingEvaluation<TResult, TEmit> : IEmittingEvaluation<TResult, TEmit>
+    public class EmittingEvaluation<TSubject, TResult, TEmit> : IEmittingEvaluation<TSubject, TResult, TEmit>
     {
-        public EmittingEvaluation([NotNull] IWrappedResult<TResult> wrappedResult, TEmit emitted)
+        public EmittingEvaluation([NotNull] IWrappedResult<TSubject, TResult> wrappedResult, TEmit emitted)
         {
             Result = wrappedResult.ValidateArgumentIsNotNull();
             Emitted = emitted;
         }
 
         public TEmit Emitted { get; private set; }
-        public IWrappedResult<TResult> Result { get; private set; }
+        public IWrappedResult<TSubject, TResult> Result { get; private set; }
     }
 }

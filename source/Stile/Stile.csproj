@@ -74,11 +74,14 @@
     <Compile Include="Prototypes\Specifications\Evaluations\Error.cs" />
     <Compile Include="Prototypes\Specifications\Evaluations\WrappedResult.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ActualClause.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Description.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ConcreteExplainer.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ExplainBe.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Explainer.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ExpectationVerb.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ExpectedClause.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ExplainHasAll.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\Terminal.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\DescriptionClause.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\ExplainerClause.cs" />
     <Compile Include="Prototypes\Specifications\ISource.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\PrefixAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Printable\BoundPrintableSpecification.cs" />

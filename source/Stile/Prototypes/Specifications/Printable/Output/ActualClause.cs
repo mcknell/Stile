@@ -9,7 +9,7 @@ using System;
 
 namespace Stile.Prototypes.Specifications.Printable.Output
 {
-    public class ActualClause<TResult> : DescriptionClause<TResult>
+    public class ActualClause<TSubject, TResult> : ExplainerClause<TSubject, TResult>
     {
         public ActualClause(string verb, Func<TResult, string> explainer = null)
             : base(verb, explainer) {}

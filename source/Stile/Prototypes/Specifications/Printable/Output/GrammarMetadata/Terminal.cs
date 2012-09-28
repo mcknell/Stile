@@ -10,6 +10,7 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
         None,
         SubjectPrefix,
         DescriptionPrefix,
-        Because
+        Because,
+        Be,
     }
 }

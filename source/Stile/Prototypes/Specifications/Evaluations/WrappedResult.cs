@@ -20,18 +20,20 @@ namespace Stile.Prototypes.Specifications.Evaluations
         object Value { get; }
     }
 
-    public interface IWrappedResult<out TValue> : IWrappedResult
+    public interface IWrappedResult<out TSubject, out TValue> : IWrappedResult
     {
+        TSubject Subject { get; }
         new TValue Value { get; }
     }
 
-    public class WrappedResult<TValue> : IWrappedResult<TValue>
+    public class WrappedResult<TSubject, TValue> : IWrappedResult<TSubject, TValue>
     {
-        public WrappedResult(Outcome outcome, TValue value, [NotNull] Exception e, params Exception[] errors)
-            : this(outcome, value, errors.Unshift(e).Select(x => (IError) new Error(x)).ToArray()) {}
+        public WrappedResult(TSubject subject, Outcome outcome, TValue value, [NotNull] Exception e, params Exception[] errors)
+            : this(subject, outcome, value, errors.Unshift(e).Select(x => (IError) new Error(x)).ToArray()) {}
 
-        public WrappedResult(Outcome outcome, TValue value, params IError[] errors)
+        public WrappedResult(TSubject subject, Outcome outcome, TValue value, params IError[] errors)
         {
+            Subject = subject;
             Outcome = outcome;
             Value = value;
             Errors = errors;
@@ -39,6 +41,7 @@ namespace Stile.Prototypes.Specifications.Evaluations
 
         public IReadOnlyCollection<IError> Errors { get; private set; }
         public Outcome Outcome { get; private set; }
+        public TSubject Subject { get; set; }
         public TValue Value { get; private set; }
         object IWrappedResult.Value
         {

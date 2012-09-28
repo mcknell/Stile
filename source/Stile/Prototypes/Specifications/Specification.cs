@@ -16,10 +16,10 @@ namespace Stile.Prototypes.Specifications
 
     public interface ISpecification<in TSubject, out TResult, out TEvaluation> : ISpecification,
         IEvaluable<TSubject, TResult, TEvaluation>
-        where TEvaluation : class, IEvaluation<TResult> {}
+        where TEvaluation : class, IEvaluation<TSubject, TResult> { }
 
     public abstract class Specification<TSubject, TResult, TEvaluation> : ISpecification<TSubject, TResult, TEvaluation>
-        where TEvaluation : class, IEvaluation<TResult>
+        where TEvaluation : class, IEvaluation<TSubject, TResult>
     {
         private readonly Predicate<TResult> _accepter;
         private readonly Func<TResult, Exception, TEvaluation> _exceptionFilter;
@@ -66,11 +66,11 @@ namespace Stile.Prototypes.Specifications
                 return _exceptionFilter.Invoke(result, null);
             }
 
-            var wrappedResult = new WrappedResult<TResult>(outcome, result);
+            var wrappedResult = new WrappedResult<TSubject, TResult>(subject, outcome, result);
             evaluation = EvaluationFactory(wrappedResult);
             return evaluation;
         }
 
-        protected abstract TEvaluation EvaluationFactory(IWrappedResult<TResult> result);
+        protected abstract TEvaluation EvaluationFactory(IWrappedResult<TSubject, TResult> result);
     }
 }

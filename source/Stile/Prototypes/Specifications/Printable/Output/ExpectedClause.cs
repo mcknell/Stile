@@ -9,7 +9,7 @@ using System;
 
 namespace Stile.Prototypes.Specifications.Printable.Output
 {
-    public class ExpectedClause<TResult> : DescriptionClause<TResult>
+    public class ExpectedClause<TSubject, TResult> : ExplainerClause<TSubject, TResult>
     {
         public ExpectedClause(string verb, Func<TResult, string> explainer = null)
             : base(verb, explainer) {}

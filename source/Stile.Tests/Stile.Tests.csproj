@@ -52,7 +52,8 @@
     <Compile Include="Patterns\Behavioral\Traversal\NonrepeatingTraverserFixture.cs" />
     <Compile Include="Patterns\Behavioral\Traversal\TraverserFixture.cs" />
     <Compile Include="Prototypes\Collections\HashBucketFixture.cs" />
-    <Compile Include="Prototypes\Specifications\PrintableSpecificationFixture.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ExplainBeFixture.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\PrintableSpecificationFixture.cs" />
     <Compile Include="Readability\NullFixture.cs" />
     <Compile Include="Readability\PrintExtensionsFixture.cs" />
     <Compile Include="Types\Enumerables\UnshiftFixture.cs" />
