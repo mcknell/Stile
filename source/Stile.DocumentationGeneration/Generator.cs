@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
@@ -74,7 +73,9 @@ namespace Stile.DocumentationGeneration
                 {
                     middle = string.Format(" ({0}\r\n\t) ", middle);
                 }
-                list.Add(new ProductionRule(key, beginning, middle, end));
+                int earliestSortOrder = bucket.Min(x => x.SortOrder);
+                var rule = new ProductionRule(key, beginning, middle, end) {SortOrder = earliestSortOrder};
+                list.Add(rule);
             }
             return list;
         }
@@ -120,8 +121,16 @@ namespace Stile.DocumentationGeneration
         private static HashBucket<string, ProductionRule> GetInitialRules()
         {
             string negated = Variable.Negated.ToString();
+            string conjunction = Variable.Conjunction.ToString();
+            string eol = Terminal.EOL.ToString();
+            Func<string, string, bool, ProductionRule> factory =
+                (left, right, inline) => new ProductionRule(left, right) {CanBeInlined = inline, SortOrder = 99};
             var initialRules = new HashBucket<string, ProductionRule>
-            {{negated, new ProductionRule(negated, "'not'?") {CanBeInlined = true}}};
+            {
+                {negated, factory.Invoke(negated, "'not'?", true)},
+                {conjunction, factory.Invoke(conjunction, eol + "? ( 'and' | 'but' )", false)},
+                {eol, factory.Invoke(eol, "'CRLF' | '<br/>' | ''", false)},
+            };
             return initialRules;
         }
 
@@ -148,7 +157,17 @@ namespace Stile.DocumentationGeneration
                     symbols.Add(parameterName);
                 }
             }
-            var productionRule = new ProductionRule(symbol, symbols) {CanBeInlined = attribute.Inline};
+            ProductionRule productionRule;
+            if (string.IsNullOrWhiteSpace(attribute.Format) == false)
+            {
+                string format = string.Format(attribute.Format, symbols.Cast<object>().ToArray());
+                productionRule = new ProductionRule(symbol, format);
+            }
+            else
+            {
+                productionRule = new ProductionRule(symbol, symbols);
+            }
+            productionRule.CanBeInlined = attribute.Inline;
             // hack to put start symbol at top; would be nice to attempt a topological sort
             if (attribute.Symbol == Variable.StartSymbol)
             {
@@ -225,8 +244,8 @@ namespace Stile.DocumentationGeneration
                         list.Remove(rewrite);
                         rewrites++;
 
-                        const string followAWordBoundary = "(?<=\b)";
-                        const string precedeAWordBoundary = "(?=\b)";
+                        const string followAWordBoundary = @"(?<=\b)";
+                        const string precedeAWordBoundary = @"(?=\b)";
                         string pattern = string.Format("{0}{1}{2}", followAWordBoundary, left, precedeAWordBoundary);
                         string replacement = string.Join(" ", ruleToInline.Right);
                         list.Add(rewrite.RewriteRightSideWith(pattern, replacement));

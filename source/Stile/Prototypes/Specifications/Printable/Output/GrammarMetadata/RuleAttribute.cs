@@ -30,6 +30,8 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
             Symbol = variable;
         }
 
+        [CanBeNull]
+        public string Format { get; set; }
         public bool Inline { get; set; }
         public Variable Symbol { get; private set; }
         [CanBeNull]

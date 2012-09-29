@@ -27,11 +27,11 @@ namespace Stile.Prototypes.Specifications.Printable
         private readonly ISource<TSubject> _source;
         private readonly IPrintableSpecification<TSubject, TResult> _specification;
 
-        [Rule(Variable.StartSymbol)]
+        [Rule(Variable.StartSymbol, Format = "SubjectPrefix {0} DescriptionPrefix {1}")]
         public BoundPrintableSpecification(
             //
-            [Symbol(Variable.SubjectClause, Prefix = Terminal.SubjectPrefix)] [NotNull] ISource<TSubject> source,
-            [Symbol(Variable.Specification, Prefix = Terminal.DescriptionPrefix)] [NotNull] IPrintableSpecification<TSubject, TResult> specification)
+            [Symbol(Variable.SubjectClause)] [NotNull] ISource<TSubject> source,
+            [Symbol(Variable.Specification)] [NotNull] IPrintableSpecification<TSubject, TResult> specification)
         {
             _source = source.ValidateArgumentIsNotNull();
             _specification = specification.ValidateArgumentIsNotNull();

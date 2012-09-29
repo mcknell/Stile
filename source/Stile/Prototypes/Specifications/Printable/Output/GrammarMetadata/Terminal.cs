@@ -12,5 +12,7 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
         DescriptionPrefix,
         Because,
         Be,
+        Was,
+        EOL,
     }
 }

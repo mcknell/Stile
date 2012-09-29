@@ -21,13 +21,16 @@ namespace Stile.DocumentationGeneration
             {Terminal.SubjectPrefix.ToString(), "'expected'"},
             {Terminal.Because.ToString(), "'because'"},
             {Terminal.Be.ToString(), "'be'"},
+            {Terminal.Was.ToString(), "'was'"},
             {Variable.SubjectClause.ToString(), "subject-clause"},
             {Variable.ExpectationClause.ToString(), "expectation-clause"},
             {Variable.Specification.ToString(), "specification"},
             {Variable.StartSymbol.ToString(), "output-grammar"},
+            {Variable.ActualValue.ToString(), "actual-value"},
             {Variable.ExpectedValue.ToString(), "expected-value"},
             {Variable.Explainer.ToString(), "explain"},
             {Variable.Negated.ToString(), "'not'?"},
+            {Variable.Reason.ToString(), "reason"},
         };
 
         static ProductionRuleExtensions()

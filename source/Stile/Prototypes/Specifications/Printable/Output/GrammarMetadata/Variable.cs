@@ -15,5 +15,8 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
         Explainer,
         Negated,
         ExpectedValue,
+        ActualValue,
+        Conjunction,
+        Reason,
     }
 }

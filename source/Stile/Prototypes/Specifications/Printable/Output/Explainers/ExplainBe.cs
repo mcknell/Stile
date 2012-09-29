@@ -13,9 +13,9 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
 {
     public class ExplainBe<TSubject, TResult> : Explainer<TSubject, TResult>
     {
-        [Rule(Variable.Explainer)]
+        [Rule(Variable.Explainer, Format = "{0} Be {1} Conjunction Was ActualValue")]
         // explainer ::=  'not'? 'be' expected conjunction 'was' actual
-        public ExplainBe([Symbol(Variable.Negated, Suffix = Terminal.Be)] Negated negated,
+        public ExplainBe([Symbol(Variable.Negated)] Negated negated,
             [Symbol(Variable.ExpectedValue)] TResult expected)
             : base(negated ? ExpectationVerb.NotBe : ExpectationVerb.Be, result => expected.ToDebugString()) {}
     }
