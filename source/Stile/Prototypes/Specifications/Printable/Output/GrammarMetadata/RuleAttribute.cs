@@ -6,6 +6,7 @@
 #region using...
 using System;
 using JetBrains.Annotations;
+using Stile.Patterns.Behavioral.Validation;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
@@ -13,9 +14,10 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
     /// <summary>
     /// A symbol on the left of a production rule in the grammar for describing <see cref="IPrintableSpecification"/> objects.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor, AllowMultiple = false, Inherited = false)]
     public class RuleAttribute : Attribute
     {
+        private object[] _items;
         private string _symbolToken;
 
         public RuleAttribute(bool startSymbol = false)
@@ -28,11 +30,16 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
                 _symbolToken = "Explanation";
             }
             Symbol = variable;
+            Items = new object[0];
         }
 
-        [CanBeNull]
-        public string Format { get; set; }
         public bool Inline { get; set; }
+        [NotNull]
+        public object[] Items
+        {
+            get { return _items; }
+            set { _items = value.ValidateArgumentIsNotNull(); }
+        }
         public Variable Symbol { get; private set; }
         [CanBeNull]
         public string SymbolToken

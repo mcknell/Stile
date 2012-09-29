@@ -10,7 +10,6 @@ using Stile.Prototypes.Specifications.Bound;
 using Stile.Prototypes.Specifications.Emitting;
 using Stile.Prototypes.Specifications.Evaluations;
 using Stile.Prototypes.Specifications.Printable.Output;
-using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable
@@ -27,11 +26,8 @@ namespace Stile.Prototypes.Specifications.Printable
         private readonly ISource<TSubject> _source;
         private readonly IPrintableSpecification<TSubject, TResult> _specification;
 
-        [Rule(Variable.StartSymbol, Format = "SubjectPrefix {0} DescriptionPrefix {1}")]
-        public BoundPrintableSpecification(
-            //
-            [Symbol(Variable.SubjectClause)] [NotNull] ISource<TSubject> source,
-            [Symbol(Variable.Specification)] [NotNull] IPrintableSpecification<TSubject, TResult> specification)
+        public BoundPrintableSpecification([NotNull] ISource<TSubject> source,
+            [NotNull] IPrintableSpecification<TSubject, TResult> specification)
         {
             _source = source.ValidateArgumentIsNotNull();
             _specification = specification.ValidateArgumentIsNotNull();

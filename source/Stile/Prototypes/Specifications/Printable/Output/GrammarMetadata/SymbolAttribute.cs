@@ -13,7 +13,7 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
     /// <summary>
     /// A symbol on the right of a production rule in the grammar for describing <see cref="ILazyReadableText"/> objects.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
     public class SymbolAttribute : Attribute
     {
         private string _prefixToken;

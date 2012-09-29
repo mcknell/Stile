@@ -10,6 +10,7 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
         UseReflection,
         StartSymbol,
         Specification,
+        Subject,
         SubjectClause,
         ExpectationClause,
         Explainer,

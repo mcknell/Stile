@@ -36,7 +36,7 @@ namespace Stile.Prototypes.Specifications
             _expectsException = _exceptionFilter != null;
         }
 
-        public TEvaluation Evaluate(TSubject subject)
+        public virtual TEvaluation Evaluate(TSubject subject)
         {
             Outcome outcome;
             TResult result = default(TResult);

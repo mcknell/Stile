@@ -19,7 +19,7 @@ namespace Stile.Prototypes.Specifications.Printable
     public interface IPrintableSpecification : IEmittingSpecification {}
 
     public interface IPrintableSpecification<TSubject, out TResult> : IPrintableSpecification,
-        IEmittingSpecification<TSubject, TResult, IPrintableEvaluation<TSubject, TResult>, ILazyReadableText> { }
+        IEmittingSpecification<TSubject, TResult, IPrintableEvaluation<TSubject, TResult>, ILazyReadableText> {}
 
     public class PrintableSpecification<TSubject, TResult> :
         EmittingSpecification<TSubject, TResult, IPrintableEvaluation<TSubject, TResult>, LazyReadableText>,
@@ -28,16 +28,26 @@ namespace Stile.Prototypes.Specifications.Printable
         private readonly IExplainer<TSubject, TResult> _explainer;
         private readonly string _reason;
 
-        [Rule(Variable.Specification, Inline = true)]
         public PrintableSpecification([NotNull] Func<TSubject, TResult> extractor,
             [NotNull] Predicate<TResult> accepter,
-            [Symbol(Variable.Explainer)] [NotNull] IExplainer<TSubject, TResult> explainer,
-            [Symbol(Prefix = Terminal.Because)] string reason = null,
+            [NotNull] IExplainer<TSubject, TResult> explainer,
+            string reason = null,
             Func<TResult, Exception, IPrintableEvaluation<TSubject, TResult>> exceptionFilter = null)
             : base(extractor, accepter, exceptionFilter)
         {
             _reason = reason;
             _explainer = explainer.ValidateArgumentIsNotNull();
+        }
+
+        [Rule(Variable.StartSymbol,
+            Items = new object[]
+            {
+                "(", Terminal.Because, Variable.Reason, Terminal.EOL, ")?", Terminal.SubjectPrefix, "{0}", //
+                Terminal.DescriptionPrefix, Variable.Explainer
+            })]
+        public override IPrintableEvaluation<TSubject, TResult> Evaluate([Symbol(Variable.Subject)] TSubject subject)
+        {
+            return base.Evaluate(subject);
         }
 
         protected override LazyReadableText EmittingFactory(IWrappedResult<TSubject, TResult> result)

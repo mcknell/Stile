@@ -158,10 +158,12 @@ namespace Stile.DocumentationGeneration
                 }
             }
             ProductionRule productionRule;
-            if (string.IsNullOrWhiteSpace(attribute.Format) == false)
+            if (attribute.Items.Any())
             {
-                string format = string.Format(attribute.Format, symbols.Cast<object>().ToArray());
-                productionRule = new ProductionRule(symbol, format);
+
+                string format = string.Join(" ", attribute.Items);
+                string substituted = string.Format(format, symbols.Cast<object>().ToArray());
+                productionRule = new ProductionRule(symbol, substituted);
             }
             else
             {
