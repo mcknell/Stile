@@ -16,7 +16,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Subje
         public static ISpecificationBuilder<TSource, TSubject> That<TSource, TSubject>(this ISubjectBuilder<TSource> builder,
             Expression<Func<TSource, TSubject>> instrument)
         {
-            return new SpecificationBuilder<TSource, TSubject>(instrument.Compile);
+            return new SpecificationBuilder<TSource, TSubject>(instrument);
         }
     }
 }

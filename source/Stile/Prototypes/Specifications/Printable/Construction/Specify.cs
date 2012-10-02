@@ -34,7 +34,7 @@ namespace Stile.Prototypes.Specifications.Printable.Construction
         [Pure]
         public static ISpecificationBuilder<TSubject> ThatAny<TSubject>()
         {
-            return new SpecificationBuilder<TSubject>();
+            return new SpecificationBuilder<TSubject>(new Lazy<string>(()=> string.Empty));
         }
     }
 }

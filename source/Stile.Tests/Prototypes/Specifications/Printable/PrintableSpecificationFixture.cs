@@ -13,6 +13,7 @@ using Stile.Prototypes.Specifications.Evaluations;
 using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.Printable.Output;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is;
 using Stile.Types;
 #endregion
 

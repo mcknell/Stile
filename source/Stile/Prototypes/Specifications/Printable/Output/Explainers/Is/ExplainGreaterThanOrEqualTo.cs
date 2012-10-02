@@ -9,7 +9,7 @@ using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 using Stile.Readability;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
+namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Is
 {
     public class ExplainGreaterThanOrEqualTo<TSubject, TResult> : Explainer<TSubject, TResult>
     {

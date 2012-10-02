@@ -5,11 +5,13 @@
 
 #region using...
 using System;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.SelfDescribingPredicates;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Has;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is;
+using Stile.Types.Expressions;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SpecificationBuilders
@@ -34,7 +36,8 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 
     public interface ISpecificationBuilder<out TSubject, out TResult> :
         ISpecificationBuilder
-            <TSubject, IHas<TResult>, INegatableIs<TSubject, TResult, IIs<TSubject, TResult>>, IIs<TSubject, TResult>, TResult> {}
+            <TSubject, IHas<TSubject, TResult>, INegatableIs<TSubject, TResult, IIs<TSubject, TResult>>, IIs<TSubject, TResult>,
+                TResult> {}
 
     public abstract class SpecificationBuilderBase<TSubject, THas, TNegatableIs, TIs> :
         ISpecificationBuilder<TSubject, THas, TNegatableIs, TIs>
@@ -78,12 +81,17 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
         ISpecificationBuilder<TSubject, TResult>
     {
         private readonly Lazy<Func<TSubject, TResult>> _extractor;
+        private readonly Lazy<string> _subjectDescription;
 
-        public SpecificationBuilder([NotNull] Func<Func<TSubject, TResult>> extractor)
-            : this(new Lazy<Func<TSubject, TResult>>(extractor)) {}
+        public SpecificationBuilder(Expression<Func<TSubject, TResult>> expression)
+            : this(expression.Compile, expression.ToLazyDebugString()) {}
 
-        public SpecificationBuilder([NotNull] Lazy<Func<TSubject, TResult>> extractor)
+        protected SpecificationBuilder([NotNull] Func<Func<TSubject, TResult>> extractor, [NotNull] Lazy<string> subjectDescription)
+            : this(new Lazy<Func<TSubject, TResult>>(extractor), subjectDescription) {}
+
+        protected SpecificationBuilder([NotNull] Lazy<Func<TSubject, TResult>> extractor, [NotNull] Lazy<string> subjectDescription)
         {
+            _subjectDescription = subjectDescription;
             _extractor = extractor.ValidateArgumentIsNotNull();
         }
 
@@ -101,7 +109,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 
         protected override IHas<TSubject, TResult> MakeHas()
         {
-            return new Has<TSubject, TResult>();
+            return new Has<TSubject, TResult>(_extractor, _subjectDescription);
         }
 
         protected override INegatableIs<TSubject, TResult, IIs<TSubject, TResult>> MakeIs()
@@ -115,6 +123,13 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
         ISpecificationBuilder<TSubject>,
         ISpecificationBuilderState<TSubject>
     {
+        private readonly Lazy<string> _subjectDescription;
+
+        public SpecificationBuilder([NotNull] Lazy<string> subjectDescription)
+        {
+            _subjectDescription = subjectDescription.ValidateArgumentIsNotNull();
+        }
+
         protected IIs<TSubject> Factory(IIsState<TSubject> state)
         {
             return new Is<TSubject, IIs<TSubject>>(state.Negated.Invert(), Factory);
@@ -122,7 +137,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 
         protected override IHas<TSubject> MakeHas()
         {
-            return new Has<TSubject>();
+            return new Has<TSubject>(_subjectDescription);
         }
 
         protected override INegatableIs<TSubject, IIs<TSubject>> MakeIs()

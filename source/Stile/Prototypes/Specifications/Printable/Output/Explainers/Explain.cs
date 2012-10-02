@@ -5,6 +5,8 @@
 
 #region using...
 using Stile.Patterns.SelfDescribingPredicates;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers.Has;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
@@ -22,6 +24,11 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
             this FluentSubject<TSubject> subject, TResult expected, Negated negated)
         {
             return new ExplainGreaterThanOrEqualTo<TSubject, TResult>(negated, expected);
+        }
+
+        public static ExplainHashCode<TSubject> HashCode<TSubject, TResult>(this FluentSubject<TSubject> subject, int hashCode)
+        {
+            return new ExplainHashCode<TSubject>(hashCode);
         }
 
         public static ExplainLessThan<TSubject, TResult> LessThan<TSubject, TResult>(this FluentSubject<TSubject> subject,

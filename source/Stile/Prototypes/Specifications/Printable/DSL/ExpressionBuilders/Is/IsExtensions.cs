@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics.Contracts;
 using Stile.Patterns.SelfDescribingPredicates;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is

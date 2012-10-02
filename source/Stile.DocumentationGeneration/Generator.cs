@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using Stile.Prototypes.Collections;
+using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 using Stile.Types.Comparison;

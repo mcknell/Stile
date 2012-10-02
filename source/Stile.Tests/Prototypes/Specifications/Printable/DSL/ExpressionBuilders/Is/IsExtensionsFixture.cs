@@ -88,16 +88,16 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.DSL.ExpressionBuilders
             AssertEquals(Specify.ThatAny<int>().Is.Not.LessThanOrEqualTo(0), Outcome.Succeeded, one);
         }
 
-        private void AssertEquals<T1, T2>(IPrintableSpecification<T1, T2> specification, Outcome outcome, T1 now)
+        private void AssertEquals<T1, T2>(IPrintableSpecification<T1, T2> specification, Outcome outcome, T1 value)
         {
-            IPrintableEvaluation<T1, T2> evaluation = specification.Evaluate(now);
+            IPrintableEvaluation<T1, T2> evaluation = specification.Evaluate(value);
             Assert.That(evaluation.Result.Outcome, NUnit.Framework.Is.EqualTo(outcome));
             Assert.That(evaluation.Emitted.Retrieved.Value, NUnit.Framework.Is.Not.Empty);
         }
 
-        private static void AssertEquals<T>(IPrintableSpecification<T> negatedSpecification, Outcome outcome, T value)
+        private static void AssertEquals<T>(IPrintableSpecification<T> specification, Outcome outcome, T value)
         {
-            IPrintableEvaluation<T> evaluation = negatedSpecification.Evaluate(value);
+            IPrintableEvaluation<T> evaluation = specification.Evaluate(value);
             Assert.That(evaluation.Result.Outcome, NUnit.Framework.Is.EqualTo(outcome));
             Assert.That(evaluation.Emitted.Retrieved.Value, NUnit.Framework.Is.Not.Empty);
         }

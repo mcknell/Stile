@@ -14,5 +14,7 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
         Be,
         Was,
         EOL,
+        Have,
+        Had,
     }
 }

@@ -9,13 +9,18 @@ using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 using Stile.Readability;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
+namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Is
 {
     public class ExplainIs<TSubject, TResult> : Explainer<TSubject, TResult>
     {
-        [Rule(Variable.Explainer,
-            Items = new object[] {"{0}", Terminal.Be, "{1}", Variable.Conjunction, Terminal.Was, Variable.ActualValue})]
+        [Rule(Variable.Explainer, Items = new object[] {"{0}", Terminal.Be, "{1}", //
+            Variable.Conjunction, Terminal.Was, Variable.ActualValue})]
         public ExplainIs([Symbol(Variable.Negated)] Negated negated, [Symbol(Variable.ExpectedValue)] TResult expected)
-            : base(negated ? ExpectationVerb.NotBe : ExpectationVerb.Be, expected : result => expected.ToDebugString()) {}
+            : base(ChooseVerb(negated), expected : result => expected.ToDebugString()) {}
+
+        private static ExpectationVerb ChooseVerb(Negated negated)
+        {
+            return negated ? ExpectationVerb.NotBe : ExpectationVerb.Be;
+        }
     }
 }

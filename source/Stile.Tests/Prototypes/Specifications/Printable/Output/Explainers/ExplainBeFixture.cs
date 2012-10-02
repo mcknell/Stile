@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Stile.Patterns.SelfDescribingPredicates;
 using Stile.Prototypes.Specifications.Evaluations;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is;
 #endregion
 
 namespace Stile.Tests.Prototypes.Specifications.Printable.Output.Explainers

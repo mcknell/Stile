@@ -13,7 +13,7 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Types.Enumerables;
 #endregion
 
-namespace Stile.Prototypes.Compilation.Grammars.ContextFree
+namespace Stile.Prototypes.Compilation.Grammars
 {
     public class ProductionRule
     {

@@ -17,7 +17,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
         public static ISpecificationBuilder<TSubject, TResult> That<TSubject, TResult>(
             this ISpecificationBuilder<TSubject, TResult> builder, Expression<Func<TSubject, TResult>> expression)
         {
-            return new SpecificationBuilder<TSubject, TResult>(expression.Compile);
+            return new SpecificationBuilder<TSubject, TResult>(expression);
         }
     }
 }
