@@ -19,6 +19,20 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.DSL.ExpressionBuilders
     public class IsExtensionsFixture
     {
         [Test]
+        public void ComparablyEquivalentTo()
+        {
+            // arrange
+            DateTime now = DateTime.Now;
+
+            // act and assert
+            AssertEquals(Specify.ThatAny<DateTime>().Is.ComparablyEquivalentTo(DateTime.MinValue), Outcome.Failed, now);
+            AssertEquals(Specify.ThatAny<DateTime>().Is.Not.ComparablyEquivalentTo(DateTime.MinValue), Outcome.Succeeded, now);
+
+            AssertEquals(Specify.For<DateTime>().That(x => x.Ticks).Is.ComparablyEquivalentTo(0), Outcome.Failed, now);
+            AssertEquals(Specify.For<DateTime>().That(x => x.Ticks).Is.Not.ComparablyEquivalentTo(0), Outcome.Succeeded, now);
+        }
+
+        [Test]
         public void EqualTo()
         {
             // arrange

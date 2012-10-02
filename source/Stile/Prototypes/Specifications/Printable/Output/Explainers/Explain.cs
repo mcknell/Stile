@@ -13,6 +13,12 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
 {
     public static class Explain
     {
+        public static ExplainComparablyEquivalentTo<TSubject, TResult> ComparablyEquivalentTo<TSubject, TResult>(
+            this FluentSubject<TSubject> subject, TResult expected, Negated negated)
+        {
+            return new ExplainComparablyEquivalentTo<TSubject, TResult>(negated, expected);
+        }
+
         public static ExplainGreaterThan<TSubject, TResult> GreaterThan<TSubject, TResult>(this FluentSubject<TSubject> subject,
             TResult expected,
             Negated negated)

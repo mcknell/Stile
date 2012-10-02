@@ -75,6 +75,7 @@
     <Compile Include="Prototypes\Specifications\Evaluations\WrappedResult.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\Has\HasExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\Has\IHasState.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\Is\IsComparableExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\Is\IsExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SpecificationBuilders\SpecificationBuilderExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SubjectBuilders\IBoundSubjectBuilderState.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SubjectBuilders\SubjectBuilderExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ActualClause.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Explain.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Is\ExplainComparablyEquivalentTo.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Is\ExplainGreaterThan.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Is\ExplainGreaterThanOrEqualTo.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Has\ExplainHashCode.cs" />
