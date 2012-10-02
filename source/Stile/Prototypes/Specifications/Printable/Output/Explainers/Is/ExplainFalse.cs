@@ -6,16 +6,18 @@
 #region using...
 using Stile.Patterns.SelfDescribingPredicates;
 using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
-using Stile.Readability;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Is
 {
-    public class ExplainLessThan<TSubject, TResult> : Explainer<TSubject, TResult>
+    public class ExplainFalse<TSubject, TResult> : Explainer<TSubject, TResult>
     {
+        public const string False = "false";
+
         [Rule(Variable.Explainer,
-            Items = new object[] {"{0}", Terminal.Be, "'<' {1}", Variable.Conjunction, Terminal.Was, Variable.ActualValue})]
-        public ExplainLessThan([Symbol(Variable.Negated)] Negated negated, [Symbol(Variable.ExpectedValue)] TResult expected)
-            : base(ChooseVerb(negated), "<", result => expected.ToDebugString()) {}
+            Items = new object[] {"{0}", Terminal.Be, "'" + False + "'", Variable.Conjunction, Terminal.Was, Variable.ActualValue}
+            )]
+        public ExplainFalse([Symbol(Variable.Negated)] Negated negated)
+            : base(ChooseVerb(negated), False, result => False) {}
     }
 }

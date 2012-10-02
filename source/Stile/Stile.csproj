@@ -95,6 +95,7 @@
     <Compile Include="Prototypes\Specifications\Printable\Output\ActualClause.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Explain.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Is\ExplainComparablyEquivalentTo.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Is\ExplainFalse.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Is\ExplainGreaterThan.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Is\ExplainGreaterThanOrEqualTo.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Has\ExplainHashCode.cs" />
@@ -102,9 +103,11 @@
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Explainer.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ExpectationVerb.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ExpectedClause.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ExplainHasAll.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Has\ExplainHasAll.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Is\ExplainLessThan.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Is\ExplainLessThanOrEqualTo.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Is\ExplainNull.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Is\ExplainTrue.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\Terminal.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ExplainerClause.cs" />
     <Compile Include="Prototypes\Specifications\ISource.cs" />

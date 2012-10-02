@@ -15,7 +15,7 @@ using Stile.Readability;
 using Stile.Types.Expressions;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
+namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Has
 {
     public class ExplainHasAll<TSubject, TResult, TItem> : Explainer<TSubject, TResult>
         where TResult : class, IEnumerable<TItem>

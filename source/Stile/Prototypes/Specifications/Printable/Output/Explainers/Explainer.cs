@@ -7,6 +7,7 @@
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Patterns.SelfDescribingPredicates;
 using Stile.Prototypes.Specifications.Evaluations;
 #endregion
 
@@ -18,7 +19,13 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
         string ExplainExpected(IWrappedResult<TSubject, TResult> result);
     }
 
-    public abstract class Explainer<TSubject, TResult> : IExplainer<TSubject, TResult>
+    public abstract class Explainer{
+        protected static ExpectationVerb ChooseVerb(Negated negated)
+        {
+            return negated ? ExpectationVerb.NotBe : ExpectationVerb.Be;
+        }
+    }
+    public abstract class Explainer<TSubject, TResult> : Explainer, IExplainer<TSubject, TResult>
     {
         protected Explainer([NotNull] IExpectationVerb expectationVerb,
             string adjective = null,

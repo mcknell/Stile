@@ -19,6 +19,11 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
             return new ExplainComparablyEquivalentTo<TSubject, TResult>(negated, expected);
         }
 
+        public static ExplainFalse<TSubject, bool> False<TSubject>(this FluentSubject<TSubject> subject, Negated negated)
+        {
+            return new ExplainFalse<TSubject, bool>(negated);
+        }
+
         public static ExplainGreaterThan<TSubject, TResult> GreaterThan<TSubject, TResult>(this FluentSubject<TSubject> subject,
             TResult expected,
             Negated negated)
@@ -50,9 +55,19 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
             return new ExplainLessThanOrEqualTo<TSubject, TResult>(negated, expected);
         }
 
+        public static ExplainNull<TSubject, TResult> Null<TSubject, TResult>(this FluentSubject<TSubject> subject, Negated negated)
+        {
+            return new ExplainNull<TSubject, TResult>(negated);
+        }
+
         public static FluentSubject<TSubject> Subject<TSubject>()
         {
             return new FluentSubject<TSubject>();
+        }
+
+        public static ExplainTrue<TSubject, bool> True<TSubject>(this FluentSubject<TSubject> subject, Negated negated)
+        {
+            return new ExplainTrue<TSubject, bool>(negated);
         }
 
         public class FluentSubject<TSubject>

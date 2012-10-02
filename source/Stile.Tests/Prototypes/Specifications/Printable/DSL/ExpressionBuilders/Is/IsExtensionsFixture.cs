@@ -47,6 +47,19 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.DSL.ExpressionBuilders
         }
 
         [Test]
+        public void False()
+        {
+            // arrange
+            string empty = string.Empty;
+
+            // act and assert
+            AssertEquals(Specify.For<string>().That(x => x.IsNormalized()).Is.False(), Outcome.Failed, empty);
+            AssertEquals(Specify.For<string>().That(x => x.IsNormalized()).Is.Not.False(), Outcome.Succeeded, empty);
+            AssertEquals(Specify.ThatAny<bool>().Is.Not.False(), Outcome.Failed, false);
+            AssertEquals(Specify.ThatAny<bool>().Is.False(), Outcome.Succeeded, false);
+        }
+
+        [Test]
         public void GreaterThan()
         {
             // arrange
@@ -100,6 +113,32 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.DSL.ExpressionBuilders
             AssertEquals(Specify.For<DateTime>().That(x => x.Ticks).Is.Not.LessThanOrEqualTo(0), Outcome.Succeeded, now);
             AssertEquals(Specify.ThatAny<int>().Is.LessThanOrEqualTo(0), Outcome.Failed, one);
             AssertEquals(Specify.ThatAny<int>().Is.Not.LessThanOrEqualTo(0), Outcome.Succeeded, one);
+        }
+
+        [Test]
+        public void Null()
+        {
+            // arrange
+            string empty = string.Empty;
+
+            // act and assert
+            AssertEquals(Specify.For<string>().That(x => x.ToLowerInvariant()).Is.Null(), Outcome.Failed, empty);
+            AssertEquals(Specify.For<string>().That(x => x.ToLowerInvariant()).Is.Not.Null(), Outcome.Succeeded, empty);
+            AssertEquals(Specify.ThatAny<string>().Is.Null(), Outcome.Failed, empty);
+            AssertEquals(Specify.ThatAny<string>().Is.Not.Null(), Outcome.Succeeded, empty);
+        }
+
+        [Test]
+        public void True()
+        {
+            // arrange
+            string empty = string.Empty;
+
+            // act and assert
+            AssertEquals(Specify.For<string>().That(x => x.IsNormalized()).Is.Not.True(), Outcome.Failed, empty);
+            AssertEquals(Specify.For<string>().That(x => x.IsNormalized()).Is.True(), Outcome.Succeeded, empty);
+            AssertEquals(Specify.ThatAny<bool>().Is.True(), Outcome.Failed, false);
+            AssertEquals(Specify.ThatAny<bool>().Is.Not.True(), Outcome.Succeeded, false);
         }
 
         private void AssertEquals<T1, T2>(IPrintableSpecification<T1, T2> specification, Outcome outcome, T1 value)

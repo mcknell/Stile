@@ -20,8 +20,8 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Is
             "{0}", Terminal.Be, "'" + ComparablyEquivalentTo + "' {1}", //
             Variable.Conjunction, Terminal.Was, Variable.ActualValue
         })]
-        public ExplainComparablyEquivalentTo([Symbol(Variable.Negated)] Negated negated, [Symbol(Variable.ExpectedValue)] TResult expected)
-            : base(
-                negated ? ExpectationVerb.NotBe : ExpectationVerb.Be, ComparablyEquivalentTo, result => expected.ToDebugString()) {}
+        public ExplainComparablyEquivalentTo([Symbol(Variable.Negated)] Negated negated,
+            [Symbol(Variable.ExpectedValue)] TResult expected)
+            : base(ChooseVerb(negated), ComparablyEquivalentTo, result => expected.ToDebugString()) {}
     }
 }

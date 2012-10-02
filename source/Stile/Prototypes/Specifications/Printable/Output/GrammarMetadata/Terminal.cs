@@ -16,5 +16,7 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
         EOL,
         Have,
         Had,
+        Null,
+        HashCode,
     }
 }

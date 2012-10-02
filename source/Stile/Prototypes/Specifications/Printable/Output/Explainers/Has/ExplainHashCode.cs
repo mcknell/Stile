@@ -12,9 +12,11 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Has
 {
     public class ExplainHashCode<TSubject> : Explainer<TSubject, int>
     {
-        [Rule(Variable.Explainer, Items = new object[] {"{0}", Terminal.Have, "'hashCode' {1}", //
-            Variable.Conjunction, Terminal.Had, "'hashCode'", Variable.ActualValue})]
-        public ExplainHashCode(int hashCode)
-            : base(ExpectationVerb.Have, "hashCode", result => hashCode.ToString(CultureInfo.InvariantCulture)) {}
+        public const string Hashcode = "hashCode";
+
+        [Rule(Variable.Explainer, Items = new object[] {Terminal.Have, "'" + Hashcode + "' {0}", //
+            Variable.Conjunction, Terminal.Had, "'" + Hashcode + "'", Variable.ActualValue})]
+        public ExplainHashCode([Symbol(Variable.ExpectedValue)] int hashCode)
+            : base(ExpectationVerb.Have, Hashcode, result => hashCode.ToString(CultureInfo.InvariantCulture)) {}
     }
 }

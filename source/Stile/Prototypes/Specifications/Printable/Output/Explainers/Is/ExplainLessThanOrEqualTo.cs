@@ -13,10 +13,15 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Is
 {
     public class ExplainLessThanOrEqualTo<TSubject, TResult> : Explainer<TSubject, TResult>
     {
-        [Rule(Variable.Explainer,
-            Items = new object[] {"{0}", Terminal.Be, "'<=' {1}", Variable.Conjunction, Terminal.Was, Variable.ActualValue})]
+        public const string Operator = "<=";
+
+        [Rule(Variable.Explainer, Items = new object[]
+        {
+            "{0}", Terminal.Be, "'" + Operator + "' {1}", //
+            Variable.Conjunction, Terminal.Was, Variable.ActualValue
+        })]
         public ExplainLessThanOrEqualTo([Symbol(Variable.Negated)] Negated negated,
             [Symbol(Variable.ExpectedValue)] TResult expected)
-            : base(negated ? ExpectationVerb.NotBe : ExpectationVerb.Be, "<=", result => expected.ToDebugString()) {}
+            : base(ChooseVerb(negated), Operator, result => expected.ToDebugString()) {}
     }
 }

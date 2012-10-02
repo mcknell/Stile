@@ -35,6 +35,24 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is
         }
 
         [Pure]
+        public static IPrintableSpecification<TSubject, bool> False<TSubject>(this IIs<TSubject, bool> builder)
+        {
+            var state = (IIsState<TSubject, bool>) builder;
+            Predicate<bool> accepter = x => state.Negated.AgreesWith(!x);
+            ExplainFalse<TSubject, bool> explainer = Explain.Subject<TSubject>().False(state.Negated);
+            return Make(builder, accepter, explainer);
+        }
+
+        [Pure]
+        public static IPrintableSpecification<bool> False(this IIs<bool> builder)
+        {
+            var state = (IIsState<bool>) builder;
+            Predicate<bool> accepter = x => state.Negated.AgreesWith(!x);
+            ExplainFalse<bool, bool> explainer = Explain.Subject<bool>().False(state.Negated);
+            return Make(accepter, explainer);
+        }
+
+        [Pure]
         public static IPrintableSpecification<TSubject, TResult> Make<TSubject, TResult>(IIs<TSubject, TResult> builder,
             Predicate<TResult> accepter,
             Explainer<TSubject, TResult> explainer)
@@ -50,6 +68,43 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is
         {
             var specification = new PrintableSpecification<TSubject>(accepter, explainer);
             return specification;
+        }
+
+        [Pure]
+        public static IPrintableSpecification<TSubject, TResult> Null<TSubject, TResult>(this IIs<TSubject, TResult> builder)
+            where TResult : class
+        {
+            var state = (IIsState<TSubject, TResult>) builder;
+            Predicate<TResult> accepter = x => state.Negated.AgreesWith(x == null);
+            ExplainNull<TSubject, TResult> explainer = Explain.Subject<TSubject>().Null<TSubject, TResult>(state.Negated);
+            return Make(builder, accepter, explainer);
+        }
+
+        [Pure]
+        public static IPrintableSpecification<TSubject> Null<TSubject>(this IIs<TSubject> builder) where TSubject : class
+        {
+            var state = (IIsState<TSubject>) builder;
+            Predicate<TSubject> accepter = x => state.Negated.AgreesWith(x == null);
+            ExplainNull<TSubject, TSubject> explainer = Explain.Subject<TSubject>().Null<TSubject, TSubject>(state.Negated);
+            return Make(accepter, explainer);
+        }
+
+        [Pure]
+        public static IPrintableSpecification<TSubject, bool> True<TSubject>(this IIs<TSubject, bool> builder)
+        {
+            var state = (IIsState<TSubject, bool>) builder;
+            Predicate<bool> accepter = x => state.Negated.AgreesWith(x);
+            ExplainTrue<TSubject, bool> explainer = Explain.Subject<TSubject>().True(state.Negated);
+            return Make(builder, accepter, explainer);
+        }
+
+        [Pure]
+        public static IPrintableSpecification<bool> True(this IIs<bool> builder)
+        {
+            var state = (IIsState<bool>) builder;
+            Predicate<bool> accepter = x => state.Negated.AgreesWith(x);
+            ExplainTrue<bool, bool> explainer = Explain.Subject<bool>().True(state.Negated);
+            return Make(accepter, explainer);
         }
     }
 }

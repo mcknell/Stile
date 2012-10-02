@@ -1,5 +1,5 @@
 #region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
+// Stile for .NET, Copyright 2011-2012 by Mark Knell
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Stile.Prototypes.Compilation.Grammars;
-using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 #endregion
 
@@ -23,6 +22,9 @@ namespace Stile.DocumentationGeneration
             {Terminal.Because.ToString(), "'because'"},
             {Terminal.Be.ToString(), "'be'"},
             {Terminal.Was.ToString(), "'was'"},
+            {Terminal.Have.ToString(), "'have'"},
+            {Terminal.Had.ToString(), "'had'"},
+            {Terminal.Null.ToString(), "'null'"},
             {Variable.Subject.ToString(), "subject-value"},
             {Variable.SubjectClause.ToString(), "subject-clause"},
             {Variable.ExpectationClause.ToString(), "expectation-clause"},

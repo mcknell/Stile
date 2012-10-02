@@ -16,8 +16,10 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Is
         public const string Operator = ">";
 
         [Rule(Variable.Explainer,
-            Items = new object[] {"{0}", Terminal.Be, "'" + Operator + "' {1}", Variable.Conjunction, Terminal.Was, Variable.ActualValue})]
+            Items =
+                new object[]
+                {"{0}", Terminal.Be, "'" + Operator + "' {1}", Variable.Conjunction, Terminal.Was, Variable.ActualValue})]
         public ExplainGreaterThan([Symbol(Variable.Negated)] Negated negated, [Symbol(Variable.ExpectedValue)] TResult expected)
-            : base(negated ? ExpectationVerb.NotBe : ExpectationVerb.Be, Operator, result => expected.ToDebugString()) {}
+            : base(ChooseVerb(negated), Operator, result => expected.ToDebugString()) {}
     }
 }
