@@ -1,5 +1,5 @@
 #region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
+// Stile for .NET, Copyright 2011-2012 by Mark Knell
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
@@ -8,15 +8,20 @@ using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Evaluations;
+using Stile.Readability;
 #endregion
 
 namespace Stile.Prototypes.Specifications
 {
     public interface ISpecification {}
 
+    public interface ISpecification<in TResult, out TEvaluation> : ISpecification,
+        IEvaluable<TResult, TEvaluation>
+        where TEvaluation : class, IEvaluation<TResult> {}
+
     public interface ISpecification<in TSubject, out TResult, out TEvaluation> : ISpecification,
         IEvaluable<TSubject, TResult, TEvaluation>
-        where TEvaluation : class, IEvaluation<TSubject, TResult> { }
+        where TEvaluation : class, IEvaluation<TSubject, TResult> {}
 
     public abstract class Specification<TSubject, TResult, TEvaluation> : ISpecification<TSubject, TResult, TEvaluation>
         where TEvaluation : class, IEvaluation<TSubject, TResult>
@@ -24,13 +29,13 @@ namespace Stile.Prototypes.Specifications
         private readonly Predicate<TResult> _accepter;
         private readonly Func<TResult, Exception, TEvaluation> _exceptionFilter;
         private readonly bool _expectsException;
-        private readonly Func<TSubject, TResult> _extractor;
+        private readonly Lazy<Func<TSubject, TResult>> _lazyExtractor;
 
-        protected Specification([NotNull] Func<TSubject, TResult> extractor,
+        protected Specification([NotNull] Lazy<Func<TSubject, TResult>> lazyExtractor,
             [NotNull] Predicate<TResult> accepter,
             Func<TResult, Exception, TEvaluation> exceptionFilter = null)
         {
-            _extractor = extractor.ValidateArgumentIsNotNull();
+            _lazyExtractor = lazyExtractor.ValidateArgumentIsNotNull();
             _accepter = accepter.ValidateArgumentIsNotNull();
             _exceptionFilter = exceptionFilter;
             _expectsException = _exceptionFilter != null;
@@ -43,7 +48,7 @@ namespace Stile.Prototypes.Specifications
             TEvaluation evaluation;
             try
             {
-                result = _extractor.Invoke(subject);
+                result = _lazyExtractor.Value.Invoke(subject);
                 bool accepted = _accepter.Invoke(result);
                 outcome = accepted ? Outcome.Succeeded : Outcome.Failed;
             } catch (Exception e)
@@ -72,5 +77,16 @@ namespace Stile.Prototypes.Specifications
         }
 
         protected abstract TEvaluation EvaluationFactory(IWrappedResult<TSubject, TResult> result);
+    }
+
+    public abstract class Specification<TResult, TEvaluation> : Specification<TResult, TResult, TEvaluation>,
+        ISpecification<TResult, TEvaluation>
+        where TEvaluation : class, IEvaluation<TResult, TResult>, IEvaluation<TResult>
+    {
+        public static readonly Lazy<Func<TResult, TResult>> IdentityMap = new Lazy<Func<TResult, TResult>>(Identity.Map<TResult>);
+
+        protected Specification([NotNull] Predicate<TResult> accepter,
+            Func<TResult, Exception, TEvaluation> exceptionFilter = null)
+            : base(IdentityMap, accepter, exceptionFilter) {}
     }
 }

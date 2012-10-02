@@ -1,5 +1,5 @@
 ﻿#region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
+// Stile for .NET, Copyright 2011-2012 by Mark Knell
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
@@ -12,11 +12,15 @@ using Stile.Prototypes.Specifications.Evaluations;
 using Stile.Prototypes.Specifications.Printable.Output;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers;
 using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
+using Stile.Readability;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable
 {
     public interface IPrintableSpecification : IEmittingSpecification {}
+
+    public interface IPrintableSpecification<TSubject> : IPrintableSpecification,
+        IEmittingSpecification<TSubject, IPrintableEvaluation<TSubject>, ILazyReadableText> {}
 
     public interface IPrintableSpecification<TSubject, out TResult> : IPrintableSpecification,
         IEmittingSpecification<TSubject, TResult, IPrintableEvaluation<TSubject, TResult>, ILazyReadableText> {}
@@ -28,7 +32,7 @@ namespace Stile.Prototypes.Specifications.Printable
         private readonly IExplainer<TSubject, TResult> _explainer;
         private readonly string _reason;
 
-        public PrintableSpecification([NotNull] Func<TSubject, TResult> extractor,
+        public PrintableSpecification([NotNull] Lazy<Func<TSubject, TResult>> extractor,
             [NotNull] Predicate<TResult> accepter,
             [NotNull] IExplainer<TSubject, TResult> explainer,
             string reason = null,
@@ -74,6 +78,30 @@ namespace Stile.Prototypes.Specifications.Printable
         internal static string PrintConjunction(Outcome outcome)
         {
             return outcome == Outcome.Succeeded ? "and" : "but";
+        }
+    }
+
+    public class PrintableSpecification<TSubject> : PrintableSpecification<TSubject, TSubject>,
+        IPrintableSpecification<TSubject>
+    {
+        public PrintableSpecification([NotNull] Predicate<TSubject> accepter,
+            [NotNull] IExplainer<TSubject, TSubject> explainer,
+            string reason = null,
+            Func<TSubject, Exception, IPrintableEvaluation<TSubject, TSubject>> exceptionFilter = null)
+            : base(Default.IdentityMap, accepter, explainer, reason, exceptionFilter) {}
+
+        public new IPrintableEvaluation<TSubject> Evaluate(TSubject subject)
+        {
+            IPrintableEvaluation<TSubject, TSubject> evaluation = base.Evaluate(subject);
+            return new PrintableEvaluation<TSubject>(evaluation.Result, evaluation.Emitted);
+        }
+
+        public static class Default
+        {
+// ReSharper disable StaticFieldInGenericType
+            [NotNull] public static readonly Lazy<Func<TSubject, TSubject>> IdentityMap =
+                new Lazy<Func<TSubject, TSubject>>(Identity.Map<TSubject>);
+// ReSharper restore StaticFieldInGenericType
         }
     }
 }

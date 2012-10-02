@@ -26,7 +26,7 @@ namespace Stile.Prototypes.Specifications.Bound
         private readonly ISource<TSubject> _source;
 
         public BoundSpecification([NotNull] ISource<TSubject> source,
-            [NotNull] Func<TSubject, TResult> extractor,
+            [NotNull] Lazy<Func<TSubject, TResult>> extractor,
             [NotNull] Predicate<TResult> accepter,
             Func<TResult, Exception, IBoundEvaluation<TSubject, TResult>> exceptionFilter = null)
             : base(extractor, accepter, exceptionFilter)

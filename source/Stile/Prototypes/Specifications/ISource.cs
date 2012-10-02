@@ -1,9 +1,11 @@
 #region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Propter project on GitHub
+// Stile for .NET, Copyright 2011-2012 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
+using System;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 #endregion
 
@@ -15,5 +17,27 @@ namespace Stile.Prototypes.Specifications
     {
         [CanBeNull]
         TSubject Get();
+    }
+
+    public class Source<TSubject> : ISource<TSubject>
+    {
+        private readonly Lazy<TSubject> _subjectGetter;
+
+        public Source(Expression<Func<TSubject>> expression)
+            : this(expression.Compile) {}
+
+        public Source(TSubject subject)
+            : this(() => () => subject) {}
+
+        private Source(Func<Func<TSubject>> doubleFunc)
+        {
+            _subjectGetter = new Lazy<TSubject>(doubleFunc.Invoke());
+        }
+
+        public TSubject Get()
+        {
+            return _subjectGetter.Value;
+        }
+
     }
 }

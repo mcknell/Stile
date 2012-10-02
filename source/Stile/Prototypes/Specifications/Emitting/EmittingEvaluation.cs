@@ -1,5 +1,5 @@
 #region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
+// Stile for .NET, Copyright 2011-2012 by Mark Knell
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
@@ -18,8 +18,11 @@ namespace Stile.Prototypes.Specifications.Emitting
         TEmit Emitted { get; }
     }
 
+    public interface IEmittingEvaluation<out TSubject, out TEmit> : IEmittingEvaluation<TEmit>,
+        IEvaluation<TSubject> {}
+
     public interface IEmittingEvaluation<out TSubject, out TResult, out TEmit> : IEmittingEvaluation<TEmit>,
-        IEvaluation<TSubject, TResult> { }
+        IEvaluation<TSubject, TResult> {}
 
     public class EmittingEvaluation<TSubject, TResult, TEmit> : IEmittingEvaluation<TSubject, TResult, TEmit>
     {
@@ -31,5 +34,17 @@ namespace Stile.Prototypes.Specifications.Emitting
 
         public TEmit Emitted { get; private set; }
         public IWrappedResult<TSubject, TResult> Result { get; private set; }
+    }
+
+    public class EmittingEvaluation<TSubject, TEmit> : IEmittingEvaluation<TSubject, TEmit>
+    {
+        public EmittingEvaluation([NotNull] IWrappedResult<TSubject> wrappedResult, TEmit emitted)
+        {
+            Result = wrappedResult.ValidateArgumentIsNotNull();
+            Emitted = emitted;
+        }
+
+        public TEmit Emitted { get; private set; }
+        public IWrappedResult<TSubject> Result { get; private set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿#region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Propter project on GitHub
+// Stile for .NET, Copyright 2011-2012 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -12,10 +12,19 @@ namespace Stile.Prototypes.Specifications
 {
     public interface IEvaluable {}
 
+    public interface IEvaluable<in TSubject, out TEvaluation> : IEvaluable
+        where TEvaluation : class, IEvaluation<TSubject>
+    {
+        [NotNull]
+        [System.Diagnostics.Contracts.Pure]
+        TEvaluation Evaluate(TSubject subject);
+    }
+
     public interface IEvaluable<in TSubject, out TResult, out TEvaluation> : IEvaluable
         where TEvaluation : class, IEvaluation<TSubject, TResult>
     {
         [NotNull]
+        [System.Diagnostics.Contracts.Pure]
         TEvaluation Evaluate(TSubject subject);
     }
 }

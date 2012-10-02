@@ -1,5 +1,5 @@
 #region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
+// Stile for .NET, Copyright 2011-2012 by Mark Knell
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
@@ -20,10 +20,14 @@ namespace Stile.Prototypes.Specifications.Evaluations
         object Value { get; }
     }
 
-    public interface IWrappedResult<out TSubject, out TValue> : IWrappedResult
+    public interface IWrappedResult<out TValue> : IWrappedResult
+    {
+        new TValue Value { get; }
+    }
+
+    public interface IWrappedResult<out TSubject, out TValue> : IWrappedResult<TValue>
     {
         TSubject Subject { get; }
-        new TValue Value { get; }
     }
 
     public class WrappedResult<TSubject, TValue> : IWrappedResult<TSubject, TValue>

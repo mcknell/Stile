@@ -1,7 +1,6 @@
-﻿#region License statement
-// NJamb, a specification and delta-specification DSL
-// Copyright (c) 2010-2011, Mark Knell
-// Published under the MIT License; all other rights reserved
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2012 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 namespace Stile.Patterns.SelfDescribingPredicates
@@ -15,6 +14,16 @@ namespace Stile.Patterns.SelfDescribingPredicates
         private Negated(bool negated)
         {
             _negated = negated;
+        }
+
+        public bool AgreesWith(bool value)
+        {
+            return value != _negated;
+        }
+
+        public Negated Invert()
+        {
+            return (Negated) (this == false);
         }
 
         public override string ToString()

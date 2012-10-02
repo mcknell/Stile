@@ -15,7 +15,7 @@ namespace Stile.Prototypes.Specifications.Bound
 {
     public interface IBoundEvaluation : IEvaluation {}
 
-    public interface IBoundEvaluation<TSubject, out TResult> : IBoundEvaluation,
+    public interface IBoundEvaluation<out TSubject, out TResult> : IBoundEvaluation,
         IEvaluation<TSubject, TResult> { }
 
     public class BoundEvaluation<TSubject, TResult> : Evaluation<TSubject, TResult>,

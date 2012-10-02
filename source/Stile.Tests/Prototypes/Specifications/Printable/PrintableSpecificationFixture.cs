@@ -13,6 +13,7 @@ using Stile.Prototypes.Specifications.Evaluations;
 using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.Printable.Output;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers;
+using Stile.Types;
 #endregion
 
 namespace Stile.Tests.Prototypes.Specifications.Printable
@@ -28,7 +29,7 @@ namespace Stile.Tests.Prototypes.Specifications.Printable
             Func<int, string> extractor = i => i.ToString(CultureInfo.InvariantCulture);
             Predicate<string> accepter = s => s == "23";
             var description = new ExplainBe<int, string>(Negated.False, "23");
-            var specification = new PrintableSpecification<int, string>(extractor, accepter, description);
+            var specification = new PrintableSpecification<int, string>(extractor.ToLazy(), accepter, description);
             Assert.NotNull(specification);
 
             // act
@@ -64,7 +65,7 @@ namespace Stile.Tests.Prototypes.Specifications.Printable
             Func<int, string> extractor = i => i.ToString(CultureInfo.InvariantCulture);
             Predicate<string> accepter = s => s == "23";
             var description = new ExplainBe<int, string>(Negated.True, "24");
-            var specification = new PrintableSpecification<int, string>(extractor, accepter, description);
+            var specification = new PrintableSpecification<int, string>(extractor.ToLazy(), accepter, description);
             Assert.NotNull(specification);
 
             // act

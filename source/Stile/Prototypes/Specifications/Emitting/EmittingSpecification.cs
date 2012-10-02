@@ -1,5 +1,5 @@
 ﻿#region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
+// Stile for .NET, Copyright 2011-2012 by Mark Knell
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
@@ -13,16 +13,20 @@ namespace Stile.Prototypes.Specifications.Emitting
 {
     public interface IEmittingSpecification : ISpecification {}
 
+    public interface IEmittingSpecification<in TSubject, out TEvaluation, out TEmit> : IEmittingSpecification,
+        ISpecification<TSubject, TEvaluation>
+        where TEvaluation : class, IEmittingEvaluation<TSubject, TEmit> {}
+
     public interface IEmittingSpecification<in TSubject, out TResult, out TEvaluation, out TEmit> : IEmittingSpecification,
         ISpecification<TSubject, TResult, TEvaluation>
-        where TEvaluation : class, IEmittingEvaluation<TSubject, TResult, TEmit> { }
+        where TEvaluation : class, IEmittingEvaluation<TSubject, TResult, TEmit> {}
 
     public abstract class EmittingSpecification<TSubject, TResult, TEvaluation, TEmit> :
         Specification<TSubject, TResult, TEvaluation>,
         IEmittingSpecification<TSubject, TResult, TEvaluation, TEmit>
         where TEvaluation : class, IEmittingEvaluation<TSubject, TResult, TEmit>
     {
-        protected EmittingSpecification([NotNull] Func<TSubject, TResult> extractor,
+        protected EmittingSpecification([NotNull] Lazy<Func<TSubject, TResult>> extractor,
             [NotNull] Predicate<TResult> accepter,
             Func<TResult, Exception, TEvaluation> exceptionFilter = null)
             : base(extractor, accepter, exceptionFilter) {}
