@@ -41,7 +41,7 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.Output.Explainers
 
         private static void AssertExplain(Negated negated, Outcome outcome)
         {
-            var testSubject = new ExplainBe<int, string>(negated, "one");
+            var testSubject = new ExplainIs<int, string>(negated, "one");
             var result = new WrappedResult<int, string>(1, outcome, "two");
 
             // act

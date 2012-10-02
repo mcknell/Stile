@@ -1,5 +1,5 @@
 #region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
+// Stile for .NET, Copyright 2011-2012 by Mark Knell
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
@@ -21,11 +21,12 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
     public abstract class Explainer<TSubject, TResult> : IExplainer<TSubject, TResult>
     {
         protected Explainer([NotNull] IExpectationVerb expectationVerb,
+            string adjective = null,
             Func<TResult, string> expected = null,
             Func<TResult, string> actual = null)
             : this(
-                new ExpectedClause<TSubject, TResult>(expectationVerb.Expected, expected),
-                new ActualClause<TSubject, TResult>(expectationVerb.Actual, actual))
+                new ExpectedClause<TSubject, TResult>(expectationVerb.Expected, adjective, expected),
+                new ActualClause<TSubject, TResult>(expectationVerb.Actual, adjective, actual))
         {
             Verb = expectationVerb;
         }

@@ -28,7 +28,7 @@ namespace Stile.Tests.Prototypes.Specifications.Printable
             int input = 23;
             Func<int, string> extractor = i => i.ToString(CultureInfo.InvariantCulture);
             Predicate<string> accepter = s => s == "23";
-            var description = new ExplainBe<int, string>(Negated.False, "23");
+            var description = new ExplainIs<int, string>(Negated.False, "23");
             var specification = new PrintableSpecification<int, string>(extractor.ToLazy(), accepter, description);
             Assert.NotNull(specification);
 
@@ -64,7 +64,7 @@ namespace Stile.Tests.Prototypes.Specifications.Printable
             int input = 23;
             Func<int, string> extractor = i => i.ToString(CultureInfo.InvariantCulture);
             Predicate<string> accepter = s => s == "23";
-            var description = new ExplainBe<int, string>(Negated.True, "24");
+            var description = new ExplainIs<int, string>(Negated.True, "24");
             var specification = new PrintableSpecification<int, string>(extractor.ToLazy(), accepter, description);
             Assert.NotNull(specification);
 

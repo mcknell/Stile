@@ -1,5 +1,5 @@
 #region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
+// Stile for .NET, Copyright 2011-2012 by Mark Knell
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
@@ -11,12 +11,11 @@ using Stile.Readability;
 
 namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
 {
-    public class ExplainBe<TSubject, TResult> : Explainer<TSubject, TResult>
+    public class ExplainIs<TSubject, TResult> : Explainer<TSubject, TResult>
     {
         [Rule(Variable.Explainer,
             Items = new object[] {"{0}", Terminal.Be, "{1}", Variable.Conjunction, Terminal.Was, Variable.ActualValue})]
-        // explainer ::=  'not'? 'be' expected conjunction 'was' actual
-        public ExplainBe([Symbol(Variable.Negated)] Negated negated, [Symbol(Variable.ExpectedValue)] TResult expected)
-            : base(negated ? ExpectationVerb.NotBe : ExpectationVerb.Be, result => expected.ToDebugString()) {}
+        public ExplainIs([Symbol(Variable.Negated)] Negated negated, [Symbol(Variable.ExpectedValue)] TResult expected)
+            : base(negated ? ExpectationVerb.NotBe : ExpectationVerb.Be, expected : result => expected.ToDebugString()) {}
     }
 }

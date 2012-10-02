@@ -1,5 +1,5 @@
 #region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
+// Stile for .NET, Copyright 2011-2012 by Mark Knell
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
@@ -45,6 +45,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
             List<string> newRight = Right.Select(x => Regex.Replace(x, pattern, wrappedReplacement)).ToList();
             var rule = new ProductionRule(Left, newRight) {CanBeInlined = CanBeInlined, SortOrder = SortOrder};
             return rule;
+        }
+
+        public override string ToString()
+        {
+            return string.Join(" ", new[] {Left, "::="}.Concat(Right));
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿#region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
+// Stile for .NET, Copyright 2011-2012 by Mark Knell
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
@@ -160,7 +160,6 @@ namespace Stile.DocumentationGeneration
             ProductionRule productionRule;
             if (attribute.Items.Any())
             {
-
                 string format = string.Join(" ", attribute.Items);
                 string substituted = string.Format(format, symbols.Cast<object>().ToArray());
                 productionRule = new ProductionRule(symbol, substituted);
@@ -197,11 +196,12 @@ namespace Stile.DocumentationGeneration
             {
                 foreach (Type type in assembly.GetTypes())
                 {
-                    IEnumerable<MethodBase> methodBases =
-                        type.GetMethods(bindingFlags).Cast<MethodBase>().Concat(type.GetConstructors(bindingFlags));
+                    IEnumerable<MethodBase> methodBases = type.GetMethods(bindingFlags).Cast<MethodBase>() //
+                        .Concat(type.GetConstructors(bindingFlags)) //
+                        .Where(x => x.ReflectedType == x.DeclaringType);
                     foreach (MethodBase methodInfo in methodBases)
                     {
-                        var attribute = methodInfo.GetCustomAttribute<RuleAttribute>();
+                        var attribute = methodInfo.GetCustomAttribute<RuleAttribute>(false);
                         if (attribute != null)
                         {
                             yield return Tuple.Create(methodInfo, attribute);

@@ -90,11 +90,16 @@
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SubjectBuilders\BoundSubjectBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SubjectBuilders\SubjectBuilderExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ActualClause.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ExplainBe.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Explain.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ExplainGreaterThan.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ExplainGreaterThanOrEqualTo.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ExplainIs.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Explainer.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ExpectationVerb.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ExpectedClause.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ExplainHasAll.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ExplainLessThan.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ExplainLessThanOrEqualTo.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\Terminal.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ExplainerClause.cs" />
     <Compile Include="Prototypes\Specifications\ISource.cs" />
