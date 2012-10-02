@@ -13,6 +13,7 @@ using Stile.Prototypes.Specifications.Printable.Output;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers;
 using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 using Stile.Readability;
+using Stile.Types.Reflection;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable
@@ -51,7 +52,10 @@ namespace Stile.Prototypes.Specifications.Printable
             })]
         public override IPrintableEvaluation<TSubject, TResult> Evaluate([Symbol(Variable.Subject)] TSubject subject)
         {
-            return base.Evaluate(subject);
+            IPrintableEvaluation<TSubject, TResult> evaluation = base.Evaluate(subject);
+            var text = new LazyReadableText(() => ExplainEvaluation(evaluation.Emitted.Retrieved, evaluation.Result.Subject));
+            var printableEvaluation = new PrintableEvaluation<TSubject, TResult>(evaluation.Result, text);
+            return printableEvaluation;
         }
 
         protected override LazyReadableText EmittingFactory(IWrappedResult<TSubject, TResult> result)
@@ -73,6 +77,13 @@ namespace Stile.Prototypes.Specifications.Printable
             string because = _reason == null ? null : string.Format("{0}because {1}", Environment.NewLine, _reason);
             string basic = string.Join(" ", expected, Environment.NewLine, conjunction, actual);
             return basic + because;
+        }
+
+        protected string ExplainEvaluation(Lazy<string> evaluatedExplanation, TSubject subject)
+        {
+            string type = typeof(TSubject).ToDebugString();
+            string evaluated = evaluatedExplanation.Value;
+            return string.Format("expected {0} (of type {1}) would {2}", subject.ToDebugString(), type, evaluated);
         }
 
         internal static string PrintConjunction(Outcome outcome)
