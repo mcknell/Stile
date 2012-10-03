@@ -7,6 +7,8 @@
 using Stile.Patterns.SelfDescribingPredicates;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers.Has;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is.Comparables;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is.Strings;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
@@ -17,6 +19,20 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
             this FluentSubject<TSubject> subject, TResult expected, Negated negated)
         {
             return new ExplainComparablyEquivalentTo<TSubject, TResult>(negated, expected);
+        }
+
+        public static ExplainStringContaining<TSubject> Containing<TSubject>(this FluentSubject<TSubject> subject,
+            string expected,
+            Negated negated)
+        {
+            return new ExplainStringContaining<TSubject>(negated, expected);
+        }
+
+        public static ExplainStringEndingWith<TSubject> EndingWith<TSubject>(this FluentSubject<TSubject> subject,
+            string expected,
+            Negated negated)
+        {
+            return new ExplainStringEndingWith<TSubject>(negated, expected);
         }
 
         public static ExplainFalse<TSubject, bool> False<TSubject>(this FluentSubject<TSubject> subject, Negated negated)
@@ -37,7 +53,7 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
             return new ExplainGreaterThanOrEqualTo<TSubject, TResult>(negated, expected);
         }
 
-        public static ExplainHashCode<TSubject> HashCode<TSubject, TResult>(this FluentSubject<TSubject> subject, int hashCode)
+        public static ExplainHashCode<TSubject> HashCode<TSubject>(this FluentSubject<TSubject> subject, int hashCode)
         {
             return new ExplainHashCode<TSubject>(hashCode);
         }
@@ -58,6 +74,25 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
         public static ExplainNull<TSubject, TResult> Null<TSubject, TResult>(this FluentSubject<TSubject> subject, Negated negated)
         {
             return new ExplainNull<TSubject, TResult>(negated);
+        }
+
+        public static ExplainStringNullOrEmpty<TSubject> NullOrEmpty<TSubject>(this FluentSubject<TSubject> subject,
+            Negated negated)
+        {
+            return new ExplainStringNullOrEmpty<TSubject>(negated);
+        }
+
+        public static ExplainStringNullOrWhitespace<TSubject> NullOrWhitespace<TSubject>(this FluentSubject<TSubject> subject,
+            Negated negated)
+        {
+            return new ExplainStringNullOrWhitespace<TSubject>(negated);
+        }
+
+        public static ExplainStringStartingWith<TSubject> StartingWith<TSubject>(this FluentSubject<TSubject> subject,
+            string expected,
+            Negated negated)
+        {
+            return new ExplainStringStartingWith<TSubject>(negated, expected);
         }
 
         public static FluentSubject<TSubject> Subject<TSubject>()

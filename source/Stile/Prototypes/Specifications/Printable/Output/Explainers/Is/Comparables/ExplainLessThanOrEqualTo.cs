@@ -9,19 +9,19 @@ using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 using Stile.Readability;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Is
+namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Is.Comparables
 {
-    public class ExplainComparablyEquivalentTo<TSubject, TResult> : Explainer<TSubject, TResult>
+    public class ExplainLessThanOrEqualTo<TSubject, TResult> : Explainer<TSubject, TResult>
     {
-        public const string ComparablyEquivalentTo = "comparably equivalent to";
+        public const string Operator = "<=";
 
         [Rule(Variable.Explainer, Items = new object[]
         {
-            "{0}", Terminal.Be, "'" + ComparablyEquivalentTo + "' {1}", //
+            "{0}", Terminal.Be, "'" + Operator + "' {1}", //
             Variable.Conjunction, Terminal.Was, Variable.ActualValue
         })]
-        public ExplainComparablyEquivalentTo([Symbol(Variable.Negated)] Negated negated,
+        public ExplainLessThanOrEqualTo([Symbol(Variable.Negated)] Negated negated,
             [Symbol(Variable.ExpectedValue)] TResult expected)
-            : base(ChooseVerb(negated), ComparablyEquivalentTo, result => expected.ToDebugString()) {}
+            : base(ExpectationVerb.Be.Negate(negated), Operator, result => expected.ToDebugString()) {}
     }
 }

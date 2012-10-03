@@ -126,6 +126,11 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.DSL.ExpressionBuilders
             AssertEquals(Specify.For<string>().That(x => x.ToLowerInvariant()).Is.Not.Null(), Outcome.Succeeded, empty);
             AssertEquals(Specify.ThatAny<string>().Is.Null(), Outcome.Failed, empty);
             AssertEquals(Specify.ThatAny<string>().Is.Not.Null(), Outcome.Succeeded, empty);
+            const int one = 1;
+            AssertEquals(Specify.For<int?>().That(x => x).Is.Null(), Outcome.Failed, one);
+            AssertEquals(Specify.For<int?>().That(x => x).Is.Not.Null(), Outcome.Succeeded, one);
+            AssertEquals(Specify.ThatAny<int?>().Is.Null(), Outcome.Failed, one);
+            AssertEquals(Specify.ThatAny<int?>().Is.Not.Null(), Outcome.Succeeded, one);
         }
 
         [Test]
@@ -141,14 +146,14 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.DSL.ExpressionBuilders
             AssertEquals(Specify.ThatAny<bool>().Is.Not.True(), Outcome.Succeeded, false);
         }
 
-        private void AssertEquals<T1, T2>(IPrintableSpecification<T1, T2> specification, Outcome outcome, T1 value)
+        internal static void AssertEquals<T1, T2>(IPrintableSpecification<T1, T2> specification, Outcome outcome, T1 value)
         {
             IPrintableEvaluation<T1, T2> evaluation = specification.Evaluate(value);
             Assert.That(evaluation.Result.Outcome, NUnit.Framework.Is.EqualTo(outcome));
             Assert.That(evaluation.Emitted.Retrieved.Value, NUnit.Framework.Is.Not.Empty);
         }
 
-        private static void AssertEquals<T>(IPrintableSpecification<T> specification, Outcome outcome, T value)
+        internal static void AssertEquals<T>(IPrintableSpecification<T> specification, Outcome outcome, T value)
         {
             IPrintableEvaluation<T> evaluation = specification.Evaluate(value);
             Assert.That(evaluation.Result.Outcome, NUnit.Framework.Is.EqualTo(outcome));

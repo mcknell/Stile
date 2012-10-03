@@ -15,6 +15,6 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Is
         [Rule(Variable.Explainer, Items = new object[] {"{0}", Terminal.Be, Terminal.Null, //
             Variable.Conjunction, Terminal.Was, Variable.ActualValue})]
         public ExplainNull([Symbol(Variable.Negated)] Negated negated)
-            : base(ChooseVerb(negated)) {}
+            : base(ExpectationVerb.Be.Negate(negated)) {}
     }
 }

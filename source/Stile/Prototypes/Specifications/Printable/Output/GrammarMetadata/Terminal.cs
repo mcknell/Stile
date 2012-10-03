@@ -17,6 +17,11 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
         Have,
         Had,
         Null,
-        HashCode,
+        Contain,
+        Contained,
+        StartWith,
+        StartedWith,
+        EndWith,
+        EndedWith,
     }
 }

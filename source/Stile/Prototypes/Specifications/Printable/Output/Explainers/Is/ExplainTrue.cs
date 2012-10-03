@@ -18,6 +18,6 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Is
             Items = new object[] {"{0}", Terminal.Be, "'" + True + "'", Variable.Conjunction, Terminal.Was, Variable.ActualValue})
         ]
         public ExplainTrue([Symbol(Variable.Negated)] Negated negated)
-            : base(ChooseVerb(negated), True, result => True) {}
+            : base(ExpectationVerb.Be.Negate(negated), True, result => True) {}
     }
 }

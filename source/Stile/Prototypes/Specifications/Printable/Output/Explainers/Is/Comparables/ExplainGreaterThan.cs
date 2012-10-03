@@ -9,7 +9,7 @@ using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 using Stile.Readability;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Is
+namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Is.Comparables
 {
     public class ExplainGreaterThan<TSubject, TResult> : Explainer<TSubject, TResult>
     {
@@ -20,6 +20,6 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Is
                 new object[]
                 {"{0}", Terminal.Be, "'" + Operator + "' {1}", Variable.Conjunction, Terminal.Was, Variable.ActualValue})]
         public ExplainGreaterThan([Symbol(Variable.Negated)] Negated negated, [Symbol(Variable.ExpectedValue)] TResult expected)
-            : base(ChooseVerb(negated), Operator, result => expected.ToDebugString()) {}
+            : base(ExpectationVerb.Be.Negate(negated), Operator, result => expected.ToDebugString()) {}
     }
 }

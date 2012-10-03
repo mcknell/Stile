@@ -16,6 +16,6 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Is
         [Rule(Variable.Explainer, Items = new object[] {"{0}", Terminal.Be, "{1}", //
             Variable.Conjunction, Terminal.Was, Variable.ActualValue})]
         public ExplainIs([Symbol(Variable.Negated)] Negated negated, [Symbol(Variable.ExpectedValue)] TResult expected)
-            : base(ChooseVerb(negated), expected : result => expected.ToDebugString()) {}
+            : base(ExpectationVerb.Be.Negate(negated), expected : result => expected.ToDebugString()) {}
     }
 }

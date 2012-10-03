@@ -19,7 +19,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Has
         {
             var extractor = new Lazy<Func<TSubject, int>>(() => x => x.GetHashCode());
             Predicate<int> predicate = x => x == hashCode;
-            ExplainHashCode<TSubject> explainer = Explain.Subject<TSubject>().HashCode<TSubject, int>(hashCode);
+            ExplainHashCode<TSubject> explainer = Explain.Subject<TSubject>().HashCode<TSubject>(hashCode);
             return new PrintableSpecification<TSubject, int>(extractor, predicate, explainer);
         }
 
@@ -30,7 +30,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Has
             var state = (IHasState<TSubject, TResult>) has;
             var extractor = new Lazy<Func<TSubject, int>>(() => x => state.Extractor.Value.Invoke(x).GetHashCode());
             Predicate<int> predicate = x => x == hashCode;
-            ExplainHashCode<TSubject> explainer = Explain.Subject<TSubject>().HashCode<TSubject, int>(hashCode);
+            ExplainHashCode<TSubject> explainer = Explain.Subject<TSubject>().HashCode<TSubject>(hashCode);
             return new PrintableSpecification<TSubject, int>(extractor, predicate, explainer, state.SubjectDescription);
         }
     }

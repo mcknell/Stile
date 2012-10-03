@@ -54,6 +54,7 @@
     <Compile Include="Prototypes\Collections\HashBucketFixture.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\Has\HasExtensionsFixture.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\Is\IsExtensionsFixture.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\Is\IsStringExtensionsFixture.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ExplainBeFixture.cs" />
     <Compile Include="Prototypes\Specifications\Printable\PrintableSpecificationFixture.cs" />
     <Compile Include="Readability\NullFixture.cs" />
