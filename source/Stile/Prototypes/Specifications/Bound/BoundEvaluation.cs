@@ -8,20 +8,20 @@
 
 #region using...
 using JetBrains.Annotations;
-using Stile.Prototypes.Specifications.Evaluations;
+using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Bound
 {
     public interface IBoundEvaluation : IEvaluation {}
 
-    public interface IBoundEvaluation<out TSubject, out TResult> : IBoundEvaluation,
-        IEvaluation<TSubject, TResult> { }
+    public interface IBoundEvaluation<out TResult> : IBoundEvaluation,
+        IEvaluation<TResult> { }
 
-    public class BoundEvaluation<TSubject, TResult> : Evaluation<TSubject, TResult>,
-        IBoundEvaluation<TSubject, TResult>
+    public class BoundEvaluation<TResult> : Evaluation<TResult>,
+        IBoundEvaluation<TResult>
     {
-        public BoundEvaluation([NotNull] IWrappedResult<TSubject, TResult> wrappedResult)
+        public BoundEvaluation([NotNull] IWrappedResult<TResult> wrappedResult)
             : base(wrappedResult) {}
     }
 }

@@ -7,15 +7,15 @@
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Specifications.Evaluations;
+using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
 {
     public interface IExplainer<in TSubject, in TResult>
     {
-        string ExplainActualSurprise(IWrappedResult<TSubject, TResult> result);
-        string ExplainExpected(IWrappedResult<TSubject, TResult> result);
+        string ExplainActualSurprise(IWrappedResult<TResult> result);
+        string ExplainExpected(IWrappedResult<TResult> result);
     }
 
     public abstract class Explainer {}
@@ -42,12 +42,12 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
 // ReSharper restore DoNotCallOverridableMethodsInConstructor
         }
 
-        public virtual string ExplainActualSurprise(IWrappedResult<TSubject, TResult> result)
+        public virtual string ExplainActualSurprise(IWrappedResult<TResult> result)
         {
             return Actual.Explain(result);
         }
 
-        public virtual string ExplainExpected(IWrappedResult<TSubject, TResult> result)
+        public virtual string ExplainExpected(IWrappedResult<TResult> result)
         {
             return Expected.Explain(result);
         }

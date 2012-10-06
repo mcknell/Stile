@@ -5,7 +5,7 @@
 
 #region using...
 using System;
-using Stile.Patterns.SelfDescribingPredicates;
+using Stile.Prototypes.Specifications.DSL.SemanticModel;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Output

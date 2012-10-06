@@ -6,7 +6,7 @@
 #region using...
 using System;
 using NUnit.Framework;
-using Stile.Prototypes.Specifications.Evaluations;
+using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.Printable.Construction;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is;
@@ -19,15 +19,6 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.DSL.ExpressionBuilders
     public class IsStringExtensionsFixture
     {
         private const string Seafood = "seafood";
-        private INegatableIs<string, string, IIs<string, string>> _instrumentedNegatableIs;
-        private INegatableIs<string, IIs<string>> _negatableIs;
-
-        [SetUp]
-        public void Init()
-        {
-            _instrumentedNegatableIs = Specify.For<string>().That(x => x.ToLowerInvariant()).Is;
-            _negatableIs = Specify.ThatAny<string>().Is;
-        }
 
         [Test]
         public void NullOrEmpty()
@@ -56,6 +47,7 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.DSL.ExpressionBuilders
             AssertStringFunction(@is => @is.StringEndingWith("ood"), Seafood);
             AssertInstrumentedStringFunction(@is => @is.StringEndingWith("ood"), Seafood);
         }
+
         [Test]
         public void StringStartingWith()
         {
@@ -63,17 +55,20 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.DSL.ExpressionBuilders
             AssertInstrumentedStringFunction(@is => @is.StringStartingWith("sea"), Seafood);
         }
 
-        private void AssertInstrumentedStringFunction(Func<IIs<string, string>, IPrintableSpecification<string, string>> func,
-            string s)
+        private void AssertInstrumentedStringFunction(
+            Func<IPrintableIs<string, string>, IPrintableSpecification<string, string>> func, string s)
         {
-            IsExtensionsFixture.AssertEquals(func.Invoke(_instrumentedNegatableIs.Not), Outcome.Failed, s);
-            IsExtensionsFixture.AssertEquals(func.Invoke(_instrumentedNegatableIs), Outcome.Succeeded, s);
+            IPrintableNegatableIs<string, IPrintableIs<string, string>, string> instrumentedNegatableIs =
+                Specify.ForAny<string>().That(x => x.ToLowerInvariant()).Is;
+            IsExtensionsFixture.AssertEquals(func.Invoke(instrumentedNegatableIs.Not), Outcome.Failed, s);
+            IsExtensionsFixture.AssertEquals(func.Invoke(instrumentedNegatableIs), Outcome.Succeeded, s);
         }
 
-        private void AssertStringFunction(Func<IIs<string>, IPrintableSpecification<string>> func, string s)
+        private void AssertStringFunction(Func<IPrintableIs<string, string>, IPrintableSpecification<string, string>> func, string s)
         {
-            IsExtensionsFixture.AssertEquals(func.Invoke(_negatableIs.Not), Outcome.Failed, s);
-            IsExtensionsFixture.AssertEquals(func.Invoke(_negatableIs), Outcome.Succeeded, s);
+            IPrintableNegatableIs<string, IPrintableIs<string, string>, string> negatableIs = Specify.ThatAny<string>().Is;
+            IsExtensionsFixture.AssertEquals(func.Invoke(negatableIs.Not), Outcome.Failed, s);
+            IsExtensionsFixture.AssertEquals(func.Invoke(negatableIs), Outcome.Succeeded, s);
         }
     }
 }

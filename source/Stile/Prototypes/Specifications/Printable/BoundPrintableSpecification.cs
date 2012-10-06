@@ -7,20 +7,10 @@
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Bound;
-using Stile.Prototypes.Specifications.Emitting;
-using Stile.Prototypes.Specifications.Evaluations;
-using Stile.Prototypes.Specifications.Printable.Output;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable
 {
-    public class BoundPrintableEvaluation<TSubject, TResult> : EmittingEvaluation<TSubject, TResult, LazyReadableText>,
-        IBoundEvaluation<TSubject, TResult>
-    {
-        public BoundPrintableEvaluation([NotNull] IWrappedResult<TSubject, TResult> wrappedResult, LazyReadableText emitted)
-            : base(wrappedResult, emitted) {}
-    }
-
     public class BoundPrintableSpecification<TSubject, TResult> : IBoundSpecification<TSubject, TResult>
     {
         private readonly ISource<TSubject> _source;
@@ -33,17 +23,17 @@ namespace Stile.Prototypes.Specifications.Printable
             _specification = specification.ValidateArgumentIsNotNull();
         }
 
-        public IBoundEvaluation<TSubject, TResult> Evaluate(TSubject subject)
+        public IBoundEvaluation<TResult> Evaluate(TSubject subject)
         {
-            IPrintableEvaluation<TSubject, TResult> evaluation = _specification.Evaluate(subject);
-            return new BoundEvaluation<TSubject, TResult>(evaluation.Result);
+            IPrintableEvaluation<TResult> evaluation = _specification.Evaluate(subject);
+            return new BoundEvaluation<TResult>(evaluation.Result);
         }
 
-        public IBoundEvaluation<TSubject, TResult> Evaluate()
+        public IBoundEvaluation<TResult> Evaluate()
         {
             TSubject subject = _source.Get();
-            IPrintableEvaluation<TSubject, TResult> evaluation = _specification.Evaluate(subject);
-            return new BoundEvaluation<TSubject, TResult>(evaluation.Result);
+            IPrintableEvaluation<TResult> evaluation = _specification.Evaluate(subject);
+            return new BoundEvaluation<TResult>(evaluation.Result);
         }
     }
 }

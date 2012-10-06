@@ -10,7 +10,7 @@ using Stile.Patterns.Behavioral.Validation;
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SubjectBuilders
 {
-    public interface IBoundSubjectBuilder<TSubject> {}
+    public interface IBoundSubjectBuilder<TSubject> : ISubjectBuilder<TSubject> {}
 
     public class BoundSubjectBuilder<TSubject> : SubjectBuilder<TSubject>,
         IBoundSubjectBuilder<TSubject>,

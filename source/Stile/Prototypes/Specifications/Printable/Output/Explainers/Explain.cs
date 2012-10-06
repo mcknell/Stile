@@ -4,7 +4,7 @@
 #endregion
 
 #region using...
-using Stile.Patterns.SelfDescribingPredicates;
+using Stile.Prototypes.Specifications.DSL.SemanticModel;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers.Has;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is.Comparables;
@@ -53,9 +53,9 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers
             return new ExplainGreaterThanOrEqualTo<TSubject, TResult>(negated, expected);
         }
 
-        public static ExplainHashCode<TSubject> HashCode<TSubject>(this FluentSubject<TSubject> subject, int hashCode)
+        public static ExplainHashCode<TSubject, TResult> HashCode<TSubject, TResult>(this FluentSubject<TSubject> subject, int hashCode)
         {
-            return new ExplainHashCode<TSubject>(hashCode);
+            return new ExplainHashCode<TSubject, TResult>(hashCode);
         }
 
         public static ExplainLessThan<TSubject, TResult> LessThan<TSubject, TResult>(this FluentSubject<TSubject> subject,

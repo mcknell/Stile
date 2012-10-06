@@ -7,8 +7,9 @@
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders;
+using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.Emitting;
-using Stile.Prototypes.Specifications.Evaluations;
 using Stile.Prototypes.Specifications.Printable.Output;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers;
 using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
@@ -20,14 +21,18 @@ namespace Stile.Prototypes.Specifications.Printable
 {
     public interface IPrintableSpecification : IEmittingSpecification {}
 
-    public interface IPrintableSpecification<TSubject> : IPrintableSpecification,
-        IEmittingSpecification<TSubject, IPrintableEvaluation<TSubject>, ILazyReadableText> {}
+    public interface IPrintableResultSpecification<out TResult> : IPrintableSpecification,
+        IEmittingSpecification<TResult, IPrintableEvaluation<TResult>> {}
 
-    public interface IPrintableSpecification<TSubject, out TResult> : IPrintableSpecification,
-        IEmittingSpecification<TSubject, TResult, IPrintableEvaluation<TSubject, TResult>, ILazyReadableText> {}
+    public interface IPrintableSpecification<in TSubject> : IPrintableSpecification,
+        IEmittingSpecification<TSubject> {}
+
+    public interface IPrintableSpecification<in TSubject, out TResult> : IPrintableSpecification<TSubject>,
+        IPrintableResultSpecification<TResult>,
+        IEmittingSpecification<TSubject, TResult, IPrintableEvaluation<TResult>, ILazyReadableText> {}
 
     public class PrintableSpecification<TSubject, TResult> :
-        EmittingSpecification<TSubject, TResult, IPrintableEvaluation<TSubject, TResult>, LazyReadableText>,
+        EmittingSpecification<TSubject, TResult, IPrintableEvaluation<TResult>, LazyReadableText>,
         IPrintableSpecification<TSubject, TResult>
     {
         private readonly IExplainer<TSubject, TResult> _explainer;
@@ -39,7 +44,7 @@ namespace Stile.Prototypes.Specifications.Printable
             [NotNull] IExplainer<TSubject, TResult> explainer,
             Lazy<string> subjectDescription = null,
             string reason = null,
-            Func<TResult, Exception, IPrintableEvaluation<TSubject, TResult>> exceptionFilter = null)
+            Func<TResult, Exception, IPrintableEvaluation<TResult>> exceptionFilter = null)
             : base(extractor, accepter, exceptionFilter)
         {
             _subjectDescription = subjectDescription;
@@ -47,31 +52,32 @@ namespace Stile.Prototypes.Specifications.Printable
             _explainer = explainer.ValidateArgumentIsNotNull();
         }
 
-        [Rule(Variable.StartSymbol, Items = new object[]
+        [Rule(Variable.StartSymbol,
+            Items = new object[]
+            {
+                "(", Terminal.Because, Variable.Reason, Terminal.EOL, ")?", //
+                Terminal.SubjectPrefix, "{0}", Terminal.DescriptionPrefix, Variable.Explainer
+            })]
+        public override IPrintableEvaluation<TResult> Evaluate([Symbol(Variable.Subject)] TSubject subject)
         {
-            "(", Terminal.Because, Variable.Reason, Terminal.EOL, ")?", //
-            Terminal.SubjectPrefix, "{0}", Terminal.DescriptionPrefix, Variable.Explainer
-        })]
-        public override IPrintableEvaluation<TSubject, TResult> Evaluate([Symbol(Variable.Subject)] TSubject subject)
-        {
-            IPrintableEvaluation<TSubject, TResult> evaluation = base.Evaluate(subject);
-            var text = new LazyReadableText(() => ExplainEvaluation(evaluation.Emitted.Retrieved, evaluation.Result.Subject));
-            var printableEvaluation = new PrintableEvaluation<TSubject, TResult>(evaluation.Result, text);
+            IPrintableEvaluation<TResult> evaluation = base.Evaluate(subject);
+            var text = new LazyReadableText(() => ExplainEvaluation(evaluation.Emitted.Retrieved, subject));
+            var printableEvaluation = new PrintableEvaluation<TResult>(evaluation.Result, text);
             return printableEvaluation;
         }
 
-        protected override LazyReadableText EmittingFactory(IWrappedResult<TSubject, TResult> result)
+        protected override LazyReadableText EmittingFactory(IWrappedResult<TResult> result)
         {
             return new LazyReadableText(() => Explain(result));
         }
 
-        protected override IPrintableEvaluation<TSubject, TResult> EvaluationFactory(IWrappedResult<TSubject, TResult> result,
+        protected override IPrintableEvaluation<TResult> EvaluationFactory(IWrappedResult<TResult> result,
             LazyReadableText emitted)
         {
-            return new PrintableEvaluation<TSubject, TResult>(result, emitted);
+            return new PrintableEvaluation<TResult>(result, emitted);
         }
 
-        private string Explain(IWrappedResult<TSubject, TResult> result)
+        private string Explain(IWrappedResult<TResult> result)
         {
             string expected = _explainer.ExplainExpected(result);
             string conjunction = PrintConjunction(result.Outcome);
@@ -110,21 +116,8 @@ namespace Stile.Prototypes.Specifications.Printable
             [NotNull] IExplainer<TSubject, TSubject> explainer,
             Lazy<string> subjectDescription = null,
             string reason = null,
-            Func<TSubject, Exception, IPrintableEvaluation<TSubject, TSubject>> exceptionFilter = null)
-            : base(Default.IdentityMap, accepter, explainer, subjectDescription, reason, exceptionFilter) {}
-
-        public new IPrintableEvaluation<TSubject> Evaluate(TSubject subject)
-        {
-            IPrintableEvaluation<TSubject, TSubject> evaluation = base.Evaluate(subject);
-            return new PrintableEvaluation<TSubject>(evaluation.Result, evaluation.Emitted);
-        }
-
-        public static class Default
-        {
-// ReSharper disable StaticFieldInGenericType
-            [NotNull] public static readonly Lazy<Func<TSubject, TSubject>> IdentityMap =
-                new Lazy<Func<TSubject, TSubject>>(Identity.Map<TSubject>);
-// ReSharper restore StaticFieldInGenericType
-        }
+            Func<TSubject, Exception, IPrintableEvaluation<TSubject>> exceptionFilter = null)
+            : base(Instrument.Trivial<TSubject>.Map, accepter, explainer, subjectDescription, reason, exceptionFilter
+                ) {}
     }
 }

@@ -3,7 +3,16 @@
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
+#region using...
+using System;
+using JetBrains.Annotations;
+#endregion
+
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SubjectBuilders
 {
-    public interface ISubjectBuilderState<TSubject> {}
+    public interface ISubjectBuilderState<TSubject>
+    {
+        [NotNull]
+        Lazy<string> SubjectDescription { get; }
+    }
 }

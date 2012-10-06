@@ -5,8 +5,8 @@
 
 #region using...
 using JetBrains.Annotations;
+using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.Emitting;
-using Stile.Prototypes.Specifications.Evaluations;
 using Stile.Prototypes.Specifications.Printable.Output;
 #endregion
 
@@ -14,18 +14,8 @@ namespace Stile.Prototypes.Specifications.Printable
 {
     public interface IPrintableEvaluation : IEmittingEvaluation {}
 
-    public interface IPrintableEvaluation<out TSubject> : IPrintableEvaluation,
-        IEmittingEvaluation<TSubject, LazyReadableText> {}
-
-    public interface IPrintableEvaluation<out TSubject, out TResult> : IPrintableEvaluation,
-        IEmittingEvaluation<TSubject, TResult, LazyReadableText> {}
-
-    public class PrintableEvaluation<TSubject, TResult> : EmittingEvaluation<TSubject, TResult, LazyReadableText>,
-        IPrintableEvaluation<TSubject, TResult>
-    {
-        public PrintableEvaluation([NotNull] IWrappedResult<TSubject, TResult> wrappedResult, LazyReadableText emitted)
-            : base(wrappedResult, emitted) {}
-    }
+    public interface IPrintableEvaluation<out TResult> : IPrintableEvaluation,
+        IEmittingEvaluation<TResult, LazyReadableText> {}
 
     public class PrintableEvaluation<TSubject> : EmittingEvaluation<TSubject, LazyReadableText>,
         IPrintableEvaluation<TSubject>

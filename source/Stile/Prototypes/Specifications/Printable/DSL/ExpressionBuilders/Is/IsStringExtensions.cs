@@ -6,6 +6,7 @@
 #region using...
 using System;
 using System.Diagnostics.Contracts;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Is;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is.Strings;
 #endregion
@@ -15,16 +16,17 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is
     public static class IsStringExtensions
     {
         [Pure]
-        public static IPrintableSpecification<string> NullOrEmpty(this IIs<string> builder)
+        public static IPrintableSpecification<string> NullOrEmpty(this IPrintableIs<string> builder)
         {
-            var state = (IIsState<string>) builder;
+            var state = (IIsState) builder;
             Predicate<string> accepter = x => state.Negated.AgreesWith(string.IsNullOrEmpty(x));
             ExplainStringNullOrEmpty<string> explainer = Explain.Subject<string>().NullOrEmpty<string>(state.Negated);
             return IsExtensions.Make(accepter, explainer);
         }
 
         [Pure]
-        public static IPrintableSpecification<TSubject, string> NullOrEmpty<TSubject>(this IIs<TSubject, string> builder)
+        public static IPrintableSpecification<TSubject, string> NullOrEmpty<TSubject>(
+            this IPrintableIs<string, TSubject> builder)
         {
             var state = (IIsState<TSubject, string>) builder;
             Predicate<string> accepter = x => state.Negated.AgreesWith(string.IsNullOrEmpty(x));
@@ -33,77 +35,89 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is
         }
 
         [Pure]
-        public static IPrintableSpecification<TSubject, string> NullOrWhitespace<TSubject>(this IIs<TSubject, string> builder)
+        public static IPrintableSpecification<TSubject, string> NullOrWhitespace<TSubject>(
+            this IPrintableIs<string, TSubject> builder)
         {
             var state = (IIsState<TSubject, string>) builder;
             Predicate<string> accepter = x => state.Negated.AgreesWith(string.IsNullOrWhiteSpace(x));
-            ExplainStringNullOrWhitespace<TSubject> explainer = Explain.Subject<TSubject>().NullOrWhitespace(state.Negated);
+            ExplainStringNullOrWhitespace<TSubject> explainer =
+                Explain.Subject<TSubject>().NullOrWhitespace(state.Negated);
             return IsExtensions.Make(builder, accepter, explainer);
         }
 
         [Pure]
-        public static IPrintableSpecification<string> NullOrWhitespace(this IIs<string> builder)
+        public static IPrintableSpecification<string> NullOrWhitespace(this IPrintableIs<string> builder)
         {
-            var state = (IIsState<string>) builder;
+            var state = (IIsState) builder;
             Predicate<string> accepter = x => state.Negated.AgreesWith(string.IsNullOrWhiteSpace(x));
-            ExplainStringNullOrWhitespace<string> explainer = Explain.Subject<string>().NullOrWhitespace<string>(state.Negated);
+            ExplainStringNullOrWhitespace<string> explainer =
+                Explain.Subject<string>().NullOrWhitespace<string>(state.Negated);
             return IsExtensions.Make(accepter, explainer);
         }
 
         [Pure]
-        public static IPrintableSpecification<string> StringContaining(this IIs<string> builder, string expected)
-        {
-            var state = (IIsState<string>) builder;
-            Predicate<string> accepter = x => state.Negated.AgreesWith(x.Contains(expected));
-            ExplainStringContaining<string> explainer = Explain.Subject<string>().Containing<string>(expected, state.Negated);
-            return IsExtensions.Make(accepter, explainer);
-        }
-
-        [Pure]
-        public static IPrintableSpecification<TSubject, string> StringContaining<TSubject>(this IIs<TSubject, string> builder,
+        public static IPrintableSpecification<string> StringContaining(this IPrintableIs<string> builder,
             string expected)
+        {
+            var state = (IIsState) builder;
+            Predicate<string> accepter = x => state.Negated.AgreesWith(x.Contains(expected));
+            ExplainStringContaining<string> explainer = Explain.Subject<string>().Containing<string>(expected,
+                state.Negated);
+            return IsExtensions.Make(accepter, explainer);
+        }
+
+        [Pure]
+        public static IPrintableSpecification<TSubject, string> StringContaining<TSubject>(
+            this IPrintableIs<string, TSubject> builder, string expected)
         {
             var state = (IIsState<TSubject, string>) builder;
             Predicate<string> accepter = x => state.Negated.AgreesWith(x.Contains(expected));
-            ExplainStringContaining<TSubject> explainer = Explain.Subject<TSubject>().Containing(expected, state.Negated);
+            ExplainStringContaining<TSubject> explainer = Explain.Subject<TSubject>().Containing(expected,
+                state.Negated);
             return IsExtensions.Make(builder, accepter, explainer);
         }
 
         [Pure]
-        public static IPrintableSpecification<string> StringEndingWith(this IIs<string> builder, string expected)
+        public static IPrintableSpecification<string> StringEndingWith(this IPrintableIs<string> builder,
+            string expected)
         {
-            var state = (IIsState<string>) builder;
+            var state = (IIsState) builder;
             Predicate<string> accepter = x => state.Negated.AgreesWith(x.EndsWith(expected));
-            ExplainStringEndingWith<string> explainer = Explain.Subject<string>().EndingWith<string>(expected, state.Negated);
+            ExplainStringEndingWith<string> explainer = Explain.Subject<string>().EndingWith<string>(expected,
+                state.Negated);
             return IsExtensions.Make(accepter, explainer);
         }
 
         [Pure]
-        public static IPrintableSpecification<TSubject, string> StringEndingWith<TSubject>(this IIs<TSubject, string> builder,
-            string expected)
+        public static IPrintableSpecification<TSubject, string> StringEndingWith<TSubject>(
+            this IPrintableIs<string, TSubject> builder, string expected)
         {
             var state = (IIsState<TSubject, string>) builder;
             Predicate<string> accepter = x => state.Negated.AgreesWith(x.EndsWith(expected));
-            ExplainStringEndingWith<TSubject> explainer = Explain.Subject<TSubject>().EndingWith(expected, state.Negated);
+            ExplainStringEndingWith<TSubject> explainer = Explain.Subject<TSubject>().EndingWith(expected,
+                state.Negated);
             return IsExtensions.Make(builder, accepter, explainer);
         }
 
         [Pure]
-        public static IPrintableSpecification<string> StringStartingWith(this IIs<string> builder, string expected)
+        public static IPrintableSpecification<string> StringStartingWith(this IPrintableIs<string> builder,
+            string expected)
         {
-            var state = (IIsState<string>) builder;
+            var state = (IIsState) builder;
             Predicate<string> accepter = x => state.Negated.AgreesWith(x.StartsWith(expected));
-            ExplainStringStartingWith<string> explainer = Explain.Subject<string>().StartingWith<string>(expected, state.Negated);
+            ExplainStringStartingWith<string> explainer = Explain.Subject<string>().StartingWith<string>(expected,
+                state.Negated);
             return IsExtensions.Make(accepter, explainer);
         }
 
         [Pure]
-        public static IPrintableSpecification<TSubject, string> StringStartingWith<TSubject>(this IIs<TSubject, string> builder,
-            string expected)
+        public static IPrintableSpecification<TSubject, string> StringStartingWith<TSubject>(
+            this IPrintableIs<string, TSubject> builder, string expected)
         {
             var state = (IIsState<TSubject, string>) builder;
             Predicate<string> accepter = x => state.Negated.AgreesWith(x.StartsWith(expected));
-            ExplainStringStartingWith<TSubject> explainer = Explain.Subject<TSubject>().StartingWith(expected, state.Negated);
+            ExplainStringStartingWith<TSubject> explainer = Explain.Subject<TSubject>().StartingWith(expected,
+                state.Negated);
             return IsExtensions.Make(builder, accepter, explainer);
         }
     }

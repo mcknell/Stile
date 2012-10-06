@@ -6,7 +6,7 @@
 #region using...
 using System;
 using System.Linq;
-using Stile.Prototypes.Specifications.Evaluations;
+using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 using Stile.Readability;
 #endregion
 
@@ -25,7 +25,7 @@ namespace Stile.Prototypes.Specifications.Printable.Output
             _explainer = explainer ?? PrintExtensions.ToDebugString;
         }
 
-        public string Explain(IWrappedResult<TSubject, TResult> wrappedResult)
+        public string Explain(IWrappedResult<TResult> wrappedResult)
         {
             string explanation = _explainer.Invoke(wrappedResult.Value);
             var strings = new[] {_verb, _adjective, explanation};

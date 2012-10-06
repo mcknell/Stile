@@ -6,6 +6,7 @@
 #region using...
 using System;
 using System.Diagnostics.Contracts;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Is;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is;
 #endregion
@@ -15,17 +16,17 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is
     public static class IsExtensions
     {
         [Pure]
-        public static IPrintableSpecification<TSubject> EqualTo<TSubject>(this IIs<TSubject> builder, TSubject subject)
+        public static IPrintableSpecification<TSubject> EqualTo<TSubject>(this IPrintableIs<TSubject> builder, TSubject subject)
             where TSubject : IEquatable<TSubject>
         {
-            var state = (IIsState<TSubject>) builder;
+            var state = (IIsState) builder;
             Predicate<TSubject> accepter = x => state.Negated.AgreesWith(x.Equals(subject));
             ExplainIs<TSubject, TSubject> explainer = Explain.Subject<TSubject>().Is(subject, state.Negated);
             return Make(accepter, explainer);
         }
 
         [Pure]
-        public static IPrintableSpecification<TSubject, TResult> EqualTo<TSubject, TResult>(this IIs<TSubject, TResult> builder,
+        public static IPrintableSpecification<TSubject, TResult> EqualTo<TSubject, TResult>(this IPrintableIs<TResult, TSubject> builder,
             TResult result) where TResult : IEquatable<TResult>
         {
             var state = (IIsState<TSubject, TResult>) builder;
@@ -35,7 +36,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is
         }
 
         [Pure]
-        public static IPrintableSpecification<TSubject, bool> False<TSubject>(this IIs<TSubject, bool> builder)
+        public static IPrintableSpecification<TSubject, bool> False<TSubject>(this IPrintableIs<bool, TSubject> builder)
         {
             var state = (IIsState<TSubject, bool>) builder;
             Predicate<bool> accepter = x => state.Negated.AgreesWith(!x);
@@ -44,21 +45,21 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is
         }
 
         [Pure]
-        public static IPrintableSpecification<bool> False(this IIs<bool> builder)
+        public static IPrintableSpecification<bool> False(this IPrintableIs<bool> builder)
         {
-            var state = (IIsState<bool>) builder;
+            var state = (IIsState) builder;
             Predicate<bool> accepter = x => state.Negated.AgreesWith(!x);
             ExplainFalse<bool, bool> explainer = Explain.Subject<bool>().False(state.Negated);
             return Make(accepter, explainer);
         }
 
         [Pure]
-        public static IPrintableSpecification<TSubject, TResult> Make<TSubject, TResult>(IIs<TSubject, TResult> builder,
+        public static IPrintableSpecification<TSubject, TResult> Make<TSubject, TResult>(IPrintableIs<TResult, TSubject> builder,
             Predicate<TResult> accepter,
             Explainer<TSubject, TResult> explainer)
         {
             var state = (IIsState<TSubject, TResult>) builder;
-            var specification = new PrintableSpecification<TSubject, TResult>(state.Extractor, accepter, explainer);
+            var specification = new PrintableSpecification<TSubject, TResult>(state.Instrument, accepter, explainer);
             return specification;
         }
 
@@ -71,7 +72,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is
         }
 
         [Pure]
-        public static IPrintableSpecification<TSubject, TResult> Null<TSubject, TResult>(this IIs<TSubject, TResult> builder)
+        public static IPrintableSpecification<TSubject, TResult> Null<TSubject, TResult>(this IPrintableIs<TResult, TSubject> builder)
             where TResult : class
         {
             var state = (IIsState<TSubject, TResult>) builder;
@@ -81,16 +82,16 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is
         }
 
         [Pure]
-        public static IPrintableSpecification<TSubject> Null<TSubject>(this IIs<TSubject> builder) where TSubject : class
+        public static IPrintableSpecification<TSubject> Null<TSubject>(this IPrintableIs<TSubject> builder) where TSubject : class
         {
-            var state = (IIsState<TSubject>) builder;
+            var state = (IIsState) builder;
             Predicate<TSubject> accepter = x => state.Negated.AgreesWith(x == null);
             ExplainNull<TSubject, TSubject> explainer = Explain.Subject<TSubject>().Null<TSubject, TSubject>(state.Negated);
             return Make(accepter, explainer);
         }
 
         [Pure]
-        public static IPrintableSpecification<TSubject, TResult?> Null<TSubject, TResult>(this IIs<TSubject, TResult?> builder)
+        public static IPrintableSpecification<TSubject, TResult?> Null<TSubject, TResult>(this IPrintableIs<TResult?, TSubject> builder)
             where TResult : struct
         {
             var state = (IIsState<TSubject, TResult?>) builder;
@@ -100,16 +101,16 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is
         }
 
         [Pure]
-        public static IPrintableSpecification<TSubject?> Null<TSubject>(this IIs<TSubject?> builder) where TSubject : struct
+        public static IPrintableSpecification<TSubject?> Null<TSubject>(this IPrintableIs<TSubject?> builder) where TSubject : struct
         {
-            var state = (IIsState<TSubject?>) builder;
+            var state = (IIsState) builder;
             Predicate<TSubject?> accepter = x => state.Negated.AgreesWith(x == null);
             ExplainNull<TSubject?, TSubject?> explainer = Explain.Subject<TSubject?>().Null<TSubject?, TSubject?>(state.Negated);
             return Make(accepter, explainer);
         }
 
         [Pure]
-        public static IPrintableSpecification<TSubject, bool> True<TSubject>(this IIs<TSubject, bool> builder)
+        public static IPrintableSpecification<TSubject, bool> True<TSubject>(this IPrintableIs<bool, TSubject> builder)
         {
             var state = (IIsState<TSubject, bool>) builder;
             Predicate<bool> accepter = x => state.Negated.AgreesWith(x);
@@ -118,9 +119,9 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is
         }
 
         [Pure]
-        public static IPrintableSpecification<bool> True(this IIs<bool> builder)
+        public static IPrintableSpecification<bool> True(this IPrintableIs<bool> builder)
         {
-            var state = (IIsState<bool>) builder;
+            var state = (IIsState) builder;
             Predicate<bool> accepter = x => state.Negated.AgreesWith(x);
             ExplainTrue<bool, bool> explainer = Explain.Subject<bool>().True(state.Negated);
             return Make(accepter, explainer);

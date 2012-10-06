@@ -10,7 +10,7 @@ using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 
 namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Has
 {
-    public class ExplainHashCode<TSubject> : Explainer<TSubject, int>
+    public class ExplainHashCode<TSubject, TResult> : Explainer<TSubject, TResult>
     {
         public const string Hashcode = "hashCode";
 

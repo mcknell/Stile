@@ -15,23 +15,25 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Has
     public static class HasExtensions
     {
         [Pure]
-        public static IPrintableSpecification<TSubject, int> HashCode<TSubject>(this IHas<TSubject> has, int hashCode)
+        public static IPrintableSpecification<TSubject, TResult> HashCode<TResult, TSubject>(
+            this IPrintableHas<TResult, TSubject> has, int hashCode)
         {
-            var extractor = new Lazy<Func<TSubject, int>>(() => x => x.GetHashCode());
-            Predicate<int> predicate = x => x == hashCode;
-            ExplainHashCode<TSubject> explainer = Explain.Subject<TSubject>().HashCode<TSubject>(hashCode);
-            return new PrintableSpecification<TSubject, int>(extractor, predicate, explainer);
+            var state = (IPrintableHasState<TSubject, TResult>) has;
+
+            Predicate<TResult> predicate = x => x.GetHashCode() == hashCode;
+            IExplainer<TSubject, TResult> explainer = new ExplainHashCode<TSubject, TResult>(hashCode);
+            return new PrintableSpecification<TSubject, TResult>(state.Instrument, predicate, explainer);
         }
 
-        [Pure]
-        public static IPrintableSpecification<TSubject, int> HashCode<TSubject, TResult>(this IHas<TSubject, TResult> has,
-            int hashCode)
-        {
-            var state = (IHasState<TSubject, TResult>) has;
-            var extractor = new Lazy<Func<TSubject, int>>(() => x => state.Extractor.Value.Invoke(x).GetHashCode());
-            Predicate<int> predicate = x => x == hashCode;
-            ExplainHashCode<TSubject> explainer = Explain.Subject<TSubject>().HashCode<TSubject>(hashCode);
-            return new PrintableSpecification<TSubject, int>(extractor, predicate, explainer, state.SubjectDescription);
-        }
+        //[Pure]
+        //public static IPrintableSpecification<TSubject, int> HashCode<TSubject, TResult>(this IPrintableHas<TSubject, TResult> has,
+        //    int hashCode)
+        //{
+        //    var state = (IPrintableHasState<TSubject, TResult>) has;
+        //    var instrument = new Lazy<Func<TSubject, int>>(() => x => state.Instrument.Value.Invoke(x).GetHashCode());
+        //    Predicate<int> predicate = x => x == hashCode;
+        //    ExplainHashCode<TSubject> explainer = Explain.Subject<TSubject>().HashCode<TSubject>(hashCode);
+        //    return new PrintableSpecification<TSubject, int>(instrument, predicate, explainer, state.SubjectDescription);
+        //}
     }
 }

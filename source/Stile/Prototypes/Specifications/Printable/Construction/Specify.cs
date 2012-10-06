@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SpecificationBuilders;
@@ -15,26 +16,42 @@ namespace Stile.Prototypes.Specifications.Printable.Construction
 {
     public static class Specify
     {
+        [Pure]
         public static IBoundSubjectBuilder<TSubject> For<TSubject>(Expression<Func<TSubject>> expression)
         {
             return new BoundSubjectBuilder<TSubject>(new Source<TSubject>(expression));
         }
 
+        [Pure]
         public static IBoundSubjectBuilder<TSubject> For<TSubject>(TSubject subject) where TSubject : class
         {
             return new BoundSubjectBuilder<TSubject>(new Source<TSubject>(subject));
         }
 
         [Pure]
-        public static ISubjectBuilder<TSubject> For<TSubject>()
+        public static IBoundEnumerableSubjectBuilder<TSubject, TItem> For<TSubject, TItem>(TSubject subject)
+            where TSubject : class, IEnumerable<TItem>
+        {
+            return new BoundEnumerableSubjectBuilder<TSubject, TItem>(new Source<TSubject>(subject));
+        }
+
+        [Pure]
+        public static ISubjectBuilder<TSubject> ForAny<TSubject>()
         {
             return new SubjectBuilder<TSubject>();
         }
 
         [Pure]
-        public static ISpecificationBuilder<TSubject> ThatAny<TSubject>()
+        public static IEnumerableSubjectBuilder<TSubject, TItem> ForAny<TSubject, TItem>()
+            where TSubject : class, IEnumerable<TItem>
         {
-            return new SpecificationBuilder<TSubject>(new Lazy<string>(()=> string.Empty));
+            return new EnumerableSubjectBuilder<TSubject, TItem>();
+        }
+
+        [Pure]
+        public static IFluentSpecificationBuilder<TSubject, TSubject> ThatAny<TSubject>()
+        {
+            return new PrintableSpecificationBuilder<TSubject>();
         }
     }
 }

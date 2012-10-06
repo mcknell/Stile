@@ -7,11 +7,18 @@
 using System;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
+using Stile.Patterns.Behavioral.Validation;
+using Stile.Types.Expressions;
+using Stile.Readability;
 #endregion
 
 namespace Stile.Prototypes.Specifications
 {
-    public interface ISource {}
+    public interface ISource
+    {
+        [NotNull]
+        Lazy<string> Description { get; }
+    }
 
     public interface ISource<out TSubject> : ISource
     {
@@ -23,21 +30,23 @@ namespace Stile.Prototypes.Specifications
     {
         private readonly Lazy<TSubject> _subjectGetter;
 
-        public Source(Expression<Func<TSubject>> expression)
-            : this(expression.Compile) {}
+        public Source([NotNull] Expression<Func<TSubject>> expression, Lazy<string> description = null)
+            : this(expression.Compile, description ?? expression.ToLazyDebugString()) {}
 
-        public Source(TSubject subject)
-            : this(() => () => subject) {}
+        public Source(TSubject subject, Lazy<string> description = null)
+            : this(() => () => subject, description ?? subject.ToLazyDebugString()) {}
 
-        private Source(Func<Func<TSubject>> doubleFunc)
+        private Source(Func<Func<TSubject>> doubleFunc, [NotNull] Lazy<string> description)
         {
             _subjectGetter = new Lazy<TSubject>(doubleFunc.Invoke());
+            Description = description.ValidateArgumentIsNotNull();
         }
+
+        public Lazy<string> Description { get; private set; }
 
         public TSubject Get()
         {
             return _subjectGetter.Value;
         }
-
     }
 }

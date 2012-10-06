@@ -6,40 +6,46 @@
 #region using...
 using System;
 using JetBrains.Annotations;
-using Stile.Prototypes.Specifications.Evaluations;
+using Stile.Prototypes.Specifications.DSL.SemanticModel;
+using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Emitting
 {
     public interface IEmittingSpecification : ISpecification {}
 
-    public interface IEmittingSpecification<in TSubject, out TEvaluation, out TEmit> : IEmittingSpecification,
-        ISpecification<TSubject, TEvaluation>
-        where TEvaluation : class, IEmittingEvaluation<TSubject, TEmit> {}
+    public interface IEmittingSpecification<in TSubject> : IEmittingSpecification,
+        ISpecification<TSubject> {}
 
-    public interface IEmittingSpecification<in TSubject, out TResult, out TEvaluation, out TEmit> : IEmittingSpecification,
+    public interface IEmittingSpecification<out TResult, out TEvaluation> : IEmittingSpecification,
+        ISpecification<TResult, TEvaluation>
+        where TEvaluation : class, IEvaluation<TResult> { }
+
+    public interface IEmittingSpecification<in TSubject, out TResult, out TEvaluation, out TEmit> :
+        IEmittingSpecification<TSubject>,
+        IEmittingSpecification<TResult, TEvaluation>,
         ISpecification<TSubject, TResult, TEvaluation>
-        where TEvaluation : class, IEmittingEvaluation<TSubject, TResult, TEmit> {}
+        where TEvaluation : class, IEmittingEvaluation<TResult, TEmit> {}
 
     public abstract class EmittingSpecification<TSubject, TResult, TEvaluation, TEmit> :
         Specification<TSubject, TResult, TEvaluation>,
         IEmittingSpecification<TSubject, TResult, TEvaluation, TEmit>
-        where TEvaluation : class, IEmittingEvaluation<TSubject, TResult, TEmit>
+        where TEvaluation : class, IEmittingEvaluation<TResult, TEmit>
     {
         protected EmittingSpecification([NotNull] Lazy<Func<TSubject, TResult>> extractor,
             [NotNull] Predicate<TResult> accepter,
             Func<TResult, Exception, TEvaluation> exceptionFilter = null)
             : base(extractor, accepter, exceptionFilter) {}
 
-        protected abstract TEmit EmittingFactory(IWrappedResult<TSubject, TResult> result);
+        protected abstract TEmit EmittingFactory(IWrappedResult<TResult> result);
 
-        protected override sealed TEvaluation EvaluationFactory(IWrappedResult<TSubject, TResult> result)
+        protected override sealed TEvaluation EvaluationFactory(IWrappedResult<TResult> result)
         {
             TEmit emit = EmittingFactory(result);
             TEvaluation evaluation = EvaluationFactory(result, emit);
             return evaluation;
         }
 
-        protected abstract TEvaluation EvaluationFactory(IWrappedResult<TSubject, TResult> result, TEmit emitted);
+        protected abstract TEvaluation EvaluationFactory(IWrappedResult<TResult> result, TEmit emitted);
     }
 }

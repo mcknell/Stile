@@ -4,7 +4,7 @@
 #endregion
 
 #region using...
-using Stile.Patterns.SelfDescribingPredicates;
+using Stile.Prototypes.Specifications.DSL.SemanticModel;
 using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 #endregion
 

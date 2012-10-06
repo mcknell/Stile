@@ -7,9 +7,9 @@
 using System;
 using System.Globalization;
 using NUnit.Framework;
-using Stile.Patterns.SelfDescribingPredicates;
+using Stile.Prototypes.Specifications.DSL.SemanticModel;
+using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.Emitting;
-using Stile.Prototypes.Specifications.Evaluations;
 using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.Printable.Output;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is;
@@ -33,7 +33,7 @@ namespace Stile.Tests.Prototypes.Specifications.Printable
             Assert.NotNull(specification);
 
             // act
-            IEmittingEvaluation<int, string, ILazyReadableText> evaluation = specification.Evaluate(input);
+            IEmittingEvaluation<string, ILazyReadableText> evaluation = specification.Evaluate(input);
 
             // assert
             Assert.NotNull(evaluation);
@@ -69,7 +69,7 @@ namespace Stile.Tests.Prototypes.Specifications.Printable
             Assert.NotNull(specification);
 
             // act
-            IEmittingEvaluation<int, string, ILazyReadableText> evaluation = specification.Evaluate(input);
+            IEmittingEvaluation<string, ILazyReadableText> evaluation = specification.Evaluate(input);
 
             // assert
             Assert.NotNull(evaluation);

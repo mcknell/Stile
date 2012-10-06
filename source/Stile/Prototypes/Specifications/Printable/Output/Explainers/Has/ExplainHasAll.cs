@@ -10,7 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Specifications.Evaluations;
+using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 using Stile.Readability;
 using Stile.Types.Expressions;
 #endregion
@@ -38,7 +38,7 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Has
             [NotNull] ActualClause<TSubject, TResult> actual)
             : base(expected, actual) {}
 
-        public override string ExplainActualSurprise(IWrappedResult<TSubject, TResult> result)
+        public override string ExplainActualSurprise(IWrappedResult<TResult> result)
         {
             int actualCount = result.Value.Count();
             return string.Format("{0} only {1} such {2}. These failed: {3}",
@@ -48,7 +48,7 @@ namespace Stile.Prototypes.Specifications.Printable.Output.Explainers.Has
                 Environment.NewLine);
         }
 
-        public override string ExplainExpected(IWrappedResult<TSubject, TResult> result)
+        public override string ExplainExpected(IWrappedResult<TResult> result)
         {
             string expectedItems = _originalCount.Pluralize(_originalCount + " item", "all " + _originalCount + " items");
             string expressionExplained = ExpressionExtensions.ToDebugString(_expression);
