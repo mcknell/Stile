@@ -5,8 +5,8 @@
 
 #region using...
 using System;
-using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Has;
-using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Is;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultHas;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
 using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 #endregion
@@ -18,8 +18,8 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBu
     public interface ISpecificationBuilder<out TSubject, out TResult, out THas, out TNegatableIs, out TIs,
         out TSpecifies, out TEvaluation> : ISpecificationBuilder
         where THas : class, IHas<TResult, TSpecifies, TEvaluation, TSubject>
-        where TNegatableIs : class, INegatableIs<TResult, TIs, TSpecifies, TEvaluation, TSubject>
-        where TIs : class, IIs<TResult, TSubject, TSpecifies, TEvaluation>
+        where TNegatableIs : class, INegatableIs<TSubject, TResult, TIs, TSpecifies, TEvaluation>
+        where TIs : class, IIs<TSubject, TResult, TSpecifies, TEvaluation>
         where TSpecifies : class, ISpecification<TSubject, TResult, TEvaluation>
         where TEvaluation : class, IEvaluation<TResult>
     {
@@ -30,8 +30,8 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBu
     public abstract class SpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies, TEvaluation> :
         ISpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies, TEvaluation>
         where THas : class, IHas<TResult, TSpecifies, TEvaluation, TSubject>
-        where TNegatableIs : class, INegatableIs<TResult, TIs, TSpecifies, TEvaluation, TSubject>
-        where TIs : class, IIs<TResult, TSubject, TSpecifies, TEvaluation>
+        where TNegatableIs : class, INegatableIs<TSubject, TResult, TIs, TSpecifies, TEvaluation>
+        where TIs : class, IIs<TSubject, TResult, TSpecifies, TEvaluation>
         where TSpecifies : class, ISpecification<TSubject, TResult, TEvaluation>
         where TEvaluation : class, IEvaluation<TResult>
     {

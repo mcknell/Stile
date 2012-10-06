@@ -5,10 +5,10 @@
 
 #region using...
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
-using Stile.Prototypes.Specifications.Printable.Output.Explainers.Has;
-using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is;
-using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is.Comparables;
-using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is.Strings;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers.ResultHas;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers.ResultIs;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers.ResultIs.Comparables;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers.ResultIs.Strings;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Output.Explainers

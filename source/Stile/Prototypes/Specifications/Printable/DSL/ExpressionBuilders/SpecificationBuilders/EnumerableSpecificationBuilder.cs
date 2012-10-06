@@ -10,8 +10,8 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBuilders;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
-using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Has.Enumerable;
-using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultHas.Enumerable;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultIs;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SpecificationBuilders
@@ -25,8 +25,8 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
             TResult, //
             TItem, //
             IPrintableEnumerableHas<TResult, TItem, TSubject>, //
-            IPrintableNegatableEnumerableIs<TResult, TItem, TSubject>, //
-            IPrintableEnumerableIs<TResult, TItem, TSubject>, //
+            IPrintableNegatableEnumerableIs<TSubject, TResult, TItem>, //
+            IPrintableEnumerableIs<TSubject, TResult, TItem>, //
             IPrintableSpecification<TSubject, TResult>, //
             IPrintableEvaluation<TResult>, //
             IPrintableQuantifiedEnumerableHas<TResult, TItem, TSubject>>
@@ -35,8 +35,8 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
     public class PrintableEnumerableSpecificationBuilder<TSubject, TResult, TItem> :
         EnumerableSpecificationBuilder
             <TSubject, TResult, TItem, IPrintableEnumerableHas<TResult, TItem, TSubject>, //
-                IPrintableNegatableEnumerableIs<TResult, TItem, TSubject>, //
-                IPrintableEnumerableIs<TResult, TItem, TSubject>, //
+                IPrintableNegatableEnumerableIs<TSubject, TResult, TItem>, //
+                IPrintableEnumerableIs<TSubject, TResult, TItem>, //
                 IPrintableSpecification<TSubject, TResult>, //
                 IPrintableEvaluation<TResult>, //
                 IPrintableQuantifiedEnumerableHas<TResult, TItem, TSubject>>,
@@ -55,9 +55,9 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
             return new PrintableEnumerableHas<TResult, TItem, TSubject>(_instrument);
         }
 
-        protected override IPrintableNegatableEnumerableIs<TResult, TItem, TSubject> MakeIs()
+        protected override IPrintableNegatableEnumerableIs<TSubject, TResult, TItem> MakeIs()
         {
-            return new PrintableEnumerableIs<TResult, TItem, TSubject>(Negated.False, _instrument);
+            return new PrintableEnumerableIs<TSubject, TResult, TItem>(Negated.False, _instrument);
         }
     }
 }

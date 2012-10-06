@@ -11,8 +11,8 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBuilders;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
-using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Has;
-using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultHas;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultIs;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SubjectBuilders;
 using Stile.Readability;
 using Stile.Types.Expressions;
@@ -28,8 +28,8 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
             <TSubject, TResult, THas, TNegatableIs, TIs, IPrintableSpecification<TSubject, TResult>,
                 IPrintableEvaluation<TResult>>
         where THas : class, IPrintableHas<TResult, TSubject>
-        where TNegatableIs : class, IPrintableNegatableIs<TResult, TIs, TSubject>
-        where TIs : class, IPrintableIs<TResult, TSubject> {}
+        where TNegatableIs : class, IPrintableNegatableIs<TSubject, TResult, TIs>
+        where TIs : class, IPrintableIs<TSubject, TResult> {}
 
     public abstract class PrintableSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs> :
         SpecificationBuilder
@@ -38,8 +38,8 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
         IPrintableSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs>,
         IPrintableSpecificationBuilderState
         where THas : class, IPrintableHas<TResult, TSubject>
-        where TNegatableIs : class, IPrintableNegatableIs<TResult, TIs, TSubject>
-        where TIs : class, IPrintableIs<TResult, TSubject>
+        where TNegatableIs : class, IPrintableNegatableIs<TSubject, TResult, TIs>
+        where TIs : class, IPrintableIs<TSubject, TResult>
     {
         protected PrintableSpecificationBuilder([NotNull] Lazy<string> subjectDescription)
         {
@@ -53,8 +53,8 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
         TSubject, //
         TResult, //
         IPrintableHas<TResult, TSubject>, //
-        IPrintableNegatableIs<TResult, IPrintableIs<TResult, TSubject>, TSubject>, //
-        IPrintableIs<TResult, TSubject>>,
+        IPrintableNegatableIs<TSubject, TResult, IPrintableIs<TSubject, TResult>>, //
+        IPrintableIs<TSubject, TResult>>,
         IFluentSpecificationBuilder<TSubject, TResult>
     {
         private readonly Lazy<Func<TSubject, TResult>> _instrument;
@@ -78,7 +78,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
             return new PrintableHas<TResult, TSubject>(_instrument, this);
         }
 
-        protected override IPrintableNegatableIs<TResult, IPrintableIs<TResult, TSubject>, TSubject> MakeIs()
+        protected override IPrintableNegatableIs<TSubject, TResult, IPrintableIs<TSubject, TResult>> MakeIs()
         {
             return new PrintableIs<TSubject, TResult>(Negated.False, _instrument);
         }

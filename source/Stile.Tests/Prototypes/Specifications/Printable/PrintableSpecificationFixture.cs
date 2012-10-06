@@ -12,7 +12,7 @@ using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.Emitting;
 using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.Printable.Output;
-using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers.ResultIs;
 using Stile.Types;
 #endregion
 
@@ -41,7 +41,8 @@ namespace Stile.Tests.Prototypes.Specifications.Printable
             Assert.That(evaluation.Result.Outcome, Is.EqualTo(Outcome.Succeeded));
             Assert.That(evaluation.Result.Errors, Is.Empty);
             Assert.That(evaluation.Emitted.Retrieved.Value,
-                Is.EqualTo(string.Format("expected 23 (of type int) would be \"23\" {0} and was \"23\"", Environment.NewLine)));
+                Is.EqualTo(string.Format("expected 23 (of type int) would be \"23\" {0} and was \"23\"",
+                    Environment.NewLine)));
 
             // arrange again
             input = 24;
@@ -54,7 +55,8 @@ namespace Stile.Tests.Prototypes.Specifications.Printable
             Assert.That(evaluation.Result.Outcome, Is.EqualTo(Outcome.Failed));
             Assert.That(evaluation.Result.Errors, Is.Empty);
             Assert.That(evaluation.Emitted.Retrieved.Value,
-                Is.EqualTo(string.Format("expected 24 (of type int) would be \"23\" {0} but was \"24\"", Environment.NewLine)));
+                Is.EqualTo(string.Format("expected 24 (of type int) would be \"23\" {0} but was \"24\"",
+                    Environment.NewLine)));
         }
 
         [Test]
@@ -77,7 +79,8 @@ namespace Stile.Tests.Prototypes.Specifications.Printable
             Assert.That(evaluation.Result.Outcome, Is.EqualTo(Outcome.Succeeded));
             Assert.That(evaluation.Result.Errors, Is.Empty);
             Assert.That(evaluation.Emitted.Retrieved.Value,
-                Is.EqualTo(string.Format("expected 23 (of type int) would not be \"24\" {0} and was \"23\"", Environment.NewLine)));
+                Is.EqualTo(string.Format("expected 23 (of type int) would not be \"24\" {0} and was \"23\"",
+                    Environment.NewLine)));
 
             // arrange again
             input = 24;
@@ -90,7 +93,8 @@ namespace Stile.Tests.Prototypes.Specifications.Printable
             Assert.That(evaluation.Result.Outcome, Is.EqualTo(Outcome.Failed));
             Assert.That(evaluation.Result.Errors, Is.Empty);
             Assert.That(evaluation.Emitted.Retrieved.Value,
-                Is.EqualTo(string.Format("expected 24 (of type int) would not be \"24\" {0} but was \"24\"", Environment.NewLine)));
+                Is.EqualTo(string.Format("expected 24 (of type int) would not be \"24\" {0} but was \"24\"",
+                    Environment.NewLine)));
         }
 
         [Test]

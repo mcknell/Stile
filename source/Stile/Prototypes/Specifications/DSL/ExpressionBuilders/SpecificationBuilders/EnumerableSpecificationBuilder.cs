@@ -5,8 +5,8 @@
 
 #region using...
 using System.Collections.Generic;
-using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Has;
-using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Is;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultHas;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
 using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 #endregion
@@ -32,8 +32,8 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBu
             ISpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies, TEvaluation>
         where TResult : class, IEnumerable<TItem>
         where THas : class, IEnumerableHas<TResult, TItem, TSpecifies, TEvaluation, TQuantified, TSubject>
-        where TNegatableIs : class, INegatableEnumerableIs<TResult, TItem, TIs, TSpecifies, TEvaluation, TSubject>
-        where TIs : class, IEnumerableIs<TResult, TItem, TSpecifies, TEvaluation, TSubject>
+        where TNegatableIs : class, INegatableEnumerableIs<TSubject, TResult, TItem, TIs, TSpecifies, TEvaluation>
+        where TIs : class, IEnumerableIs<TSubject, TResult, TItem, TSpecifies, TEvaluation>
         where TSpecifies : class, ISpecification<TSubject, TResult, TEvaluation>
         where TEvaluation : class, IEvaluation<TResult>
         where TQuantified : class, IQuantifiedEnumerableHas<TResult, TItem, TSpecifies, TEvaluation, TSubject> {}
@@ -45,8 +45,8 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBu
                 <TSubject, TResult, TItem, THas, TNegatableIs, TIs, TSpecifies, TEvaluation, TQuantified>
         where TResult : class, IEnumerable<TItem>
         where THas : class, IEnumerableHas<TResult, TItem, TSpecifies, TEvaluation, TQuantified, TSubject>
-        where TNegatableIs : class, INegatableEnumerableIs<TResult, TItem, TIs, TSpecifies, TEvaluation, TSubject>
-        where TIs : class, IEnumerableIs<TResult, TItem, TSpecifies, TEvaluation, TSubject>
+        where TNegatableIs : class, INegatableEnumerableIs<TSubject, TResult, TItem, TIs, TSpecifies, TEvaluation>
+        where TIs : class, IEnumerableIs<TSubject, TResult, TItem, TSpecifies, TEvaluation>
         where TSpecifies : class, ISpecification<TSubject, TResult, TEvaluation>
         where TEvaluation : class, IEvaluation<TResult>
         where TQuantified : class, IQuantifiedEnumerableHas<TResult, TItem, TSpecifies, TEvaluation, TSubject> {}

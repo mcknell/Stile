@@ -6,7 +6,7 @@
 #region using...
 using NUnit.Framework;
 using Stile.Prototypes.Specifications.Printable.Construction;
-using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Has;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultHas;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SpecificationBuilders;
 #endregion
 

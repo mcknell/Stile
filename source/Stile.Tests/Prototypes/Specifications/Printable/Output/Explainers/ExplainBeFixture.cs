@@ -1,5 +1,5 @@
 ﻿#region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
+// Stile for .NET, Copyright 2011-2012 by Mark Knell
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
@@ -7,8 +7,7 @@
 using NUnit.Framework;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
 using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
-using Stile.Prototypes.Specifications.Printable.Output.Explainers;
-using Stile.Prototypes.Specifications.Printable.Output.Explainers.Is;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers.ResultIs;
 #endregion
 
 namespace Stile.Tests.Prototypes.Specifications.Printable.Output.Explainers

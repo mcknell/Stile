@@ -4,8 +4,8 @@
 #endregion
 
 #region using...
-using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Has;
-using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Is;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultHas;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultIs;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SpecificationBuilders
@@ -13,12 +13,12 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
     public interface IFluentSpecificationBuilder<TSubject> :
         IPrintableSpecificationBuilder
             <TSubject, TSubject, IPrintableHas<TSubject, TSubject>,
-                IPrintableNegatableIs<TSubject, IPrintableIs<TSubject, TSubject>, TSubject>,
+                IPrintableNegatableIs<TSubject, TSubject, IPrintableIs<TSubject, TSubject>>,
                 IPrintableIs<TSubject, TSubject>> {}
 
     public interface IFluentSpecificationBuilder<TSubject, out TResult> :
         IPrintableSpecificationBuilder
             <TSubject, TResult, IPrintableHas<TResult, TSubject>,
-                IPrintableNegatableIs<TResult, IPrintableIs<TResult, TSubject>, TSubject>,
-                IPrintableIs<TResult, TSubject>> {}
+                IPrintableNegatableIs<TSubject, TResult, IPrintableIs<TSubject, TResult>>,
+                IPrintableIs<TSubject, TResult>> {}
 }

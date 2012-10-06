@@ -6,8 +6,8 @@
 #region using...
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Has;
-using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Is;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultHas;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBuilders;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
 using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
@@ -19,8 +19,8 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
         out TSpecifies, out TEvaluation> :
             ISpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies, TEvaluation>
         where THas : class, IHas<TResult, TSpecifies, TEvaluation, TSubject>
-        where TNegatableIs : class, INegatableIs<TResult, TIs, TSpecifies, TEvaluation, TSubject>
-        where TIs : class, IIs<TResult, TSubject, TSpecifies, TEvaluation>
+        where TNegatableIs : class, INegatableIs<TSubject, TResult, TIs, TSpecifies, TEvaluation>
+        where TIs : class, IIs<TSubject, TResult, TSpecifies, TEvaluation>
         where TSpecifies : class, ISpecification<TSubject, TResult, TEvaluation>
         where TEvaluation : class, IEvaluation<TResult> {}
 
@@ -29,8 +29,8 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
             IBoundSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies, TEvaluation>,
             IBoundSpecificationBuilderState<TSubject>
         where THas : class, IHas<TResult, TSpecifies, TEvaluation, TSubject>
-        where TNegatableIs : class, INegatableIs<TResult, TIs, TSpecifies, TEvaluation, TSubject>
-        where TIs : class, IIs<TResult, TSubject, TSpecifies, TEvaluation>
+        where TNegatableIs : class, INegatableIs<TSubject, TResult, TIs, TSpecifies, TEvaluation>
+        where TIs : class, IIs<TSubject, TResult, TSpecifies, TEvaluation>
         where TSpecifies : class, ISpecification<TSubject, TResult, TEvaluation>
         where TEvaluation : class, IEvaluation<TResult>
     {
