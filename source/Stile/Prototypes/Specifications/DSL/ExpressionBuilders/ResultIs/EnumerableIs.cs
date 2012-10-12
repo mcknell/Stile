@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBuilders;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
 using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 #endregion
@@ -26,14 +27,24 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs
 		where TResult : class, IEnumerable<TItem>
 		where TSpecifies : class, ISpecification<TSubject, TResult> {}
 
-	public abstract class EnumerableIs<TSubject, TResult, TItem, TNegated, TSpecifies, TEvaluation> :
-		Is<TSubject, TResult, TNegated, TSpecifies>,
+	public interface IEnumerableIsState : IIsState {}
+
+	public interface IEnumerableIsState<out TResult, out TItem> : IEnumerableIsState
+		where TResult : class, IEnumerable<TItem> {}
+
+	public interface IEnumerableIsState<TSubject, TResult, out TItem> : IEnumerableIsState<TResult, TItem>,
+		IIsState<TSubject, TResult>
+		where TResult : class, IEnumerable<TItem> {}
+
+	public abstract class EnumerableIs<TSubject, TResult, TItem, TNegated, TSpecifies, TEvaluation, TInput> :
+		Is<TSubject, TResult, TNegated, TSpecifies, TInput>,
 		IEnumerableIs<TSubject, TResult, TItem, TSpecifies>,
 		IEnumerableIsState<TSubject, TResult, TItem>
 		where TResult : class, IEnumerable<TItem>
 		where TNegated : class, IIs<TSubject, TResult, TSpecifies>
 		where TSpecifies : class, ISpecification<TSubject, TResult, TEvaluation>
 		where TEvaluation : class, IEvaluation<TResult>
+		where TInput : class, ISpecificationInput<TSubject, TResult>
 	{
 		protected EnumerableIs(Negated negated, [NotNull] Lazy<Func<TSubject, TResult>> instrument)
 			: base(negated, instrument) {}

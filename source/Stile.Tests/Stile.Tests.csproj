@@ -51,8 +51,9 @@
     <Compile Include="Patterns\Behavioral\Traversal\NonrepeatingTraverserFixture.cs" />
     <Compile Include="Patterns\Behavioral\Traversal\TraverserFixture.cs" />
     <Compile Include="Prototypes\Collections\HashBucketFixture.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultHas\Foo.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\Foo.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultHas\HasExtensionsFixture.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SubjectBuilders\SubjectBuilderExtensionsFixture.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultIs\IsExtensionsFixture.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultIs\IsStringExtensionsFixture.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ExplainBeFixture.cs" />

@@ -33,7 +33,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Sourc
         public PrintableSource(TSubject subject, Lazy<string> description = null)
             : this(() => () => subject, description ?? subject.ToLazyDebugString()) {}
 
-        protected PrintableSource(Func<Func<TSubject>> doubleFunc, [NotNull] Lazy<string> description)
+	    public PrintableSource(Func<Func<TSubject>> doubleFunc, [NotNull] Lazy<string> description)
             : base(doubleFunc)
         {
             Description = description.ValidateArgumentIsNotNull();

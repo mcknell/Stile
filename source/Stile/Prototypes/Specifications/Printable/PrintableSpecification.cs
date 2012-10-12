@@ -113,12 +113,29 @@ namespace Stile.Prototypes.Specifications.Printable
 			return output;
 		}
 
-		protected abstract TEmit ExplainEvaluation(Lazy<TEmit> emitted, TSubject subject);
+		public static string Explain(IWrappedResult<TResult> result, IExplainer<TSubject, TResult> explainer, string reason)
+		{
+			string expected = explainer.ExplainExpected(result);
+			string conjunction =
+				PrintableSpecification<TSubject, TResult, IPrintableEvaluation<TResult>, ILazyReadableText>.PrintConjunction(
+					result.Outcome);
+			string actual = explainer.ExplainActualSurprise(result);
+			string because = reason == null ? null : string.Format("because {0}{1}", reason, Environment.NewLine);
+			string basic = string.Join(" ", expected, Environment.NewLine, conjunction, actual);
+			return because + basic;
+		}
 
-		internal static string PrintConjunction(Outcome outcome)
+		public static string PrintConjunction(Outcome outcome)
 		{
 			return outcome == Outcome.Succeeded ? "and" : "but";
 		}
+
+		protected string Explain(IWrappedResult<TResult> result)
+		{
+			return Explain(result, Explainer, Reason);
+		}
+
+		protected abstract TEmit ExplainEvaluation(Lazy<TEmit> emitted, TSubject subject);
 	}
 
 	public class PrintableSpecification<TSubject, TResult> :
@@ -143,18 +160,6 @@ namespace Stile.Prototypes.Specifications.Printable
 			ILazyReadableText emitted)
 		{
 			return new PrintableEvaluation<TResult>(result, emitted);
-		}
-
-		private string Explain(IWrappedResult<TResult> result)
-		{
-			IExplainer<TSubject, TResult> explainer = Explainer;
-			string expected = explainer.ExplainExpected(result);
-			string conjunction = PrintConjunction(result.Outcome);
-			string actual = explainer.ExplainActualSurprise(result);
-			string reason = Reason;
-			string because = reason == null ? null : string.Format("because {0}{1}", reason, Environment.NewLine);
-			string basic = string.Join(" ", expected, Environment.NewLine, conjunction, actual);
-			return because + basic;
 		}
 
 		protected override ILazyReadableText ExplainEvaluation(Lazy<ILazyReadableText> emitted, TSubject subject)

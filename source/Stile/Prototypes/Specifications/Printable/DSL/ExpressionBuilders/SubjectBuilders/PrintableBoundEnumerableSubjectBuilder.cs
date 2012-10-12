@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SubjectBuilders;
@@ -12,27 +13,45 @@ using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Sources;
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SubjectBuilders
 {
-    public interface IPrintableBoundEnumerableSubjectBuilder : IBoundEnumerableSubjectBuilder {}
+	public interface IPrintableBoundEnumerableSubjectBuilder : IBoundEnumerableSubjectBuilder,
+		IPrintableBoundSubjectBuilder {}
 
-    public interface IPrintableBoundEnumerableSubjectBuilder<TSubject, TItem> :
-        IPrintableBoundEnumerableSubjectBuilder,
-        IBoundEnumerableSubjectBuilder<TSubject, TItem>
-        where TSubject : class, IEnumerable<TItem> {}
+	public interface IPrintableBoundEnumerableSubjectBuilder<TSubject, TItem> : IPrintableBoundEnumerableSubjectBuilder,
+		IBoundEnumerableSubjectBuilder<TSubject, TItem>,
+		IPrintableBoundSubjectBuilder<TSubject>
+		where TSubject : class, IEnumerable<TItem> {}
 
-    public class PrintableBoundEnumerableSubjectBuilder<TSubject, TItem> :
-        BoundEnumerableSubjectBuilder<TSubject, TItem, IPrintableEnumerableSource<TSubject, TItem>>,
-        IPrintableBoundEnumerableSubjectBuilder<TSubject, TItem>,
-        IPrintableBoundEnumerableSubjectBuilderState<TSubject, TItem>
-        where TSubject : class, IEnumerable<TItem>
-    {
-        public PrintableBoundEnumerableSubjectBuilder([NotNull] IPrintableSource<TSubject> source)
-            : base(new PrintableEnumerableSource<TSubject, TItem>(source)) {}
-    }
+	public class PrintableBoundEnumerableSubjectBuilder<TSubject, TItem> :
+		BoundEnumerableSubjectBuilder<TSubject, TItem, IPrintableSource<TSubject>>,
+		IPrintableBoundEnumerableSubjectBuilder<TSubject, TItem>,
+		IPrintableBoundEnumerableSubjectBuilderState
+			<TSubject, TItem, PrintableBoundEnumerableSubjectBuilder<TSubject, TItem>>
+		where TSubject : class, IEnumerable<TItem>
+	{
+		public PrintableBoundEnumerableSubjectBuilder([NotNull] IPrintableSource<TSubject> source)
+			: base(source) {}
 
-    public interface IPrintableBoundEnumerableSubjectBuilderState : IBoundEnumerableSubjectBuilderState {}
+		public Lazy<string> SubjectDescription
+		{
+			get { return Source.Description; }
+		}
 
-    public interface IPrintableBoundEnumerableSubjectBuilderState<out TSubject, out TItem> :
-        IPrintableBoundEnumerableSubjectBuilderState,
-        IBoundEnumerableSubjectBuilderState<TSubject, TItem, IPrintableEnumerableSource<TSubject, TItem>>
-        where TSubject : class, IEnumerable<TItem> {}
+		public PrintableBoundEnumerableSubjectBuilder<TSubject, TItem> Make(Lazy<string> description)
+		{
+			var source = new PrintableSource<TSubject>(() => Source.Get, description);
+			return new PrintableBoundEnumerableSubjectBuilder<TSubject, TItem>(source);
+		}
+	}
+
+	public interface IPrintableBoundEnumerableSubjectBuilderState : IBoundEnumerableSubjectBuilderState,
+		IPrintableSubjectBuilderState,
+		IPrintableBoundSubjectBuilderState {}
+
+	public interface IPrintableBoundEnumerableSubjectBuilderState<out TSubject, out TItem, out TBuilder> :
+		IPrintableBoundEnumerableSubjectBuilderState,
+		IBoundEnumerableSubjectBuilderState<TSubject, TItem, IPrintableSource<TSubject>>,
+		IPrintableSubjectBuilderState<TBuilder>,
+		IPrintableBoundSubjectBuilderState<TSubject>
+		where TSubject : class, IEnumerable<TItem>
+		where TBuilder : class, IPrintableBoundEnumerableSubjectBuilder<TSubject, TItem> {}
 }

@@ -7,6 +7,7 @@
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBuilders;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
 #endregion
 
@@ -30,11 +31,20 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs
 		Lazy<Func<TSubject, TResult>> Instrument { get; }
 	}
 
-	public abstract class Is<TSubject, TResult, TNegated, TSpecifies> :
+	public interface IIsState<TSubject, TResult, out TSpecifies, in TInput> : IIsState<TSubject, TResult>
+		where TSpecifies : class, ISpecification<TSubject, TResult>
+		where TInput : class, ISpecificationInput<TSubject, TResult>
+	{
+		[NotNull]
+		TSpecifies Make([NotNull] TInput input);
+	}
+
+	public abstract class Is<TSubject, TResult, TNegated, TSpecifies, TInput> :
 		INegatableIs<TSubject, TResult, TNegated, TSpecifies>,
-		IIsState<TSubject, TResult>
+		IIsState<TSubject, TResult, TSpecifies, TInput>
 		where TSpecifies : class, ISpecification<TSubject, TResult>
 		where TNegated : class, IIs<TSubject, TResult, TSpecifies>
+		where TInput : class, ISpecificationInput<TSubject, TResult>
 	{
 		protected Is(Negated negated, [NotNull] Lazy<Func<TSubject, TResult>> instrument)
 		{
@@ -46,10 +56,11 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs
 		public Negated Negated { get; private set; }
 		public TNegated Not
 		{
-			get { return Factory(); }
+			get { return Factory(Negated.Invert(), Instrument); }
 		}
+		public abstract TSpecifies Make(TInput input);
 
 		[NotNull]
-		protected abstract TNegated Factory();
+		protected abstract TNegated Factory(Negated negated, Lazy<Func<TSubject, TResult>> instrument);
 	}
 }

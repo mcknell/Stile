@@ -32,7 +32,7 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SubjectBuilders
     {
         private readonly TSource _source;
 
-        public BoundSubjectBuilder([NotNull] TSource source)
+	    protected BoundSubjectBuilder([NotNull] TSource source)
         {
             _source = source.ValidateArgumentIsNotNull();
         }

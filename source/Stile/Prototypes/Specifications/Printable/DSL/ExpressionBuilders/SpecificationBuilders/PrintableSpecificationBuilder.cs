@@ -79,7 +79,8 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 			IFluentSpecification<TSubject, TResult>>, //
 		IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
 		IFluentSpecification<TSubject, TResult>, //
-		IPrintableEvaluation<TResult>>,
+		IPrintableEvaluation<TResult> //
+		>,
 		IFluentSpecificationBuilder<TSubject, TResult>
 	{
 		private readonly Lazy<Func<TSubject, TResult>> _instrument;
@@ -87,7 +88,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 		public PrintableSpecificationBuilder([NotNull] Expression<Func<TSubject, TResult>> expression)
 			: this(expression.Compile, expression.ToLazyDebugString()) {}
 
-		protected PrintableSpecificationBuilder([NotNull] Func<Func<TSubject, TResult>> extractor,
+		public PrintableSpecificationBuilder([NotNull] Func<Func<TSubject, TResult>> extractor,
 			[NotNull] Lazy<string> subjectDescription)
 			: this(new Lazy<Func<TSubject, TResult>>(extractor), subjectDescription) {}
 

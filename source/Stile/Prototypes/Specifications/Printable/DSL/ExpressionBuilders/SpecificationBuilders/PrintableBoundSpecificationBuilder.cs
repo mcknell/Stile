@@ -5,11 +5,14 @@
 
 #region using...
 using System;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
+using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultHas;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs;
-using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Sources;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBuilders;
+using Stile.Prototypes.Specifications.DSL.SemanticModel;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultIs;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Sources;
 using Stile.Prototypes.Specifications.Printable.Output;
 #endregion
@@ -37,13 +40,27 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 		where TNegatableIs : class, INegatableIs<TSubject, TResult, TIs, IPrintableBoundSpecification<TSubject, TResult>>
 		where TIs : class, IIs<TSubject, TResult, IPrintableBoundSpecification<TSubject, TResult>> {}
 
+	public interface IFluentBoundSpecificationBuilder<TSubject, out TResult> : IPrintableBoundSpecificationBuilder< //
+		TSubject, //
+		TResult, //
+		IHas<TSubject, TResult, IPrintableBoundSpecification<TSubject, TResult>>, //
+		INegatableIs< //
+			TSubject, //
+			TResult, //
+			IIs<TSubject, TResult, IPrintableBoundSpecification<TSubject, TResult>>, //
+			IPrintableBoundSpecification<TSubject, TResult> //
+			>, //
+		IIs<TSubject, TResult, IPrintableBoundSpecification<TSubject, TResult>>, //
+		IPrintableBoundSpecification<TSubject, TResult>, //
+		IPrintableBoundEvaluation<TResult, ILazyReadableText>> {}
+
 	public interface IPrintableBoundSpecificationBuilderState : IPrintableSpecificationBuilderState,
 		IBoundSpecificationBuilderState {}
 
 	public interface IPrintableBoundSpecificationBuilderState<out TSubject, out TSource> :
 		IPrintableBoundSpecificationBuilderState,
 		IBoundSpecificationBuilderState<TSubject, TSource>
-		where TSource : class, ISource<TSubject> {}
+		where TSource : class, IPrintableSource<TSubject> {}
 
 	public abstract class PrintableBoundSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs> :
 		BoundSpecificationBuilder
@@ -61,6 +78,56 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 		public Lazy<string> SubjectDescription
 		{
 			get { return Source.Description; }
+		}
+	}
+
+	public class PrintableBoundSpecificationBuilder<TSubject, TResult> : PrintableBoundSpecificationBuilder< //
+		TSubject, //
+		TResult, //
+		IHas< //
+			TSubject, //
+			TResult, //
+			IPrintableBoundSpecification<TSubject, TResult> //
+			>, //
+		INegatableIs< //
+			TSubject, //
+			TResult, //
+			IIs<TSubject, TResult, IPrintableBoundSpecification<TSubject, TResult>>, //
+			IPrintableBoundSpecification<TSubject, TResult> //
+			>, //
+		IIs<TSubject, TResult, IPrintableBoundSpecification<TSubject, TResult>> //
+		>,
+		IFluentBoundSpecificationBuilder<TSubject, TResult>
+	{
+		private readonly Lazy<Func<TSubject, TResult>> _instrument;
+
+		public PrintableBoundSpecificationBuilder(IPrintableSource<TSubject> source,
+			Func<Func<TSubject, TResult>> extractor)
+			: this(source, new Lazy<Func<TSubject, TResult>>(extractor)) {}
+
+		public PrintableBoundSpecificationBuilder(IPrintableSource<TSubject> source,
+			Expression<Func<TSubject, TResult>> expression)
+			: this(source, expression.Compile) {}
+
+		public PrintableBoundSpecificationBuilder([NotNull] IPrintableSource<TSubject> source,
+			[NotNull] Lazy<Func<TSubject, TResult>> instrument)
+			: base(source)
+		{
+			_instrument = instrument.ValidateArgumentIsNotNull();
+		}
+
+		protected override IHas<TSubject, TResult, IPrintableBoundSpecification<TSubject, TResult>> MakeHas()
+		{
+			return new Has<TSubject, TResult, IPrintableBoundSpecification<TSubject, TResult>>(_instrument);
+		}
+
+		protected override INegatableIs< //
+			TSubject, //
+			TResult, //
+			IIs<TSubject, TResult, IPrintableBoundSpecification<TSubject, TResult>>, //
+			IPrintableBoundSpecification<TSubject, TResult>> MakeIs()
+		{
+			return new PrintableBoundIs<TSubject, TResult>(Negated.False, _instrument, Source);
 		}
 	}
 }

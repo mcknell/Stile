@@ -49,7 +49,8 @@
     <Compile Include="Patterns\Structural\FluentInterface\IFluent.cs" />
     <Compile Include="Patterns\Structural\FluentInterface\INegatable.cs" />
     <Compile Include="Patterns\Lifetimes\Lazy\Lazier.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\Sources\EnumerableSource.cs" />
+    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\ResultIs\BoundIs.cs" />
+    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\SpecificationBuilders\SpecificationInput.cs" />
     <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\Sources\Source.cs" />
     <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\ResultHas\EnumerableHas.cs" />
     <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\ResultHas\IHasState.cs" />
@@ -60,8 +61,9 @@
     <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\SpecificationBuilders\BoundSpecificationBuilderForEnumerableSubject.cs" />
     <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\SpecificationBuilders\EnumerableSpecificationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\SpecificationBuilders\SpecificationBuilderForEnumerableSubject.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\SubjectBuilders\ISubjectBuilderState.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultIs\PrintableBoundIs.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultIs\PrintableIs.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultIs\PrintableSpecificationInput.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SpecificationBuilders\PrintableBoundSpecificationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SubjectBuilders\PrintableBoundEnumerableSubjectBuilder.cs" />
     <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\SubjectBuilders\SubjectBuilder.cs" />
@@ -76,15 +78,13 @@
     <Compile Include="Prototypes\Specifications\DSL\SemanticModel\Evaluations\Error.cs" />
     <Compile Include="Prototypes\Specifications\DSL\SemanticModel\Evaluations\WrappedResult.cs" />
     <Compile Include="Prototypes\Specifications\Printable\PrintableBoundEvaluation.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Construction\PrintableBoundSubjectBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SubjectBuilders\PrintableBoundSubjectBuilder.cs" />
     <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\ResultHas\QuantifiedEnumerableHas.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultHas\HasExtensions.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\ResultIs\IEnumerableIsState.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultIs\IsComparableExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultIs\IsExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultIs\IsStringExtensions.cs" />
     <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\SpecificationBuilders\BoundSpecificationBuilder.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\Sources\PrintableEnumerableSource.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SpecificationBuilders\SpecificationBuilderExtensions.cs" />
     <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\SubjectBuilders\BoundEnumerableSubjectBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SpecificationBuilders\PrintableEnumerableSpecificationBuilder.cs" />
