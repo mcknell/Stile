@@ -8,92 +8,108 @@ using System;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Specifications.DSL.ExpressionBuilders;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultHas;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBuilders;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
-using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultHas;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultIs;
-using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SubjectBuilders;
-using Stile.Readability;
+using Stile.Prototypes.Specifications.Printable.Output;
 using Stile.Types.Expressions;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SpecificationBuilders
 {
-    public interface IPrintableSpecificationBuilder : ISpecificationBuilder {}
+	public interface IPrintableSpecificationBuilder : ISpecificationBuilder {}
 
-    public interface IPrintableSpecificationBuilder<TSubject, out TResult, out THas, out TNegatableIs, out TIs> :
-        IPrintableSpecificationBuilder,
-        ISpecificationBuilder
-            <TSubject, TResult, THas, TNegatableIs, TIs, IPrintableSpecification<TSubject, TResult>,
-                IPrintableEvaluation<TResult>>
-        where THas : class, IPrintableHas<TResult, TSubject>
-        where TNegatableIs : class, IPrintableNegatableIs<TSubject, TResult, TIs>
-        where TIs : class, IPrintableIs<TSubject, TResult> {}
+	public interface IPrintableSpecificationBuilder<out TSubject, out TResult, out THas, out TNegatableIs, out TIs,
+		out TSpecifies, out TEvaluation> : IPrintableSpecificationBuilder,
+			ISpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies>
+		where THas : class, IHas<TSubject, TResult, TSpecifies>
+		where TNegatableIs : class, INegatableIs<TSubject, TResult, TIs, TSpecifies>
+		where TIs : class, IIs<TSubject, TResult, TSpecifies>
+		where TSpecifies : class, IPrintableSpecification<TSubject, TResult, TEvaluation, ILazyReadableText>
+		where TEvaluation : class, IPrintableEvaluation<TResult, ILazyReadableText> {}
 
-    public abstract class PrintableSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs> :
-        SpecificationBuilder
-            <TSubject, TResult, THas, TNegatableIs, TIs, IPrintableSpecification<TSubject, TResult>,
-                IPrintableEvaluation<TResult>>,
-        IPrintableSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs>,
-        IPrintableSpecificationBuilderState
-        where THas : class, IPrintableHas<TResult, TSubject>
-        where TNegatableIs : class, IPrintableNegatableIs<TSubject, TResult, TIs>
-        where TIs : class, IPrintableIs<TSubject, TResult>
-    {
-        protected PrintableSpecificationBuilder([NotNull] Lazy<string> subjectDescription)
-        {
-            SubjectDescription = subjectDescription.ValidateArgumentIsNotNull();
-        }
+	public interface IFluentSpecificationBuilder<TSubject, out TResult> : IPrintableSpecificationBuilder< //
+		TSubject, //
+		TResult, //
+		IHas<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
+		INegatableIs< //
+			TSubject, //
+			TResult, //
+			IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
+			IFluentSpecification<TSubject, TResult> //
+			>, //
+		IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
+		IFluentSpecification<TSubject, TResult>, //
+		IPrintableEvaluation<TResult, ILazyReadableText>> {}
 
-        public Lazy<string> SubjectDescription { get; private set; }
-    }
+	public interface IPrintableSpecificationBuilderState : ISpecificationBuilderState
+	{
+		[NotNull]
+		Lazy<string> SubjectDescription { get; }
+	}
 
-    public class PrintableSpecificationBuilder<TSubject, TResult> : PrintableSpecificationBuilder< //
-        TSubject, //
-        TResult, //
-        IPrintableHas<TResult, TSubject>, //
-        IPrintableNegatableIs<TSubject, TResult, IPrintableIs<TSubject, TResult>>, //
-        IPrintableIs<TSubject, TResult>>,
-        IFluentSpecificationBuilder<TSubject, TResult>
-    {
-        private readonly Lazy<Func<TSubject, TResult>> _instrument;
+	public abstract class PrintableSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies,
+		TEvaluation> : SpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies>,
+			IPrintableSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies, TEvaluation>,
+			IPrintableSpecificationBuilderState
+		where THas : class, IHas<TSubject, TResult, TSpecifies>
+		where TNegatableIs : class, INegatableIs<TSubject, TResult, TIs, TSpecifies>
+		where TIs : class, IIs<TSubject, TResult, TSpecifies>
+		where TSpecifies : class, IPrintableSpecification<TSubject, TResult, TEvaluation, ILazyReadableText>
+		where TEvaluation : class, IPrintableEvaluation<TResult, ILazyReadableText>
+	{
+		protected PrintableSpecificationBuilder([NotNull] Lazy<string> subjectDescription)
+		{
+			SubjectDescription = subjectDescription.ValidateArgumentIsNotNull();
+		}
 
-        public PrintableSpecificationBuilder([NotNull] Expression<Func<TSubject, TResult>> expression)
-            : this(expression.Compile, expression.ToLazyDebugString()) {}
+		public Lazy<string> SubjectDescription { get; private set; }
+	}
 
-        protected PrintableSpecificationBuilder([NotNull] Func<Func<TSubject, TResult>> extractor,
-            [NotNull] Lazy<string> subjectDescription)
-            : this(new Lazy<Func<TSubject, TResult>>(extractor), subjectDescription) {}
+	public class PrintableSpecificationBuilder<TSubject, TResult> : PrintableSpecificationBuilder< //
+		TSubject, //
+		TResult, //
+		IHas<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
+		INegatableIs< //
+			TSubject, //
+			TResult, //
+			IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
+			IFluentSpecification<TSubject, TResult>>, //
+		IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
+		IFluentSpecification<TSubject, TResult>, //
+		IPrintableEvaluation<TResult>>,
+		IFluentSpecificationBuilder<TSubject, TResult>
+	{
+		private readonly Lazy<Func<TSubject, TResult>> _instrument;
 
-        protected PrintableSpecificationBuilder([NotNull] Lazy<Func<TSubject, TResult>> instrument,
-            [NotNull] Lazy<string> subjectDescription)
-            : base(subjectDescription)
-        {
-            _instrument = instrument.ValidateArgumentIsNotNull();
-        }
+		public PrintableSpecificationBuilder([NotNull] Expression<Func<TSubject, TResult>> expression)
+			: this(expression.Compile, expression.ToLazyDebugString()) {}
 
-        protected override IPrintableHas<TResult, TSubject> MakeHas()
-        {
-            return new PrintableHas<TResult, TSubject>(_instrument, this);
-        }
+		protected PrintableSpecificationBuilder([NotNull] Func<Func<TSubject, TResult>> extractor,
+			[NotNull] Lazy<string> subjectDescription)
+			: this(new Lazy<Func<TSubject, TResult>>(extractor), subjectDescription) {}
 
-        protected override IPrintableNegatableIs<TSubject, TResult, IPrintableIs<TSubject, TResult>> MakeIs()
-        {
-            return new PrintableIs<TSubject, TResult>(Negated.False, _instrument);
-        }
-    }
+		protected PrintableSpecificationBuilder([NotNull] Lazy<Func<TSubject, TResult>> instrument,
+			[NotNull] Lazy<string> subjectDescription)
+			: base(subjectDescription)
+		{
+			_instrument = instrument.ValidateArgumentIsNotNull();
+		}
 
-    public class PrintableSpecificationBuilder<TSubject> : PrintableSpecificationBuilder<TSubject, TSubject>,
-        IFluentSpecificationBuilder<TSubject>
-    {
-// ReSharper disable StaticFieldInGenericType
-// ReSharper disable InconsistentNaming
-        private static readonly Lazy<string> sSubjectDescription = typeof(TSubject).ToLazyDebugString();
-// ReSharper restore InconsistentNaming
-// ReSharper restore StaticFieldInGenericType
+		protected override IHas<TSubject, TResult, IFluentSpecification<TSubject, TResult>> MakeHas()
+		{
+			return new Has<TSubject, TResult, IFluentSpecification<TSubject, TResult>>(_instrument);
+		}
 
-        public PrintableSpecificationBuilder(ISubjectBuilderState<TSubject> state = null)
-            : base(Instrument.Trivial<TSubject>.Map, state == null ? sSubjectDescription : state.SubjectDescription) {}
-    }
+		protected override INegatableIs< //
+			TSubject, //
+			TResult, //
+			IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
+			IFluentSpecification<TSubject, TResult>> MakeIs()
+		{
+			return new PrintableIs<TSubject, TResult>(Negated.False, _instrument);
+		}
+	}
 }

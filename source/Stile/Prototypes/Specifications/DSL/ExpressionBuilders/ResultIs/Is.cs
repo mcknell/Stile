@@ -8,45 +8,48 @@ using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
-using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 #endregion
 
 namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs
 {
-    public interface IIs {}
+	public interface IIs {}
 
-    public interface IIs<out TResult> : IIs {}
+	public interface IIs<out TResult, out TSpecifies> : IIs
+		where TSpecifies : class, ISpecification {}
 
-    public interface IIs<out TResult, out TSpecifies, out TEvaluation> : IIs<TResult>
-        where TSpecifies : class, ISpecification<TResult, TEvaluation>
-        where TEvaluation : class, IEvaluation<TResult> {}
+	public interface IIs<out TSubject, out TResult, out TSpecifies> : IIs<TResult, TSpecifies>
+		where TSpecifies : class, ISpecification<TSubject, TResult> {}
 
-    public interface IIs<out TSubject, out TResult, out TSpecifies, out TEvaluation> :
-        IIs<TResult, TSpecifies, TEvaluation>
-        where TSpecifies : class, ISpecification<TSubject, TResult, TEvaluation>
-        where TEvaluation : class, IEvaluation<TResult> {}
+	public interface IIsState
+	{
+		Negated Negated { get; }
+	}
 
-    public abstract class Is<TSubject, TResult, TNegated, TSpecifies, TEvaluation> :
-        INegatableIs<TSubject, TResult, TNegated, TSpecifies, TEvaluation>,
-        IIsState<TSubject, TResult>
-        where TSpecifies : class, ISpecification<TSubject, TResult, TEvaluation>
-        where TEvaluation : class, IEvaluation<TResult>
-        where TNegated : class, IIs<TSubject, TResult, TSpecifies, TEvaluation>
-    {
-        protected Is(Negated negated, [NotNull] Lazy<Func<TSubject, TResult>> extractor)
-        {
-            Negated = negated;
-            Instrument = extractor.ValidateArgumentIsNotNull();
-        }
+	public interface IIsState<TSubject, TResult> : IIsState
+	{
+		Lazy<Func<TSubject, TResult>> Instrument { get; }
+	}
 
-        public Lazy<Func<TSubject, TResult>> Instrument { get; private set; }
-        public Negated Negated { get; private set; }
-        public TNegated Not
-        {
-            get { return Factory(); }
-        }
+	public abstract class Is<TSubject, TResult, TNegated, TSpecifies> :
+		INegatableIs<TSubject, TResult, TNegated, TSpecifies>,
+		IIsState<TSubject, TResult>
+		where TSpecifies : class, ISpecification<TSubject, TResult>
+		where TNegated : class, IIs<TSubject, TResult, TSpecifies>
+	{
+		protected Is(Negated negated, [NotNull] Lazy<Func<TSubject, TResult>> instrument)
+		{
+			Negated = negated;
+			Instrument = instrument.ValidateArgumentIsNotNull();
+		}
 
-        [NotNull]
-        protected abstract TNegated Factory();
-    }
+		public Lazy<Func<TSubject, TResult>> Instrument { get; private set; }
+		public Negated Negated { get; private set; }
+		public TNegated Not
+		{
+			get { return Factory(); }
+		}
+
+		[NotNull]
+		protected abstract TNegated Factory();
+	}
 }

@@ -7,86 +7,94 @@
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Specifications.DSL.ExpressionBuilders;
 using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 #endregion
 
 namespace Stile.Prototypes.Specifications.DSL.SemanticModel
 {
-    public interface ISpecification {}
+	public interface ISpecification {}
 
-    public interface ISpecification<in TSubject> : ISpecification {}
+	public interface ISpecification<in TSubject, out TResult> : ISpecification {}
 
-    public interface ISpecification<out TResult, out TEvaluation> : ISpecification
-        where TEvaluation : class, IEvaluation<TResult> {}
+	public interface ISpecification<in TSubject, out TResult, out TEvaluation> : ISpecification<TSubject, TResult>,
+		IEvaluable<TSubject, TResult, TEvaluation>
+		where TEvaluation : class, IEvaluation<TResult> {}
 
-    public interface ISpecification<in TSubject, out TResult, out TEvaluation> : ISpecification<TSubject>,
-        ISpecification<TResult, TEvaluation>,
-        IEvaluable<TSubject, TResult, TEvaluation>
-        where TEvaluation : class, IEvaluation<TResult> {}
+	public interface ISpecificationState<TSubject, TResult, out TEvaluation>
+		where TEvaluation : class, IEvaluation<TResult>
+	{
+		Predicate<TResult> Accepter { get; }
+		Func<TResult, Exception, TEvaluation> ExceptionFilter { get; }
+		Lazy<Func<TSubject, TResult>> LazyInstrument { get; }
+	}
 
-    public abstract class Specification<TSubject, TResult, TEvaluation> :
-        ISpecification<TSubject, TResult, TEvaluation>
-        where TEvaluation : class, IEvaluation<TResult>
-    {
-        private readonly Predicate<TResult> _accepter;
-        private readonly Func<TResult, Exception, TEvaluation> _exceptionFilter;
-        private readonly bool _expectsException;
-        private readonly Lazy<Func<TSubject, TResult>> _lazyExtractor;
+	public abstract class Specification<TSubject, TResult, TEvaluation> : ISpecification<TSubject, TResult, TEvaluation>,
+		ISpecificationState<TSubject, TResult, TEvaluation>
+		where TEvaluation : class, IEvaluation<TResult>
+	{
+		private readonly Predicate<TResult> _accepter;
+		private readonly Func<TResult, Exception, TEvaluation> _exceptionFilter;
+		private readonly bool _expectsException;
+		private readonly Lazy<Func<TSubject, TResult>> _lazyInstrument;
 
-        protected Specification([NotNull] Lazy<Func<TSubject, TResult>> lazyExtractor,
-            [NotNull] Predicate<TResult> accepter,
-            Func<TResult, Exception, TEvaluation> exceptionFilter = null)
-        {
-            _lazyExtractor = lazyExtractor.ValidateArgumentIsNotNull();
-            _accepter = accepter.ValidateArgumentIsNotNull();
-            _exceptionFilter = exceptionFilter;
-            _expectsException = _exceptionFilter != null;
-        }
+		protected Specification([NotNull] Lazy<Func<TSubject, TResult>> lazyInstrument,
+			[NotNull] Predicate<TResult> accepter,
+			Func<TResult, Exception, TEvaluation> exceptionFilter = null)
+		{
+			_lazyInstrument = lazyInstrument.ValidateArgumentIsNotNull();
+			_accepter = accepter.ValidateArgumentIsNotNull();
+			_exceptionFilter = exceptionFilter;
+			_expectsException = ExceptionFilter != null;
+		}
 
-        public virtual TEvaluation Evaluate(TSubject subject)
-        {
-            Outcome outcome;
-            TResult result = default(TResult);
-            TEvaluation evaluation;
-            try
-            {
-                result = _lazyExtractor.Value.Invoke(subject);
-                bool accepted = _accepter.Invoke(result);
-                outcome = accepted ? Outcome.Succeeded : Outcome.Failed;
-            } catch (Exception e)
-            {
-                if (_expectsException)
-                {
-                    evaluation = _exceptionFilter.Invoke(result, e);
-                    if (evaluation != null)
-                    {
-                        // only trap exception if exception filter handled it
-                        return evaluation;
-                    }
-                }
-                throw;
-            }
+		public Predicate<TResult> Accepter
+		{
+			get { return _accepter; }
+		}
+		public Func<TResult, Exception, TEvaluation> ExceptionFilter
+		{
+			get { return _exceptionFilter; }
+		}
+		public Lazy<Func<TSubject, TResult>> LazyInstrument
+		{
+			get { return _lazyInstrument; }
+		}
 
-            if (_expectsException)
-            {
-                // exception was expected but none was thrown
-                return _exceptionFilter.Invoke(result, null);
-            }
+		public virtual TEvaluation Evaluate(TSubject subject)
+		{
+			Outcome outcome;
+			TResult result = default(TResult);
+			TEvaluation evaluation;
+			try
+			{
+				result = LazyInstrument.Value.Invoke(subject);
+				bool accepted = Accepter.Invoke(result);
+				outcome = accepted ? Outcome.Succeeded : Outcome.Failed;
+			} catch (Exception e)
+			{
+				if (_expectsException)
+				{
+					evaluation = ExceptionFilter.Invoke(result, e);
+					if (evaluation != null)
+					{
+						// only trap exception if exception filter handled it
+						return evaluation;
+					}
+				}
+				throw;
+			}
 
-            var wrappedResult = new WrappedResult<TResult>(outcome, result);
-            evaluation = EvaluationFactory(wrappedResult);
-            return evaluation;
-        }
+			if (_expectsException)
+			{
+				// exception was expected but none was thrown
+				return ExceptionFilter.Invoke(result, null);
+			}
 
-        protected abstract TEvaluation EvaluationFactory(IWrappedResult<TResult> result);
-    }
+			var wrappedResult = new WrappedResult<TResult>(outcome, result);
+			evaluation = EvaluationFactory(wrappedResult);
+			return evaluation;
+		}
 
-    public abstract class Specification<TResult, TEvaluation> : Specification<TResult, TResult, TEvaluation>
-        where TEvaluation : class, IEvaluation<TResult>
-    {
-        protected Specification([NotNull] Predicate<TResult> accepter,
-            Func<TResult, Exception, TEvaluation> exceptionFilter = null)
-            : base(Instrument.Trivial<TResult>.Map, accepter, exceptionFilter) {}
-    }
+		protected abstract TEvaluation EvaluationFactory(IWrappedResult<TResult> result);
+	}
 }

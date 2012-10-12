@@ -8,45 +8,37 @@ using System;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Types.Expressions;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Sources;
 using Stile.Readability;
+using Stile.Types.Expressions;
 #endregion
 
-namespace Stile.Prototypes.Specifications
+namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Sources
 {
-    public interface ISource
+    public interface IPrintableSource : ISource
     {
         [NotNull]
         Lazy<string> Description { get; }
     }
 
-    public interface ISource<out TSubject> : ISource
-    {
-        [CanBeNull]
-        TSubject Get();
-    }
+    public interface IPrintableSource<out TSubject> : IPrintableSource,
+        ISource<TSubject> {}
 
-    public class Source<TSubject> : ISource<TSubject>
+    public class PrintableSource<TSubject> : Source<TSubject>,
+        IPrintableSource<TSubject>
     {
-        private readonly Lazy<TSubject> _subjectGetter;
-
-        public Source([NotNull] Expression<Func<TSubject>> expression, Lazy<string> description = null)
+        public PrintableSource([NotNull] Expression<Func<TSubject>> expression, Lazy<string> description = null)
             : this(expression.Compile, description ?? expression.ToLazyDebugString()) {}
 
-        public Source(TSubject subject, Lazy<string> description = null)
+        public PrintableSource(TSubject subject, Lazy<string> description = null)
             : this(() => () => subject, description ?? subject.ToLazyDebugString()) {}
 
-        private Source(Func<Func<TSubject>> doubleFunc, [NotNull] Lazy<string> description)
+        protected PrintableSource(Func<Func<TSubject>> doubleFunc, [NotNull] Lazy<string> description)
+            : base(doubleFunc)
         {
-            _subjectGetter = new Lazy<TSubject>(doubleFunc.Invoke());
             Description = description.ValidateArgumentIsNotNull();
         }
 
         public Lazy<string> Description { get; private set; }
-
-        public TSubject Get()
-        {
-            return _subjectGetter.Value;
-        }
     }
 }

@@ -13,102 +13,63 @@ using Stile.Prototypes.Specifications.Printable.Output.Explainers;
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultIs
 {
-    public static class IsComparableExtensions
-    {
-        [Pure]
-        public static IPrintableSpecification<TSubject, TResult> ComparablyEquivalentTo<TSubject, TResult>(
-            this IPrintableIs<TSubject, TResult> builder, TResult result) where TResult : IComparable<TResult>
-        {
-            return Make(builder, x => x == 0, result, Explain.ComparablyEquivalentTo);
-        }
+	public static class IsComparableExtensions
+	{
+		[Pure]
+		public static IFluentSpecification<TSubject, TResult> ComparablyEquivalentTo<TSubject, TResult, TSpecifies>(
+			this IIs<TSubject, TResult, TSpecifies> builder, TResult result) where TResult : IComparable<TResult>
+			where TSpecifies : class, ISpecification<TSubject, TResult>
+		{
+			return Make(builder, x => x == 0, result, Explain.ComparablyEquivalentTo);
+		}
 
-        [Pure]
-        public static IPrintableSpecification<TSubject> GreaterThan<TSubject>(this IPrintableIs<TSubject> builder,
-            TSubject result) where TSubject : IComparable<TSubject>
-        {
-            return Make(builder, x => x > 0, result, Explain.GreaterThan);
-        }
+		[Pure]
+		public static IFluentSpecification<TSubject, TResult> GreaterThan<TSubject, TResult, TSpecifies>(
+			this IIs<TSubject, TResult, TSpecifies> builder, TResult result) where TResult : IComparable<TResult>
+			where TSpecifies : class, ISpecification<TSubject, TResult>
+		{
+			return Make(builder, x => x > 0, result, Explain.GreaterThan);
+		}
 
-        [Pure]
-        public static IPrintableSpecification<TSubject, TResult> GreaterThan<TSubject, TResult>(
-            this IPrintableIs<TSubject, TResult> builder, TResult result) where TResult : IComparable<TResult>
-        {
-            return Make(builder, x => x > 0, result, Explain.GreaterThan);
-        }
+		[Pure]
+		public static IFluentSpecification<TSubject, TResult> GreaterThanOrEqualTo<TSubject, TResult, TSpecifies>(
+			this IIs<TSubject, TResult, TSpecifies> builder, TResult result) where TResult : IComparable<TResult>
+			where TSpecifies : class, ISpecification<TSubject, TResult>
+		{
+			return Make(builder, x => x >= 0, result, Explain.GreaterThanOrEqualTo);
+		}
 
-        [Pure]
-        public static IPrintableSpecification<TSubject> GreaterThanOrEqualTo<TSubject>(
-            this IPrintableIs<TSubject> builder, TSubject result) where TSubject : IComparable<TSubject>
-        {
-            return Make(builder, x => x >= 0, result, Explain.GreaterThanOrEqualTo);
-        }
+		[Pure]
+		public static IFluentSpecification<TSubject, TResult> LessThan<TSubject, TResult, TSpecifies>(
+			this IIs<TSubject, TResult, TSpecifies> builder, TResult result) where TResult : IComparable<TResult>
+			where TSpecifies : class, ISpecification<TSubject, TResult>
+		{
+			return Make(builder, x => x < 0, result, Explain.LessThan);
+		}
 
-        [Pure]
-        public static IPrintableSpecification<TSubject, TResult> GreaterThanOrEqualTo<TSubject, TResult>(
-            this IPrintableIs<TSubject, TResult> builder, TResult result) where TResult : IComparable<TResult>
-        {
-            return Make(builder, x => x >= 0, result, Explain.GreaterThanOrEqualTo);
-        }
+		[Pure]
+		public static IFluentSpecification<TSubject, TResult> LessThanOrEqualTo<TSubject, TResult, TSpecifies>(
+			this IIs<TSubject, TResult, TSpecifies> builder, TResult result) where TResult : IComparable<TResult>
+			where TSpecifies : class, ISpecification<TSubject, TResult>
+		{
+			return Make(builder, x => x <= 0, result, Explain.LessThanOrEqualTo);
+		}
 
-        [Pure]
-        public static IPrintableSpecification<TSubject, TResult> LessThan<TSubject, TResult>(
-            this IPrintableIs<TSubject, TResult> builder, TResult result) where TResult : IComparable<TResult>
-        {
-            return Make(builder, x => x < 0, result, Explain.LessThan);
-        }
-
-        [Pure]
-        public static IPrintableSpecification<TSubject> LessThan<TSubject>(this IPrintableIs<TSubject> builder,
-            TSubject result) where TSubject : IComparable<TSubject>
-        {
-            return Make(builder, x => x < 0, result, Explain.LessThan);
-        }
-
-        [Pure]
-        public static IPrintableSpecification<TSubject> LessThanOrEqualTo<TSubject>(
-            this IPrintableIs<TSubject> builder, TSubject result) where TSubject : IComparable<TSubject>
-        {
-            return Make(builder, x => x <= 0, result, Explain.LessThanOrEqualTo);
-        }
-
-        [Pure]
-        public static IPrintableSpecification<TSubject, TResult> LessThanOrEqualTo<TSubject, TResult>(
-            this IPrintableIs<TSubject, TResult> builder, TResult result) where TResult : IComparable<TResult>
-        {
-            return Make(builder, x => x <= 0, result, Explain.LessThanOrEqualTo);
-        }
-
-        [Pure]
-        public static IPrintableSpecification<TSubject, TResult> Make<TSubject, TResult>(
-            IPrintableIs<TSubject, TResult> builder,
-            Predicate<int> predicate,
-            TResult result,
-            Func<Explain.FluentSubject<TSubject>, TResult, Negated, Explainer<TSubject, TResult>> explainerFactory)
-            where TResult : IComparable<TResult>
-        {
-            var state = (IIsState<TSubject, TResult>) builder;
-            Predicate<TResult> accepter = x => state.Negated.AgreesWith(predicate.Invoke(x.CompareTo(result)));
-            Explainer<TSubject, TResult> explainer = explainerFactory.Invoke(Explain.Subject<TSubject>(),
-                result,
-                state.Negated);
-            var specification = new PrintableSpecification<TSubject, TResult>(state.Instrument, accepter, explainer);
-            return specification;
-        }
-
-        [Pure]
-        public static IPrintableSpecification<TSubject> Make<TSubject>(IPrintableIs<TSubject> builder,
-            Predicate<int> predicate,
-            TSubject result,
-            Func<Explain.FluentSubject<TSubject>, TSubject, Negated, Explainer<TSubject, TSubject>> explainerFactory)
-            where TSubject : IComparable<TSubject>
-        {
-            var state = (IIsState) builder;
-            Predicate<TSubject> accepter = x => state.Negated.AgreesWith(predicate.Invoke(x.CompareTo(result)));
-            Explainer<TSubject, TSubject> explainer = explainerFactory.Invoke(Explain.Subject<TSubject>(),
-                result,
-                state.Negated);
-            var specification = new PrintableSpecification<TSubject>(accepter, explainer);
-            return specification;
-        }
-    }
+		[Pure]
+		public static IFluentSpecification<TSubject, TResult> Make<TSubject, TResult, TSpecifies>(
+			IIs<TSubject, TResult, TSpecifies> builder,
+			Predicate<int> predicate,
+			TResult result,
+			Func<Explain.FluentSubject<TSubject>, TResult, Negated, Explainer<TSubject, TResult>> explainerFactory)
+			where TResult : IComparable<TResult> where TSpecifies : class, ISpecification<TSubject, TResult>
+		{
+			var state = (IIsState<TSubject, TResult>) builder;
+			Predicate<TResult> accepter = x => state.Negated.AgreesWith(predicate.Invoke(x.CompareTo(result)));
+			Explainer<TSubject, TResult> explainer = explainerFactory.Invoke(Explain.Subject<TSubject>(),
+				result,
+				state.Negated);
+			var specification = new PrintableSpecification<TSubject, TResult>(state.Instrument, accepter, explainer);
+			return specification;
+		}
+	}
 }

@@ -6,27 +6,21 @@
 #region using...
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
-using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 #endregion
 
 namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs
 {
-    public interface INegatableIs : IIs {}
+	public interface INegatableIs : IIs {}
 
-    public interface INegatableIs<out TResult> : INegatableIs {}
+	public interface INegatableIs<out TResult, out TNegated, out TSpecifies> : INegatableIs,
+		IIs<TResult, TSpecifies>,
+		INegatable<TNegated>
+		where TNegated : class, IIs<TResult, TSpecifies>
+		where TSpecifies : class, ISpecification {}
 
-    public interface INegatableIs<out TResult, out TNegated> : INegatableIs<TResult>,
-        INegatable<TNegated> {}
-
-    public interface INegatableIs<out TResult, out TNegated, out TSpecifies, out TEvaluation> :
-        INegatableIs<TResult, TNegated>
-        where TSpecifies : class, ISpecification<TResult, TEvaluation>
-        where TEvaluation : class, IEvaluation<TResult> {}
-
-    public interface INegatableIs<out TSubject, out TResult, out TNegated, out TSpecifies, out TEvaluation> :
-        INegatableIs<TResult, TNegated>,
-        IIs<TResult, TSpecifies, TEvaluation>
-        where TNegated : class, IIs<TSubject, TResult, TSpecifies, TEvaluation>
-        where TSpecifies : class, ISpecification<TSubject, TResult, TEvaluation>
-        where TEvaluation : class, IEvaluation<TResult> {}
+	public interface INegatableIs<out TSubject, out TResult, out TNegated, out TSpecifies> :
+		INegatableIs<TResult, TNegated, TSpecifies>,
+		IIs<TSubject, TResult, TSpecifies>
+		where TNegated : class, IIs<TSubject, TResult, TSpecifies>
+		where TSpecifies : class, ISpecification<TSubject, TResult> {}
 }

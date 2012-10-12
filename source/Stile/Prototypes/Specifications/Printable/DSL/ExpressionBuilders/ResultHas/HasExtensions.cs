@@ -6,23 +6,24 @@
 #region using...
 using System;
 using System.Diagnostics.Contracts;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultHas;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers.ResultHas;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultHas
 {
-    public static class HasExtensions
-    {
-        [Pure]
-        public static IPrintableSpecification<TSubject, TResult> HashCode<TResult, TSubject>(
-            this IPrintableHas<TResult, TSubject> has, int hashCode)
-        {
-            var state = (IPrintableHasState<TSubject, TResult>) has;
+	public static class HasExtensions
+	{
+		[Pure]
+		public static IFluentSpecification<TSubject, TResult> HashCode<TResult, TSubject>(
+			this IHas<TSubject, TResult, IPrintableSpecification<TSubject, TResult>> has, int hashCode)
+		{
+			var state = (IHasState<TSubject, TResult>) has;
 
-            Predicate<TResult> predicate = x => x.GetHashCode() == hashCode;
-            IExplainer<TSubject, TResult> explainer = new ExplainHashCode<TSubject, TResult>(hashCode);
-            return new PrintableSpecification<TSubject, TResult>(state.Instrument, predicate, explainer);
-        }
-    }
+			Predicate<TResult> predicate = x => x.GetHashCode() == hashCode;
+			IExplainer<TSubject, TResult> explainer = new ExplainHashCode<TSubject, TResult>(hashCode);
+			return new PrintableSpecification<TSubject, TResult>(state.Instrument, predicate, explainer);
+		}
+	}
 }

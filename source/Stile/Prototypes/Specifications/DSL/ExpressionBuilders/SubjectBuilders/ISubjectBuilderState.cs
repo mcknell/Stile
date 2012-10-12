@@ -4,10 +4,9 @@
 #endregion
 
 #region using...
-
 #endregion
 
-namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBuilders
+namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SubjectBuilders
 {
-    public interface ISpecificationBuilderState {}
+
 }

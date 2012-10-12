@@ -7,7 +7,6 @@
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Specifications.DSL.ExpressionBuilders;
 using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.Emitting;
 using Stile.Prototypes.Specifications.Printable.Output;
@@ -19,105 +18,148 @@ using Stile.Types.Reflection;
 
 namespace Stile.Prototypes.Specifications.Printable
 {
-    public interface IPrintableSpecification : IEmittingSpecification {}
+	public interface IPrintableSpecification : IEmittingSpecification {}
 
-    public interface IPrintableResultSpecification<out TResult> : IPrintableSpecification,
-        IEmittingSpecification<TResult, IPrintableEvaluation<TResult>> {}
+	public interface IPrintableSpecification<in TSubject, out TResult> : IPrintableSpecification,
+		IEmittingSpecification<TSubject, TResult> {}
 
-    public interface IPrintableSpecification<in TSubject> : IPrintableSpecification,
-        IEmittingSpecification<TSubject> {}
+	public interface IPrintableSpecification<in TSubject, out TResult, out TEvaluation, out TEmit> :
+		IPrintableSpecification<TSubject, TResult>,
+		IEmittingSpecification<TSubject, TResult, TEvaluation, TEmit>
+		where TEvaluation : class, IPrintableEvaluation<TResult, TEmit> {}
 
-    public interface IPrintableSpecification<in TSubject, out TResult> : IPrintableSpecification<TSubject>,
-        IPrintableResultSpecification<TResult>,
-        IEmittingSpecification<TSubject, TResult, IPrintableEvaluation<TResult>, ILazyReadableText> {}
+	public interface IFluentSpecification<in TSubject, out TResult> :
+		IPrintableSpecification<TSubject, TResult, IPrintableEvaluation<TResult>, ILazyReadableText> {}
 
-    public class PrintableSpecification<TSubject, TResult> :
-        EmittingSpecification<TSubject, TResult, IPrintableEvaluation<TResult>, LazyReadableText>,
-        IPrintableSpecification<TSubject, TResult>
-    {
-        private readonly IExplainer<TSubject, TResult> _explainer;
-        private readonly string _reason;
-        private readonly Lazy<string> _subjectDescription;
+	public interface IPrintableSpecificationState<TSubject, TResult, out TEvaluation, TEmit> :
+		IEmittingSpecificationState<TSubject, TResult, TEvaluation, TEmit>
+		where TEvaluation : class, IPrintableEvaluation<TResult, TEmit>
+	{
+		IExplainer<TSubject, TResult> Explainer { get; }
+		string Reason { get; }
+		Lazy<string> SubjectDescription { get; }
+	}
 
-        public PrintableSpecification([NotNull] Lazy<Func<TSubject, TResult>> extractor,
-            [NotNull] Predicate<TResult> accepter,
-            [NotNull] IExplainer<TSubject, TResult> explainer,
-            Lazy<string> subjectDescription = null,
-            string reason = null,
-            Func<TResult, Exception, IPrintableEvaluation<TResult>> exceptionFilter = null)
-            : base(extractor, accepter, exceptionFilter)
-        {
-            _subjectDescription = subjectDescription;
-            _reason = reason;
-            _explainer = explainer.ValidateArgumentIsNotNull();
-        }
+	public interface IPrintableSpecificationState<TSubject, TResult> :
+		IPrintableSpecificationState<TSubject, TResult, IPrintableEvaluation<TResult>, ILazyReadableText> {}
 
-        [Rule(Variable.StartSymbol,
-            Items = new object[]
-            {
-                "(", Terminal.Because, Variable.Reason, Terminal.EOL, ")?", //
-                Terminal.SubjectPrefix, "{0}", Terminal.DescriptionPrefix, Variable.Explainer
-            })]
-        public override IPrintableEvaluation<TResult> Evaluate([Symbol(Variable.Subject)] TSubject subject)
-        {
-            IPrintableEvaluation<TResult> evaluation = base.Evaluate(subject);
-            var text = new LazyReadableText(() => ExplainEvaluation(evaluation.Emitted.Retrieved, subject));
-            var printableEvaluation = new PrintableEvaluation<TResult>(evaluation.Result, text);
-            return printableEvaluation;
-        }
+	public static class PrintableSpecification
+	{
+		public static string ExplainEvaluation<TSubject>(this Lazy<ILazyReadableText> emitted,
+			TSubject subject,
+			Lazy<string> lazySubjectDescription)
+		{
+			string type = typeof(TSubject).ToDebugString();
+			string evaluated = emitted.Value.Retrieved.Value;
+			string subjectDescription = subject.ToDebugString();
+			if (lazySubjectDescription != null && String.IsNullOrWhiteSpace(lazySubjectDescription.Value) == false)
+			{
+				subjectDescription += String.Format(" transformed by {0}", lazySubjectDescription.Value);
+			}
+			else
+			{
+				subjectDescription += String.Format(" (of type {0})", type);
+			}
+			return String.Format("expected {0} would {1}", subjectDescription, evaluated);
+		}
+	}
 
-        protected override LazyReadableText EmittingFactory(IWrappedResult<TResult> result)
-        {
-            return new LazyReadableText(() => Explain(result));
-        }
+	public abstract class PrintableSpecification<TSubject, TResult, TEvaluation, TEmit> :
+		EmittingSpecification<TSubject, TResult, TEvaluation, TEmit>,
+		IPrintableSpecification<TSubject, TResult, TEvaluation, TEmit>,
+		IPrintableSpecificationState<TSubject, TResult, TEvaluation, TEmit>
+		where TEvaluation : class, IPrintableEvaluation<TResult, TEmit>
+	{
+		private readonly IExplainer<TSubject, TResult> _explainer;
+		private readonly string _reason;
+		private readonly Lazy<string> _subjectDescription;
 
-        protected override IPrintableEvaluation<TResult> EvaluationFactory(IWrappedResult<TResult> result,
-            LazyReadableText emitted)
-        {
-            return new PrintableEvaluation<TResult>(result, emitted);
-        }
+		protected PrintableSpecification([NotNull] Lazy<Func<TSubject, TResult>> instrument,
+			[NotNull] Predicate<TResult> accepter,
+			[NotNull] IExplainer<TSubject, TResult> explainer,
+			Lazy<string> subjectDescription = null,
+			string reason = null,
+			Func<TResult, Exception, TEvaluation> exceptionFilter = null)
+			: base(instrument, accepter, exceptionFilter)
+		{
+			_subjectDescription = subjectDescription;
+			_reason = reason;
+			_explainer = explainer.ValidateArgumentIsNotNull();
+		}
 
-        private string Explain(IWrappedResult<TResult> result)
-        {
-            string expected = _explainer.ExplainExpected(result);
-            string conjunction = PrintConjunction(result.Outcome);
-            string actual = _explainer.ExplainActualSurprise(result);
-            string because = _reason == null ? null : string.Format("because {0}{1}", _reason, Environment.NewLine);
-            string basic = string.Join(" ", expected, Environment.NewLine, conjunction, actual);
-            return because + basic;
-        }
+		public IExplainer<TSubject, TResult> Explainer
+		{
+			get { return _explainer; }
+		}
+		public string Reason
+		{
+			get { return _reason; }
+		}
+		public Lazy<string> SubjectDescription
+		{
+			get { return _subjectDescription; }
+		}
 
-        protected string ExplainEvaluation(Lazy<string> evaluatedExplanation, TSubject subject)
-        {
-            string type = typeof(TSubject).ToDebugString();
-            string evaluated = evaluatedExplanation.Value;
-            string subjectDescription = subject.ToDebugString();
-            if (_subjectDescription != null && string.IsNullOrWhiteSpace(_subjectDescription.Value) == false)
-            {
-                subjectDescription += string.Format(" transformed by {0}", _subjectDescription.Value);
-            }
-            else
-            {
-                subjectDescription += string.Format(" (of type {0})", type);
-            }
-            return string.Format("expected {0} would {1}", subjectDescription, evaluated);
-        }
+		[Rule(Variable.StartSymbol, Items = new object[]
+		{
+			"(", Terminal.Because, Variable.Reason, Terminal.EOL, ")?", //
+			Terminal.SubjectPrefix, "{0}", Terminal.DescriptionPrefix, Variable.Explainer
+		})]
+		public override TEvaluation Evaluate([Symbol(Variable.Subject)] TSubject subject)
+		{
+			TEvaluation evaluation = base.Evaluate(subject);
+			TEmit explained = ExplainEvaluation(new Lazy<TEmit>(() => evaluation.Emitted), subject);
+			TEvaluation output = EvaluationFactory(evaluation.Result, explained);
+			return output;
+		}
 
-        internal static string PrintConjunction(Outcome outcome)
-        {
-            return outcome == Outcome.Succeeded ? "and" : "but";
-        }
-    }
+		protected abstract TEmit ExplainEvaluation(Lazy<TEmit> emitted, TSubject subject);
 
-    public class PrintableSpecification<TSubject> : PrintableSpecification<TSubject, TSubject>,
-        IPrintableSpecification<TSubject>
-    {
-        public PrintableSpecification([NotNull] Predicate<TSubject> accepter,
-            [NotNull] IExplainer<TSubject, TSubject> explainer,
-            Lazy<string> subjectDescription = null,
-            string reason = null,
-            Func<TSubject, Exception, IPrintableEvaluation<TSubject>> exceptionFilter = null)
-            : base(Instrument.Trivial<TSubject>.Map, accepter, explainer, subjectDescription, reason, exceptionFilter
-                ) {}
-    }
+		internal static string PrintConjunction(Outcome outcome)
+		{
+			return outcome == Outcome.Succeeded ? "and" : "but";
+		}
+	}
+
+	public class PrintableSpecification<TSubject, TResult> :
+		PrintableSpecification<TSubject, TResult, IPrintableEvaluation<TResult>, ILazyReadableText>,
+		IFluentSpecification<TSubject, TResult>,
+		IPrintableSpecificationState<TSubject, TResult>
+	{
+		public PrintableSpecification([NotNull] Lazy<Func<TSubject, TResult>> instrument,
+			[NotNull] Predicate<TResult> accepter,
+			[NotNull] IExplainer<TSubject, TResult> explainer,
+			Lazy<string> subjectDescription = null,
+			string reason = null,
+			Func<TResult, Exception, IPrintableEvaluation<TResult>> exceptionFilter = null)
+			: base(instrument, accepter, explainer, subjectDescription, reason, exceptionFilter) {}
+
+		protected override ILazyReadableText EmittingFactory(IWrappedResult<TResult> result)
+		{
+			return new LazyReadableText(() => Explain(result));
+		}
+
+		protected override IPrintableEvaluation<TResult> EvaluationFactory(IWrappedResult<TResult> result,
+			ILazyReadableText emitted)
+		{
+			return new PrintableEvaluation<TResult>(result, emitted);
+		}
+
+		private string Explain(IWrappedResult<TResult> result)
+		{
+			IExplainer<TSubject, TResult> explainer = Explainer;
+			string expected = explainer.ExplainExpected(result);
+			string conjunction = PrintConjunction(result.Outcome);
+			string actual = explainer.ExplainActualSurprise(result);
+			string reason = Reason;
+			string because = reason == null ? null : string.Format("because {0}{1}", reason, Environment.NewLine);
+			string basic = string.Join(" ", expected, Environment.NewLine, conjunction, actual);
+			return because + basic;
+		}
+
+		protected override ILazyReadableText ExplainEvaluation(Lazy<ILazyReadableText> emitted, TSubject subject)
+		{
+			return new LazyReadableText(() => emitted.ExplainEvaluation(subject, SubjectDescription));
+		}
+	}
 }
