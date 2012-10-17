@@ -5,12 +5,9 @@
 
 #region using...
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
-using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Sources;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SpecificationBuilders;
-using Stile.Types;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SubjectBuilders
@@ -18,66 +15,47 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Subje
 	public static class SubjectBuilderExtensions
 	{
 		[System.Diagnostics.Contracts.Pure]
-		public static TBuilder DescribedBy<TBuilder>(this TBuilder builder, [NotNull] Lazy<string> description)
-			where TBuilder : class, IPrintableSubjectBuilder
+		public static IPrintableSubjectBuilder<TBuilder> DescribedBy<TBuilder>(
+			this IPrintableSubjectBuilder<TBuilder> builder, [NotNull] Lazy<string> description)
 		{
 			var state = (IPrintableSubjectBuilderState<TBuilder>) builder;
-			TBuilder printableSubjectBuilder = state.Make(description);
-			return printableSubjectBuilder;
+			return state.Make(description);
 		}
 
 		[System.Diagnostics.Contracts.Pure]
-		public static TBuilder DescribedBy<TBuilder>(this TBuilder builder, [NotNull] string description)
-			where TBuilder : class, IPrintableSubjectBuilder
+		public static IPrintableBoundSubjectBuilder<TBuilder> DescribedBy<TBuilder>(
+			this IPrintableBoundSubjectBuilder<TBuilder> builder, [NotNull] Lazy<string> description)
 		{
-			return DescribedBy(builder, description.ToLazy());
-		}
-
-		[System.Diagnostics.Contracts.Pure]
-		public static TBuilder DescribedBy<TBuilder>(this TBuilder builder, [NotNull] Func<string> description)
-			where TBuilder : class, IPrintableSubjectBuilder
-		{
-			return DescribedBy(builder, new Lazy<string>(description));
-		}
-
-		/// <summary>
-		/// Syntactical gimmick for implicitly specifying the type of items an <see cref="IEnumerable{T}"/>,
-		/// i.e., type inference will resolve the type without the coder having to hard-code an explicit 
-		/// type parameter (which is much easier and more likely to be correct after refactorings).
-		/// </summary>
-		/// <typeparam name="TSubject"></typeparam>
-		/// <typeparam name="TItem"></typeparam>
-		/// <param name="builder"></param>
-		/// <param name="item">The value of this item is never used; only its type matters.</param>
-		/// <returns></returns>
-		[System.Diagnostics.Contracts.Pure]
-		public static IPrintableBoundEnumerableSubjectBuilder<TSubject, TItem> Of<TSubject, TItem>(
-			this IPrintableBoundSubjectBuilder<TSubject> builder, TItem item) where TSubject : class, IEnumerable<TItem>
-		{
-			var state = (IPrintableBoundSubjectBuilderState<TSubject>) builder;
-			return new PrintableBoundEnumerableSubjectBuilder<TSubject, TItem>(state.Source);
-		}
-
-		[System.Diagnostics.Contracts.Pure]
-		public static TBuilder That<TBuilder>(this TBuilder builder, [NotNull] Func<string> description)
-			where TBuilder : class, IPrintableSubjectBuilder
-		{
-			return DescribedBy(builder, new Lazy<string>(description));
+			var state = (IPrintableSubjectBuilderState<TBuilder>) builder;
+			return state.MakeBound(description);
 		}
 
 		[System.Diagnostics.Contracts.Pure]
 		public static IFluentSpecificationBuilder<TSubject, TResult> That<TSubject, TResult>(
 			this IPrintableSubjectBuilder<TSubject> builder, Expression<Func<TSubject, TResult>> expression)
 		{
-			return new PrintableSpecificationBuilder<TSubject, TResult>(expression);
+			var state = (IPrintableSubjectBuilderState<TSubject>) builder;
+			return state.Make(expression);
 		}
+		[System.Diagnostics.Contracts.Pure]
+		public static IFluentBoundSpecificationBuilder<TSubject, TResult> That<TSubject, TResult>(
+			this IPrintableBoundSubjectBuilder<TSubject> builder, Expression<Func<TSubject, TResult>> expression)
+		{
+			var state = (IPrintableSubjectBuilderState<TSubject>) builder;
+			return state.MakeBound(expression);
+		}
+
+/*
 
 		[System.Diagnostics.Contracts.Pure]
 		public static IFluentBoundSpecificationBuilder<TSubject, TResult> That<TSubject, TResult>(
 			this IPrintableBoundSubjectBuilder<TSubject> builder, Expression<Func<TSubject, TResult>> expression)
 		{
-			var state = (IPrintableBoundSubjectBuilderState<TSubject>)builder;
-			return new PrintableBoundSpecificationBuilder<TSubject, TResult>(state.Source, expression);
+			var state = (IPrintableSubjectBuilderState<TSubject>) builder;
+			return new PrintableSpecificationBuilder<TSubject, TResult>(state.Source, expression);
 		}
+*/
 	}
+
+	public static class EnumerableSubjectBuilderExtensions {}
 }

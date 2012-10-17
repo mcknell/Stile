@@ -5,7 +5,6 @@
 
 #region using...
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
@@ -13,21 +12,36 @@ using Stile.Prototypes.Specifications.DSL.SemanticModel;
 
 namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultHas
 {
-    public interface IQuantifiedEnumerableHas {}
+	public interface IQuantifiedEnumerableHas {}
 
-    public interface IQuantifiedEnumerableHas<out TResult, TItem, out TSpecifies> : IQuantifiedEnumerableHas
-        where TResult : class, IEnumerable<TItem>
-        where TSpecifies : class, ISpecification
-    {
-        [Pure]
-        TSpecifies ItemsSatisfying(Expression<Func<TItem, bool>> expression);
-    }
+	public interface IQuantifiedEnumerableHas<TItem, out TSpecifies> : IQuantifiedEnumerableHas
+		where TSpecifies : class, ISpecification
+	{
+		[Pure]
+		TSpecifies ItemsSatisfying(Expression<Func<TItem, bool>> expression);
+	}
 
-    public abstract class QuantifiedEnumerableHas<TResult, TItem, TSpecifies> :
-        IQuantifiedEnumerableHas<TResult, TItem, TSpecifies>
-        where TResult : class, IEnumerable<TItem>
-        where TSpecifies : class, ISpecification
-    {
-        public abstract TSpecifies ItemsSatisfying(Expression<Func<TItem, bool>> expression);
-    }
+	public interface IQuantifiedEnumerableHasState {}
+
+	public interface IQuantifiedEnumerableHasState<out TSpecifies> : IQuantifiedEnumerableHasState
+		where TSpecifies : class, ISpecification
+	{
+		TSpecifies Make();
+	}
+
+	public abstract class QuantifiedEnumerableHas<TItem, TSpecifies> :
+		IQuantifiedEnumerableHas<TItem, TSpecifies>,
+		IQuantifiedEnumerableHasState<TSpecifies>
+		where TSpecifies : class, ISpecification
+	{
+		public TSpecifies ItemsSatisfying(Expression<Func<TItem, bool>> expression)
+		{
+			return Make();
+		}
+
+		public TSpecifies Make()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

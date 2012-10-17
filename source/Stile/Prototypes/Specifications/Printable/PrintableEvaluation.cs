@@ -6,7 +6,6 @@
 #region using...
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
-using Stile.Prototypes.Specifications.Emitting;
 using Stile.Prototypes.Specifications.Printable.Output;
 #endregion
 

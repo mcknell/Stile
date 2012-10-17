@@ -4,10 +4,16 @@
 #endregion
 
 #region using...
+using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultHas;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBuilders;
+using Stile.Prototypes.Specifications.DSL.SemanticModel;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultIs;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Sources;
+using Stile.Prototypes.Specifications.Printable.Output;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SpecificationBuilders
@@ -16,85 +22,100 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 		IEnumerableSpecificationBuilder {}
 
 	public interface IPrintableEnumerableSpecificationBuilder<out TResult, out TItem, out THas, out TNegatableIs,
-		out TIs, out TSpecifies, out TQuantified> : IPrintableEnumerableSpecificationBuilder,
-			IEnumerableSpecificationBuilder<TResult, TItem, THas, TNegatableIs, TIs, TSpecifies, TQuantified>
+		out TIs, out TSpecifies> : IPrintableEnumerableSpecificationBuilder,
+			IEnumerableSpecificationBuilder<TResult, TItem, THas, TNegatableIs, TIs, TSpecifies>
 		where TResult : class, IEnumerable<TItem>
-		where THas : class, IEnumerableHas<TResult, TItem, TSpecifies, TQuantified>
+		where THas : class, IEnumerableHas<TResult, TItem, TSpecifies>
 		where TNegatableIs : class, INegatableEnumerableIs<TResult, TItem, TIs, TSpecifies>
 		where TIs : class, IEnumerableIs<TResult, TItem, TSpecifies>
-		where TSpecifies : class, IPrintableSpecification
-		where TQuantified : class, IQuantifiedEnumerableHas<TResult, TItem, TSpecifies> {}
+		where TSpecifies : class, IPrintableSpecification {}
 
 	public interface IPrintableEnumerableSpecificationBuilder<out TSubject, out TResult, out TItem, out THas,
-		out TNegatableIs, out TIs, out TSpecifies, out TQuantified> :
-			IPrintableEnumerableSpecificationBuilder<TResult, TItem, THas, TNegatableIs, TIs, TSpecifies, TQuantified>,
-			IEnumerableSpecificationBuilder<TSubject, TResult, TItem, THas, TNegatableIs, TIs, TSpecifies, TQuantified>
+		out TNegatableIs, out TIs, out TSource, out TSpecifies> :
+			IPrintableEnumerableSpecificationBuilder<TResult, TItem, THas, TNegatableIs, TIs, TSpecifies>,
+			IEnumerableSpecificationBuilder<TSubject, TResult, TItem, THas, TNegatableIs, TIs, TSource, TSpecifies>
 		where TResult : class, IEnumerable<TItem>
-		where THas : class, IEnumerableHas<TSubject, TResult, TItem, TSpecifies, TQuantified>
+		where THas : class, IEnumerableHas<TSubject, TResult, TItem, TSource, TSpecifies>
 		where TNegatableIs : class, INegatableEnumerableIs<TSubject, TResult, TItem, TIs, TSpecifies>
 		where TIs : class, IEnumerableIs<TSubject, TResult, TItem, TSpecifies>
-		where TSpecifies : class, IPrintableSpecification<TSubject, TResult>
-		where TQuantified : class, IQuantifiedEnumerableHas<TResult, TItem, TSpecifies> {}
+		where TSource : class, IPrintableSource<TSubject>
+		where TSpecifies : class, IFluentSpecification<TSubject, TResult> {}
 
 	public interface IFluentEnumerableSpecificationBuilder<TSubject, out TResult, TItem> :
-		IPrintableEnumerableSpecificationBuilder< //
-			TSubject, //
-			TResult, //
-			TItem, //
-			IEnumerableHas< //
-				TSubject, //
-				TResult, //
-				TItem, //
-				IFluentSpecification<TSubject, TResult>, //
-				IQuantifiedEnumerableHas< //
-					TResult, //
-					TItem, //
-					IFluentSpecification<TSubject, TResult> //
-					> //
-				>, //
-			INegatableEnumerableIs< //
-				TSubject, //
-				TResult, //
-				TItem, //
-				IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>, //
-				IFluentSpecification<TSubject, TResult> //
-				>, //
-			IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>, //
-			IFluentSpecification<TSubject, TResult>, //
-			IQuantifiedEnumerableHas<TResult, TItem, IFluentSpecification<TSubject, TResult>>>
+		IPrintableEnumerableSpecificationBuilder
+			<TSubject, TResult, TItem,
+				IEnumerableHas<TSubject, TResult, TItem, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>,
+				INegatableEnumerableIs
+					<TSubject, TResult, TItem, IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>,
+						IFluentSpecification<TSubject, TResult>>,
+				IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>, IPrintableSource<TSubject>,
+				IFluentSpecification<TSubject, TResult>>
 		where TResult : class, IEnumerable<TItem> {}
 
-/*
+	public interface IFluentBoundEnumerableSpecificationBuilder<TSubject, out TResult, TItem> :
+		IFluentEnumerableSpecificationBuilder<TSubject, TResult, TItem>
+		where TResult : class, IEnumerable<TItem> {}
+
 	public class PrintableEnumerableSpecificationBuilder<TSubject, TResult, TItem> : //
-		EnumerableSpecificationBuilder< //
-			TSubject, //
-			TResult, //
-			TItem, //
-			IEnumerableHas<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>, int>, //
-			INegatableEnumerableIs<TSubject, TResult, TItem>, //
-			IEnumerableIs<TSubject, TResult, TItem>, //
-			IPrintableSpecification<TSubject, TResult>, //
-			IQuantifiedEnumerableHas<TSubject, TResult, TItem> //
-			>,
-		IPrintableEnumerableSpecificationBuilder<TSubject, TResult, TItem>
+		SpecificationBuilder
+			<TSubject, TResult,
+				IEnumerableHas<TSubject, TResult, TItem, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>,
+				INegatableEnumerableIs
+					<TSubject, TResult, TItem, IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>,
+						IFluentSpecification<TSubject, TResult>>,
+				IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>, IPrintableSource<TSubject>,
+				IFluentSpecification<TSubject, TResult>, IPrintableEvaluation<TResult, ILazyReadableText>, ILazyReadableText>,
+		IFluentBoundEnumerableSpecificationBuilder<TSubject, TResult, TItem>
 		where TResult : class, IEnumerable<TItem>
 	{
-		private readonly Lazy<Func<TSubject, TResult>> _instrument;
+		public PrintableEnumerableSpecificationBuilder([NotNull] IPrintableSource<TSubject> source,
+			[NotNull] Lazy<Func<TSubject, TResult>> instrument)
+			: base(source, instrument) {}
 
-		public PrintableEnumerableSpecificationBuilder([NotNull] Lazy<Func<TSubject, TResult>> instrument)
+		IEnumerableHas<TSubject, TResult, TItem, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>
+			ISpecificationBuilder
+				<TResult,
+					IEnumerableHas<TSubject, TResult, TItem, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>
+					,
+					INegatableEnumerableIs
+						<TSubject, TResult, TItem, IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>,
+							IFluentSpecification<TSubject, TResult>>,
+					IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>,
+					IFluentSpecification<TSubject, TResult>>.Has
 		{
-			_instrument = instrument.ValidateArgumentIsNotNull();
+			get { return Has; }
+		}
+		INegatableEnumerableIs
+			<TSubject, TResult, TItem, IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>,
+				IFluentSpecification<TSubject, TResult>>
+			ISpecificationBuilder
+				<TResult,
+					IEnumerableHas<TSubject, TResult, TItem, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>
+					,
+					INegatableEnumerableIs
+						<TSubject, TResult, TItem, IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>,
+							IFluentSpecification<TSubject, TResult>>,
+					IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>,
+					IFluentSpecification<TSubject, TResult>>.Is
+		{
+			get { return Is; }
 		}
 
-		protected override IEnumerableHas<TSubject, TResult, TItem> MakeHas()
+		protected override
+			IEnumerableHas<TSubject, TResult, TItem, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>
+			MakeHas()
 		{
-			return new EnumerableHas<TSubject, TResult, TItem>(_instrument);
+			return
+				new EnumerableHas<TSubject, TResult, TItem, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>(
+					Source, Instrument);
 		}
 
-		protected override INegatableEnumerableIs<TSubject, TResult, TItem> MakeIs()
+		protected override
+			INegatableEnumerableIs
+				<TSubject, TResult, TItem, IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>,
+					IFluentSpecification<TSubject, TResult>> MakeIs()
 		{
-			return new EnumerableIs<TSubject, TResult, TItem>(Negated.False, _instrument);
+			return new PrintableEnumerableIs<TSubject, TResult, TItem>(Source, Negated.False, Instrument);
 		}
 	}
-*/
 }

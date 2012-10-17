@@ -10,11 +10,4 @@ using JetBrains.Annotations;
 
 namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultHas
 {
-    public interface IHasState<TSubject> {}
-
-    public interface IHasState<TSubject, TResult> : IHasState<TSubject>
-    {
-        [NotNull]
-        Lazy<Func<TSubject, TResult>> Instrument { get; }
-    }
 }

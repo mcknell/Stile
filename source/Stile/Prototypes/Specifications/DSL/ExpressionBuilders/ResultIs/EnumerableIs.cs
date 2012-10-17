@@ -7,7 +7,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBuilders;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Sources;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
 using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 #endregion
@@ -36,17 +36,19 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs
 		IIsState<TSubject, TResult>
 		where TResult : class, IEnumerable<TItem> {}
 
-	public abstract class EnumerableIs<TSubject, TResult, TItem, TNegated, TSpecifies, TEvaluation, TInput> :
-		Is<TSubject, TResult, TNegated, TSpecifies, TInput>,
+	public abstract class EnumerableIs<TSubject, TResult, TItem, TSource, TNegated, TSpecifies, TEvaluation> :
+		Is<TSubject, TResult, TSource, TNegated, TSpecifies>,
 		IEnumerableIs<TSubject, TResult, TItem, TSpecifies>,
 		IEnumerableIsState<TSubject, TResult, TItem>
 		where TResult : class, IEnumerable<TItem>
+		where TSource : class, ISource<TSubject>
 		where TNegated : class, IIs<TSubject, TResult, TSpecifies>
 		where TSpecifies : class, ISpecification<TSubject, TResult, TEvaluation>
 		where TEvaluation : class, IEvaluation<TResult>
-		where TInput : class, ISpecificationInput<TSubject, TResult>
 	{
-		protected EnumerableIs(Negated negated, [NotNull] Lazy<Func<TSubject, TResult>> instrument)
-			: base(negated, instrument) {}
+		protected EnumerableIs([NotNull] TSource source,
+			Negated negated,
+			[NotNull] Lazy<Func<TSubject, TResult>> instrument)
+			: base(source, negated, instrument) {}
 	}
 }

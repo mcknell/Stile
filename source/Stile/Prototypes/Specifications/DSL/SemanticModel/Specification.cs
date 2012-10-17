@@ -7,6 +7,7 @@
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Sources;
 using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 #endregion
 
@@ -28,19 +29,25 @@ namespace Stile.Prototypes.Specifications.DSL.SemanticModel
 		Lazy<Func<TSubject, TResult>> LazyInstrument { get; }
 	}
 
-	public abstract class Specification<TSubject, TResult, TEvaluation> : ISpecification<TSubject, TResult, TEvaluation>,
+	public abstract class Specification<TSubject, TResult, TSource, TEvaluation, TEmit> :
+		IEmittingSpecification<TSubject, TResult, TEvaluation, TEmit>,
+		IBoundSpecification<TSubject, TResult, TEvaluation>,
 		ISpecificationState<TSubject, TResult, TEvaluation>
-		where TEvaluation : class, IEvaluation<TResult>
+		where TSource : class, ISource<TSubject>
+		where TEvaluation : class, IEmittingEvaluation<TResult, TEmit>
 	{
 		private readonly Predicate<TResult> _accepter;
 		private readonly Func<TResult, Exception, TEvaluation> _exceptionFilter;
 		private readonly bool _expectsException;
 		private readonly Lazy<Func<TSubject, TResult>> _lazyInstrument;
+		private readonly TSource _source;
 
-		protected Specification([NotNull] Lazy<Func<TSubject, TResult>> lazyInstrument,
+		protected Specification([NotNull] TSource source,
+			[NotNull] Lazy<Func<TSubject, TResult>> lazyInstrument,
 			[NotNull] Predicate<TResult> accepter,
 			Func<TResult, Exception, TEvaluation> exceptionFilter = null)
 		{
+			_source = source.ValidateArgumentIsNotNull();
 			_lazyInstrument = lazyInstrument.ValidateArgumentIsNotNull();
 			_accepter = accepter.ValidateArgumentIsNotNull();
 			_exceptionFilter = exceptionFilter;
@@ -58,6 +65,12 @@ namespace Stile.Prototypes.Specifications.DSL.SemanticModel
 		public Lazy<Func<TSubject, TResult>> LazyInstrument
 		{
 			get { return _lazyInstrument; }
+		}
+
+		public virtual TEvaluation Evaluate()
+		{
+			TSubject subject = _source.Get();
+			return Evaluate(subject);
 		}
 
 		public virtual TEvaluation Evaluate(TSubject subject)
@@ -95,6 +108,15 @@ namespace Stile.Prototypes.Specifications.DSL.SemanticModel
 			return evaluation;
 		}
 
-		protected abstract TEvaluation EvaluationFactory(IWrappedResult<TResult> result);
+		protected abstract TEmit EmittingFactory(IWrappedResult<TResult> result);
+
+		private TEvaluation EvaluationFactory(IWrappedResult<TResult> result)
+		{
+			TEmit emit = EmittingFactory(result);
+			TEvaluation evaluation = EvaluationFactory(result, emit);
+			return evaluation;
+		}
+
+		protected abstract TEvaluation EvaluationFactory(IWrappedResult<TResult> result, TEmit emitted);
 	}
 }

@@ -43,7 +43,7 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.DSL.ExpressionBuilders
 			DateTime now = DateTime.Now;
 
 			// act and assert
-			AssertEquals(Specify.ThatAny<DateTime>().Is.EqualTo(DateTime.MinValue), Outcome.Failed, now);
+			AssertEquals<DateTime, DateTime>(Specify.ThatAny<DateTime>().Is.EqualTo(DateTime.MinValue), Outcome.Failed, now);
 			AssertEquals(Specify.ThatAny<DateTime>().Is.Not.EqualTo(DateTime.MinValue), Outcome.Succeeded, now);
 
 			AssertEquals(Specify.ForAny<DateTime>().That(x => x.Ticks).Is.EqualTo(0), Outcome.Failed, now);

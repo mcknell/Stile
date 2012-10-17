@@ -3,23 +3,20 @@
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
-#region using...
-using System.Collections.Generic;
-#endregion
-
 namespace Stile.Tests.Prototypes.Specifications.Printable.DSL.ExpressionBuilders
 {
-	public interface IFoo<out T> : IEnumerable<T>
+	public interface IMetaFoo<out T>
 	{
-		int Jump();
+		IFoo<T> Foo { get; }
 	}
 
-	internal class Foo<T> : List<T>,
-		IFoo<T>
+	public class MetaFoo<T> : IMetaFoo<T>
 	{
-		public int Jump()
+		public MetaFoo(IFoo<T> foo = null)
 		{
-			return GetHashCode();
+			Foo = foo ?? new Foo<T>();
 		}
+
+		public IFoo<T> Foo { get; private set; }
 	}
 }

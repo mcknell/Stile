@@ -7,6 +7,8 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultHas.Quantifiers;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Sources;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
 #endregion
 
@@ -14,45 +16,43 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultHas
 {
 	public interface IEnumerableHas : IHas {}
 
-	public interface IEnumerableHas<out TResult, out TItem, out TSpecifies, out TQuantified> : IEnumerableHas,
+	public interface IEnumerableHas<out TResult, TItem, out TSpecifies> : IEnumerableHas,
 		IHas<TResult, TSpecifies>
 		where TResult : class, IEnumerable<TItem>
 		where TSpecifies : class, ISpecification
-		where TQuantified : class, IQuantifiedEnumerableHas<TResult, TItem, TSpecifies>
 	{
-		TQuantified All { get; }
+		IQuantifiedEnumerableHas<TItem, TSpecifies> All { get; }
 	}
 
-	public interface IEnumerableHas<out TSubject, out TResult, out TItem, out TSpecifies, out TQuantified> :
-		IEnumerableHas<TResult, TItem, TSpecifies, TQuantified>
+	public interface IEnumerableHas<out TSubject, out TResult, TItem, out TSource, out TSpecifies> :
+		IEnumerableHas<TResult, TItem, TSpecifies>,
+		IHas<TSubject, TResult, TSource, TSpecifies>
 		where TResult : class, IEnumerable<TItem>
-		where TSpecifies : class, ISpecification<TSubject, TResult>
-		where TQuantified : class, IQuantifiedEnumerableHas<TResult, TItem, TSpecifies> {}
+		where TSource : class, ISource<TSubject>
+		where TSpecifies : class, ISpecification<TSubject, TResult> {}
 
-	public abstract class EnumerableHas<TSubject, TResult, TItem, TSpecifies, TQuantified> :
-		Has<TSubject, TResult, TSpecifies>,
-		IEnumerableHas<TSubject, TResult, TItem, TSpecifies, TQuantified>
+	public class EnumerableHas<TSubject, TResult, TItem, TSource, TSpecifies> :
+		Has<TSubject, TResult, TSource, TSpecifies>,
+		IEnumerableHas<TSubject, TResult, TItem, TSource, TSpecifies>
 		where TResult : class, IEnumerable<TItem>
+		where TSource : class, ISource<TSubject>
 		where TSpecifies : class, ISpecification<TSubject, TResult>
-		where TQuantified : class, IQuantifiedEnumerableHas<TResult, TItem, TSpecifies>
 	{
-		private readonly Lazy<TQuantified> _lazy;
+		private readonly Lazy<IQuantifiedEnumerableHas<TItem, TSpecifies>> _lazy;
 
-		protected EnumerableHas([NotNull] Lazy<Func<TSubject, TResult>> instrument)
-			: base(instrument)
+		public EnumerableHas([NotNull] TSource source, [NotNull] Lazy<Func<TSubject, TResult>> instrument)
+			: base(source, instrument)
 		{
-			_lazy = new Lazy<TQuantified>(MakeAll);
+			_lazy = new Lazy<IQuantifiedEnumerableHas<TItem, TSpecifies>>(() => new HasAll<TResult, TItem, TSpecifies>());
 		}
 
-		public TQuantified All
+		public IQuantifiedEnumerableHas<TItem, TSpecifies> All
 		{
 			get
 			{
-				TQuantified quantified = _lazy.Value;
+				IQuantifiedEnumerableHas<TItem, TSpecifies> quantified = _lazy.Value;
 				return quantified;
 			}
 		}
-
-		protected abstract TQuantified MakeAll();
 	}
 }

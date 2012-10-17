@@ -18,7 +18,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Resul
 	{
 		[Pure]
 		public static TSpecifies NullOrEmpty<TSubject, TSpecifies>(this IIs<TSubject, string, TSpecifies> builder)
-			where TSpecifies : class, ISpecification<TSubject, string>
+			where TSpecifies : class, IPrintableSpecification<TSubject, string>
 		{
 			var state = (IFluentIsState<TSubject, string, TSpecifies>) builder;
 			Predicate<string> accepter = x => state.Negated.AgreesWith(string.IsNullOrEmpty(x));
@@ -28,7 +28,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Resul
 
 		[Pure]
 		public static TSpecifies NullOrWhitespace<TSubject, TSpecifies>(this IIs<TSubject, string, TSpecifies> builder)
-			where TSpecifies : class, ISpecification<TSubject, string>
+			where TSpecifies : class, IPrintableSpecification<TSubject, string>
 		{
 			var state = (IFluentIsState<TSubject, string, TSpecifies>) builder;
 			Predicate<string> accepter = x => state.Negated.AgreesWith(string.IsNullOrWhiteSpace(x));
@@ -38,7 +38,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Resul
 
 		[Pure]
 		public static TSpecifies StringContaining<TSubject, TSpecifies>(this IIs<TSubject, string, TSpecifies> builder,
-			string expected) where TSpecifies : class, ISpecification<TSubject, string>
+			string expected) where TSpecifies : class, IPrintableSpecification<TSubject, string>
 		{
 			var state = (IFluentIsState<TSubject, string, TSpecifies>) builder;
 			Predicate<string> accepter = x => state.Negated.AgreesWith(x.Contains(expected));
@@ -48,7 +48,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Resul
 
 		[Pure]
 		public static TSpecifies StringEndingWith<TSubject, TSpecifies>(this IIs<TSubject, string, TSpecifies> builder,
-			string expected) where TSpecifies : class, ISpecification<TSubject, string>
+			string expected) where TSpecifies : class, IPrintableSpecification<TSubject, string>
 		{
 			var state = (IFluentIsState<TSubject, string, TSpecifies>) builder;
 			Predicate<string> accepter = x => state.Negated.AgreesWith(x.EndsWith(expected));
@@ -58,7 +58,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Resul
 
 		[Pure]
 		public static TSpecifies StringStartingWith<TSubject, TSpecifies>(this IIs<TSubject, string, TSpecifies> builder,
-			string expected) where TSpecifies : class, ISpecification<TSubject, string>
+			string expected) where TSpecifies : class, IPrintableSpecification<TSubject, string>
 		{
 			var state = (IFluentIsState<TSubject, string, TSpecifies>) builder;
 			Predicate<string> accepter = x => state.Negated.AgreesWith(x.StartsWith(expected));

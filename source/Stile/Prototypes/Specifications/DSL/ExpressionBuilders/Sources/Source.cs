@@ -5,40 +5,41 @@
 
 #region using...
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 #endregion
 
 namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Sources
 {
-    public interface ISource {}
+	public interface ISource {}
 
-    public interface ISource<out TSubject> : ISource
-    {
-        [CanBeNull]
-        TSubject Get();
-    }
+	public interface ISource<out TSubject> : ISource
+	{
+		[CanBeNull]
+		TSubject Get();
+	}
 
-    public class Source<TSubject> : ISource<TSubject>
-    {
-        private readonly Lazy<TSubject> _subjectGetter;
+	public class Source<TSubject> : ISource<TSubject>
+	{
+		private readonly Lazy<TSubject> _subjectGetter;
 
-        public Source([NotNull] Expression<Func<TSubject>> expression)
-            : this(expression.Compile) {}
+		public Source()
+			: this(() => () => default(TSubject)) {}
 
-        public Source(TSubject subject)
-            : this(() => () => subject) {}
+		public Source([NotNull] Expression<Func<TSubject>> expression)
+			: this(expression.Compile) {}
 
-        protected Source(Func<Func<TSubject>> doubleFunc)
-        {
-            _subjectGetter = new Lazy<TSubject>(doubleFunc.Invoke());
-        }
+		public Source(TSubject subject)
+			: this(() => () => subject) {}
 
-        public TSubject Get()
-        {
-            return _subjectGetter.Value;
-        }
-    }
+		protected Source(Func<Func<TSubject>> doubleFunc)
+		{
+			_subjectGetter = new Lazy<TSubject>(doubleFunc.Invoke());
+		}
 
+		public TSubject Get()
+		{
+			return _subjectGetter.Value;
+		}
+	}
 }

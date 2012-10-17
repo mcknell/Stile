@@ -7,8 +7,9 @@
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.DSL.SemanticModel;
 using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
-using Stile.Prototypes.Specifications.Emitting;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Sources;
 using Stile.Prototypes.Specifications.Printable.Output;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers;
 using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
@@ -30,6 +31,22 @@ namespace Stile.Prototypes.Specifications.Printable
 
 	public interface IFluentSpecification<in TSubject, out TResult> :
 		IPrintableSpecification<TSubject, TResult, IPrintableEvaluation<TResult>, ILazyReadableText> {}
+
+	public interface IPrintableBoundSpecification : IBoundSpecification,
+		IPrintableSpecification {}
+
+	public interface IPrintableBoundSpecification<in TSubject, out TResult, out TEvaluation, out TEmit> :
+		IPrintableBoundSpecification,
+		IBoundSpecification<TSubject, TResult, TEvaluation>,
+		IPrintableSpecification<TSubject, TResult, TEvaluation, TEmit>
+		where TEvaluation : class, IPrintableEvaluation<TResult, TEmit> {}
+
+	public interface IPrintableBoundSpecification<in TSubject, out TResult, out TEvaluation> :
+		IPrintableBoundSpecification<TSubject, TResult, TEvaluation, ILazyReadableText>
+		where TEvaluation : class, IPrintableEvaluation<TResult, ILazyReadableText> {}
+
+	public interface IFluentBoundSpecification<in TSubject, out TResult> : IFluentSpecification<TSubject, TResult>,
+		IPrintableBoundSpecification<TSubject, TResult, IPrintableEvaluation<TResult>> {}
 
 	public interface IPrintableSpecificationState<TSubject, TResult, out TEvaluation, TEmit> :
 		IEmittingSpecificationState<TSubject, TResult, TEvaluation, TEmit>
@@ -64,23 +81,25 @@ namespace Stile.Prototypes.Specifications.Printable
 		}
 	}
 
-	public abstract class PrintableSpecification<TSubject, TResult, TEvaluation, TEmit> :
-		EmittingSpecification<TSubject, TResult, TEvaluation, TEmit>,
-		IPrintableSpecification<TSubject, TResult, TEvaluation, TEmit>,
+	public abstract class PrintableSpecification<TSubject, TResult, TSource, TEvaluation, TEmit> :
+		Specification<TSubject, TResult, TSource, TEvaluation, TEmit>,
+		IPrintableBoundSpecification<TSubject, TResult, TEvaluation, TEmit>,
 		IPrintableSpecificationState<TSubject, TResult, TEvaluation, TEmit>
+		where TSource : class, IPrintableSource<TSubject>
 		where TEvaluation : class, IPrintableEvaluation<TResult, TEmit>
 	{
 		private readonly IExplainer<TSubject, TResult> _explainer;
 		private readonly string _reason;
 		private readonly Lazy<string> _subjectDescription;
 
-		protected PrintableSpecification([NotNull] Lazy<Func<TSubject, TResult>> instrument,
+		protected PrintableSpecification([NotNull] TSource source,
+			[NotNull] Lazy<Func<TSubject, TResult>> instrument,
 			[NotNull] Predicate<TResult> accepter,
 			[NotNull] IExplainer<TSubject, TResult> explainer,
 			Lazy<string> subjectDescription = null,
 			string reason = null,
 			Func<TResult, Exception, TEvaluation> exceptionFilter = null)
-			: base(instrument, accepter, exceptionFilter)
+			: base(source, instrument, accepter, exceptionFilter)
 		{
 			_subjectDescription = subjectDescription;
 			_reason = reason;
@@ -117,8 +136,9 @@ namespace Stile.Prototypes.Specifications.Printable
 		{
 			string expected = explainer.ExplainExpected(result);
 			string conjunction =
-				PrintableSpecification<TSubject, TResult, IPrintableEvaluation<TResult>, ILazyReadableText>.PrintConjunction(
-					result.Outcome);
+				PrintableSpecification
+					<TSubject, TResult, IPrintableSource<TSubject>, IPrintableEvaluation<TResult>, ILazyReadableText>.
+					PrintConjunction(result.Outcome);
 			string actual = explainer.ExplainActualSurprise(result);
 			string because = reason == null ? null : string.Format("because {0}{1}", reason, Environment.NewLine);
 			string basic = string.Join(" ", expected, Environment.NewLine, conjunction, actual);
@@ -139,9 +159,10 @@ namespace Stile.Prototypes.Specifications.Printable
 	}
 
 	public class PrintableSpecification<TSubject, TResult> :
-		PrintableSpecification<TSubject, TResult, IPrintableEvaluation<TResult>, ILazyReadableText>,
-		IFluentSpecification<TSubject, TResult>,
-		IPrintableSpecificationState<TSubject, TResult>
+		PrintableSpecification
+			<TSubject, TResult, IPrintableSource<TSubject>, IPrintableEvaluation<TResult>, ILazyReadableText>,
+		IPrintableSpecificationState<TSubject, TResult>,
+		IFluentBoundSpecification<TSubject, TResult>
 	{
 		public PrintableSpecification([NotNull] Lazy<Func<TSubject, TResult>> instrument,
 			[NotNull] Predicate<TResult> accepter,
@@ -149,7 +170,17 @@ namespace Stile.Prototypes.Specifications.Printable
 			Lazy<string> subjectDescription = null,
 			string reason = null,
 			Func<TResult, Exception, IPrintableEvaluation<TResult>> exceptionFilter = null)
-			: base(instrument, accepter, explainer, subjectDescription, reason, exceptionFilter) {}
+			: this(
+				PrintableSource<TSubject>.Empty, instrument, accepter, explainer, subjectDescription, reason, exceptionFilter) {}
+
+		public PrintableSpecification([NotNull] IPrintableSource<TSubject> source,
+			[NotNull] Lazy<Func<TSubject, TResult>> instrument,
+			[NotNull] Predicate<TResult> accepter,
+			[NotNull] IExplainer<TSubject, TResult> explainer,
+			Lazy<string> subjectDescription = null,
+			string reason = null,
+			Func<TResult, Exception, IPrintableEvaluation<TResult>> exceptionFilter = null)
+			: base(source, instrument, accepter, explainer, subjectDescription, reason, exceptionFilter) {}
 
 		protected override ILazyReadableText EmittingFactory(IWrappedResult<TResult> result)
 		{

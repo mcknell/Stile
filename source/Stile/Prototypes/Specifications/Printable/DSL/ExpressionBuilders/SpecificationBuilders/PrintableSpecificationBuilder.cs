@@ -13,27 +13,29 @@ using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBuilders;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultIs;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Sources;
 using Stile.Prototypes.Specifications.Printable.Output;
-using Stile.Types.Expressions;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SpecificationBuilders
 {
-	public interface IPrintableSpecificationBuilder : ISpecificationBuilder {}
+	public interface IPrintableSpecificationBuilder : IEmittingSpecificationBuilder {}
 
 	public interface IPrintableSpecificationBuilder<out TSubject, out TResult, out THas, out TNegatableIs, out TIs,
-		out TSpecifies, out TEvaluation> : IPrintableSpecificationBuilder,
-			ISpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies>
-		where THas : class, IHas<TSubject, TResult, TSpecifies>
+		out TSource, out TSpecifies, out TEvaluation> : IPrintableSpecificationBuilder,
+			IEmittingSpecificationBuilder
+				<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies, TEvaluation, ILazyReadableText>
+		where THas : class, IHas<TSubject, TResult, TSource, TSpecifies>
 		where TNegatableIs : class, INegatableIs<TSubject, TResult, TIs, TSpecifies>
 		where TIs : class, IIs<TSubject, TResult, TSpecifies>
-		where TSpecifies : class, IPrintableSpecification<TSubject, TResult, TEvaluation, ILazyReadableText>
+		where TSource : class, IPrintableSource<TSubject>
+		where TSpecifies : class, IFluentSpecification<TSubject, TResult>
 		where TEvaluation : class, IPrintableEvaluation<TResult, ILazyReadableText> {}
 
 	public interface IFluentSpecificationBuilder<TSubject, out TResult> : IPrintableSpecificationBuilder< //
 		TSubject, //
 		TResult, //
-		IHas<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
+		IHas<TSubject, TResult, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>, //
 		INegatableIs< //
 			TSubject, //
 			TResult, //
@@ -41,76 +43,149 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 			IFluentSpecification<TSubject, TResult> //
 			>, //
 		IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
+		IPrintableSource<TSubject>, //
 		IFluentSpecification<TSubject, TResult>, //
 		IPrintableEvaluation<TResult, ILazyReadableText>> {}
 
-	public interface IPrintableSpecificationBuilderState : ISpecificationBuilderState
-	{
-		[NotNull]
-		Lazy<string> SubjectDescription { get; }
-	}
+	public interface IFluentSpecificationBuilder<TSubject> : IFluentSpecificationBuilder<TSubject, TSubject> {}
 
-	public abstract class PrintableSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies,
-		TEvaluation> : SpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies>,
-			IPrintableSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies, TEvaluation>,
-			IPrintableSpecificationBuilderState
-		where THas : class, IHas<TSubject, TResult, TSpecifies>
+	public interface IPrintableBoundSpecificationBuilder : IPrintableSpecificationBuilder,
+		IBoundSpecificationBuilder {}
+
+	public interface IPrintableBoundSpecificationBuilder<out TSubject, out TResult, out THas, out TNegatableIs, out TIs,
+		out TSource, out TSpecifies, out TEvaluation> : IPrintableBoundSpecificationBuilder,
+			IPrintableSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSource, TSpecifies, TEvaluation> /*,
+			IBoundSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies, TEvaluation>*/
+		where THas : class, IHas<TSubject, TResult, TSource, TSpecifies>
 		where TNegatableIs : class, INegatableIs<TSubject, TResult, TIs, TSpecifies>
 		where TIs : class, IIs<TSubject, TResult, TSpecifies>
-		where TSpecifies : class, IPrintableSpecification<TSubject, TResult, TEvaluation, ILazyReadableText>
-		where TEvaluation : class, IPrintableEvaluation<TResult, ILazyReadableText>
-	{
-		protected PrintableSpecificationBuilder([NotNull] Lazy<string> subjectDescription)
-		{
-			SubjectDescription = subjectDescription.ValidateArgumentIsNotNull();
-		}
+		where TSource : class, IPrintableSource<TSubject>
+		where TSpecifies : class, IFluentBoundSpecification<TSubject, TResult>
+		where TEvaluation : class, IPrintableEvaluation<TResult, ILazyReadableText> {}
 
-		public Lazy<string> SubjectDescription { get; private set; }
-	}
-
-	public class PrintableSpecificationBuilder<TSubject, TResult> : PrintableSpecificationBuilder< //
+	public interface IFluentBoundSpecificationBuilder<TSubject, out TResult> : IPrintableBoundSpecificationBuilder< //
 		TSubject, //
 		TResult, //
-		IHas<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
+		IHas<TSubject, TResult, IPrintableSource<TSubject>, IFluentBoundSpecification<TSubject, TResult>>, //
 		INegatableIs< //
 			TSubject, //
 			TResult, //
-			IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
-			IFluentSpecification<TSubject, TResult>>, //
-		IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
-		IFluentSpecification<TSubject, TResult>, //
-		IPrintableEvaluation<TResult> //
+			IIs<TSubject, TResult, IFluentBoundSpecification<TSubject, TResult>>, //
+			IFluentBoundSpecification<TSubject, TResult> //
+			>, //
+		IIs<TSubject, TResult, IFluentBoundSpecification<TSubject, TResult>>, //
+		IPrintableSource<TSubject>, //
+		IFluentBoundSpecification<TSubject, TResult>, //
+		IPrintableEvaluation<TResult, ILazyReadableText>> {}
+
+	public interface IPrintableSpecificationBuilderState : ISpecificationBuilderState {}
+
+	public interface IPrintableSpecificationBuilderState<TSubject, TResult> : IPrintableSpecificationBuilderState,
+		ISpecificationBuilderState<TSubject, TResult, IPrintableSource<TSubject>> {}
+
+	public class PrintableSpecificationBuilder<TSubject, TResult> : SpecificationBuilder< //
+		TSubject, //
+		TResult, //
+		IHas<TSubject, TResult, IPrintableSource<TSubject>, IFluentBoundSpecification<TSubject, TResult>>, //
+		INegatableIs< //
+			TSubject, //
+			TResult, //
+			IIs<TSubject, TResult, IFluentBoundSpecification<TSubject, TResult>>, //
+			IFluentBoundSpecification<TSubject, TResult>>, //
+		IIs<TSubject, TResult, IFluentBoundSpecification<TSubject, TResult>>, //
+		IPrintableSource<TSubject>, //
+		IFluentBoundSpecification<TSubject, TResult>, //
+		IPrintableEvaluation<TResult>, //
+		ILazyReadableText //
 		>,
-		IFluentSpecificationBuilder<TSubject, TResult>
+		IFluentSpecificationBuilder<TSubject, TResult>,
+		IFluentBoundSpecificationBuilder<TSubject, TResult>,
+		IPrintableSpecificationBuilderState<TSubject, TResult>
 	{
 		private readonly Lazy<Func<TSubject, TResult>> _instrument;
 
-		public PrintableSpecificationBuilder([NotNull] Expression<Func<TSubject, TResult>> expression)
-			: this(expression.Compile, expression.ToLazyDebugString()) {}
+		public PrintableSpecificationBuilder([NotNull] IPrintableSource<TSubject> source,
+			[NotNull] Expression<Func<TSubject, TResult>> expression)
+			: this(source, new Lazy<Func<TSubject, TResult>>(expression.Compile)) {}
 
-		public PrintableSpecificationBuilder([NotNull] Func<Func<TSubject, TResult>> extractor,
-			[NotNull] Lazy<string> subjectDescription)
-			: this(new Lazy<Func<TSubject, TResult>>(extractor), subjectDescription) {}
-
-		protected PrintableSpecificationBuilder([NotNull] Lazy<Func<TSubject, TResult>> instrument,
-			[NotNull] Lazy<string> subjectDescription)
-			: base(subjectDescription)
+		public PrintableSpecificationBuilder(IPrintableSource<TSubject> source,
+			[NotNull] Lazy<Func<TSubject, TResult>> instrument)
+			: base(source, instrument)
 		{
 			_instrument = instrument.ValidateArgumentIsNotNull();
 		}
 
-		protected override IHas<TSubject, TResult, IFluentSpecification<TSubject, TResult>> MakeHas()
+		IHas<TSubject, TResult, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>
+			ISpecificationBuilder
+				<TResult, IHas<TSubject, TResult, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>,
+					INegatableIs
+						<TSubject, TResult, IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>,
+							IFluentSpecification<TSubject, TResult>>, IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>,
+					IFluentSpecification<TSubject, TResult>>.Has
 		{
-			return new Has<TSubject, TResult, IFluentSpecification<TSubject, TResult>>(_instrument);
+			get { return Has; }
+		}
+		INegatableIs
+			<TSubject, TResult, IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>,
+				IFluentSpecification<TSubject, TResult>>
+			ISpecificationBuilder
+				<TResult, IHas<TSubject, TResult, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>,
+					INegatableIs
+						<TSubject, TResult, IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>,
+							IFluentSpecification<TSubject, TResult>>, IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>,
+					IFluentSpecification<TSubject, TResult>>.Is
+		{
+			get { return Is; }
+		}
+
+		protected override
+			IHas<TSubject, TResult, IPrintableSource<TSubject>, IFluentBoundSpecification<TSubject, TResult>> MakeHas()
+		{
+			return new Has<TSubject, TResult, IPrintableSource<TSubject>, IFluentBoundSpecification<TSubject, TResult>>(
+				Source, _instrument);
 		}
 
 		protected override INegatableIs< //
 			TSubject, //
 			TResult, //
-			IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
-			IFluentSpecification<TSubject, TResult>> MakeIs()
+			IIs<TSubject, TResult, IFluentBoundSpecification<TSubject, TResult>>, //
+			IFluentBoundSpecification<TSubject, TResult>> MakeIs()
 		{
-			return new PrintableIs<TSubject, TResult>(Negated.False, _instrument);
+			return new PrintableIs<TSubject, TResult>(Source, Negated.False, _instrument);
+		}
+	}
+
+	public class PrintableSpecificationBuilder<TSubject> : PrintableSpecificationBuilder<TSubject, TSubject>,
+		IFluentSpecificationBuilder<TSubject>
+	{
+		public PrintableSpecificationBuilder([NotNull] Expression<Func<TSubject, TSubject>> expression)
+			: this(PrintableSource<TSubject>.Empty, expression) {}
+
+		public PrintableSpecificationBuilder([NotNull] IPrintableSource<TSubject> source,
+			[NotNull] Expression<Func<TSubject, TSubject>> expression)
+			: base(source, expression) {}
+
+		IHas<TSubject, TSubject, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TSubject>>
+			ISpecificationBuilder
+				<TSubject, IHas<TSubject, TSubject, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TSubject>>,
+					INegatableIs
+						<TSubject, TSubject, IIs<TSubject, TSubject, IFluentSpecification<TSubject, TSubject>>,
+							IFluentSpecification<TSubject, TSubject>>, IIs<TSubject, TSubject, IFluentSpecification<TSubject, TSubject>>,
+					IFluentSpecification<TSubject, TSubject>>.Has
+		{
+			get { return Has; }
+		}
+		INegatableIs
+			<TSubject, TSubject, IIs<TSubject, TSubject, IFluentSpecification<TSubject, TSubject>>,
+				IFluentSpecification<TSubject, TSubject>>
+			ISpecificationBuilder
+				<TSubject, IHas<TSubject, TSubject, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TSubject>>,
+					INegatableIs
+						<TSubject, TSubject, IIs<TSubject, TSubject, IFluentSpecification<TSubject, TSubject>>,
+							IFluentSpecification<TSubject, TSubject>>, IIs<TSubject, TSubject, IFluentSpecification<TSubject, TSubject>>,
+					IFluentSpecification<TSubject, TSubject>>.Is
+		{
+			get { return Is; }
 		}
 	}
 }

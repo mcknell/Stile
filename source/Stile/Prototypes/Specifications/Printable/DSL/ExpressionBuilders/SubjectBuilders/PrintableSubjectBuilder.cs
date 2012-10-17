@@ -5,10 +5,11 @@
 
 #region using...
 using System;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
-using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SubjectBuilders;
-using Stile.Readability;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Sources;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SpecificationBuilders;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SubjectBuilders
@@ -18,41 +19,59 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Subje
 	public interface IPrintableSubjectBuilder<TSubject> : IPrintableSubjectBuilder,
 		ISubjectBuilder<TSubject> {}
 
-	public interface IPrintableSubjectBuilderState : ISubjectBuilderState
+	public interface IPrintableBoundSubjectBuilder : IPrintableSubjectBuilder,
+		IBoundSubjectBuilder {}
+
+	public interface IPrintableBoundSubjectBuilder<TSubject> : IPrintableBoundSubjectBuilder,
+		IPrintableSubjectBuilder<TSubject>,
+		IBoundSubjectBuilder<TSubject> {}
+
+	public interface IPrintableSubjectBuilderState : ISubjectBuilderState {}
+
+	public interface IPrintableSubjectBuilderState<TSubject> : IPrintableSubjectBuilderState
 	{
 		[NotNull]
-		Lazy<string> SubjectDescription { get; }
-	}
+		IPrintableSubjectBuilder<TSubject> Make([NotNull] Lazy<string> description);
 
-	public interface IPrintableSubjectBuilderState<out TBuilder> : IPrintableSubjectBuilderState
-		where TBuilder : class, IPrintableSubjectBuilder
-	{
 		[NotNull]
-		TBuilder Make([NotNull] Lazy<string> description);
+		IFluentSpecificationBuilder<TSubject, TResult> Make<TResult>(
+			[NotNull] Expression<Func<TSubject, TResult>> expression);
+
+		[NotNull]
+		IPrintableBoundSubjectBuilder<TSubject> MakeBound([NotNull] Lazy<string> description);
+
+		[NotNull]
+		IFluentBoundSpecificationBuilder<TSubject, TResult> MakeBound<TResult>(
+			[NotNull] Expression<Func<TSubject, TResult>> expression);
 	}
 
-	public class PrintableSubjectBuilder<TSubject> : IPrintableSubjectBuilder<TSubject>,
-		IPrintableSubjectBuilderState<IPrintableSubjectBuilder<TSubject>>
+	public class PrintableSubjectBuilder<TSubject> : SubjectBuilder<TSubject, IPrintableSource<TSubject>>,
+		IPrintableBoundSubjectBuilder<TSubject>,
+		IPrintableSubjectBuilderState<TSubject>
 	{
-// ReSharper disable StaticFieldInGenericType
-// ReSharper disable InconsistentNaming
-		private static readonly Lazy<string> sSubjectDescription = typeof(TSubject).ToLazyDebugString();
-// ReSharper restore InconsistentNaming
-// ReSharper restore StaticFieldInGenericType
-
-		public PrintableSubjectBuilder()
-			: this(sSubjectDescription) {}
-
-		public PrintableSubjectBuilder([NotNull] Lazy<string> subjectDescription)
-		{
-			SubjectDescription = subjectDescription.ValidateArgumentIsNotNull();
-		}
-
-		public Lazy<string> SubjectDescription { get; private set; }
+		public PrintableSubjectBuilder(IPrintableSource<TSubject> source = null)
+			: base(source ?? PrintableSource<TSubject>.Empty) {}
 
 		public IPrintableSubjectBuilder<TSubject> Make(Lazy<string> description)
 		{
-			return new PrintableSubjectBuilder<TSubject>(description);
+			return MakeBound(description);
+		}
+
+		public IFluentSpecificationBuilder<TSubject, TResult> Make<TResult>(Expression<Func<TSubject, TResult>> expression)
+		{
+			return new PrintableSpecificationBuilder<TSubject, TResult>(Source, expression);
+		}
+
+		public IPrintableBoundSubjectBuilder<TSubject> MakeBound(Lazy<string> description)
+		{
+			var source = new PrintableSource<TSubject>(() => Source.Get, description);
+			return new PrintableSubjectBuilder<TSubject>(source);
+		}
+
+		public IFluentBoundSpecificationBuilder<TSubject, TResult> MakeBound<TResult>(
+			Expression<Func<TSubject, TResult>> expression)
+		{
+			return new PrintableSpecificationBuilder<TSubject, TResult>(Source, expression);
 		}
 	}
 }

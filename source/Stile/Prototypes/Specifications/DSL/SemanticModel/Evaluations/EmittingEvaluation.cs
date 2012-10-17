@@ -6,10 +6,9 @@
 #region using...
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Emitting
+namespace Stile.Prototypes.Specifications.DSL.SemanticModel.Evaluations
 {
     public interface IEmittingEvaluation : IEvaluation {}
 

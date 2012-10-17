@@ -8,11 +8,22 @@ using System;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
+using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Sources;
 using Stile.Prototypes.Specifications.Printable.Output.Explainers;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultIs
 {
+	public interface IPrintableIs : IIs {}
+
+	public interface IPrintableIs<out TResult, out TSpecifies> : IPrintableIs,
+		IIs<TResult, TSpecifies>
+		where TSpecifies : class, ISpecification {}
+
+	public interface IPrintableIs<out TSubject, out TResult, out TSpecifies> : IPrintableIs,
+		IIs<TSubject,TResult, TSpecifies>
+		where TSpecifies : class, ISpecification<TSubject, TResult> {}
+
 	public interface IPrintableIsState : IIsState {}
 
 	public interface IPrintableIsState<TSubject, TResult> : IPrintableIsState,
@@ -24,58 +35,51 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Resul
 		TSpecifies Make(Predicate<TResult> accepter, IExplainer<TSubject, TResult> explainer);
 	}
 
-	public interface IPrintableIsState<TSubject, TResult, out TSpecifies, in TInput> :
-		IPrintableIsState<TSubject, TResult, TSpecifies>,
-		IIsState<TSubject, TResult, TSpecifies, TInput>
-		where TSpecifies : class, ISpecification<TSubject, TResult>
-		where TInput : class, IPrintableSpecificationInput<TSubject, TResult> {}
-
 	public interface IFluentIsState<TSubject, TResult, out TSpecifies> :
-		IPrintableIsState<TSubject, TResult, TSpecifies, IPrintableSpecificationInput<TSubject, TResult>>
+		IPrintableIsState<TSubject, TResult, TSpecifies>
 		where TSpecifies : class, ISpecification<TSubject, TResult> {}
 
-	public abstract class PrintableIs<TSubject, TResult, TSpecifies, TInput> :
-		Is<TSubject, TResult, IIs<TSubject, TResult, TSpecifies>, TSpecifies, TInput>,
-		IPrintableIsState<TSubject, TResult, TSpecifies, TInput>
+	public abstract class PrintableIs<TSubject, TResult, TSource, TSpecifies> :
+		Is<TSubject, TResult, TSource, IIs<TSubject, TResult, TSpecifies>, TSpecifies>,
+		IPrintableIsState<TSubject, TResult, TSpecifies>
+		where TSource : class, IPrintableSource<TSubject>
 		where TSpecifies : class, ISpecification<TSubject, TResult>
-		where TInput : class, IPrintableSpecificationInput<TSubject, TResult>
 	{
-		protected PrintableIs(Negated negated, [NotNull] Lazy<Func<TSubject, TResult>> instrument)
-			: base(negated, instrument) {}
+		protected PrintableIs([NotNull] TSource source, Negated negated, [NotNull] Lazy<Func<TSubject, TResult>> instrument)
+			: base(source, negated, instrument) {}
 
 		public abstract TSpecifies Make(Predicate<TResult> accepter, IExplainer<TSubject, TResult> explainer);
 	}
 
 	public class PrintableIs<TSubject, TResult> :
 		PrintableIs
-			<TSubject, TResult, IFluentSpecification<TSubject, TResult>, IPrintableSpecificationInput<TSubject, TResult>>,
-		IFluentIsState<TSubject, TResult, IFluentSpecification<TSubject, TResult>>
+			<TSubject, TResult, IPrintableSource<TSubject>, IFluentBoundSpecification<TSubject, TResult>>,
+		IFluentIsState<TSubject, TResult, IFluentBoundSpecification<TSubject, TResult>>
 	{
-		public PrintableIs(Negated negated, [NotNull] Lazy<Func<TSubject, TResult>> instrument)
-			: base(negated, instrument) {}
+		public PrintableIs([NotNull] IPrintableSource<TSubject> source,
+			Negated negated,
+			[NotNull] Lazy<Func<TSubject, TResult>> instrument)
+			: base(source, negated, instrument) {}
 
-		public override IFluentSpecification<TSubject, TResult> Make(Predicate<TResult> accepter,
+		public override IFluentBoundSpecification<TSubject, TResult> Make(Predicate<TResult> accepter,
 			IExplainer<TSubject, TResult> explainer)
 		{
-			return Make(Instrument, accepter, explainer);
+			return Make(Source, Instrument, accepter, explainer);
 		}
 
-		public override IFluentSpecification<TSubject, TResult> Make(IPrintableSpecificationInput<TSubject, TResult> input)
+		protected override IIs<TSubject, TResult, IFluentBoundSpecification<TSubject, TResult>> Factory(Negated negated,
+			Lazy<Func<TSubject, TResult>> instrument,
+			IPrintableSource<TSubject> source)
 		{
-			return Make(input.LazyInstrument, input.Accepter, input.Explainer);
+			return new PrintableIs<TSubject, TResult>(source, negated, instrument);
 		}
 
-		protected override IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>> Factory(Negated negated,
-			Lazy<Func<TSubject, TResult>> instrument)
-		{
-			return new PrintableIs<TSubject, TResult>(negated, instrument);
-		}
-
-		private static PrintableSpecification<TSubject, TResult> Make(Lazy<Func<TSubject, TResult>> instrument,
+		private static PrintableSpecification<TSubject, TResult> Make(IPrintableSource<TSubject> source,
+			Lazy<Func<TSubject, TResult>> instrument,
 			Predicate<TResult> accepter,
 			IExplainer<TSubject, TResult> explainer)
 		{
-			return new PrintableSpecification<TSubject, TResult>(instrument, accepter, explainer);
+			return new PrintableSpecification<TSubject, TResult>(source, instrument, accepter, explainer);
 		}
 	}
 }

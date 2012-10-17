@@ -7,6 +7,7 @@
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.Sources;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
 #endregion
 
@@ -17,18 +18,33 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultHas
 	public interface IHas<out TResult, out TSpecifies> : IHas
 		where TSpecifies : class, ISpecification {}
 
-	public interface IHas<out TSubject, out TResult, out TSpecifies> : IHas<TResult, TSpecifies>
+	public interface IHas<out TSubject, out TResult, out TSource, out TSpecifies> : IHas<TResult, TSpecifies>
+		where TSource : class, ISource<TSubject>
 		where TSpecifies : class, ISpecification<TSubject, TResult> {}
 
-	public class Has<TSubject, TResult, TSpecifies> : IHas<TSubject, TResult, TSpecifies>,
-		IHasState<TSubject, TResult>
+	public interface IHasState<TSubject> {}
+
+	public interface IHasState<TSubject, TResult, out TSource> : IHasState<TSubject>
+		where TSource : class, ISource<TSubject>
+	{
+		[NotNull]
+		Lazy<Func<TSubject, TResult>> Instrument { get; }
+		[NotNull]
+		TSource Source { get; }
+	}
+
+	public class Has<TSubject, TResult, TSource, TSpecifies> : IHas<TSubject, TResult, TSource, TSpecifies>,
+		IHasState<TSubject, TResult, TSource>
+		where TSource : class, ISource<TSubject>
 		where TSpecifies : class, ISpecification<TSubject, TResult>
 	{
-		public Has([NotNull] Lazy<Func<TSubject, TResult>> instrument)
+		public Has([NotNull] TSource source, [NotNull] Lazy<Func<TSubject, TResult>> instrument)
 		{
+			Source = source.ValidateArgumentIsNotNull();
 			Instrument = instrument.ValidateArgumentIsNotNull();
 		}
 
 		public Lazy<Func<TSubject, TResult>> Instrument { get; private set; }
+		public TSource Source { get; private set; }
 	}
 }
