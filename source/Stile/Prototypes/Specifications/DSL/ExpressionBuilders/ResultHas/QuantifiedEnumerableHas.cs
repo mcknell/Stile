@@ -34,6 +34,8 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultHas
 		IQuantifiedEnumerableHasState<TSpecifies>
 		where TSpecifies : class, ISpecification
 	{
+		protected QuantifiedEnumerableHas() {}
+
 		public TSpecifies ItemsSatisfying(Expression<Func<TItem, bool>> expression)
 		{
 			return Make();

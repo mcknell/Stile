@@ -14,6 +14,7 @@ using Stile.Prototypes.Specifications.DSL.SemanticModel;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultIs;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Sources;
 using Stile.Prototypes.Specifications.Printable.Output;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SpecificationBuilders
@@ -64,7 +65,8 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 					<TSubject, TResult, TItem, IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>,
 						IFluentSpecification<TSubject, TResult>>,
 				IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>, IPrintableSource<TSubject>,
-				IFluentSpecification<TSubject, TResult>, IPrintableEvaluation<TResult, ILazyReadableText>, ILazyReadableText>,
+				IFluentSpecification<TSubject, TResult>, IPrintableEvaluation<TResult>, ILazyReadableText,
+				IPrintableSpecificationArguments<TSubject, TResult, IPrintableEvaluation<TResult>>>,
 		IFluentBoundEnumerableSpecificationBuilder<TSubject, TResult, TItem>
 		where TResult : class, IEnumerable<TItem>
 	{
@@ -75,8 +77,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 		IEnumerableHas<TSubject, TResult, TItem, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>
 			ISpecificationBuilder
 				<TResult,
-					IEnumerableHas<TSubject, TResult, TItem, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>
-					,
+					IEnumerableHas<TSubject, TResult, TItem, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>,
 					INegatableEnumerableIs
 						<TSubject, TResult, TItem, IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>,
 							IFluentSpecification<TSubject, TResult>>,
@@ -90,8 +91,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 				IFluentSpecification<TSubject, TResult>>
 			ISpecificationBuilder
 				<TResult,
-					IEnumerableHas<TSubject, TResult, TItem, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>
-					,
+					IEnumerableHas<TSubject, TResult, TItem, IPrintableSource<TSubject>, IFluentSpecification<TSubject, TResult>>,
 					INegatableEnumerableIs
 						<TSubject, TResult, TItem, IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>,
 							IFluentSpecification<TSubject, TResult>>,
@@ -99,6 +99,22 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 					IFluentSpecification<TSubject, TResult>>.Is
 		{
 			get { return Is; }
+		}
+
+		public override IFluentSpecification<TSubject, TResult> Build(
+			IPrintableSpecificationArguments<TSubject, TResult, IPrintableEvaluation<TResult>> arguments)
+		{
+			IPrintableSource<TSubject> source = Source;
+			Lazy<Func<TSubject, TResult>> instrument = Instrument;
+			Predicate<TResult> accepter = arguments.Accepter;
+			IExplainer<TSubject, TResult> explainer = arguments.Explainer;
+			Func<TResult, Exception, IPrintableEvaluation<TResult>> exceptionFilter =
+				(result, exception) => arguments.ExceptionFilter.Invoke(result, exception);
+			return new PrintableSpecification<TSubject, TResult>(source,
+				instrument,
+				accepter,
+				explainer,
+				exceptionFilter : exceptionFilter);
 		}
 
 		protected override

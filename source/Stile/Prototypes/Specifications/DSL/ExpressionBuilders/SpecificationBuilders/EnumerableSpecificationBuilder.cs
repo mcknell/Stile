@@ -39,8 +39,9 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBu
 		where TSpecifies : class, ISpecification<TSubject, TResult> {}
 
 	public abstract class EnumerableSpecificationBuilder<TSubject, TResult, TItem, THas, TNegatableIs, TIs, TSource,
-		TSpecifies, TEvaluation, TEmit> :
-			SpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSource, TSpecifies, TEvaluation, TEmit>,
+		TSpecifies, TEvaluation, TEmit, TSpecificationArguments> :
+			SpecificationBuilder
+				<TSubject, TResult, THas, TNegatableIs, TIs, TSource, TSpecifies, TEvaluation, TEmit, TSpecificationArguments>,
 			IEnumerableSpecificationBuilder<TSubject, TResult, TItem, THas, TNegatableIs, TIs, TSource, TSpecifies>
 		where TResult : class, IEnumerable<TItem>
 		where THas : class, IEnumerableHas<TSubject, TResult, TItem, TSource, TSpecifies>
@@ -49,6 +50,7 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBu
 		where TSpecifies : class, IEmittingSpecification<TSubject, TResult, TEvaluation, TEmit>
 		where TSource : class, ISource<TSubject>
 		where TEvaluation : class, IEmittingEvaluation<TResult, TEmit>
+		where TSpecificationArguments : class, ISpecificationArguments<TResult, TEvaluation>
 	{
 		protected EnumerableSpecificationBuilder([NotNull] TSource source,
 			[NotNull] Lazy<Func<TSubject, TResult>> instrument)

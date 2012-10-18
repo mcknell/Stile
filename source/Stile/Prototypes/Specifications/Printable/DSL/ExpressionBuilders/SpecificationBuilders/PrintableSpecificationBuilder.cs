@@ -15,6 +15,7 @@ using Stile.Prototypes.Specifications.DSL.SemanticModel;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultIs;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Sources;
 using Stile.Prototypes.Specifications.Printable.Output;
+using Stile.Prototypes.Specifications.Printable.Output.Explainers;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.SpecificationBuilders
@@ -30,7 +31,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 		where TIs : class, IIs<TSubject, TResult, TSpecifies>
 		where TSource : class, IPrintableSource<TSubject>
 		where TSpecifies : class, IFluentSpecification<TSubject, TResult>
-		where TEvaluation : class, IPrintableEvaluation<TResult, ILazyReadableText> {}
+		where TEvaluation : class, IPrintableEvaluation<TResult> {}
 
 	public interface IFluentSpecificationBuilder<TSubject, out TResult> : IPrintableSpecificationBuilder< //
 		TSubject, //
@@ -45,7 +46,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 		IIs<TSubject, TResult, IFluentSpecification<TSubject, TResult>>, //
 		IPrintableSource<TSubject>, //
 		IFluentSpecification<TSubject, TResult>, //
-		IPrintableEvaluation<TResult, ILazyReadableText>> {}
+		IPrintableEvaluation<TResult>> {}
 
 	public interface IFluentSpecificationBuilder<TSubject> : IFluentSpecificationBuilder<TSubject, TSubject> {}
 
@@ -54,14 +55,13 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 
 	public interface IPrintableBoundSpecificationBuilder<out TSubject, out TResult, out THas, out TNegatableIs, out TIs,
 		out TSource, out TSpecifies, out TEvaluation> : IPrintableBoundSpecificationBuilder,
-			IPrintableSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSource, TSpecifies, TEvaluation> /*,
-			IBoundSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies, TEvaluation>*/
+			IPrintableSpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSource, TSpecifies, TEvaluation> 
 		where THas : class, IHas<TSubject, TResult, TSource, TSpecifies>
 		where TNegatableIs : class, INegatableIs<TSubject, TResult, TIs, TSpecifies>
 		where TIs : class, IIs<TSubject, TResult, TSpecifies>
 		where TSource : class, IPrintableSource<TSubject>
 		where TSpecifies : class, IFluentBoundSpecification<TSubject, TResult>
-		where TEvaluation : class, IPrintableEvaluation<TResult, ILazyReadableText> {}
+		where TEvaluation : class, IPrintableEvaluation<TResult> {}
 
 	public interface IFluentBoundSpecificationBuilder<TSubject, out TResult> : IPrintableBoundSpecificationBuilder< //
 		TSubject, //
@@ -76,12 +76,25 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 		IIs<TSubject, TResult, IFluentBoundSpecification<TSubject, TResult>>, //
 		IPrintableSource<TSubject>, //
 		IFluentBoundSpecification<TSubject, TResult>, //
-		IPrintableEvaluation<TResult, ILazyReadableText>> {}
+		IPrintableEvaluation<TResult>> {}
 
 	public interface IPrintableSpecificationBuilderState : ISpecificationBuilderState {}
 
-	public interface IPrintableSpecificationBuilderState<TSubject, TResult> : IPrintableSpecificationBuilderState,
-		ISpecificationBuilderState<TSubject, TResult, IPrintableSource<TSubject>> {}
+	public interface IPrintableSpecificationArguments : ISpecificationArguments {}
+
+	public interface IPrintableSpecificationArguments<in TSubject, in TResult, out TEvaluation> :
+		IPrintableSpecificationArguments,
+		ISpecificationArguments<TResult, TEvaluation>
+	{
+		[NotNull]
+		IExplainer<TSubject, TResult> Explainer { get; }
+	}
+
+	public interface IPrintableSpecificationBuilderState<TSubject, TResult, out TSpecifies, TEvaluation> :
+		IPrintableSpecificationBuilderState,
+		ISpecificationBuilderState
+			<TSubject, TResult, IPrintableSource<TSubject>, TSpecifies, TEvaluation,
+				IPrintableSpecificationArguments<TSubject, TResult, TEvaluation>> {}
 
 	public class PrintableSpecificationBuilder<TSubject, TResult> : SpecificationBuilder< //
 		TSubject, //
@@ -96,11 +109,13 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 		IPrintableSource<TSubject>, //
 		IFluentBoundSpecification<TSubject, TResult>, //
 		IPrintableEvaluation<TResult>, //
-		ILazyReadableText //
+		ILazyReadableText, //
+		IPrintableSpecificationArguments<TSubject, TResult, IPrintableEvaluation<TResult>> //
 		>,
 		IFluentSpecificationBuilder<TSubject, TResult>,
 		IFluentBoundSpecificationBuilder<TSubject, TResult>,
-		IPrintableSpecificationBuilderState<TSubject, TResult>
+		IPrintableSpecificationBuilderState
+			<TSubject, TResult, IFluentBoundSpecification<TSubject, TResult>, IPrintableEvaluation<TResult>>
 	{
 		private readonly Lazy<Func<TSubject, TResult>> _instrument;
 
@@ -136,6 +151,16 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 					IFluentSpecification<TSubject, TResult>>.Is
 		{
 			get { return Is; }
+		}
+
+		public override IFluentBoundSpecification<TSubject, TResult> Build(
+			IPrintableSpecificationArguments<TSubject, TResult, IPrintableEvaluation<TResult>> arguments)
+		{
+			return new PrintableSpecification<TSubject, TResult>(Source,
+				Instrument,
+				arguments.Accepter,
+				arguments.Explainer,
+				exceptionFilter:arguments.ExceptionFilter);
 		}
 
 		protected override

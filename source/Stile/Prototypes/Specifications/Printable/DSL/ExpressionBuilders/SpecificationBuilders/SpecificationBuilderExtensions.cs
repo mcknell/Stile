@@ -31,9 +31,13 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 			this IFluentSpecificationBuilder<TSubject, TResult> builder, TItem item)
 			where TSubject : class, IEnumerable<TItem> where TResult : class, IEnumerable<TItem>
 		{
-			var state = (IPrintableSpecificationBuilderState<TSubject, TResult>) builder;
+			var state =
+				(
+				IPrintableSpecificationBuilderState
+					<TSubject, TResult, IFluentSpecification<TSubject, TResult>, IPrintableEvaluation<TResult>>) builder;
 			return new PrintableEnumerableSpecificationBuilder<TSubject, TResult, TItem>(state.Source, state.Instrument);
 		}
+
 		/// <summary>
 		/// Syntactical gimmick for implicitly specifying the type of items an <see cref="IEnumerable{T}"/>,
 		/// i.e., type inference will resolve the type without the coder having to hard-code an explicit 
@@ -50,9 +54,11 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Speci
 			this IFluentBoundSpecificationBuilder<TSubject, TResult> builder, TItem item)
 			where TSubject : class, IEnumerable<TItem> where TResult : class, IEnumerable<TItem>
 		{
-			var state = (IPrintableSpecificationBuilderState<TSubject, TResult>) builder;
+			var state =
+				(
+				IPrintableSpecificationBuilderState
+					<TSubject, TResult, IFluentSpecification<TSubject, TResult>, IPrintableEvaluation<TResult>>) builder;
 			return new PrintableEnumerableSpecificationBuilder<TSubject, TResult, TItem>(state.Source, state.Instrument);
 		}
 	}
-
 }

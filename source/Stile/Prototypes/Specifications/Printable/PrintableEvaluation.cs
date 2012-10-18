@@ -13,10 +13,10 @@ namespace Stile.Prototypes.Specifications.Printable
 {
     public interface IPrintableEvaluation : IEmittingEvaluation {}
 
-    public interface IPrintableEvaluation<out TResult, out TEmit> : IPrintableEvaluation,
-        IEmittingEvaluation<TResult, TEmit> {}
+	//public interface IPrintableEvaluation<out TResult, out TEmit> : IPrintableEvaluation,
+	//	IEmittingEvaluation<TResult, TEmit> {}
 
-    public interface IPrintableEvaluation<out TResult> : IPrintableEvaluation<TResult, ILazyReadableText> {}
+	public interface IPrintableEvaluation<out TResult> : IEmittingEvaluation<TResult, ILazyReadableText> { }
 
     public class PrintableEvaluation<TSubject> : EmittingEvaluation<TSubject, ILazyReadableText>,
         IPrintableEvaluation<TSubject>

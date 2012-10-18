@@ -24,33 +24,29 @@ namespace Stile.Prototypes.Specifications.Printable
 	public interface IPrintableSpecification<in TSubject, out TResult> : IPrintableSpecification,
 		IEmittingSpecification<TSubject, TResult> {}
 
-	public interface IPrintableSpecification<in TSubject, out TResult, out TEvaluation, out TEmit> :
+	public interface IPrintableSpecification<in TSubject, out TResult, out TEvaluation> :
 		IPrintableSpecification<TSubject, TResult>,
-		IEmittingSpecification<TSubject, TResult, TEvaluation, TEmit>
-		where TEvaluation : class, IPrintableEvaluation<TResult, TEmit> {}
+		IEmittingSpecification<TSubject, TResult, TEvaluation, ILazyReadableText>
+		where TEvaluation : class, IPrintableEvaluation<TResult> {}
 
 	public interface IFluentSpecification<in TSubject, out TResult> :
-		IPrintableSpecification<TSubject, TResult, IPrintableEvaluation<TResult>, ILazyReadableText> {}
+		IPrintableSpecification<TSubject, TResult, IPrintableEvaluation<TResult>> {}
 
 	public interface IPrintableBoundSpecification : IBoundSpecification,
 		IPrintableSpecification {}
 
-	public interface IPrintableBoundSpecification<in TSubject, out TResult, out TEvaluation, out TEmit> :
+	public interface IPrintableBoundSpecification<in TSubject, out TResult, out TEvaluation> :
 		IPrintableBoundSpecification,
 		IBoundSpecification<TSubject, TResult, TEvaluation>,
-		IPrintableSpecification<TSubject, TResult, TEvaluation, TEmit>
-		where TEvaluation : class, IPrintableEvaluation<TResult, TEmit> {}
-
-	public interface IPrintableBoundSpecification<in TSubject, out TResult, out TEvaluation> :
-		IPrintableBoundSpecification<TSubject, TResult, TEvaluation, ILazyReadableText>
-		where TEvaluation : class, IPrintableEvaluation<TResult, ILazyReadableText> {}
+		IPrintableSpecification<TSubject, TResult, TEvaluation>
+		where TEvaluation : class, IPrintableEvaluation<TResult> {}
 
 	public interface IFluentBoundSpecification<in TSubject, out TResult> : IFluentSpecification<TSubject, TResult>,
 		IPrintableBoundSpecification<TSubject, TResult, IPrintableEvaluation<TResult>> {}
 
-	public interface IPrintableSpecificationState<TSubject, TResult, out TEvaluation, TEmit> :
-		IEmittingSpecificationState<TSubject, TResult, TEvaluation, TEmit>
-		where TEvaluation : class, IPrintableEvaluation<TResult, TEmit>
+	public interface IPrintableSpecificationState<TSubject, TResult, out TEvaluation> :
+		IEmittingSpecificationState<TSubject, TResult, TEvaluation, ILazyReadableText>
+		where TEvaluation : class, IPrintableEvaluation<TResult>
 	{
 		IExplainer<TSubject, TResult> Explainer { get; }
 		string Reason { get; }
@@ -58,7 +54,7 @@ namespace Stile.Prototypes.Specifications.Printable
 	}
 
 	public interface IPrintableSpecificationState<TSubject, TResult> :
-		IPrintableSpecificationState<TSubject, TResult, IPrintableEvaluation<TResult>, ILazyReadableText> {}
+		IPrintableSpecificationState<TSubject, TResult, IPrintableEvaluation<TResult>> {}
 
 	public static class PrintableSpecification
 	{
@@ -81,12 +77,12 @@ namespace Stile.Prototypes.Specifications.Printable
 		}
 	}
 
-	public abstract class PrintableSpecification<TSubject, TResult, TSource, TEvaluation, TEmit> :
-		Specification<TSubject, TResult, TSource, TEvaluation, TEmit>,
-		IPrintableBoundSpecification<TSubject, TResult, TEvaluation, TEmit>,
-		IPrintableSpecificationState<TSubject, TResult, TEvaluation, TEmit>
+	public abstract class PrintableSpecification<TSubject, TResult, TSource, TEvaluation> :
+		Specification<TSubject, TResult, TSource, TEvaluation, ILazyReadableText>,
+		IPrintableBoundSpecification<TSubject, TResult, TEvaluation>,
+		IPrintableSpecificationState<TSubject, TResult, TEvaluation>
 		where TSource : class, IPrintableSource<TSubject>
-		where TEvaluation : class, IPrintableEvaluation<TResult, TEmit>
+		where TEvaluation : class, IPrintableEvaluation<TResult>
 	{
 		private readonly IExplainer<TSubject, TResult> _explainer;
 		private readonly string _reason;
@@ -127,7 +123,7 @@ namespace Stile.Prototypes.Specifications.Printable
 		public override TEvaluation Evaluate([Symbol(Variable.Subject)] TSubject subject)
 		{
 			TEvaluation evaluation = base.Evaluate(subject);
-			TEmit explained = ExplainEvaluation(new Lazy<TEmit>(() => evaluation.Emitted), subject);
+			ILazyReadableText explained = ExplainEvaluation(new Lazy<ILazyReadableText>(() => evaluation.Emitted), subject);
 			TEvaluation output = EvaluationFactory(evaluation.Result, explained);
 			return output;
 		}
@@ -136,8 +132,7 @@ namespace Stile.Prototypes.Specifications.Printable
 		{
 			string expected = explainer.ExplainExpected(result);
 			string conjunction =
-				PrintableSpecification
-					<TSubject, TResult, IPrintableSource<TSubject>, IPrintableEvaluation<TResult>, ILazyReadableText>.
+				PrintableSpecification<TSubject, TResult, IPrintableSource<TSubject>, IPrintableEvaluation<TResult>>.
 					PrintConjunction(result.Outcome);
 			string actual = explainer.ExplainActualSurprise(result);
 			string because = reason == null ? null : string.Format("because {0}{1}", reason, Environment.NewLine);
@@ -155,12 +150,11 @@ namespace Stile.Prototypes.Specifications.Printable
 			return Explain(result, Explainer, Reason);
 		}
 
-		protected abstract TEmit ExplainEvaluation(Lazy<TEmit> emitted, TSubject subject);
+		protected abstract ILazyReadableText ExplainEvaluation(Lazy<ILazyReadableText> emitted, TSubject subject);
 	}
 
 	public class PrintableSpecification<TSubject, TResult> :
-		PrintableSpecification
-			<TSubject, TResult, IPrintableSource<TSubject>, IPrintableEvaluation<TResult>, ILazyReadableText>,
+		PrintableSpecification<TSubject, TResult, IPrintableSource<TSubject>, IPrintableEvaluation<TResult>>,
 		IPrintableSpecificationState<TSubject, TResult>,
 		IFluentBoundSpecification<TSubject, TResult>
 	{

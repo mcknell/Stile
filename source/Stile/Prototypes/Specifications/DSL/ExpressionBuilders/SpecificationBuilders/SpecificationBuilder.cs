@@ -69,22 +69,38 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBu
 
 	public interface ISpecificationBuilderState {}
 
-	public interface ISpecificationBuilderState<TSubject, TResult, out TSource> : ISpecificationBuilderState
+	public interface ISpecificationBuilderState<TSubject, TResult, out TSource, out TSpecifies, TEvaluation,
+		in TSpecificationArguments> : ISpecificationBuilderState
 		where TSource : class, ISource<TSubject>
+		where TSpecificationArguments : class, ISpecificationArguments<TResult, TEvaluation>
 	{
 		Lazy<Func<TSubject, TResult>> Instrument { get; }
 		TSource Source { get; }
+
+		TSpecifies Build(TSpecificationArguments arguments);
+	}
+
+	public interface ISpecificationArguments {}
+
+	public interface ISpecificationArguments<in TResult, out TEvaluation> : ISpecificationArguments
+	{
+		[NotNull]
+		Predicate<TResult> Accepter { get; }
+		[CanBeNull]
+		Func<TResult, Exception, TEvaluation> ExceptionFilter { get; }
 	}
 
 	public abstract class SpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSource, TSpecifies,
-		TEvaluation, TEmit> : ISpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies>,
-			ISpecificationBuilderState<TSubject, TResult, TSource>
+		TEvaluation, TEmit, TSpecificationArguments> :
+			ISpecificationBuilder<TSubject, TResult, THas, TNegatableIs, TIs, TSpecifies>,
+			ISpecificationBuilderState<TSubject, TResult, TSource, TSpecifies, TEvaluation, TSpecificationArguments>
 		where TSource : class, ISource<TSubject>
 		where THas : class, IHas<TResult, TSpecifies>
 		where TNegatableIs : class, INegatableIs<TResult, TIs, TSpecifies>
 		where TIs : class, IIs<TResult, TSpecifies>
 		where TSpecifies : class, IEmittingSpecification<TSubject, TResult, TEvaluation, TEmit>
 		where TEvaluation : class, IEmittingEvaluation<TResult, TEmit>
+		where TSpecificationArguments : class, ISpecificationArguments<TResult, TEvaluation>
 	{
 		private readonly Lazy<Func<TSubject, TResult>> _instrument;
 		private readonly Lazy<THas> _lazyHas;
@@ -123,6 +139,8 @@ namespace Stile.Prototypes.Specifications.DSL.ExpressionBuilders.SpecificationBu
 		{
 			get { return _source; }
 		}
+		public abstract TSpecifies Build(TSpecificationArguments arguments);
+
 		protected abstract THas MakeHas();
 		protected abstract TNegatableIs MakeIs();
 	}

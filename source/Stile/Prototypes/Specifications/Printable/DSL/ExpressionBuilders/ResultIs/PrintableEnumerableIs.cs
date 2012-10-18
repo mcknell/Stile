@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using Stile.Prototypes.Specifications.DSL.ExpressionBuilders.ResultIs;
 using Stile.Prototypes.Specifications.DSL.SemanticModel;
 using Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Sources;
-using Stile.Prototypes.Specifications.Printable.Output;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.ResultIs
@@ -18,7 +17,7 @@ namespace Stile.Prototypes.Specifications.Printable.DSL.ExpressionBuilders.Resul
 		EnumerableIs
 			<TSubject, TResult, TItem, IPrintableSource<TSubject>,
 				IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>,
-				IFluentSpecification<TSubject, TResult>, IPrintableEvaluation<TResult, ILazyReadableText>>,
+				IFluentSpecification<TSubject, TResult>, IPrintableEvaluation<TResult>>,
 		INegatableEnumerableIs
 			<TSubject, TResult, TItem, IEnumerableIs<TSubject, TResult, TItem, IFluentSpecification<TSubject, TResult>>,
 				IFluentSpecification<TSubject, TResult>>
