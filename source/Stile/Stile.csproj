@@ -32,6 +32,21 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="envdte100, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="envdte80, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="envdte90, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="envdte90a, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,83 +61,52 @@
     </Compile>
     <Compile Include="JetBrains.Annotations.cs" />
     <Compile Include="Patterns\Lifetimes\Disposables\Disposable.cs" />
-    <Compile Include="Patterns\Structural\FluentInterface\IFluent.cs" />
+    <Compile Include="Patterns\Structural\FluentInterface\IHides.cs" />
     <Compile Include="Patterns\Structural\FluentInterface\INegatable.cs" />
     <Compile Include="Patterns\Lifetimes\Lazy\Lazier.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\ResultHas\Quantifiers\HasAll.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\Sources\Source.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\ResultHas\EnumerableHas.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\ResultHas\IHasState.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\Instrument.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\ResultIs\EnumerableIs.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\ResultIs\INegatableEnumerableIs.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\ResultIs\INegatableIs.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\SpecificationBuilders\EnumerableSpecificationBuilder.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultIs\PrintableIs.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultIs\PrintableEnumerableIs.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\SubjectBuilders\SubjectBuilder.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\SemanticModel\Negated.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfInstruments\InstrumentBuilderExtensions.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Has\HasExtensions.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Is\IsExtensions.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\PredicateBuilderExtensions.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfInstruments\BoundInstrumentBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfInstruments\InstrumentBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\EnumerablePredicateBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Is\IsComparableExtensions.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\PredicateBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\PredicateBuilderState.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Has\PredicateHas.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Is\PredicateIs.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfSources\BoundSourceBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfSources\SourceBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Source.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Instrument.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Criterion.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\ExceptionFilter.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Negated.cs" />
     <Compile Include="Prototypes\Collections\HashBucket.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ContextFreeGrammar.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ProductionRule.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\ResultHas\Has.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\ResultIs\Is.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\SpecificationBuilders\SpecificationBuilder.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\SemanticModel\Evaluations\EmittingEvaluation.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\SemanticModel\Evaluations\Error.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\SemanticModel\Evaluations\WrappedResult.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\ExpressionBuilders\ResultHas\QuantifiedEnumerableHas.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultHas\HasExtensions.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultIs\IsComparableExtensions.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultIs\IsExtensions.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\ResultIs\IsStringExtensions.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SpecificationBuilders\SpecificationBuilderExtensions.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SpecificationBuilders\PrintableEnumerableSpecificationBuilder.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SubjectBuilders\PrintableSubjectBuilder.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SpecificationBuilders\PrintableSpecificationBuilder.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Construction\Specify.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\SubjectBuilders\SubjectBuilderExtensions.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\Error.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ActualClause.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Explain.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultIs\Comparables\ExplainComparablyEquivalentTo.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultIs\ExplainFalse.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultIs\Comparables\ExplainGreaterThan.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultIs\Comparables\ExplainGreaterThanOrEqualTo.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultHas\ExplainHashCode.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultIs\ExplainIs.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\Explainer.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ExpectationVerb.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ExpectedClause.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultHas\ExplainHasAll.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultIs\Comparables\ExplainLessThan.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultIs\Comparables\ExplainLessThanOrEqualTo.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultIs\ExplainNull.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultIs\Strings\ExplainStringContaining.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultIs\Strings\ExplainStringEndingWith.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultIs\Strings\ExplainStringNullOrEmpty.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultIs\ExplainTrue.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultIs\Strings\ExplainStringNullOrWhitespace.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\Explainers\ResultIs\Strings\ExplainStringStartingWith.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\Terminal.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ExplainerClause.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\DSL\ExpressionBuilders\Sources\PrintableSource.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\PrefixAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\RuleAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\SymbolAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\Variable.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\PrintableEvaluation.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Construction\GrammarMetadata\SpecificationRuleAttribute.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\SemanticModel\Evaluations\Evaluation.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\SemanticModel\IBoundSpecification.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\SemanticModel\IEmittingSpecification.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\SemanticModel\IEvaluable.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\SemanticModel\Evaluations\Outcome.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\Evaluation.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\IBoundSpecification.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\IEvaluable.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\Outcome.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\LazyReadableText.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\PrintableSpecification.cs" />
     <Compile Include="Patterns\Behavioral\Traversal\NonrepeatingTraverser.cs" />
     <Compile Include="Patterns\Behavioral\Traversal\Traverser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Prototypes\Specifications\DSL\SemanticModel\Specification.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Specification.cs" />
+    <Compile Include="Prototypes\Specifications\Specify.cs" />
     <Compile Include="Readability\Empty.cs" />
     <Compile Include="Readability\Identity.cs" />
     <Compile Include="Readability\Null.cs" />
@@ -179,6 +163,9 @@
     <Compile Include="Types\Reflection\TypeStringBuilder.cs" />
     <Compile Include="Patterns\Behavioral\Validation\ValidateArgument.cs" />
     <Compile Include="VersionedLanguage.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
