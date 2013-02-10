@@ -26,7 +26,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		where TResult : class, IEnumerable<TItem>
 		where TSpecification : class, ISpecification<TSubject, TResult> {}
 
-
 	public class EnumerablePredicateBuilder<TSpecification, TSubject, TResult, TItem> :
 		PredicateBuilder
 			<TSpecification, TSubject, TResult, IEnumerablePredicateHas<TSpecification, TSubject, TResult, TItem>,
@@ -36,8 +35,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		where TResult : class, IEnumerable<TItem>
 	{
 		public EnumerablePredicateBuilder([NotNull] Instrument<TSubject, TResult> instrument,
-			[NotNull] ISource<TSubject> source)
-			: base(instrument, source) {}
+			[NotNull] Specification.Factory<TSpecification, TSubject, TResult> specificationFactory,
+			ISource<TSubject> source = null)
+			: base(instrument, specificationFactory, source) {}
 
 		protected override IEnumerablePredicateHas<TSpecification, TSubject, TResult, TItem> MakeHas()
 		{

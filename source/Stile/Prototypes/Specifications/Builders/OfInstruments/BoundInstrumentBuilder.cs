@@ -18,7 +18,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 
 	public interface IBoundInstrumentBuilder<out TSubject> : IBoundInstrumentBuilder,
 		IInstrumentBuilder<TSubject>,
-		IHides<IInstrumentBuilderState<TSubject>> {}
+		IHides<IBoundInstrumentBuilderState<TSubject>> {}
 
 	public interface IBoundInstrumentBuilderState<out TSubject> : IInstrumentBuilderState<TSubject>
 	{
@@ -36,5 +36,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 		}
 
 		public ISource<TSubject> Source { get; private set; }
+		public IBoundInstrumentBuilderState<TSubject> Xray
+		{
+			get { return this; }
+		}
 	}
 }

@@ -25,7 +25,8 @@ namespace Stile.Prototypes.Specifications
 		}
 
 		[System.Diagnostics.Contracts.Pure]
-		public static IBoundInstrumentBuilder<TSubject> For<TSubject>([NotNull] Expression<Func<TSubject>> expression)
+		public static IBoundInstrumentBuilder<TSubject> For<TSubject>(
+			[NotNull] Expression<Func<TSubject>> expression)
 		{
 			var source = new Source<TSubject>(expression.ValidateArgumentIsNotNull());
 			return new BoundInstrumentBuilder<TSubject>(source);
@@ -41,7 +42,9 @@ namespace Stile.Prototypes.Specifications
 		public static IPredicateBuilder<ISpecification<TSubject, TSubject>, TSubject, TSubject> ThatAny<TSubject>()
 		{
 			var instrument = new Instrument<TSubject, TSubject>(x => x);
-			return new PredicateBuilder<ISpecification<TSubject, TSubject>, TSubject, TSubject>(instrument);
+			Specification.Factory<ISpecification<TSubject, TSubject>, TSubject, TSubject> factory =
+				Specification.MakeUnboundFactory<TSubject, TSubject>();
+			return new PredicateBuilder<ISpecification<TSubject, TSubject>, TSubject, TSubject>(instrument, factory);
 		}
 	}
 }

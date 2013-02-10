@@ -17,18 +17,25 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 	public static class InstrumentBuilderExtensions
 	{
 		[Pure]
-		public static IPredicateBuilder<ISpecification<TSubject, TResult>, TSubject, TResult> That<TSubject, TResult>(
-			this IInstrumentBuilder<TSubject> builder, Expression<Func<TSubject, TResult>> expression)
+		public static IPredicateBuilder<ISpecification<TSubject, TResult>, TSubject, TResult> That
+			<TSubject, TResult>(this IInstrumentBuilder<TSubject> builder,
+				Expression<Func<TSubject, TResult>> expression)
 		{
 			var instrument = new Instrument<TSubject, TResult>(expression);
-			return new PredicateBuilder<ISpecification<TSubject, TResult>, TSubject, TResult>(instrument);
+			var specificationFactory = Specification.MakeUnboundFactory<TSubject, TResult>();
+			return new PredicateBuilder<ISpecification<TSubject, TResult>, TSubject, TResult>(instrument,
+				specificationFactory);
 		}
 
 		[Pure]
-		public static IPredicateBuilder<IBoundSpecification<TSubject, TResult>, TSubject, TResult> That<TSubject, TResult>(
-			this IBoundInstrumentBuilder<TSubject> builder, Expression<Func<TSubject, TResult>> expression)
+		public static IPredicateBuilder<IBoundSpecification<TSubject, TResult>, TSubject, TResult> That
+			<TSubject, TResult>(this IBoundInstrumentBuilder<TSubject> builder,
+				Expression<Func<TSubject, TResult>> expression)
 		{
-			throw new NotImplementedException();
+			var instrument = new Instrument<TSubject, TResult>(expression);
+			var specificationFactory = Specification.MakeBoundFactory<TSubject, TResult>();
+			return new PredicateBuilder<IBoundSpecification<TSubject, TResult>, TSubject, TResult>(instrument,
+				specificationFactory, builder.Xray.Source);
 		}
 	}
 

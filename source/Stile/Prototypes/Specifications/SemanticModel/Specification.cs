@@ -24,9 +24,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 // ReSharper restore UnusedTypeParameter
 
-	public interface ISpecification<in TSubject> : ISpecification
-	{
-	}
+	public interface ISpecification<in TSubject> : ISpecification {}
 
 	public interface ISpecification<TSubject, TResult> : ISpecification<TSubject>,
 		IResultSpecification<TResult>,
@@ -50,6 +48,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 	public abstract class Specification
 	{
+		public delegate TSpecification Factory<out TSpecification, TSubject, TResult>(
+			ISource<TSubject> source, IInstrument<TSubject, TResult> instrument, ICriterion<TResult> criterion)
+			where TSpecification : class, ISpecification<TSubject, TResult>;
+
 		protected static readonly IError[] NoErrors = new IError[0];
 
 		public static Specification<TSubject, TResult> Make<TSubject, TResult>(
@@ -62,7 +64,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			return Specification<TSubject, TResult>.Make(instrument, criterion, source, because, exceptionFilter);
 		}
 
-		public static Specification<TSubject, TResult> MakeBound<TSubject, TResult>([NotNull] ISource<TSubject> source,
+		public static Specification<TSubject, TResult> MakeBound<TSubject, TResult>(
+			[NotNull] ISource<TSubject> source,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] ICriterion<TResult> criterion,
 			string because = null,
@@ -70,10 +73,22 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		{
 			return Specification<TSubject, TResult>.MakeBound(source, instrument, criterion, because, exceptionFilter);
 		}
+
+		public static Factory<IBoundSpecification<TSubject, TResult>, TSubject, TResult> MakeBoundFactory
+			<TSubject, TResult>()
+		{
+			return (source, instrument, criterion) => MakeBound(source, instrument, criterion);
+		}
+
+		public static Factory<ISpecification<TSubject, TResult>, TSubject, TResult> MakeUnboundFactory
+			<TSubject, TResult>()
+		{
+			return (source, instrument, criterion) => Make(instrument, criterion);
+		}
 	}
 
 	public class Specification<TSubject, TResult> : Specification,
-		ISpecification<TSubject, TResult>,
+		IBoundSpecification<TSubject, TResult>,
 		ISpecificationState<TSubject, TResult>
 	{
 		private readonly IExceptionFilter<TResult> _exceptionFilter;

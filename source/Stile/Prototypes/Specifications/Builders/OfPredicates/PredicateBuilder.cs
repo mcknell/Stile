@@ -45,10 +45,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		private readonly Lazy<THas> _lazyHas;
 		private readonly Lazy<TIs> _lazyIs;
 
-		protected PredicateBuilder([NotNull] Instrument<TSubject, TResult> instrument, ISource<TSubject> source = null)
+		protected readonly Specification.Factory<TSpecification, TSubject, TResult> _specificationFactory;
+
+		protected PredicateBuilder([NotNull] Instrument<TSubject, TResult> instrument,
+			Specification.Factory<TSpecification, TSubject, TResult> specificationFactory,
+			ISource<TSubject> source = null)
 		{
 			Source = source;
 			Instrument = instrument.ValidateArgumentIsNotNull();
+			_specificationFactory = specificationFactory.ValidateArgumentIsNotNull();
 			_lazyHas = new Lazy<THas>(MakeHas);
 			_lazyIs = new Lazy<TIs>(MakeIs);
 		}
@@ -84,11 +89,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		IPredicateBuilderState<TSubject, TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>
 	{
-		public PredicateBuilder(Instrument<TSubject, TResult> instrument, ISource<TSubject> source = null)
-			: base(instrument, source) {}
+		public PredicateBuilder(Instrument<TSubject, TResult> instrument,
+			[NotNull] Specification.Factory<TSpecification, TSubject, TResult> specificationFactory,
+			ISource<TSubject> source = null)
+			: base(instrument, specificationFactory, source) {}
 
 		public new
-			INegatablePredicateIs<TSpecification, TSubject, TResult, IPredicateIs<TSpecification, TSubject, TResult>> Is
+			INegatablePredicateIs<TSpecification, TSubject, TResult, IPredicateIs<TSpecification, TSubject, TResult>>
+			Is
 		{
 			get { return base.Is; }
 		}
@@ -100,13 +108,17 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 
 		protected override IPredicateHas<TSpecification, TSubject, TResult> MakeHas()
 		{
-			throw new NotImplementedException();
+			var has = new PredicateHas<TSpecification, TSubject, TResult>(Instrument, _specificationFactory, Source);
+			return has;
 		}
 
 		protected override
-			INegatablePredicateIs<TSpecification, TSubject, TResult, IPredicateIs<TSpecification, TSubject, TResult>> MakeIs()
+			INegatablePredicateIs<TSpecification, TSubject, TResult, IPredicateIs<TSpecification, TSubject, TResult>>
+			MakeIs()
 		{
-			throw new NotImplementedException();
+			return new PredicateIs<TSpecification, TSubject, TResult>(Instrument,
+				Negated.False,
+				_specificationFactory, Source);
 		}
 	}
 }

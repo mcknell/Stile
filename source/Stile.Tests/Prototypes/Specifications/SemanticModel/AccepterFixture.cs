@@ -18,9 +18,9 @@ namespace Stile.Tests.Prototypes.Specifications.SemanticModel
 		public void FromExpression()
 		{
 			var source = new Criterion<int>(x => x == 4 ? Outcome.Succeeded : Outcome.Failed);
-			Assert.That(source.Accept(4), Is.EqualTo(true));
-			Assert.That(source.Accept(5), Is.Not.EqualTo(true));
-			Assert.That(source.Description.Value, Is.EqualTo("x => x == 4"));
+			Assert.That(source.Accept(4), Is.EqualTo(Outcome.Succeeded));
+			Assert.That(source.Accept(5), Is.EqualTo(Outcome.Failed));
+			Assert.That(source.Description.Value, Is.EqualTo("x => (x == 4) ? Outcome.Succeeded : Outcome.Failed"));
 		}
 	}
 }

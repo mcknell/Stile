@@ -4,7 +4,7 @@
 #endregion
 
 #region using...
-using Stile.Patterns.Structural.FluentInterface;
+
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfInstruments
@@ -14,22 +14,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 	/// </summary>
 	public interface IInstrumentBuilder {}
 
-	public interface IInstrumentBuilder<out TSubject> : IInstrumentBuilder,
-		IHides<IInstrumentBuilderState<TSubject>> {}
+	public interface IInstrumentBuilder<out TSubject> : IInstrumentBuilder {}
 
 	public interface IInstrumentBuilderState<out TSubject> {}
 
 	public class InstrumentBuilder<TSubject> : IInstrumentBuilder<TSubject>,
-		IInstrumentBuilderState<TSubject>
-	{
-		public IInstrumentBuilderState<TSubject> Xray
-		{
-			get { return this; }
-		}
-
-		public static InstrumentBuilder<TSubject> Make()
-		{
-			return new InstrumentBuilder<TSubject>();
-		}
-	}
+		IInstrumentBuilderState<TSubject> {}
 }
