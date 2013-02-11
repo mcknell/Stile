@@ -25,6 +25,7 @@ namespace Stile.Tests.Prototypes.Specifications
 				Specify.ForAny<int>().That(x => x.ToString(CultureInfo.InvariantCulture)).Is.EqualTo("6");
 			IEvaluation<string> evaluation = specification.Evaluate(6);
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
+			Assert.That(specification.Evaluate(7).Outcome, Is.EqualTo(Outcome.Failed));
 		}
 	}
 }

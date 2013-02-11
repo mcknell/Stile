@@ -14,9 +14,13 @@ using Stile.Types.Expressions;
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IInstrument<in TSubject, out TResult>
+	public interface IInstrument
 	{
 		Lazy<string> Description { get; }
+	}
+
+	public interface IInstrument<in TSubject, out TResult> : IInstrument
+	{
 		TResult Sample([NotNull] TSubject subject);
 	}
 

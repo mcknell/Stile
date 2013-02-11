@@ -5,9 +5,9 @@
 
 #region using...
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
+using Stile.Prototypes.Specifications.Builders.OfExceptionFilters;
 using Stile.Prototypes.Specifications.Builders.OfPredicates;
 using Stile.Prototypes.Specifications.SemanticModel;
 #endregion
@@ -22,7 +22,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 				Expression<Func<TSubject, TResult>> expression)
 		{
 			var instrument = new Instrument<TSubject, TResult>(expression);
-			var specificationFactory = Specification.MakeUnboundFactory<TSubject, TResult>();
+			Specification.Factory<ISpecification<TSubject, TResult>, TSubject, TResult> specificationFactory =
+				Specification.MakeUnboundFactory<TSubject, TResult>();
 			return new PredicateBuilder<ISpecification<TSubject, TResult>, TSubject, TResult>(instrument,
 				specificationFactory);
 		}
@@ -33,20 +34,20 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 				Expression<Func<TSubject, TResult>> expression)
 		{
 			var instrument = new Instrument<TSubject, TResult>(expression);
-			var specificationFactory = Specification.MakeBoundFactory<TSubject, TResult>();
+			Specification.Factory<IBoundSpecification<TSubject, TResult>, TSubject, TResult> specificationFactory =
+				Specification.MakeBoundFactory<TSubject, TResult>();
 			return new PredicateBuilder<IBoundSpecification<TSubject, TResult>, TSubject, TResult>(instrument,
-				specificationFactory, builder.Xray.Source);
+				specificationFactory,
+				builder.Xray.Source);
 		}
-	}
 
-	public static class EnumerableInstrumentBuilderExtensions
-	{
 		[Pure]
-		public static IEnumerablePredicateBuilder<ISpecification<TSubject, TResult>, TSubject, TResult, TItem>
-			ThatTheSequence<TSubject, TResult, TItem>(this IInstrumentBuilder<TSubject> builder,
-				Expression<Func<TSubject, TResult>> expression) where TResult : class, IEnumerable<TItem>
+		public static IExceptionFilterBuilder<IThrowingBoundSpecification<TSubject>, TSubject> That<TSubject>(
+			this IBoundInstrumentBuilder<TSubject> builder, Expression<Action<TSubject>> expression)
 		{
-			throw new NotImplementedException();
+			var instrument = new VoidInstrument<TSubject>(expression);
+			ISource<TSubject> source = builder.Xray.Source;
+			return new ExceptionFilterBuilder<IThrowingBoundSpecification<TSubject>, TSubject>(instrument, source);
 		}
 	}
 }

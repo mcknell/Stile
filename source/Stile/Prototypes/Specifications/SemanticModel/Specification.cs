@@ -26,24 +26,32 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 	public interface ISpecification<in TSubject> : ISpecification {}
 
-	public interface ISpecification<TSubject, TResult> : ISpecification<TSubject>,
-		IResultSpecification<TResult>,
-		IHides<ISpecificationState<TSubject, TResult>>
+	public interface ISpecification<in TSubject, out TResult, out TState> : ISpecification<TSubject>,
+		IHides<TState>
+		where TState : class, ISpecificationState<TSubject>
 	{
 		[NotNull]
 		IEvaluation<TResult> Evaluate(TSubject subject);
 	}
 
-	public interface ISpecificationState<TSubject, TResult>
+	public interface ISpecification<TSubject, TResult> :
+		ISpecification<TSubject, TResult, ISpecificationState<TSubject, TResult>>,
+		IResultSpecification<TResult> {}
+
+	public interface ISpecificationState<out TSubject>
 	{
 		[CanBeNull]
 		string Because { get; }
+		[CanBeNull]
+		ISource<TSubject> Source { get; }
+	}
+
+	public interface ISpecificationState<TSubject, TResult> : ISpecificationState<TSubject>
+	{
 		[NotNull]
 		ICriterion<TResult> Criterion { get; }
 		[NotNull]
 		IInstrument<TSubject, TResult> Instrument { get; }
-		[CanBeNull]
-		ISource<TSubject> Source { get; }
 	}
 
 	public abstract class Specification
@@ -87,7 +95,20 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		}
 	}
 
-	public class Specification<TSubject, TResult> : Specification,
+	public abstract class Specification<TSubject> : Specification,
+		ISpecification<TSubject>
+	{
+		protected Specification([CanBeNull] ISource<TSubject> source, [CanBeNull] string because)
+		{
+			Source = source;
+			Because = because;
+		}
+
+		public string Because { get; private set; }
+		public ISource<TSubject> Source { get; private set; }
+	}
+
+	public class Specification<TSubject, TResult> : Specification<TSubject>,
 		IBoundSpecification<TSubject, TResult>,
 		ISpecificationState<TSubject, TResult>
 	{
@@ -99,19 +120,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			ISource<TSubject> source = null,
 			string because = null,
 			IExceptionFilter<TResult> exceptionFilter = null)
+			: base(source, because)
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
 			Criterion = criterion.ValidateArgumentIsNotNull();
-			Source = source;
-			Because = because;
 			_exceptionFilter = exceptionFilter;
 			_expectsException = _exceptionFilter != null;
 		}
 
-		public string Because { get; private set; }
 		public ICriterion<TResult> Criterion { get; private set; }
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
-		public ISource<TSubject> Source { get; private set; }
 		public ISpecificationState<TSubject, TResult> Xray
 		{
 			get { return this; }

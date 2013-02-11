@@ -64,7 +64,11 @@
     <Compile Include="Patterns\Structural\FluentInterface\IHides.cs" />
     <Compile Include="Patterns\Structural\FluentInterface\INegatable.cs" />
     <Compile Include="Patterns\Lifetimes\Lazy\Lazier.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\IVoidBoundSpecification.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\ThrowingSpecification.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfInstruments\EnumerableInstrumentBuilderExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfInstruments\InstrumentBuilderExtensions.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\ExceptionFilterBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Has\HasExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Is\IsExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfPredicates\PredicateBuilderExtensions.cs" />
@@ -106,6 +110,7 @@
     <Compile Include="Patterns\Behavioral\Traversal\Traverser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specification.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\VoidInstrument.cs" />
     <Compile Include="Prototypes\Specifications\Specify.cs" />
     <Compile Include="Readability\Empty.cs" />
     <Compile Include="Readability\Identity.cs" />

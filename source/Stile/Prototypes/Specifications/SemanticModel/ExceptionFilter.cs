@@ -11,7 +11,9 @@ using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IExceptionFilter<TResult>
+	public interface IExceptionFilter {}
+
+	public interface IExceptionFilter<TResult> : IExceptionFilter
 	{
 		/// <summary>
 		/// If exception was expected but none was thrown.
@@ -19,6 +21,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		/// <param name="result"></param>
 		/// <returns></returns>
 		IEvaluation<TResult> Fail(TResult result);
+
 		bool TryFilter(TResult result, [NotNull] Exception e, out IEvaluation<TResult> evaluation);
 	}
 

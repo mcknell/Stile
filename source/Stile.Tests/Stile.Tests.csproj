@@ -54,8 +54,10 @@
     <Compile Include="Prototypes\Specifications\Construction\EnumerableSpecifyAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\SampleObjects\Foo.cs" />
     <Compile Include="Prototypes\Specifications\Construction\SpecifyAcceptanceTests.cs" />
+    <Compile Include="Prototypes\Specifications\SampleObjects\Saboteur.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\AccepterFixture.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\InstrumentFixture.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\OutcomeFixture.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\SourceFixture.cs" />
     <Compile Include="Prototypes\Specifications\SubjunctiveSpecificationVisitorFixture.cs" />
     <Compile Include="Readability\NullFixture.cs" />
@@ -86,6 +88,9 @@
       <Project>{43ea9efc-e83f-4a8f-ba09-ea2f8fb90e65}</Project>
       <Name>Stile</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Prototypes\Builders\OfPredicates\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,7 +4,6 @@
 #endregion
 
 #region using...
-using JetBrains.Annotations;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
@@ -13,16 +12,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	{
 		IError[] Errors { get; }
 		Outcome Outcome { get; }
-		/// <summary>
-		/// Note: This typewashed property is susceptible to boxing.
-		/// </summary>
-		[CanBeNull]
-		object Value { get; }
 	}
 
 	public interface IEvaluation<out TResult> : IEvaluation
 	{
-		new TResult Value { get; }
+		TResult Value { get; }
 	}
 
 	public class Evaluation<TValue> : IEvaluation<TValue>
@@ -37,9 +31,5 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public IError[] Errors { get; private set; }
 		public Outcome Outcome { get; private set; }
 		public TValue Value { get; private set; }
-		object IEvaluation.Value
-		{
-			get { return Value; }
-		}
 	}
 }

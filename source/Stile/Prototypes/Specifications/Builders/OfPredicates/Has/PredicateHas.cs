@@ -17,11 +17,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 {
 	public interface IPredicateHas {}
 
-	public interface IPredicateHas<TSpecification, TSubject, out TResult> : IPredicateHas,
+	public interface IPredicateHas<out TSpecification, TSubject, out TResult> : IPredicateHas,
 		IHides<IPredicateHasState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, ISpecification<TSubject, TResult> {}
 
-	public interface IPredicateHasState<TSpecification, TSubject, out TResult>
+	public interface IPredicateHasState<out TSpecification, TSubject, out TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>
 	{
 		[NotNull]

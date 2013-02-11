@@ -7,6 +7,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Linq.Expressions;
 using Stile.Types.Enumerables;
 #endregion
 
@@ -20,6 +22,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public static readonly Outcome Failed;
 		public static readonly Outcome Incomplete;
 		public static readonly Outcome Interrupted;
+		public static readonly Outcome Quit;
 		public static readonly ReadOnlyCollection<Outcome> Values;
 		private static readonly IEqualityComparer<Outcome> ValueComparerInstance = new ValueEqualityComparer();
 		private readonly int _value;
@@ -33,11 +36,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			Failed = MakeNext(outcomes);
 			Incomplete = MakeNext(outcomes);
 			Interrupted = MakeNext(outcomes);
+			Quit = MakeNext(outcomes);
 
 			Values = outcomes.ToReadOnly();
 		}
 
-		public Outcome(int value)
+		private Outcome(int value)
 		{
 			_value = value;
 		}
@@ -69,6 +73,17 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public override int GetHashCode()
 		{
 			return _value;
+		}
+
+		public override string ToString()
+		{
+			return _value.ToString(CultureInfo.InvariantCulture);
+		}
+
+		private static void Make(Expression<Func<Outcome>> field)
+		{
+			var memberExpression = (MemberExpression) field.Body;
+			if (memberExpression.NodeType == ExpressionType.MemberAccess) {}
 		}
 
 		private static Outcome MakeNext(List<Outcome> outcomes)
