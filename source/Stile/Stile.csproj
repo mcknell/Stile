@@ -110,6 +110,7 @@
     <Compile Include="Patterns\Behavioral\Traversal\Traverser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\Specification.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfSpecifications\ThrowingSpecificationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\ThrowingInstrument.cs" />
     <Compile Include="Prototypes\Specifications\Specify.cs" />
     <Compile Include="Readability\Empty.cs" />

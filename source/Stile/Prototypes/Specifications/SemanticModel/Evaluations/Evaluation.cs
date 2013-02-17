@@ -6,6 +6,10 @@
 #region using...
 #endregion
 
+#region using...
+using System;
+#endregion
+
 namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 {
 	public interface IEvaluation
@@ -19,17 +23,30 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		TResult Value { get; }
 	}
 
-	public class Evaluation<TValue> : IEvaluation<TValue>
+	public class Evaluation : IEvaluation
 	{
-		public Evaluation(Outcome outcome, TValue value, params IError[] errors)
+		public Evaluation(Outcome outcome, Exception handledExpectedException)
+			: this(outcome, new Error(handledExpectedException)) {}
+
+		public Evaluation(Outcome outcome, params IError[] errors)
 		{
-			Outcome = outcome;
-			Value = value;
 			Errors = errors;
+			Outcome = outcome;
 		}
 
 		public IError[] Errors { get; private set; }
 		public Outcome Outcome { get; private set; }
+	}
+
+	public class Evaluation<TValue> : Evaluation,
+		IEvaluation<TValue>
+	{
+		public Evaluation(Outcome outcome, TValue value, params IError[] errors)
+			: base(outcome, errors)
+		{
+			Value = value;
+		}
+
 		public TValue Value { get; private set; }
 	}
 }

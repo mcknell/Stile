@@ -6,6 +6,7 @@
 #region using...
 using System;
 using JetBrains.Annotations;
+using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 #endregion
 
@@ -29,11 +30,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		bool TryFilter(TResult result, [NotNull] Exception e, out IEvaluation<TResult> evaluation);
 	}
 
-	public class ExceptionFilter<TResult> : IExceptionFilter<TResult>
+	public class ExceptionFilter : IExceptionFilter
 	{
-		public IEvaluation<TResult> Fail(TResult result)
+		private readonly Predicate<Exception> _predicate;
+
+		public ExceptionFilter([NotNull] Predicate<Exception> predicate)
 		{
-			throw new NotImplementedException();
+			_predicate = predicate.ValidateArgumentIsNotNull();
 		}
 
 		public IEvaluation FailBeforeResult()
@@ -41,12 +44,30 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			throw new NotImplementedException();
 		}
 
-		public bool TryFilter(TResult result, Exception e, out IEvaluation<TResult> evaluation)
+		public bool TryFilterBeforeResult(Exception e, out IEvaluation evaluation)
+		{
+			if (_predicate.Invoke(e))
+			{
+				evaluation = new Evaluation(Outcome.Succeeded, e);
+				return true;
+			}
+			evaluation = null;
+			return false;
+		}
+	}
+
+	public class ExceptionFilter<TResult> : ExceptionFilter,
+		IExceptionFilter<TResult>
+	{
+		public ExceptionFilter([NotNull] Predicate<Exception> predicate)
+			: base(predicate) {}
+
+		public IEvaluation<TResult> Fail(TResult result)
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool TryFilterBeforeResult(Exception e, out IEvaluation evaluation)
+		public bool TryFilter(TResult result, Exception e, out IEvaluation<TResult> evaluation)
 		{
 			throw new NotImplementedException();
 		}

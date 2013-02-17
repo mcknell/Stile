@@ -8,6 +8,7 @@ using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
+using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 #endregion
 
@@ -42,13 +43,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			[NotNull] IExceptionFilter<TException> exceptionFilter) where TSpecification : class
 			where TException : Exception;
 
-		public static ThrowingSpecification<TSubject, TException> Make<TSubject, TException>(
+		public static IThrowingSpecification<TSubject> Make<TSubject, TException>(
 			[NotNull] IThrowingInstrument<TSubject> instrument,
 			IExceptionFilter<TException> exceptionFilter,
-			ISource<TSubject> source = null,
-			string because = null) where TException : Exception
+			ISource<TSubject> source = null) where TException : Exception
 		{
-			return ThrowingSpecification<TSubject, TException>.Make(instrument, exceptionFilter, source, because);
+			return ThrowingSpecification<TSubject>.Make(instrument, exceptionFilter, source);
 		}
 
 		public static IThrowingSpecificationBuilder<TSpecification, TSubject, TException> Resolve
@@ -60,40 +60,26 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		}
 	}
 
-	public interface IThrowingSpecificationBuilder {}
-
-	public interface IThrowingSpecificationBuilder<out TSpecification, TSubject, TException> :
-		IThrowingSpecificationBuilder
-		where TSpecification : class, ISpecification<TSubject>
-		where TException : Exception
+	public static class ThrowingSpecification
 	{
-		TSpecification Build();
+		public delegate TSpecification Factory<out TSpecification, TSubject>(
+			[NotNull] IThrowingInstrument<TSubject> instrument,
+			[NotNull] IExceptionFilter exceptionFilter,
+			ISource<TSubject> source = null) where TSpecification : class, IThrowingSpecification<TSubject>;
 	}
 
-	public class ThrowingSpecificationBuilder<TSpecification, TSubject, TException> :
-		IThrowingSpecificationBuilder<TSpecification, TSubject, TException>
-		where TSpecification : class, IThrowingSpecification<TSubject>
-		where TException : Exception
-	{
-		public TSpecification Build()
-		{
-			throw new NotImplementedException();
-		}
-	}
-
-	public class ThrowingSpecification<TSubject, TException> : Specification<TSubject>,
+	public class ThrowingSpecification<TSubject> : Specification<TSubject>,
 		IThrowingBoundSpecification<TSubject>,
 		IThrowingSpecificationState<TSubject>
-		where TException : Exception
 	{
 		protected ThrowingSpecification([NotNull] IThrowingInstrument<TSubject> instrument,
-			[NotNull] IExceptionFilter<TException> exceptionFilter,
+			[NotNull] IExceptionFilter exceptionFilter,
 			[CanBeNull] ISource<TSubject> source,
 			[CanBeNull] string because)
 			: base(source, because)
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
-			ExceptionFilter = exceptionFilter;
+			ExceptionFilter = exceptionFilter.ValidateArgumentIsNotNull();
 		}
 
 		public IExceptionFilter ExceptionFilter { get; private set; }
@@ -106,39 +92,47 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public IEvaluation Evaluate()
 		{
-			throw new NotImplementedException();
+			return Evaluate(Source.Get);
 		}
 
-		IEvaluation IThrowingSpecification<TSubject>.Evaluate(TSubject subject)
+		public IEvaluation Evaluate(TSubject subject)
 		{
-			return Evaluate(subject);
+			return Evaluate(() => subject);
 		}
 
-		public IEvaluation<TException> Evaluate(TSubject subject)
+		public static ThrowingSpecification<TSubject> Make([NotNull] IThrowingInstrument<TSubject> instrument,
+			IExceptionFilter exceptionFilter,
+			ISource<TSubject> source = null)
 		{
-			throw new NotImplementedException();
+			return new ThrowingSpecification<TSubject>(instrument, exceptionFilter, null, null);
 		}
 
-		public static ThrowingSpecification<TSubject, TException> Make(
-			[NotNull] IThrowingInstrument<TSubject> instrument, [NotNull] IExceptionFilter<TException> exceptionFilter)
+		public static ThrowingSpecification<TSubject> MakeBound([NotNull] IThrowingInstrument<TSubject> instrument,
+			[NotNull] IExceptionFilter exceptionFilter,
+			[NotNull] ISource<TSubject> source)
 		{
-			return new ThrowingSpecification<TSubject, TException>(instrument, exceptionFilter, null, null);
+			return new ThrowingSpecification<TSubject>(instrument, exceptionFilter, source, null);
 		}
 
-		public static ThrowingSpecification<TSubject, TException> Make(
-			[NotNull] IThrowingInstrument<TSubject> instrument,
-			IExceptionFilter<TException> exceptionFilter,
-			ISource<TSubject> source = null,
-			string because = null)
+		private IEvaluation Evaluate(Func<TSubject> subjectGetter)
 		{
-			return new ThrowingSpecification<TSubject, TException>(instrument, exceptionFilter, source, because);
-		}
+			try
+			{
+				TSubject subject = subjectGetter.Invoke();
+				Instrument.Sample(subject);
+			} catch (Exception e)
+			{
+				IEvaluation evaluation;
+				if (ExceptionFilter.TryFilterBeforeResult(e, out evaluation))
+				{
+					return evaluation;
+				}
+				// allow unexpected exceptions to bubble out
+				throw;
+			}
 
-		public static ThrowingSpecification<TSubject, TException> MakeBound([NotNull] ISource<TSubject> source,
-			[NotNull] IThrowingInstrument<TSubject> instrument,
-			[NotNull] IExceptionFilter<TException> exceptionFilter)
-		{
-			return new ThrowingSpecification<TSubject, TException>(instrument, exceptionFilter, source, null);
+			// exception was expected but none was thrown
+			return ExceptionFilter.FailBeforeResult();
 		}
 	}
 }

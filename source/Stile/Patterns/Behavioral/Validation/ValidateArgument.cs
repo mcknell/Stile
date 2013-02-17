@@ -7,10 +7,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using JetBrains.Annotations;
 using Stile.Types.Enums;
 using Stile.Types.Expressions;
 #endregion
@@ -71,7 +71,7 @@ namespace Stile.Patterns.Behavioral.Validation
             return new FluentValidationBuilder<TArg>(arg, 1);
         }
 
-		[Pure]
+		[NotNull,System.Diagnostics.Contracts.Pure]
         public static TArg ValidateArgumentIsNotNull<TArg>(this TArg arg) where TArg : class
         {
             return arg.ValidateArgumentIsNotNull(2);

@@ -53,7 +53,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 			builder.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			var instrument = new ThrowingInstrument<TSubject>(expression);
-			return ExceptionFilterBuilder<IThrowingSpecification<TSubject>, TSubject>.Make(instrument);
+			return ExceptionFilterBuilder<IThrowingSpecification<TSubject>, TSubject>.Make(instrument,
+				ThrowingSpecification<TSubject>.Make);
 		}
 
 		[System.Diagnostics.Contracts.Pure]
@@ -65,7 +66,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			var instrument = new ThrowingInstrument<TSubject>(expression);
 			ISource<TSubject> source = builder.Xray.Source;
-			return ExceptionFilterBuilder<IThrowingBoundSpecification<TSubject>, TSubject>.MakeBound(source, instrument);
+			return ExceptionFilterBuilder<IThrowingBoundSpecification<TSubject>, TSubject>.MakeBound(source, instrument,
+				ThrowingSpecification<TSubject>.MakeBound);
 		}
 	}
 }

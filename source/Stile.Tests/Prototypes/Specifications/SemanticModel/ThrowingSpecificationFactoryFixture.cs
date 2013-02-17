@@ -6,6 +6,7 @@
 #region using...
 using System;
 using NUnit.Framework;
+using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion

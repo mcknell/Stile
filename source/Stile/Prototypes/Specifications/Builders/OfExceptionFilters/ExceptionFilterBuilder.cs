@@ -8,6 +8,7 @@ using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
+using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -16,7 +17,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 {
 	public interface IExceptionFilterBuilder {}
 
-	public interface IExceptionFilterBuilder<TSpecification, TSubject> : IExceptionFilterBuilder,
+	public interface IExceptionFilterBuilder<out TSpecification, TSubject> : IExceptionFilterBuilder,
 		IHides<IExceptionFilterBuilderState<TSubject>>
 		where TSpecification : class, IThrowingSpecification<TSubject>
 	{
@@ -39,10 +40,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 		IExceptionFilterBuilderState<TSubject>
 		where TSpecification : class, IThrowingSpecification<TSubject>
 	{
+		private readonly ThrowingSpecification.Factory<TSpecification, TSubject> _specificationFactory;
+
 		protected ExceptionFilterBuilder([NotNull] IThrowingInstrument<TSubject> instrument,
+			[NotNull] ThrowingSpecification.Factory<TSpecification, TSubject> specificationFactory,
 			ISource<TSubject> source = null)
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
+			_specificationFactory = specificationFactory.ValidateArgumentIsNotNull();
 			Source = source;
 		}
 
@@ -56,19 +61,25 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 		public IThrowingSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
 			where TException : Exception
 		{
-			return ThrowingSpecificationFactory.Resolve<TSpecification, TSubject, TException>(Instrument, Source);
+			var exceptionFilter = new ExceptionFilter(exception => exception is TException);
+			var builder = new ThrowingSpecificationBuilder<TSpecification, TSubject, TException>(Source,
+				Instrument, exceptionFilter,
+				_specificationFactory);
+			return builder;
 		}
 
 		public static ExceptionFilterBuilder<TSpecification, TSubject> Make(
-			[NotNull] IThrowingInstrument<TSubject> instrument)
+			[NotNull] IThrowingInstrument<TSubject> instrument,
+			[NotNull] ThrowingSpecification.Factory<TSpecification, TSubject> specificationFactory)
 		{
-			return new ExceptionFilterBuilder<TSpecification, TSubject>(instrument);
+			return new ExceptionFilterBuilder<TSpecification, TSubject>(instrument, specificationFactory);
 		}
 
 		public static ExceptionFilterBuilder<TSpecification, TSubject> MakeBound([NotNull] ISource<TSubject> source,
-			[NotNull] IThrowingInstrument<TSubject> instrument)
+			[NotNull] IThrowingInstrument<TSubject> instrument,
+			[NotNull] ThrowingSpecification.Factory<TSpecification, TSubject> specificationFactory)
 		{
-			return new ExceptionFilterBuilder<TSpecification, TSubject>(instrument, source);
+			return new ExceptionFilterBuilder<TSpecification, TSubject>(instrument, specificationFactory, source);
 		}
 	}
 
