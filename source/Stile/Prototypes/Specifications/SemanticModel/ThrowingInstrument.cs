@@ -13,14 +13,14 @@ using Stile.Types.Expressions;
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IVoidInstrument : IInstrument {}
+	public interface IThrowingInstrument : IInstrument {}
 
-	public interface IVoidInstrument<in TSubject> : IVoidInstrument
+	public interface IThrowingInstrument<in TSubject> : IThrowingInstrument
 	{
 		void Sample([NotNull] TSubject subject);
 	}
 
-	public class VoidInstrument : Instrument
+	public class ThrowingInstrument : Instrument
 	{
 		public new static class Trivial<TSubject>
 		{
@@ -28,12 +28,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		}
 	}
 
-	public class VoidInstrument<TSubject> : VoidInstrument,
-		IVoidInstrument<TSubject>
+	public class ThrowingInstrument<TSubject> : ThrowingInstrument,
+		IThrowingInstrument<TSubject>
 	{
 		private readonly Lazy<Action<TSubject>> _lazyAction;
 
-		public VoidInstrument([NotNull] Expression<Action<TSubject>> expression)
+		public ThrowingInstrument([NotNull] Expression<Action<TSubject>> expression)
 		{
 			Expression<Action<TSubject>> validExpression = expression.ValidateArgumentIsNotNull();
 			_lazyAction = new Lazy<Action<TSubject>>(validExpression.Compile);

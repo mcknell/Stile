@@ -11,6 +11,7 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
@@ -66,7 +67,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 
 	public interface IEnumerablePredicateHas : IPredicateHas {}
 
-	public interface IEnumerablePredicateHas<TSpecification, TSubject, out TResult, TItem> :
+	public interface IEnumerablePredicateHas<out TSpecification, TSubject, out TResult, TItem> :
 		IEnumerablePredicateHas,
 		IPredicateHas<TSpecification, TSubject, TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>

@@ -7,7 +7,7 @@
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 #endregion
 
-namespace Stile.Prototypes.Specifications.SemanticModel
+namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
 	public interface IBoundSpecification : ISpecification {}
 

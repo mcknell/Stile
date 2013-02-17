@@ -10,6 +10,7 @@ using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using Stile.Prototypes.Specifications.Builders.OfPredicates;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfInstruments

@@ -5,14 +5,13 @@
 
 #region using...
 using System;
-using System.Linq.Expressions;
 using NUnit.Framework;
 using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
 using Stile.Prototypes.Specifications.Builders.OfPredicates.Has;
 using Stile.Prototypes.Specifications.Builders.OfPredicates.Is;
-using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Tests.Prototypes.Specifications.SampleObjects;
 #endregion
 
@@ -44,6 +43,32 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		}
 
 		[Test]
+		public void ThrowingBound()
+		{
+			var saboteur = new Saboteur();
+			saboteur.Load(() => new ArgumentException());
+			IThrowingSpecificationBuilder<IThrowingBoundSpecification<Saboteur>, Saboteur, ArgumentException>
+				specificationBuilder = Specify.For(saboteur).That(x => x.Throw()).Throws<ArgumentException>();
+			Assert.That(specificationBuilder, Is.Not.Null);
+			IThrowingBoundSpecification<Saboteur> specification = specificationBuilder.Build();
+			IEvaluation evaluation = specification.Evaluate();
+			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
+		}
+
+		[Test]
+		public void ThrowingUnbound()
+		{
+			var saboteur = new Saboteur();
+			saboteur.Load(() => new ArgumentException());
+			IThrowingSpecificationBuilder<IThrowingSpecification<Saboteur>, Saboteur, ArgumentException>
+				specificationBuilder = Specify.ForAny<Saboteur>().That(x => x.Throw()).Throws<ArgumentException>();
+			Assert.That(specificationBuilder, Is.Not.Null);
+			IThrowingSpecification<Saboteur> specification = specificationBuilder.Build();
+			IEvaluation evaluation = specification.Evaluate(saboteur);
+			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
+		}
+
+		[Test]
 		public void Unbound()
 		{
 			ISpecification<Foo<int>, string> specification =
@@ -52,32 +77,6 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			IEvaluation<string> evaluation = specification.Evaluate(new Foo<int>());
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(evaluation.Value, Is.Not.EqualTo(45));
-		}
-
-		[Test]
-		public void VoidInstrument()
-		{
-			var saboteur = new Saboteur();
-			saboteur.Load(() => new ArgumentException());
-			IThrowingBoundSpecification<Saboteur> specification =
-				Specify.For(saboteur).That(x => x.Throw()).Throws<ArgumentException>();
-			Assert.That(specification, Is.Not.Null);
-			IEvaluation evaluation = specification.Evaluate();
-			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
-		}
-		[Test]
-		public void Throws()
-		{
-/*
-			var saboteur = new Saboteur();
-			saboteur.Load(() => new ArgumentException());
-			var specification =
-				Specify.For(saboteur).That(x => x.Throw()).Has.HashCode(45);
-			Assert.That(specification, Is.Not.Null);
-			IEvaluation<string> evaluation = specification.Evaluate(new Foo<int>());
-			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
-			Assert.That(evaluation.Value, Is.Not.EqualTo(45));
-*/
 		}
 	}
 }

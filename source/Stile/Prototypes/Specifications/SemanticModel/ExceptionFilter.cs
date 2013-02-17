@@ -11,7 +11,11 @@ using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IExceptionFilter {}
+	public interface IExceptionFilter
+	{
+		IEvaluation FailBeforeResult();
+		bool TryFilterBeforeResult([NotNull] Exception e, out IEvaluation evaluation);
+	}
 
 	public interface IExceptionFilter<TResult> : IExceptionFilter
 	{
@@ -32,7 +36,17 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			throw new NotImplementedException();
 		}
 
+		public IEvaluation FailBeforeResult()
+		{
+			throw new NotImplementedException();
+		}
+
 		public bool TryFilter(TResult result, Exception e, out IEvaluation<TResult> evaluation)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool TryFilterBeforeResult(Exception e, out IEvaluation evaluation)
 		{
 			throw new NotImplementedException();
 		}

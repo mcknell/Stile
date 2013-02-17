@@ -14,6 +14,7 @@ using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.OfPredicates.Has;
 using Stile.Prototypes.Specifications.Builders.OfPredicates.Is;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfPredicates

@@ -11,6 +11,7 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
 using Stile.Prototypes.Specifications.Builders.OfPredicates;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications
@@ -42,9 +43,8 @@ namespace Stile.Prototypes.Specifications
 		public static IPredicateBuilder<ISpecification<TSubject, TSubject>, TSubject, TSubject> ThatAny<TSubject>()
 		{
 			var instrument = new Instrument<TSubject, TSubject>(x => x);
-			Specification.Factory<ISpecification<TSubject, TSubject>, TSubject, TSubject> factory =
-				Specification.MakeUnboundFactory<TSubject, TSubject>();
-			return new PredicateBuilder<ISpecification<TSubject, TSubject>, TSubject, TSubject>(instrument, factory);
+			return new PredicateBuilder<ISpecification<TSubject, TSubject>, TSubject, TSubject>(instrument,
+				Specification<TSubject, TSubject>.Make);
 		}
 	}
 }

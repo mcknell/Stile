@@ -11,7 +11,7 @@ using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 #endregion
 
-namespace Stile.Prototypes.Specifications.SemanticModel
+namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
 	public interface ISpecification {}
 
@@ -26,19 +26,17 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 	public interface ISpecification<in TSubject> : ISpecification {}
 
-	public interface ISpecification<in TSubject, out TResult, out TState> : ISpecification<TSubject>,
-		IHides<TState>
-		where TState : class, ISpecificationState<TSubject>
+	public interface ISpecification<TSubject, TResult> : ISpecification<TSubject>,
+		IResultSpecification<TResult>,
+		IHides<ISpecificationState<TSubject, TResult>>
 	{
 		[NotNull]
 		IEvaluation<TResult> Evaluate(TSubject subject);
 	}
 
-	public interface ISpecification<TSubject, TResult> :
-		ISpecification<TSubject, TResult, ISpecificationState<TSubject, TResult>>,
-		IResultSpecification<TResult> {}
+	public interface ISpecificationState {}
 
-	public interface ISpecificationState<out TSubject>
+	public interface ISpecificationState<out TSubject> : ISpecificationState
 	{
 		[CanBeNull]
 		string Because { get; }
@@ -61,38 +59,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			where TSpecification : class, ISpecification<TSubject, TResult>;
 
 		protected static readonly IError[] NoErrors = new IError[0];
-
-		public static Specification<TSubject, TResult> Make<TSubject, TResult>(
-			[NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] ICriterion<TResult> criterion,
-			ISource<TSubject> source = null,
-			string because = null,
-			IExceptionFilter<TResult> exceptionFilter = null)
-		{
-			return Specification<TSubject, TResult>.Make(instrument, criterion, source, because, exceptionFilter);
-		}
-
-		public static Specification<TSubject, TResult> MakeBound<TSubject, TResult>(
-			[NotNull] ISource<TSubject> source,
-			[NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] ICriterion<TResult> criterion,
-			string because = null,
-			IExceptionFilter<TResult> exceptionFilter = null)
-		{
-			return Specification<TSubject, TResult>.MakeBound(source, instrument, criterion, because, exceptionFilter);
-		}
-
-		public static Factory<IBoundSpecification<TSubject, TResult>, TSubject, TResult> MakeBoundFactory
-			<TSubject, TResult>()
-		{
-			return (source, instrument, criterion) => MakeBound(source, instrument, criterion);
-		}
-
-		public static Factory<ISpecification<TSubject, TResult>, TSubject, TResult> MakeUnboundFactory
-			<TSubject, TResult>()
-		{
-			return (source, instrument, criterion) => Make(instrument, criterion);
-		}
 	}
 
 	public abstract class Specification<TSubject> : Specification,
@@ -135,32 +101,26 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			get { return this; }
 		}
 
-		public IEvaluation<TResult> Evaluate(TSubject subject)
-		{
-			return Evaluate(() => subject);
-		}
-
 		public IEvaluation<TResult> Evaluate()
 		{
 			return Evaluate(Source.Get);
 		}
 
-		public static Specification<TSubject, TResult> Make([NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] ICriterion<TResult> criterion,
-			ISource<TSubject> source = null,
-			string because = null,
-			IExceptionFilter<TResult> exceptionFilter = null)
+		public IEvaluation<TResult> Evaluate(TSubject subject)
 		{
-			return new Specification<TSubject, TResult>(instrument, criterion, source, because, exceptionFilter);
+			return Evaluate(() => subject);
+		}
+
+		public static Specification<TSubject, TResult> Make([CanBeNull] ISource<TSubject> source, [NotNull] IInstrument<TSubject, TResult> instrument, [NotNull] ICriterion<TResult> criterion)
+		{
+			return new Specification<TSubject, TResult>(instrument, criterion, source);
 		}
 
 		public static Specification<TSubject, TResult> MakeBound([NotNull] ISource<TSubject> source,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] ICriterion<TResult> criterion,
-			string because = null,
-			IExceptionFilter<TResult> exceptionFilter = null)
+			[NotNull] ICriterion<TResult> criterion)
 		{
-			return new Specification<TSubject, TResult>(instrument, criterion, source, because, exceptionFilter);
+			return new Specification<TSubject, TResult>(instrument, criterion, source);
 		}
 
 		private IEvaluation<TResult> Evaluate(Func<TSubject> subjectGetter)

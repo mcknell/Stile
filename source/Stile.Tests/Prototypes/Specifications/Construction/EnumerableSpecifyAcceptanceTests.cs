@@ -10,7 +10,7 @@ using NUnit.Framework;
 using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
 using Stile.Prototypes.Specifications.Builders.OfPredicates;
-using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Tests.Prototypes.Specifications.SampleObjects;
 #endregion
 

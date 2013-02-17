@@ -7,6 +7,7 @@
 using System.Diagnostics.Contracts;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
@@ -18,8 +19,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 			this IPredicateHas<TSpecification, TSubject, TResult> has, int hashCode)
 			where TSpecification : class, ISpecification<TSubject, TResult>
 		{
-			return Specification.Make(has.Xray.Instrument,
-				new Criterion<TResult>(x => x.GetHashCode() == hashCode ? Outcome.Succeeded : Outcome.Failed));
+			return Specification<TSubject, TResult>.Make(has.Xray.Source, has.Xray.Instrument, new Criterion<TResult>(x => x.GetHashCode() == hashCode ? Outcome.Succeeded : Outcome.Failed));
 		}
 	}
 }

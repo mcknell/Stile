@@ -5,49 +5,67 @@
 
 #region using...
 using System;
-using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
+using JetBrains.Annotations;
+using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Builders.OfExceptionFilters;
 using Stile.Prototypes.Specifications.Builders.OfPredicates;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 {
 	public static class InstrumentBuilderExtensions
 	{
-		[Pure]
+		[System.Diagnostics.Contracts.Pure]
 		public static IPredicateBuilder<ISpecification<TSubject, TResult>, TSubject, TResult> That
-			<TSubject, TResult>(this IInstrumentBuilder<TSubject> builder,
+			<TSubject, TResult>([NotNull] this IInstrumentBuilder<TSubject> builder,
 				Expression<Func<TSubject, TResult>> expression)
 		{
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+			builder.ValidateArgumentIsNotNull();
+// ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			var instrument = new Instrument<TSubject, TResult>(expression);
-			Specification.Factory<ISpecification<TSubject, TResult>, TSubject, TResult> specificationFactory =
-				Specification.MakeUnboundFactory<TSubject, TResult>();
 			return new PredicateBuilder<ISpecification<TSubject, TResult>, TSubject, TResult>(instrument,
-				specificationFactory);
+				Specification<TSubject, TResult>.Make);
 		}
 
-		[Pure]
+		[System.Diagnostics.Contracts.Pure]
 		public static IPredicateBuilder<IBoundSpecification<TSubject, TResult>, TSubject, TResult> That
-			<TSubject, TResult>(this IBoundInstrumentBuilder<TSubject> builder,
+			<TSubject, TResult>([NotNull] this IBoundInstrumentBuilder<TSubject> builder,
 				Expression<Func<TSubject, TResult>> expression)
 		{
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+			builder.ValidateArgumentIsNotNull();
+// ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			var instrument = new Instrument<TSubject, TResult>(expression);
-			Specification.Factory<IBoundSpecification<TSubject, TResult>, TSubject, TResult> specificationFactory =
-				Specification.MakeBoundFactory<TSubject, TResult>();
 			return new PredicateBuilder<IBoundSpecification<TSubject, TResult>, TSubject, TResult>(instrument,
-				specificationFactory,
+				Specification<TSubject, TResult>.MakeBound,
 				builder.Xray.Source);
 		}
 
-		[Pure]
-		public static IExceptionFilterBuilder<IThrowingBoundSpecification<TSubject>, TSubject> That<TSubject>(
-			this IBoundInstrumentBuilder<TSubject> builder, Expression<Action<TSubject>> expression)
+		[System.Diagnostics.Contracts.Pure]
+		public static IExceptionFilterBuilder<IThrowingSpecification<TSubject>, TSubject> That<TSubject>(
+			[NotNull] this IInstrumentBuilder<TSubject> builder, Expression<Action<TSubject>> expression)
 		{
-			var instrument = new VoidInstrument<TSubject>(expression);
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+			builder.ValidateArgumentIsNotNull();
+// ReSharper restore ReturnValueOfPureMethodIsNotUsed
+			var instrument = new ThrowingInstrument<TSubject>(expression);
+			return ExceptionFilterBuilder<IThrowingSpecification<TSubject>, TSubject>.Make(instrument);
+		}
+
+		[System.Diagnostics.Contracts.Pure]
+		public static IExceptionFilterBuilder<IThrowingBoundSpecification<TSubject>, TSubject> That<TSubject>(
+			[NotNull] this IBoundInstrumentBuilder<TSubject> builder, Expression<Action<TSubject>> expression)
+		{
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+			builder.ValidateArgumentIsNotNull();
+// ReSharper restore ReturnValueOfPureMethodIsNotUsed
+			var instrument = new ThrowingInstrument<TSubject>(expression);
 			ISource<TSubject> source = builder.Xray.Source;
-			return new ExceptionFilterBuilder<IThrowingBoundSpecification<TSubject>, TSubject>(instrument, source);
+			return ExceptionFilterBuilder<IThrowingBoundSpecification<TSubject>, TSubject>.MakeBound(source, instrument);
 		}
 	}
 }

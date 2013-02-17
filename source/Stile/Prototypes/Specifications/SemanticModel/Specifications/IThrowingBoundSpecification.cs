@@ -4,24 +4,20 @@
 #endregion
 
 #region using...
-using System;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 #endregion
 
-namespace Stile.Prototypes.Specifications.SemanticModel
+namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
 	public interface IThrowingBoundSpecification : IThrowingSpecification,
 		IBoundSpecification {}
 
 	public interface IThrowingBoundSpecification<TSubject> : IThrowingBoundSpecification,
-		IThrowingSpecification<TSubject> {}
-
-	public interface IThrowingBoundSpecification<TSubject, TException> : IThrowingBoundSpecification<TSubject>,
-		IThrowingSpecification<TSubject, TException>
-		where TException : Exception
+		IThrowingSpecification<TSubject>,
+		IBoundSpecification<TSubject>
 	{
 		[NotNull]
-		IEvaluation<TException> Evaluate();
+		IEvaluation Evaluate();
 	}
 }
