@@ -17,7 +17,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 {
 	public interface IEnumerablePredicateBuilder<TSpecification, TSubject, TResult, TItem> :
 		IPredicateBuilder
-			<TSpecification, TSubject, TResult, IEnumerablePredicateHas<TSpecification, TSubject, TResult, TItem>,
+			<TSpecification, TSubject, TResult, IEnumerableHas<TSpecification, TSubject, TResult, TItem>,
 				IEnumerablePredicateIs<TSpecification, TSubject, TResult, TItem>>
 		where TSpecification : class, ISpecification<TSubject, TResult>
 		where TResult : class, IEnumerable<TItem> {}
@@ -29,20 +29,23 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 
 	public class EnumerablePredicateBuilder<TSpecification, TSubject, TResult, TItem> :
 		PredicateBuilder
-			<TSpecification, TSubject, TResult, IEnumerablePredicateHas<TSpecification, TSubject, TResult, TItem>,
+			<TSpecification, TSubject, TResult, IEnumerableHas<TSpecification, TSubject, TResult, TItem>,
 				IEnumerablePredicateIs<TSpecification, TSubject, TResult, TItem>>,
 		IEnumerablePredicateBuilder<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification<TSubject, TResult>
 		where TResult : class, IEnumerable<TItem>
 	{
-		public EnumerablePredicateBuilder([NotNull] Instrument<TSubject, TResult> instrument,
+		public EnumerablePredicateBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] Specification.Factory<TSpecification, TSubject, TResult> specificationFactory,
 			ISource<TSubject> source = null)
 			: base(instrument, specificationFactory, source) {}
 
-		protected override IEnumerablePredicateHas<TSpecification, TSubject, TResult, TItem> MakeHas()
+		protected override IEnumerableHas<TSpecification, TSubject, TResult, TItem> MakeHas()
 		{
-			throw new NotImplementedException();
+			var has = new EnumerableHas<TSpecification, TSubject, TResult, TItem>(Instrument,
+				_specificationFactory,
+				Source);
+			return has;
 		}
 
 		protected override IEnumerablePredicateIs<TSpecification, TSubject, TResult, TItem> MakeIs()

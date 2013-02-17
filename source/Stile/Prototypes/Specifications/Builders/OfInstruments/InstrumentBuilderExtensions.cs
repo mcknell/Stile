@@ -32,7 +32,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 		}
 
 		[System.Diagnostics.Contracts.Pure]
-		public static IPredicateBuilder<IBoundSpecification<TSubject, TResult>, TSubject, TResult> That
+		public static IBoundPredicateBuilder<IBoundSpecification<TSubject, TResult>, TSubject, TResult> That
 			<TSubject, TResult>([NotNull] this IBoundInstrumentBuilder<TSubject> builder,
 				Expression<Func<TSubject, TResult>> expression)
 		{
@@ -40,7 +40,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 			builder.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			var instrument = new Instrument<TSubject, TResult>(expression);
-			return new PredicateBuilder<IBoundSpecification<TSubject, TResult>, TSubject, TResult>(instrument,
+			return new BoundPredicateBuilder<IBoundSpecification<TSubject, TResult>, TSubject, TResult>(instrument,
 				Specification<TSubject, TResult>.MakeBound,
 				builder.Xray.Source);
 		}

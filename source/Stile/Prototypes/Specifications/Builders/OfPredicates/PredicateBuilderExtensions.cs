@@ -4,7 +4,6 @@
 #endregion
 
 #region using...
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Stile.Prototypes.Specifications.SemanticModel;
@@ -16,12 +15,30 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 	public static class PredicateBuilderExtensions
 	{
 		[Pure]
-		public static IEnumerablePredicateBuilder<TSpecification, TSubject, TResult, TItem> OfItemsLike
-			<TSpecification, TSubject, TResult, TItem>(this IPredicateBuilder<TSpecification, TSubject, TResult> builder,
-				TItem throwaway) where TResult : class, IEnumerable<TItem>
-			where TSpecification : class, ISpecification<TSubject, TResult>
+		public static IEnumerablePredicateBuilder<ISpecification<TSubject, TResult>, TSubject, TResult, TItem>
+			OfItemsLike<TSpecification, TSubject, TResult, TItem>(
+			this IPredicateBuilder<TSpecification, TSubject, TResult> builder, TItem throwaway)
+			where TSpecification : class, ISpecification<TSubject, TResult> where TResult : class, IEnumerable<TItem>
 		{
-			throw new NotImplementedException();
+			IPredicateBuilderState<TSubject, TResult> state = builder.Xray;
+			IInstrument<TSubject, TResult> instrument = state.Instrument;
+			return
+				new EnumerablePredicateBuilder<ISpecification<TSubject, TResult>, TSubject, TResult, TItem>(instrument,
+					Specification<TSubject, TResult>.Make,
+					state.Source);
+		}
+		[Pure]
+		public static IEnumerablePredicateBuilder<IBoundSpecification<TSubject, TResult>, TSubject, TResult, TItem>
+			OfItemsLike<TSpecification, TSubject, TResult, TItem>(
+			this IBoundPredicateBuilder<TSpecification, TSubject, TResult> builder, TItem throwaway)
+			where TSpecification : class, IBoundSpecification<TSubject, TResult> where TResult : class, IEnumerable<TItem>
+		{
+			IPredicateBuilderState<TSubject, TResult> state = builder.Xray;
+			IInstrument<TSubject, TResult> instrument = state.Instrument;
+			return
+				new EnumerablePredicateBuilder<IBoundSpecification<TSubject, TResult>, TSubject, TResult, TItem>(instrument,
+					Specification<TSubject, TResult>.MakeBound,
+					state.Source);
 		}
 	}
 }

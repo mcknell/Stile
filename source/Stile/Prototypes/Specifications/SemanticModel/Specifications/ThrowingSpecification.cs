@@ -8,7 +8,6 @@ using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
-using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 #endregion
 
@@ -33,31 +32,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		IExceptionFilter ExceptionFilter { get; }
 		[NotNull]
 		IThrowingInstrument<TSubject> Instrument { get; }
-	}
-
-	public static class ThrowingSpecificationFactory
-	{
-		public delegate TSpecification Method<out TSpecification, TSubject, TException>(
-			[CanBeNull] ISource<TSubject> source,
-			[NotNull] IThrowingInstrument<TSubject> instrument,
-			[NotNull] IExceptionFilter<TException> exceptionFilter) where TSpecification : class
-			where TException : Exception;
-
-		public static IThrowingSpecification<TSubject> Make<TSubject, TException>(
-			[NotNull] IThrowingInstrument<TSubject> instrument,
-			IExceptionFilter<TException> exceptionFilter,
-			ISource<TSubject> source = null) where TException : Exception
-		{
-			return ThrowingSpecification<TSubject>.Make(instrument, exceptionFilter, source);
-		}
-
-		public static IThrowingSpecificationBuilder<TSpecification, TSubject, TException> Resolve
-			<TSpecification, TSubject, TException>([NotNull] IThrowingInstrument<TSubject> instrument,
-				ISource<TSubject> source = null) where TSpecification : class, ISpecification<TSubject>
-			where TException : Exception
-		{
-			throw new NotImplementedException();
-		}
 	}
 
 	public static class ThrowingSpecification

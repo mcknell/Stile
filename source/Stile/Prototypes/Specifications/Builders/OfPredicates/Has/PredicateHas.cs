@@ -4,9 +4,6 @@
 #endregion
 
 #region using...
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
@@ -60,29 +57,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 
 		public TSpecification Make(ICriterion<TResult> criterion)
 		{
-			var specification = _specificationFactory.Invoke(Source, Instrument, criterion);
+			TSpecification specification = _specificationFactory.Invoke(Source, Instrument, criterion);
 			return specification;
 		}
-	}
-
-	public interface IEnumerablePredicateHas : IPredicateHas {}
-
-	public interface IEnumerablePredicateHas<out TSpecification, TSubject, out TResult, TItem> :
-		IEnumerablePredicateHas,
-		IPredicateHas<TSpecification, TSubject, TResult>
-		where TSpecification : class, ISpecification<TSubject, TResult>
-		where TResult : class, IEnumerable<TItem>
-	{
-		IQuantifiedEnumerablePredicateHas<TSpecification, TItem> All { get; }
-	}
-
-	public interface IQuantifiedEnumerablePredicateHas {}
-
-	public interface IQuantifiedEnumerablePredicateHas<out TSpecification, TItem> :
-		IQuantifiedEnumerablePredicateHas
-		where TSpecification : class, ISpecification
-	{
-		[System.Diagnostics.Contracts.Pure]
-		TSpecification ItemsSatisfying(Expression<Func<TItem, bool>> expression);
 	}
 }

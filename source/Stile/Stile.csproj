@@ -64,6 +64,10 @@
     <Compile Include="Patterns\Structural\FluentInterface\IHides.cs" />
     <Compile Include="Patterns\Structural\FluentInterface\INegatable.cs" />
     <Compile Include="Patterns\Lifetimes\Lazy\Lazier.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\BoundPredicateBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Has\EnumerableHas.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Has\Quantified\HasAll.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Has\Quantified\QuantifiedHas.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\IThrowingBoundSpecification.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\ThrowingSpecification.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfInstruments\EnumerableInstrumentBuilderExtensions.cs" />

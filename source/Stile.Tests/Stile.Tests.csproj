@@ -59,7 +59,6 @@
     <Compile Include="Prototypes\Specifications\SemanticModel\InstrumentFixture.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\OutcomeFixture.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\SourceFixture.cs" />
-    <Compile Include="Prototypes\Specifications\SemanticModel\ThrowingSpecificationFactoryFixture.cs" />
     <Compile Include="Prototypes\Specifications\SubjunctiveSpecificationVisitorFixture.cs" />
     <Compile Include="Readability\NullFixture.cs" />
     <Compile Include="Readability\PrintExtensionsFixture.cs" />

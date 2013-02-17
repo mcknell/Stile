@@ -37,6 +37,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		IHides<IPredicateBuilderState<TSubject, TResult>>
 		where TSpecification : class, ISpecification<TSubject, TResult> {}
 
+
 	public abstract class PredicateBuilder<TSpecification, TSubject, TResult, THas, TIs> :
 		IPredicateBuilder<TSpecification, TSubject, TResult, THas, TIs>
 		where TSpecification : class, ISpecification<TSubject, TResult>
@@ -48,7 +49,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 
 		protected readonly Specification.Factory<TSpecification, TSubject, TResult> _specificationFactory;
 
-		protected PredicateBuilder([NotNull] Instrument<TSubject, TResult> instrument,
+		protected PredicateBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
 			Specification.Factory<TSpecification, TSubject, TResult> specificationFactory,
 			ISource<TSubject> source = null)
 		{
@@ -119,7 +120,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		{
 			return new PredicateIs<TSpecification, TSubject, TResult>(Instrument,
 				Negated.False,
-				_specificationFactory, Source);
+				_specificationFactory,
+				Source);
 		}
 	}
 }
