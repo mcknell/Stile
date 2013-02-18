@@ -48,12 +48,30 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
-			IThrowingSpecificationBuilder<IThrowingBoundSpecification<Saboteur>, Saboteur, ArgumentException>
-				specificationBuilder = Specify.For(saboteur).That(x => x.Throw()).Throws<ArgumentException>();
+			IThrowingSpecificationBuilder<IThrowingBoundSpecification<Saboteur>, Saboteur> specificationBuilder =
+				Specify.For(saboteur).That(x => x.Throw()).Throws<ArgumentException>();
 			Assert.That(specificationBuilder, Is.Not.Null);
 			IThrowingBoundSpecification<Saboteur> specification = specificationBuilder.Build();
 			IEvaluation evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
+			Assert.That(saboteur.ThrowCalled);
+		}
+
+		[Test]
+		public void ThrowingBoundInstrument()
+		{
+			var saboteur = new Saboteur();
+
+			saboteur.Load(() => new ArgumentException());
+			var target = new SabotageTarget(saboteur);
+			IThrowingSpecificationBuilder<IBoundSpecification<SabotageTarget, Saboteur>, SabotageTarget>
+				specificationBuilder =
+					Specify.For(target).That(x => x.Saboteur.SuicidalSideEffect).Throws<ArgumentException>();
+			Assert.That(specificationBuilder, Is.Not.Null);
+			IBoundSpecification<SabotageTarget, Saboteur> specification = specificationBuilder.Build();
+			IEvaluation evaluation = specification.Evaluate();
+			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
+			Assert.That(saboteur.ThrowCalled);
 		}
 
 		[Test]
@@ -61,12 +79,13 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
-			IThrowingSpecificationBuilder<IThrowingSpecification<Saboteur>, Saboteur, ArgumentException>
-				specificationBuilder = Specify.ForAny<Saboteur>().That(x => x.Throw()).Throws<ArgumentException>();
+			IThrowingSpecificationBuilder<IThrowingSpecification<Saboteur>, Saboteur> specificationBuilder =
+				Specify.ForAny<Saboteur>().That(x => x.Throw()).Throws<ArgumentException>();
 			Assert.That(specificationBuilder, Is.Not.Null);
 			IThrowingSpecification<Saboteur> specification = specificationBuilder.Build();
 			IEvaluation evaluation = specification.Evaluate(saboteur);
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
+			Assert.That(saboteur.ThrowCalled);
 		}
 
 		[Test]

@@ -36,6 +36,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 		public Lazy<string> Description { get; private set; }
 
+		public static Criterion<TResult> UnconditionalAcceptance
+		{
+			get { return new Criterion<TResult>(result => Outcome.Succeeded); }
+		}
+
 		public Outcome Accept(TResult result)
 		{
 			return _lazyPredicate.Value.Invoke(result);

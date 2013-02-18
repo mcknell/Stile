@@ -17,17 +17,17 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 	{
 		[Pure]
 		public static TSpecification EqualTo<TSpecification, TSubject, TResult>(
-			this IPredicateIs<TSpecification, TSubject, TResult> builder, TResult result)
+			this IIs<TSpecification, TSubject, TResult> builder, TResult result)
 			where TSpecification : class, ISpecification<TSubject, TResult> where TResult : IEquatable<TResult>
 		{
 			return Make(builder, x => x.Equals(result));
 		}
 
 		private static TSpecification Make<TSpecification, TSubject, TResult>(
-			IPredicateIs<TSpecification, TSubject, TResult> builder, Predicate<TResult> predicate)
+			IIs<TSpecification, TSubject, TResult> builder, Predicate<TResult> predicate)
 			where TSpecification : class, ISpecification<TSubject, TResult> where TResult : IEquatable<TResult>
 		{
-			IPredicateIsState<TSpecification, TSubject, TResult> state = builder.Xray;
+			IIsState<TSpecification, TSubject, TResult> state = builder.Xray;
 			Predicate<TResult> accepter = x => state.Negated.AgreesWith(predicate.Invoke(x));
 			var criterion = new Criterion<TResult>(x => accepter.Invoke(x) ? Outcome.Succeeded : Outcome.Failed);
 			return state.Make(criterion);

@@ -17,7 +17,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 	{
 		[Pure]
 		public static TSpecification ComparablyEquivalentTo<TSpecification, TSubject, TResult>(
-			this IPredicateIs<TSpecification, TSubject, TResult> builder, TResult result)
+			this IIs<TSpecification, TSubject, TResult> builder, TResult result)
 			where TSpecification : class, ISpecification<TSubject, TResult> where TResult : IComparable<TResult>
 		{
 			return Make(builder, x => x == 0, result);
@@ -25,10 +25,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 
 		[Pure]
 		public static TSpecification Make<TSpecification, TSubject, TResult>(
-			IPredicateIs<TSpecification, TSubject, TResult> builder, Predicate<int> predicate, TResult result)
+			IIs<TSpecification, TSubject, TResult> builder, Predicate<int> predicate, TResult result)
 			where TSpecification : class, ISpecification<TSubject, TResult> where TResult : IComparable<TResult>
 		{
-			IPredicateIsState<TSpecification, TSubject, TResult> state = builder.Xray;
+			IIsState<TSpecification, TSubject, TResult> state = builder.Xray;
 			Predicate<TResult> accepter = x => state.Negated.AgreesWith(predicate.Invoke(x.CompareTo(result)));
 			var criterion = new Criterion<TResult>(x => accepter.Invoke(x) ? Outcome.Succeeded : Outcome.Failed);
 			return state.Make(criterion);

@@ -13,6 +13,7 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.OfPredicates.Has;
 using Stile.Prototypes.Specifications.Builders.OfPredicates.Is;
+using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -21,28 +22,29 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 {
 	public interface IPredicateBuilder {}
 
-	public interface IPredicateBuilder<TSpecification, TSubject, TResult, out THas, out TIs> : IPredicateBuilder
+	public interface IPredicateBuilder<out TSpecification, TSubject, TResult, out THas, out TIs> :
+		IPredicateBuilder
 		where TSpecification : class, ISpecification<TSubject, TResult>
-		where THas : class, IPredicateHas<TSpecification, TSubject, TResult>
-		where TIs : class, IResultPredicateIs<TSpecification, TResult>
+		where THas : class, IHas<TSpecification, TSubject, TResult>
+		where TIs : class, IResultIs<TSpecification, TResult>
 	{
 		THas Has { get; }
 		TIs Is { get; }
+		IThrowingSpecificationBuilder<TSpecification, TSubject> Throws<TException>() where TException : Exception;
 	}
 
 	public interface IPredicateBuilder<TSpecification, TSubject, TResult> :
 		IPredicateBuilder
-			<TSpecification, TSubject, TResult, IPredicateHas<TSpecification, TSubject, TResult>,
-				INegatablePredicateIs<TSpecification, TSubject, TResult, IPredicateIs<TSpecification, TSubject, TResult>>>,
+			<TSpecification, TSubject, TResult, IHas<TSpecification, TSubject, TResult>,
+				INegatableIs<TSpecification, TSubject, TResult, IIs<TSpecification, TSubject, TResult>>>,
 		IHides<IPredicateBuilderState<TSubject, TResult>>
 		where TSpecification : class, ISpecification<TSubject, TResult> {}
-
 
 	public abstract class PredicateBuilder<TSpecification, TSubject, TResult, THas, TIs> :
 		IPredicateBuilder<TSpecification, TSubject, TResult, THas, TIs>
 		where TSpecification : class, ISpecification<TSubject, TResult>
-		where THas : class, IPredicateHas, IPredicateHas<TSpecification, TSubject, TResult>
-		where TIs : class, IResultPredicateIs<TSpecification, TResult>
+		where THas : class, IHas, IHas<TSpecification, TSubject, TResult>
+		where TIs : class, IResultIs<TSpecification, TResult>
 	{
 		private readonly Lazy<THas> _lazyHas;
 		private readonly Lazy<TIs> _lazyIs;
@@ -77,7 +79,19 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 				return value;
 			}
 		}
+
 		public ISource<TSubject> Source { get; private set; }
+
+		public IThrowingSpecificationBuilder<TSpecification, TSubject> Throws<TException>()
+			where TException : Exception
+		{
+			var exceptionFilter = new ExceptionFilter<TResult>(exception => exception is TException);
+			var builder = new ThrowingSpecificationBuilder<TSpecification, TSubject, TResult>(Source,
+				Instrument,
+				exceptionFilter,
+				_specificationFactory);
+			return builder;
+		}
 
 		protected abstract THas MakeHas();
 		protected abstract TIs MakeIs();
@@ -85,8 +99,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 
 	public class PredicateBuilder<TSpecification, TSubject, TResult> :
 		PredicateBuilder
-			<TSpecification, TSubject, TResult, IPredicateHas<TSpecification, TSubject, TResult>,
-				INegatablePredicateIs<TSpecification, TSubject, TResult, IPredicateIs<TSpecification, TSubject, TResult>>>,
+			<TSpecification, TSubject, TResult, IHas<TSpecification, TSubject, TResult>,
+				INegatableIs<TSpecification, TSubject, TResult, IIs<TSpecification, TSubject, TResult>>>,
 		IPredicateBuilder<TSpecification, TSubject, TResult>,
 		IPredicateBuilderState<TSubject, TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>
@@ -96,9 +110,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 			ISource<TSubject> source = null)
 			: base(instrument, specificationFactory, source) {}
 
-		public new
-			INegatablePredicateIs<TSpecification, TSubject, TResult, IPredicateIs<TSpecification, TSubject, TResult>>
-			Is
+		public new INegatableIs<TSpecification, TSubject, TResult, IIs<TSpecification, TSubject, TResult>> Is
 		{
 			get { return base.Is; }
 		}
@@ -108,20 +120,16 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 			get { return this; }
 		}
 
-		protected override IPredicateHas<TSpecification, TSubject, TResult> MakeHas()
+		protected override IHas<TSpecification, TSubject, TResult> MakeHas()
 		{
-			var has = new PredicateHas<TSpecification, TSubject, TResult>(Instrument, _specificationFactory, Source);
+			var has = new Has<TSpecification, TSubject, TResult>(Instrument, _specificationFactory, Source);
 			return has;
 		}
 
-		protected override
-			INegatablePredicateIs<TSpecification, TSubject, TResult, IPredicateIs<TSpecification, TSubject, TResult>>
+		protected override INegatableIs<TSpecification, TSubject, TResult, IIs<TSpecification, TSubject, TResult>>
 			MakeIs()
 		{
-			return new PredicateIs<TSpecification, TSubject, TResult>(Instrument,
-				Negated.False,
-				_specificationFactory,
-				Source);
+			return new Is<TSpecification, TSubject, TResult>(Instrument, Negated.False, _specificationFactory, Source);
 		}
 	}
 }

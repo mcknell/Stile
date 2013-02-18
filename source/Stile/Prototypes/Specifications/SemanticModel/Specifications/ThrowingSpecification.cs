@@ -39,7 +39,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public delegate TSpecification Factory<out TSpecification, TSubject>(
 			[NotNull] IThrowingInstrument<TSubject> instrument,
 			[NotNull] IExceptionFilter exceptionFilter,
-			ISource<TSubject> source = null) where TSpecification : class, IThrowingSpecification<TSubject>;
+			ISource<TSubject> source = null) where TSpecification : class, ISpecification<TSubject>;
 	}
 
 	public class ThrowingSpecification<TSubject> : Specification<TSubject>,

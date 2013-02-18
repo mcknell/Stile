@@ -13,26 +13,26 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 
 namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 {
-	public interface IPredicateIs {}
+	public interface IIs {}
 
-	public interface IResultPredicateIs<TSpecification, out TResult> : IPredicateIs
+	public interface IResultIs<TSpecification, out TResult> : IIs
 		where TSpecification : class, IResultSpecification<TResult> {}
 
-	public interface IPredicateIs<TSpecification, TSubject, out TResult> :
-		IResultPredicateIs<TSpecification, TResult>,
-		IHides<IPredicateIsState<TSpecification, TSubject, TResult>>
+	public interface IIs<TSpecification, TSubject, out TResult> :
+		IResultIs<TSpecification, TResult>,
+		IHides<IIsState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, ISpecification<TSubject, TResult> {}
 
-	public interface INegatablePredicateIs : IPredicateIs {}
+	public interface INegatableIs : IIs {}
 
-	public interface INegatablePredicateIs<TSpecification, TSubject, out TResult, out TNegated> :
-		INegatablePredicateIs,
-		IPredicateIs<TSpecification, TSubject, TResult>,
+	public interface INegatableIs<TSpecification, TSubject, out TResult, out TNegated> :
+		INegatableIs,
+		IIs<TSpecification, TSubject, TResult>,
 		INegatable<TNegated>
 		where TSpecification : class, ISpecification<TSubject, TResult>
-		where TNegated : class, IPredicateIs<TSpecification, TSubject, TResult> {}
+		where TNegated : class, IIs<TSpecification, TSubject, TResult> {}
 
-	public interface IPredicateIsState<out TSpecification, TSubject, out TResult>
+	public interface IIsState<out TSpecification, TSubject, out TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>
 	{
 		[NotNull]
@@ -45,14 +45,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 		TSpecification Make(ICriterion<TResult> criterion);
 	}
 
-	public class PredicateIs<TSpecification, TSubject, TResult> :
-		INegatablePredicateIs<TSpecification, TSubject, TResult, IPredicateIs<TSpecification, TSubject, TResult>>,
-		IPredicateIsState<TSpecification, TSubject, TResult>
+	public class Is<TSpecification, TSubject, TResult> :
+		INegatableIs<TSpecification, TSubject, TResult, IIs<TSpecification, TSubject, TResult>>,
+		IIsState<TSpecification, TSubject, TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>
 	{
 		private readonly Specification.Factory<TSpecification, TSubject, TResult> _specificationFactory;
 
-		public PredicateIs([NotNull] IInstrument<TSubject, TResult> instrument,
+		public Is([NotNull] IInstrument<TSubject, TResult> instrument,
 			Negated negated,
 			[NotNull] Specification.Factory<TSpecification, TSubject, TResult> specificationFactory,
 			ISource<TSubject> source = null)
@@ -65,18 +65,18 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
 		public Negated Negated { get; private set; }
-		public IPredicateIs<TSpecification, TSubject, TResult> Not
+		public IIs<TSpecification, TSubject, TResult> Not
 		{
 			get
 			{
-				return new PredicateIs<TSpecification, TSubject, TResult>(Instrument,
+				return new Is<TSpecification, TSubject, TResult>(Instrument,
 					Negated.True,
 					_specificationFactory,
 					Source);
 			}
 		}
 		public ISource<TSubject> Source { get; private set; }
-		public IPredicateIsState<TSpecification, TSubject, TResult> Xray
+		public IIsState<TSpecification, TSubject, TResult> Xray
 		{
 			get { return this; }
 		}

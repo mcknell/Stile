@@ -18,19 +18,19 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 	public interface IEnumerablePredicateBuilder<TSpecification, TSubject, TResult, TItem> :
 		IPredicateBuilder
 			<TSpecification, TSubject, TResult, IEnumerableHas<TSpecification, TSubject, TResult, TItem>,
-				IEnumerablePredicateIs<TSpecification, TSubject, TResult, TItem>>
+				IEnumerableIs<TSpecification, TSubject, TResult, TItem>>
 		where TSpecification : class, ISpecification<TSubject, TResult>
 		where TResult : class, IEnumerable<TItem> {}
 
-	public interface IEnumerablePredicateIs<TSpecification, TSubject, out TResult, TItem> :
-		IPredicateIs<TSpecification, TSubject, TResult>
+	public interface IEnumerableIs<TSpecification, TSubject, out TResult, TItem> :
+		IIs<TSpecification, TSubject, TResult>
 		where TResult : class, IEnumerable<TItem>
 		where TSpecification : class, ISpecification<TSubject, TResult> {}
 
 	public class EnumerablePredicateBuilder<TSpecification, TSubject, TResult, TItem> :
 		PredicateBuilder
 			<TSpecification, TSubject, TResult, IEnumerableHas<TSpecification, TSubject, TResult, TItem>,
-				IEnumerablePredicateIs<TSpecification, TSubject, TResult, TItem>>,
+				IEnumerableIs<TSpecification, TSubject, TResult, TItem>>,
 		IEnumerablePredicateBuilder<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification<TSubject, TResult>
 		where TResult : class, IEnumerable<TItem>
@@ -48,7 +48,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 			return has;
 		}
 
-		protected override IEnumerablePredicateIs<TSpecification, TSubject, TResult, TItem> MakeIs()
+		protected override IEnumerableIs<TSpecification, TSubject, TResult, TItem> MakeIs()
 		{
 			throw new NotImplementedException();
 		}

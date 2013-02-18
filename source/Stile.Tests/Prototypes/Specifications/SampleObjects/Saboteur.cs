@@ -12,6 +12,15 @@ namespace Stile.Tests.Prototypes.Specifications.SampleObjects
 	public class Saboteur
 	{
 		public Lazy<Exception> LazyThrower { get; private set; }
+		public Saboteur SuicidalSideEffect
+		{
+			get
+			{
+				Throw();
+				return this;
+			}
+		}
+		public bool ThrowCalled { get; private set; }
 
 		public void Load<TException>(Func<TException> thrower) where TException : Exception
 		{
@@ -20,6 +29,7 @@ namespace Stile.Tests.Prototypes.Specifications.SampleObjects
 
 		public void Throw()
 		{
+			ThrowCalled = true;
 			throw LazyThrower.Value;
 		}
 	}

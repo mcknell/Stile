@@ -17,6 +17,15 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	public struct Outcome : IEquatable<Outcome>,
 		IComparable<Outcome>
 	{
+		public enum Enumerated:byte
+		{
+			Unclear = 0,
+			Succeeded = 1,
+			Completed = 2,
+			QuitVersusAborted = 4,
+			Waiting = 8,
+			Suspended = 16
+		}
 		public static readonly Outcome Unclear;
 		public static readonly Outcome Succeeded;
 		public static readonly Outcome Failed;

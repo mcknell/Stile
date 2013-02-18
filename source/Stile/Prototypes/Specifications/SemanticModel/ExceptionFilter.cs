@@ -32,11 +32,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 	public class ExceptionFilter : IExceptionFilter
 	{
-		private readonly Predicate<Exception> _predicate;
-
 		public ExceptionFilter([NotNull] Predicate<Exception> predicate)
 		{
-			_predicate = predicate.ValidateArgumentIsNotNull();
+			Predicate = predicate.ValidateArgumentIsNotNull();
 		}
 
 		public IEvaluation FailBeforeResult()
@@ -46,14 +44,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 		public bool TryFilterBeforeResult(Exception e, out IEvaluation evaluation)
 		{
-			if (_predicate.Invoke(e))
+			if (Predicate.Invoke(e))
 			{
 				evaluation = new Evaluation(Outcome.Succeeded, e);
 				return true;
 			}
-			evaluation = null;
+			evaluation = new Evaluation(Outcome.Failed);
 			return false;
 		}
+
+		protected Predicate<Exception> Predicate { get; private set; }
 	}
 
 	public class ExceptionFilter<TResult> : ExceptionFilter,
@@ -69,7 +69,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 		public bool TryFilter(TResult result, Exception e, out IEvaluation<TResult> evaluation)
 		{
-			throw new NotImplementedException();
+			if(Predicate.Invoke(e))
+			{
+				evaluation = new Evaluation<TResult>(Outcome.Succeeded, result, new Error(e));
+				return true;
+			}
+			evaluation = new Evaluation<TResult>(Outcome.Interrupted, result, new Error(e, false));
+			return false;
 		}
 	}
 }

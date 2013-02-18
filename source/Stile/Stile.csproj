@@ -82,8 +82,8 @@
     <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Is\IsComparableExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfPredicates\PredicateBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfPredicates\PredicateBuilderState.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Has\PredicateHas.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Is\PredicateIs.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Has\Has.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Is\Is.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfSources\BoundSourceBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfSources\SourceBuilder.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Source.cs" />

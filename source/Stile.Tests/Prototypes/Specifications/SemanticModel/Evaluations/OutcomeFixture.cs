@@ -8,11 +8,17 @@ using NUnit.Framework;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 #endregion
 
-namespace Stile.Tests.Prototypes.Specifications.SemanticModel
+namespace Stile.Tests.Prototypes.Specifications.SemanticModel.Evaluations
 {
 	[TestFixture]
 	public class OutcomeFixture
 	{
+		[Test]
+		public void InterruptedIsIncomplete()
+		{
+			Assert.That(Outcome.Values, Is.Not.Null);
+		}
+
 		[Test]
 		public void Make()
 		{

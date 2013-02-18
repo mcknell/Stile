@@ -54,10 +54,11 @@
     <Compile Include="Prototypes\Specifications\Construction\EnumerableSpecifyAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\SampleObjects\Foo.cs" />
     <Compile Include="Prototypes\Specifications\Construction\SpecifyAcceptanceTests.cs" />
+    <Compile Include="Prototypes\Specifications\SampleObjects\SabotageTarget.cs" />
     <Compile Include="Prototypes\Specifications\SampleObjects\Saboteur.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\AccepterFixture.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\InstrumentFixture.cs" />
-    <Compile Include="Prototypes\Specifications\SemanticModel\OutcomeFixture.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\OutcomeFixture.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\SourceFixture.cs" />
     <Compile Include="Prototypes\Specifications\SubjunctiveSpecificationVisitorFixture.cs" />
     <Compile Include="Readability\NullFixture.cs" />

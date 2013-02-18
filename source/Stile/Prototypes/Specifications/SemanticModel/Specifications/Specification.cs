@@ -55,7 +55,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public abstract class Specification
 	{
 		public delegate TSpecification Factory<out TSpecification, TSubject, TResult>(
-			ISource<TSubject> source, IInstrument<TSubject, TResult> instrument, ICriterion<TResult> criterion)
+			ISource<TSubject> source,
+			IInstrument<TSubject, TResult> instrument,
+			ICriterion<TResult> criterion,
+			IExceptionFilter<TResult> exceptionFilter = null)
 			where TSpecification : class, ISpecification<TSubject, TResult>;
 
 		protected static readonly IError[] NoErrors = new IError[0];
@@ -98,10 +101,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		{
 			get { return this; }
 		}
-		private bool ExpectsException
-		{
-			get { return _exceptionFilter != null; }
-		}
 
 		public IEvaluation<TResult> Evaluate()
 		{
@@ -115,17 +114,30 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public static Specification<TSubject, TResult> Make([CanBeNull] ISource<TSubject> source,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] ICriterion<TResult> criterion)
+			[NotNull] ICriterion<TResult> criterion,
+			IExceptionFilter<TResult> exceptionFilter = null)
 		{
-			return new Specification<TSubject, TResult>(instrument, criterion, source);
+			return new Specification<TSubject, TResult>(instrument,
+				criterion,
+				source,
+				exceptionFilter : exceptionFilter);
 		}
 
 		public static Specification<TSubject, TResult> MakeBound([NotNull] ISource<TSubject> source,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] ICriterion<TResult> criterion)
+			[NotNull] ICriterion<TResult> criterion,
+			IExceptionFilter<TResult> exceptionFilter = null)
 		{
 			ISource<TSubject> validatedSource = source.ValidateArgumentIsNotNull();
-			return new Specification<TSubject, TResult>(instrument, criterion, validatedSource);
+			return new Specification<TSubject, TResult>(instrument,
+				criterion,
+				validatedSource,
+				exceptionFilter : exceptionFilter);
+		}
+
+		private bool ExpectsException
+		{
+			get { return _exceptionFilter != null; }
 		}
 
 		private IEvaluation<TResult> Evaluate(Func<TSubject> subjectGetter)

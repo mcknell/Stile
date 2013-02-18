@@ -13,13 +13,13 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 
 namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 {
-	public interface IPredicateHas {}
+	public interface IHas {}
 
-	public interface IPredicateHas<out TSpecification, TSubject, out TResult> : IPredicateHas,
-		IHides<IPredicateHasState<TSpecification, TSubject, TResult>>
+	public interface IHas<out TSpecification, TSubject, out TResult> : IHas,
+		IHides<IHasState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, ISpecification<TSubject, TResult> {}
 
-	public interface IPredicateHasState<out TSpecification, TSubject, out TResult>
+	public interface IHasState<out TSpecification, TSubject, out TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>
 	{
 		[NotNull]
@@ -31,14 +31,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 		TSpecification Make(ICriterion<TResult> criterion);
 	}
 
-	public class PredicateHas<TSpecification, TSubject, TResult> :
-		IPredicateHas<TSpecification, TSubject, TResult>,
-		IPredicateHasState<TSpecification, TSubject, TResult>
+	public class Has<TSpecification, TSubject, TResult> :
+		IHas<TSpecification, TSubject, TResult>,
+		IHasState<TSpecification, TSubject, TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>
 	{
 		private readonly Specification.Factory<TSpecification, TSubject, TResult> _specificationFactory;
 
-		public PredicateHas([NotNull] IInstrument<TSubject, TResult> instrument,
+		public Has([NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] Specification.Factory<TSpecification, TSubject, TResult> specificationFactory,
 			ISource<TSubject> source = null)
 		{
@@ -50,7 +50,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
 		public ISource<TSubject> Source { get; private set; }
 
-		public IPredicateHasState<TSpecification, TSubject, TResult> Xray
+		public IHasState<TSpecification, TSubject, TResult> Xray
 		{
 			get { return this; }
 		}

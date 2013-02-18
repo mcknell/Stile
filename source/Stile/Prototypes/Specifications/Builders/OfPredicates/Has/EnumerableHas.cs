@@ -14,10 +14,10 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 
 namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 {
-	public interface IEnumerableHas : IPredicateHas {}
+	public interface IEnumerableHas : IHas {}
 
 	public interface IEnumerableHas<out TSpecification, TSubject, out TResult, TItem> : IEnumerableHas,
-		IPredicateHas<TSpecification, TSubject, TResult>
+		IHas<TSpecification, TSubject, TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>
 		where TResult : class, IEnumerable<TItem>
 	{
@@ -25,7 +25,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 	}
 
 	public class EnumerableHas<TSpecification, TSubject, TResult, TItem> :
-		PredicateHas<TSpecification, TSubject, TResult>,
+		Has<TSpecification, TSubject, TResult>,
 		IEnumerableHas<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification<TSubject, TResult>
 		where TResult : class, IEnumerable<TItem>

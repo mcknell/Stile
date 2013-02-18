@@ -16,7 +16,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 	{
 		[Pure]
 		public static ISpecification<TSubject, TResult> HashCode<TSpecification, TSubject, TResult>(
-			this IPredicateHas<TSpecification, TSubject, TResult> has, int hashCode)
+			this IHas<TSpecification, TSubject, TResult> has, int hashCode)
 			where TSpecification : class, ISpecification<TSubject, TResult>
 		{
 			return Specification<TSubject, TResult>.Make(has.Xray.Source, has.Xray.Instrument, new Criterion<TResult>(x => x.GetHashCode() == hashCode ? Outcome.Succeeded : Outcome.Failed));
