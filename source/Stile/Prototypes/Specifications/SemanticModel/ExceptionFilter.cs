@@ -8,6 +8,7 @@ using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel
@@ -18,16 +19,19 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		bool TryFilterBeforeResult([NotNull] Exception e, out IEvaluation evaluation);
 	}
 
-	public interface IExceptionFilter<TResult> : IExceptionFilter
+	public interface IExceptionFilter<TSubject, TResult> : IExceptionFilter
 	{
 		/// <summary>
 		/// If exception was expected but none was thrown.
 		/// </summary>
 		/// <param name="result"></param>
 		/// <returns></returns>
-		IEvaluation<TResult> Fail(TResult result);
+		IEvaluation<TSubject, TResult> Fail(TResult result);
 
-		bool TryFilter(TResult result, [NotNull] Exception e, out IEvaluation<TResult> evaluation);
+		bool TryFilter(ISpecification<TSubject, TResult> specification,
+			TResult result,
+			[NotNull] Exception e,
+			out IEvaluation<TSubject, TResult> evaluation);
 	}
 
 	public class ExceptionFilter : IExceptionFilter
@@ -56,25 +60,31 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		protected Predicate<Exception> Predicate { get; private set; }
 	}
 
-	public class ExceptionFilter<TResult> : ExceptionFilter,
-		IExceptionFilter<TResult>
+	public class ExceptionFilter<TSubject, TResult> : ExceptionFilter,
+		IExceptionFilter<TSubject, TResult>
 	{
 		public ExceptionFilter([NotNull] Predicate<Exception> predicate)
 			: base(predicate) {}
 
-		public IEvaluation<TResult> Fail(TResult result)
+		public IEvaluation<TSubject, TResult> Fail(TResult result)
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool TryFilter(TResult result, Exception e, out IEvaluation<TResult> evaluation)
+		public bool TryFilter(ISpecification<TSubject, TResult> specification,
+			TResult result,
+			Exception e,
+			out IEvaluation<TSubject, TResult> evaluation)
 		{
-			if(Predicate.Invoke(e))
+			if (Predicate.Invoke(e))
 			{
-				evaluation = new Evaluation<TResult>(Outcome.Succeeded, result, new Error(e));
+				evaluation = new Evaluation<TSubject, TResult>(specification, Outcome.Succeeded, result, new Error(e));
 				return true;
 			}
-			evaluation = new Evaluation<TResult>(Outcome.Interrupted, result, new Error(e, false));
+			evaluation = new Evaluation<TSubject, TResult>(specification,
+				Outcome.Interrupted,
+				result,
+				new Error(e, false));
 			return false;
 		}
 	}

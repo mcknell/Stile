@@ -8,6 +8,9 @@
 
 #region using...
 using System;
+using JetBrains.Annotations;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Patterns.Behavioral.Validation;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
@@ -21,6 +24,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	public interface IEvaluation<out TResult> : IEvaluation
 	{
 		TResult Value { get; }
+	}
+
+	public interface IEvaluation<in TSubject, out TResult> : IEvaluation<TResult>
+	{
+		IEvaluation<TResult> Evaluate(TSubject subject);
 	}
 
 	public class Evaluation : IEvaluation
@@ -38,15 +46,32 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public Outcome Outcome { get; private set; }
 	}
 
-	public class Evaluation<TValue> : Evaluation,
-		IEvaluation<TValue>
+	public class Evaluation<TResult> : Evaluation,
+		IEvaluation<TResult>
 	{
-		public Evaluation(Outcome outcome, TValue value, params IError[] errors)
+		public Evaluation(Outcome outcome, TResult value, params IError[] errors)
 			: base(outcome, errors)
 		{
 			Value = value;
 		}
 
-		public TValue Value { get; private set; }
+		public TResult Value { get; private set; }
+	}
+
+	public class Evaluation<TSubject, TResult> : Evaluation<TResult>,
+		IEvaluation<TSubject, TResult>
+	{
+		private readonly ISpecification<TSubject, TResult> _specification;
+
+		public Evaluation([NotNull] ISpecification<TSubject, TResult>specification ,Outcome outcome, TResult value, params IError[] errors)
+			: base(outcome, value, errors)
+		{
+			_specification = specification.ValidateArgumentIsNotNull();
+		}
+
+		public IEvaluation<TResult> Evaluate(TSubject subject)
+		{
+			return _specification.Evaluate(subject);
+		}
 	}
 }

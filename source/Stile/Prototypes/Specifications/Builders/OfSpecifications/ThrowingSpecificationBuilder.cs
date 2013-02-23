@@ -59,12 +59,12 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 	{
 		private readonly ISource<TSubject> _source;
 		private readonly IInstrument<TSubject, TResult> _instrument;
-		private readonly IExceptionFilter<TResult> _exceptionFilter;
+		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
 		private readonly Specification.Factory<TSpecification, TSubject, TResult> _specificationFactory;
 
 		public ThrowingSpecificationBuilder([CanBeNull] ISource<TSubject> source,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] IExceptionFilter<TResult> exceptionFilter,
+			[NotNull] IExceptionFilter<TSubject, TResult> exceptionFilter,
 			[NotNull] Specification.Factory<TSpecification, TSubject, TResult> specificationFactory)
 		{
 			_source = source;

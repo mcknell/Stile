@@ -21,13 +21,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public SimpleSpecification([NotNull] ISimplePredicateBuilder<TSubject, TResult> predicateBuilder,
 			[NotNull] ICriterion<TResult> criterion,
 			string because = null,
-			IExceptionFilter<TResult> exceptionFilter = null)
+			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 			: base(predicateBuilder, criterion, because, exceptionFilter) {}
 
 		public new static ISimpleSpecification<TSubject, TResult> Make([CanBeNull] ISource<TSubject> source,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] ICriterion<TResult> criterion,
-			IExceptionFilter<TResult> exceptionFilter = null)
+			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 		{
 			return
 				new SimpleSpecification<TSubject, TResult>(

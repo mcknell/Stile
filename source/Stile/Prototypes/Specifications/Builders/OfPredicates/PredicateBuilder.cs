@@ -90,7 +90,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		public IThrowingSpecificationBuilder<TSpecification, TSubject> Throws<TException>()
 			where TException : Exception
 		{
-			var exceptionFilter = new ExceptionFilter<TResult>(exception => exception is TException);
+			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(exception => exception is TException);
 			var builder = new ThrowingSpecificationBuilder<TSpecification, TSubject, TResult>(Source,
 				Instrument,
 				exceptionFilter,

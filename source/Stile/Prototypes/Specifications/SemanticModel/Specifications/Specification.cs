@@ -32,7 +32,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		IHides<ISpecificationState<TSubject, TResult>>
 	{
 		[NotNull]
-		IEvaluation<TResult> Evaluate(TSubject subject);
+		IEvaluation<TSubject, TResult> Evaluate(TSubject subject);
 	}
 
 	public interface ISpecification<TSubject, TResult, out TPredicateBuilder> : ISpecification<TSubject, TResult>
@@ -65,7 +65,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			ISource<TSubject> source,
 			IInstrument<TSubject, TResult> instrument,
 			ICriterion<TResult> criterion,
-			IExceptionFilter<TResult> exceptionFilter = null)
+			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 			where TSpecification : class, ISpecification<TSubject, TResult>;
 
 		protected static readonly IError[] NoErrors = new IError[0];
@@ -88,13 +88,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		IBoundSpecification<TSubject, TResult>,
 		ISpecificationState<TSubject, TResult>
 	{
-		private readonly IExceptionFilter<TResult> _exceptionFilter;
+		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
 
 		protected Specification([NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] ICriterion<TResult> criterion,
 			ISource<TSubject> source = null,
 			string because = null,
-			IExceptionFilter<TResult> exceptionFilter = null)
+			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 			: base(source, because)
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
@@ -114,7 +114,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return Evaluate(Source.Get);
 		}
 
-		public IEvaluation<TResult> Evaluate(TSubject subject)
+		public IEvaluation<TSubject, TResult> Evaluate(TSubject subject)
 		{
 			return Evaluate(() => subject);
 		}
@@ -122,7 +122,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public static Specification<TSubject, TResult> Make([CanBeNull] ISource<TSubject> source,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] ICriterion<TResult> criterion,
-			IExceptionFilter<TResult> exceptionFilter = null)
+			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 		{
 			return new Specification<TSubject, TResult>(instrument,
 				criterion,
@@ -133,7 +133,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public static Specification<TSubject, TResult> MakeBound([NotNull] ISource<TSubject> source,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] ICriterion<TResult> criterion,
-			IExceptionFilter<TResult> exceptionFilter = null)
+			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 		{
 			ISource<TSubject> validatedSource = source.ValidateArgumentIsNotNull();
 			return new Specification<TSubject, TResult>(instrument,
@@ -147,11 +147,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			get { return _exceptionFilter != null; }
 		}
 
-		private IEvaluation<TResult> Evaluate(Func<TSubject> subjectGetter)
+		private IEvaluation<TSubject, TResult> Evaluate(Func<TSubject> subjectGetter)
 		{
 			TResult result = default(TResult);
 			IError[] errors = NoErrors;
-			IEvaluation<TResult> evaluation;
+			IEvaluation<TSubject, TResult> evaluation;
 			try
 			{
 				// only trap exceptions while getting the subject or instrumenting it, not while accepting it
@@ -159,7 +159,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 				result = Instrument.Sample(subject);
 			} catch (Exception e)
 			{
-				if (ExpectsException && _exceptionFilter.TryFilter(result, e, out evaluation))
+				if (ExpectsException && _exceptionFilter.TryFilter(this, result, e, out evaluation))
 				{
 					return evaluation;
 				}
@@ -174,7 +174,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			}
 
 			Outcome outcome = Criterion.Accept(result);
-			evaluation = new Evaluation<TResult>(outcome, result, errors);
+			evaluation = new Evaluation<TSubject, TResult>(this, outcome, result, errors);
 			return evaluation;
 		}
 	}
@@ -190,7 +190,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		protected Specification([NotNull] TPredicateBuilder predicateBuilder,
 			[NotNull] ICriterion<TResult> criterion,
 			string because = null,
-			IExceptionFilter<TResult> exceptionFilter = null)
+			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 			: base(predicateBuilder.Xray.Instrument, criterion, predicateBuilder.Xray.Source, because, exceptionFilter)
 		{
 			_predicateBuilder = predicateBuilder;
