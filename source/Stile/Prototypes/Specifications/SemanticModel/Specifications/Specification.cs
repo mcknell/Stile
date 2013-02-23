@@ -8,6 +8,7 @@ using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
+using Stile.Prototypes.Specifications.Builders.OfPredicates;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 #endregion
 
@@ -32,6 +33,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	{
 		[NotNull]
 		IEvaluation<TResult> Evaluate(TSubject subject);
+	}
+
+	public interface ISpecification<TSubject, TResult, out TPredicateBuilder> : ISpecification<TSubject, TResult>
+		where TPredicateBuilder : class, IPredicateBuilder
+	{
+		TPredicateBuilder AndThen { get; }
 	}
 
 	public interface ISpecificationState {}
@@ -169,6 +176,29 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			Outcome outcome = Criterion.Accept(result);
 			evaluation = new Evaluation<TResult>(outcome, result, errors);
 			return evaluation;
+		}
+	}
+
+	public class Specification<TSpecification, TSubject, TResult, TPredicateBuilder> :
+		Specification<TSubject, TResult>,
+		ISpecification<TSubject, TResult, TPredicateBuilder>
+		where TSpecification : class, ISpecification<TSubject, TResult>
+		where TPredicateBuilder : class, IPredicateBuilder<TSpecification, TSubject, TResult, TPredicateBuilder>
+	{
+		private readonly TPredicateBuilder _predicateBuilder;
+
+		protected Specification([NotNull] TPredicateBuilder predicateBuilder,
+			[NotNull] ICriterion<TResult> criterion,
+			string because = null,
+			IExceptionFilter<TResult> exceptionFilter = null)
+			: base(predicateBuilder.Xray.Instrument, criterion, predicateBuilder.Xray.Source, because, exceptionFilter)
+		{
+			_predicateBuilder = predicateBuilder;
+		}
+
+		public TPredicateBuilder AndThen
+		{
+			get { return _predicateBuilder; }
 		}
 	}
 }

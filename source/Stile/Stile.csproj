@@ -68,9 +68,11 @@
     <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Has\EnumerableHas.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Has\Quantified\HasAll.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Has\Quantified\QuantifiedHas.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\SimplePredicateBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Chained\SpecificationExtensions.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\IThrowingBoundSpecification.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\SimpleSpecification.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\ThrowingSpecification.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfInstruments\EnumerableInstrumentBuilderExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfInstruments\InstrumentBuilderExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\ExceptionFilterBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Has\HasExtensions.cs" />

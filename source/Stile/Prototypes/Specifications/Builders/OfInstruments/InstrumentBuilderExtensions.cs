@@ -19,16 +19,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 	public static class InstrumentBuilderExtensions
 	{
 		[System.Diagnostics.Contracts.Pure]
-		public static IPredicateBuilder<ISpecification<TSubject, TResult>, TSubject, TResult> That
-			<TSubject, TResult>([NotNull] this IInstrumentBuilder<TSubject> builder,
-				Expression<Func<TSubject, TResult>> expression)
+		public static ISimplePredicateBuilder<TSubject, TResult> That<TSubject, TResult>(
+			[NotNull] this IInstrumentBuilder<TSubject> builder, Expression<Func<TSubject, TResult>> expression)
 		{
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
 			builder.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			var instrument = new Instrument<TSubject, TResult>(expression);
-			return new PredicateBuilder<ISpecification<TSubject, TResult>, TSubject, TResult>(instrument,
-				Specification<TSubject, TResult>.Make);
+			return new SimplePredicateBuilder<TSubject, TResult>(instrument,
+				SimpleSpecification<TSubject, TResult>.Make);
 		}
 
 		[System.Diagnostics.Contracts.Pure]
@@ -66,7 +65,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			var instrument = new ThrowingInstrument<TSubject>(expression);
 			ISource<TSubject> source = builder.Xray.Source;
-			return ExceptionFilterBuilder<IThrowingBoundSpecification<TSubject>, TSubject>.MakeBound(source, instrument,
+			return ExceptionFilterBuilder<IThrowingBoundSpecification<TSubject>, TSubject>.MakeBound(source,
+				instrument,
 				ThrowingSpecification<TSubject>.MakeBound);
 		}
 	}

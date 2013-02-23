@@ -15,11 +15,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 	public static class HasExtensions
 	{
 		[Pure]
-		public static ISpecification<TSubject, TResult> HashCode<TSpecification, TSubject, TResult>(
+		public static TSpecification HashCode<TSpecification, TSubject, TResult>(
 			this IHas<TSpecification, TSubject, TResult> has, int hashCode)
 			where TSpecification : class, ISpecification<TSubject, TResult>
 		{
-			return Specification<TSubject, TResult>.Make(has.Xray.Source, has.Xray.Instrument, new Criterion<TResult>(x => x.GetHashCode() == hashCode ? Outcome.Succeeded : Outcome.Failed));
+			var criterion =
+				new Criterion<TResult>(x => x.GetHashCode() == hashCode ? Outcome.Succeeded : Outcome.Failed);
+			TSpecification specification = has.Xray.Make(criterion);
+			return specification;
 		}
 	}
 }

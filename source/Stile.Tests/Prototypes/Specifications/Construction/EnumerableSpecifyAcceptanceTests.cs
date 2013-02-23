@@ -30,6 +30,16 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		}
 
 		[Test]
+		public void BoundToInstance()
+		{
+			IBoundSpecification<Foo<int>, IEnumerable<int>> specification =
+				Specify.For(new Foo<int>()).That(x => Enumerable.Reverse(x)).OfItemsLike(0).Has.All.ItemsSatisfying(
+					x => x > 3);
+			Assert.That(specification, Is.Not.Null);
+			Assert.DoesNotThrow(() => specification.Evaluate());
+		}
+
+		[Test]
 		public void Unbound()
 		{
 			ISpecification<Foo<int>, Foo<int>> specification =

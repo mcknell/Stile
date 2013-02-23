@@ -40,6 +40,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		IHides<IPredicateBuilderState<TSubject, TResult>>
 		where TSpecification : class, ISpecification<TSubject, TResult> {}
 
+	public interface IPredicateBuilder<TSpecification, TSubject, TResult, TPredicateBuilder> :
+		IPredicateBuilder<TSpecification, TSubject, TResult>
+		where TSpecification : class, ISpecification<TSubject, TResult>
+		where TPredicateBuilder : class, IPredicateBuilder<TSpecification, TSubject, TResult> {}
+
 	public abstract class PredicateBuilder<TSpecification, TSubject, TResult, THas, TIs> :
 		IPredicateBuilder<TSpecification, TSubject, TResult, THas, TIs>
 		where TSpecification : class, ISpecification<TSubject, TResult>
@@ -105,7 +110,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		IPredicateBuilderState<TSubject, TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>
 	{
-		public PredicateBuilder(Instrument<TSubject, TResult> instrument,
+		public PredicateBuilder(IInstrument<TSubject, TResult> instrument,
 			[NotNull] Specification.Factory<TSpecification, TSubject, TResult> specificationFactory,
 			ISource<TSubject> source = null)
 			: base(instrument, specificationFactory, source) {}
@@ -131,5 +136,17 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		{
 			return new Is<TSpecification, TSubject, TResult>(Instrument, Negated.False, _specificationFactory, Source);
 		}
+	}
+
+	public abstract class PredicateBuilder<TSpecification, TSubject, TResult, TPredicateBuilder> :
+		PredicateBuilder<TSpecification, TSubject, TResult>,
+		IPredicateBuilder<TSpecification, TSubject, TResult, TPredicateBuilder>
+		where TSpecification : class, ISpecification<TSubject, TResult, TPredicateBuilder>
+		where TPredicateBuilder : class, IPredicateBuilder<TSpecification, TSubject, TResult>
+	{
+		protected PredicateBuilder(IInstrument<TSubject, TResult> instrument,
+			[NotNull] Specification.Factory<TSpecification, TSubject, TResult> specificationFactory,
+			ISource<TSubject> source = null)
+			: base(instrument, specificationFactory, source) {}
 	}
 }
