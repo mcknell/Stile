@@ -11,29 +11,28 @@ using Stile.Prototypes.Specifications.Builders.OfPredicates;
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
 	public interface ISimpleSpecification<TSubject, TResult> :
-		ISpecification<TSubject, TResult, ISimplePredicateBuilder<TSubject, TResult>> {}
+		ISpecification<TSubject, TResult, ISimpleExpectationBuilder<TSubject, TResult>> {}
 
 	public class SimpleSpecification<TSubject, TResult> :
-		Specification
-			<ISimpleSpecification<TSubject, TResult>, TSubject, TResult, ISimplePredicateBuilder<TSubject, TResult>>,
+		Specification<TSubject, TResult, ISimpleExpectationBuilder<TSubject, TResult>>,
 		ISimpleSpecification<TSubject, TResult>
 	{
-		public SimpleSpecification([NotNull] ISimplePredicateBuilder<TSubject, TResult> predicateBuilder,
+		public SimpleSpecification(IInstrument<TSubject, TResult> instrument,
+			[NotNull] ISimpleExpectationBuilder<TSubject, TResult> expectationBuilder,
 			[NotNull] ICriterion<TResult> criterion,
 			string because = null,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
-			: base(predicateBuilder, criterion, because, exceptionFilter) {}
+			: base(instrument, criterion, expectationBuilder, because : because, exceptionFilter : exceptionFilter) {}
 
-		public new static ISimpleSpecification<TSubject, TResult> Make([CanBeNull] ISource<TSubject> source,
+		public static ISimpleSpecification<TSubject, TResult> Make([CanBeNull] ISource<TSubject> source,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] ICriterion<TResult> criterion,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 		{
-			return
-				new SimpleSpecification<TSubject, TResult>(
-					new SimplePredicateBuilder<TSubject, TResult>(instrument, Make, source),
-					criterion,
-					exceptionFilter : exceptionFilter);
+			return new SimpleSpecification<TSubject, TResult>(instrument,
+				new SimpleExpectationBuilder<TSubject, TResult>(instrument, Make, source),
+				criterion,
+				exceptionFilter : exceptionFilter);
 		}
 	}
 }

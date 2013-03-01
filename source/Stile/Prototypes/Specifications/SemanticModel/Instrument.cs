@@ -6,50 +6,49 @@
 #region using...
 using System;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Readability;
 using Stile.Types.Expressions;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IInstrument
+	public interface IInstrument : IProcedure {}
+
+	public interface IInstrument<in TSubject, out TResult> : IInstrument,
+		IProcedure<TSubject>
 	{
-		Lazy<string> Description { get; }
+		new TResult Sample(TSubject subject, CancellationToken? cancellationToken = null);
 	}
 
-	public interface IInstrument<in TSubject, out TResult> : IInstrument
-	{
-		TResult Sample([NotNull] TSubject subject);
-	}
-
-	public class Instrument
-	{
-		public static class Trivial<TSubject>
-		{
-			public static readonly Lazy<Func<TSubject, TSubject>> Map =
-				new Lazy<Func<TSubject, TSubject>>(Identity.Map<TSubject>);
-		}
-	}
-
-	public class Instrument<TSubject, TResult> : Instrument,
-		IInstrument<TSubject, TResult>
+	public class Instrument<TSubject, TResult> : IInstrument<TSubject, TResult>,
+		IProcedureState
 	{
 		private readonly Lazy<Func<TSubject, TResult>> _lazyFunc;
 
 		public Instrument([NotNull] Expression<Func<TSubject, TResult>> expression)
 		{
-			Expression<Func<TSubject, TResult>> validExpression = expression.ValidateArgumentIsNotNull();
-			_lazyFunc = new Lazy<Func<TSubject, TResult>>(validExpression.Compile);
-			Description = validExpression.ToLazyDebugString();
+			Expression<Func<TSubject, TResult>> validatedExpression = expression.ValidateArgumentIsNotNull();
+			_lazyFunc = new Lazy<Func<TSubject, TResult>>(validatedExpression.Compile);
+			Description = validatedExpression.ToLazyDebugString();
 		}
 
 		public Lazy<string> Description { get; private set; }
+		public IProcedureState Xray
+		{
+			get { return this; }
+		}
 
-		public TResult Sample(TSubject subject)
+		public TResult Sample(TSubject subject, CancellationToken? cancellationToken = null)
 		{
 			return _lazyFunc.Value.Invoke(subject);
+		}
+
+		void IProcedure<TSubject>.Sample(TSubject subject, CancellationToken? cancellationToken)
+		{
+			((IInstrument<TSubject, TResult>)this).Sample(subject);
 		}
 	}
 }

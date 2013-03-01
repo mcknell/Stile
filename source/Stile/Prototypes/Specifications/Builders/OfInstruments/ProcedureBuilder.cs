@@ -12,12 +12,12 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 	/// <summary>
 	/// This non-generic interface exists for typewashing, such as in collections.
 	/// </summary>
-	public interface IInstrumentBuilder {}
+	public interface IProcedureBuilder {}
 
-	public interface IInstrumentBuilder<out TSubject> : IInstrumentBuilder {}
+	public interface IProcedureBuilder<out TSubject> : IProcedureBuilder {}
 
 	public interface IInstrumentBuilderState<out TSubject> {}
 
-	public class InstrumentBuilder<TSubject> : IInstrumentBuilder<TSubject>,
+	public class ProcedureBuilder<TSubject> : IProcedureBuilder<TSubject>,
 		IInstrumentBuilderState<TSubject> {}
 }

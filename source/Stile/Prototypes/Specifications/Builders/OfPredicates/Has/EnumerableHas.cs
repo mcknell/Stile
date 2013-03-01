@@ -18,30 +18,29 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 
 	public interface IEnumerableHas<out TSpecification, TSubject, out TResult, TItem> : IEnumerableHas,
 		IHas<TSpecification, TSubject, TResult>
-		where TSpecification : class, ISpecification<TSubject, TResult>
+		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>
 	{
 		IQuantifiedHas<TSpecification, TItem> All { get; }
 	}
 
-	public class EnumerableHas<TSpecification, TSubject, TResult, TItem> :
-		Has<TSpecification, TSubject, TResult>,
+	public class EnumerableHas<TSpecification, TSubject, TResult, TItem> : Has<TSpecification, TSubject, TResult>,
 		IEnumerableHas<TSpecification, TSubject, TResult, TItem>
-		where TSpecification : class, ISpecification<TSubject, TResult>
+		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>
 	{
 		private readonly Lazy<IQuantifiedHas<TSpecification, TItem>> _lazyAll;
 
 		public EnumerableHas([NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] Specification.Factory<TSpecification, TSubject, TResult> specificationFactory,
+			[NotNull] Func<ICriterion<TResult>, IExceptionFilter<TSubject, TResult>, TSpecification>
+				specificationFactory,
 			ISource<TSubject> source = null)
 			: base(instrument, specificationFactory, source)
 		{
 			_lazyAll =
 				new Lazy<IQuantifiedHas<TSpecification, TItem>>(
 					() =>
-					new HasAll<TSpecification, TResult, TItem>(
-						criterion => specificationFactory.Invoke(source, instrument, criterion)));
+					new HasAll<TSpecification, TResult, TItem>(criterion => specificationFactory.Invoke(criterion, null)));
 		}
 
 		public IQuantifiedHas<TSpecification, TItem> All

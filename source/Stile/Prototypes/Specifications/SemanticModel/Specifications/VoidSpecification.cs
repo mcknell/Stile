@@ -13,53 +13,54 @@ using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
-	public interface IThrowingSpecification : ISpecification {}
+	public interface IVoidSpecification : ISpecification {}
 
-	public interface IThrowingSpecification<TSubject> : IThrowingSpecification,
+	public interface IVoidSpecification<TSubject> : IVoidSpecification,
 		ISpecification<TSubject>,
-		IHides<IThrowingSpecificationState<TSubject>>
+		IHides<IVoidSpecificationState<TSubject>>,
+		IChainableSpecification
 	{
 		[NotNull]
 		IEvaluation Evaluate(TSubject subject);
 	}
 
-	public interface IThrowingSpecificationState {}
+	public interface IVoidSpecificationState {}
 
-	public interface IThrowingSpecificationState<TSubject> : IThrowingSpecificationState,
+	public interface IVoidSpecificationState<TSubject> : IVoidSpecificationState,
 		ISpecificationState<TSubject>
 	{
 		[CanBeNull]
 		IExceptionFilter ExceptionFilter { get; }
 		[NotNull]
-		IThrowingInstrument<TSubject> Instrument { get; }
+		IProcedure<TSubject> Procedure { get; }
 	}
 
-	public static class ThrowingSpecification
+	public static class VoidSpecification
 	{
 		public delegate TSpecification Factory<out TSpecification, TSubject>(
-			[NotNull] IThrowingInstrument<TSubject> instrument,
+			[NotNull] IProcedure<TSubject> procedure,
 			[NotNull] IExceptionFilter exceptionFilter,
 			ISource<TSubject> source = null) where TSpecification : class, ISpecification<TSubject>;
 	}
 
-	public class ThrowingSpecification<TSubject> : Specification<TSubject>,
-		IThrowingBoundSpecification<TSubject>,
-		IThrowingSpecificationState<TSubject>
+	public class VoidSpecification<TSubject> : Specification<TSubject>,
+		IVoidBoundSpecification<TSubject>,
+		IVoidSpecificationState<TSubject>
 	{
-		protected ThrowingSpecification([NotNull] IThrowingInstrument<TSubject> instrument,
+		protected VoidSpecification([NotNull] IProcedure<TSubject> procedure,
 			[NotNull] IExceptionFilter exceptionFilter,
 			[CanBeNull] ISource<TSubject> source,
 			[CanBeNull] string because)
 			: base(source, because)
 		{
-			Instrument = instrument.ValidateArgumentIsNotNull();
+			Procedure = procedure.ValidateArgumentIsNotNull();
 			ExceptionFilter = exceptionFilter.ValidateArgumentIsNotNull();
 		}
 
 		public IExceptionFilter ExceptionFilter { get; private set; }
-		public IThrowingInstrument<TSubject> Instrument { get; private set; }
+		public IProcedure<TSubject> Procedure { get; private set; }
 
-		public IThrowingSpecificationState<TSubject> Xray
+		public IVoidSpecificationState<TSubject> Xray
 		{
 			get { return this; }
 		}
@@ -74,18 +75,18 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return Evaluate(() => subject);
 		}
 
-		public static ThrowingSpecification<TSubject> Make([NotNull] IThrowingInstrument<TSubject> instrument,
+		public static VoidSpecification<TSubject> Make([NotNull] IProcedure<TSubject> procedure,
 			IExceptionFilter exceptionFilter,
 			ISource<TSubject> source = null)
 		{
-			return new ThrowingSpecification<TSubject>(instrument, exceptionFilter, null, null);
+			return new VoidSpecification<TSubject>(procedure, exceptionFilter, null, null);
 		}
 
-		public static ThrowingSpecification<TSubject> MakeBound([NotNull] IThrowingInstrument<TSubject> instrument,
+		public static VoidSpecification<TSubject> MakeBound([NotNull] IProcedure<TSubject> procedure,
 			[NotNull] IExceptionFilter exceptionFilter,
 			[NotNull] ISource<TSubject> source)
 		{
-			return new ThrowingSpecification<TSubject>(instrument, exceptionFilter, source, null);
+			return new VoidSpecification<TSubject>(procedure, exceptionFilter, source, null);
 		}
 
 		private IEvaluation Evaluate(Func<TSubject> subjectGetter)
@@ -93,7 +94,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			try
 			{
 				TSubject subject = subjectGetter.Invoke();
-				Instrument.Sample(subject);
+				Procedure.Sample(subject);
 			} catch (Exception e)
 			{
 				IEvaluation evaluation;

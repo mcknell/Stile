@@ -6,7 +6,6 @@
 #region using...
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -16,32 +15,48 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 	public static class PredicateBuilderExtensions
 	{
 		[Pure]
-		public static IEnumerablePredicateBuilder<ISpecification<TSubject, TResult>, TSubject, TResult, TItem>
-			OfItemsLike<TSpecification, TSubject, TResult, TItem>(
-			this IPredicateBuilder<TSpecification, TSubject, TResult> builder, TItem throwaway)
-			where TSpecification : class, ISpecification<TSubject, TResult> where TResult : class, IEnumerable<TItem>
+		public static IEnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> OfItemsLike
+			<TSpecification, TSubject, TResult, TItem>(
+			this IExpectationBuilder<TSpecification, TSubject, TResult> builder, TItem throwaway)
+			where TSpecification : class,
+				ISpecification<TSubject, TResult, IExpectationBuilder<TSpecification, TSubject, TResult>>
+			where TResult : class, IEnumerable<TItem>
 		{
-			IPredicateBuilderState<TSubject, TResult> state = builder.Xray;
+			IExpectationBuilderState<TSpecification, TSubject, TResult> state = builder.Xray;
 			IInstrument<TSubject, TResult> instrument = state.Instrument;
-			return
-				new EnumerablePredicateBuilder<ISpecification<TSubject, TResult>, TSubject, TResult, TItem>(instrument,
-					Specification<TSubject, TResult>.Make,
-					state.Source);
+
+			// Specification<TSubject, TResult, EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>>. Make
+			return new EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>(instrument,
+				(source, instrument1, criterion, expectationBuilder, filter) => builder.Xray.Make(criterion),
+				state.Source);
 		}
 
 		[Pure]
-		public static IEnumerablePredicateBuilder<IBoundSpecification<TSubject, TResult>, TSubject, TResult, TItem>
-			OfItemsLike<TSpecification, TSubject, TResult, TItem>(
-			this IBoundPredicateBuilder<TSpecification, TSubject, TResult> builder, TItem throwaway)
-			where TSpecification : class, IBoundSpecification<TSubject, TResult>
-			where TResult : class, IEnumerable<TItem>
+		public static IEnumerableBoundExpectationBuilder<TSpecification, TSubject, TResult, TItem> OfItemsLike
+			<TSpecification, TSubject, TResult, TPredicateBuilder, TItem>(
+			this IBoundExpectationBuilder<TSpecification, TSubject, TResult> builder, TItem throwaway)
+			where TSpecification : class,
+				IBoundSpecification
+					<TSubject, TResult, IEnumerableBoundExpectationBuilder<TSpecification, TSubject, TResult, TItem>>,
+				IBoundSpecification<TSubject, TResult, TPredicateBuilder> where TResult : class, IEnumerable<TItem>
+			where TPredicateBuilder : class, IBoundExpectationBuilder<TSpecification, TSubject, TResult>
 		{
-			IPredicateBuilderState<TSubject, TResult> state = builder.Xray;
+			IExpectationBuilderState<TSpecification, TSubject, TResult> state = builder.Xray;
 			IInstrument<TSubject, TResult> instrument = state.Instrument;
 			return
-				new EnumerablePredicateBuilder<IBoundSpecification<TSubject, TResult>, TSubject, TResult, TItem>(
-					instrument, Specification<TSubject, TResult>.MakeBound, state.Source);
+				new EnumerableBoundExpectationBuilder<TSpecification, TSubject, TResult, TPredicateBuilder, TItem>(
+					instrument,
+					(source, instrument1, criterion, expectationBuilder, filter) => builder.Xray.Make(criterion),
+					state.Source);
 		}
- 
 	}
+
+	public interface IFluentEnumerableBoundSpecification<TSubject, TResult, TItem> :
+		IBoundSpecification<TSubject, TResult, IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>>
+		where TResult : class, IEnumerable<TItem> {}
+
+	public interface IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem> :
+		IEnumerableBoundExpectationBuilder
+			<IFluentEnumerableBoundSpecification<TSubject, TResult, TItem>, TSubject, TResult, TItem>
+		where TResult : class, IEnumerable<TItem> {}
 }

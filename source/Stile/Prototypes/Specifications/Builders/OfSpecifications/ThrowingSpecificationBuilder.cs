@@ -7,7 +7,6 @@
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
@@ -16,50 +15,50 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 	public interface IThrowingSpecificationBuilder {}
 
 	public interface IThrowingSpecificationBuilder<out TSpecification, TSubject> : IThrowingSpecificationBuilder
-		where TSpecification : class, ISpecification<TSubject>
+		where TSpecification : class, IChainableSpecification
 	{
 		TSpecification Build();
 	}
 
 	public interface IThrowingSpecificationBuilder<out TSpecification, TSubject, TResult> :
 		IThrowingSpecificationBuilder<TSpecification, TSubject>
-		where TSpecification : class, ISpecification<TSubject, TResult> {}
+		where TSpecification : class, IChainableSpecification {}
 
 	public abstract class ThrowingSpecificationBuilder {}
 
 	public class ThrowingSpecificationBuilder<TSpecification, TSubject> : ThrowingSpecificationBuilder,
 		IThrowingSpecificationBuilder<TSpecification, TSubject>
-		where TSpecification : class, ISpecification<TSubject>
+		where TSpecification : class, IChainableSpecification, ISpecification<TSubject>
 	{
 		private readonly IExceptionFilter _exceptionFilter;
-		private readonly IThrowingInstrument<TSubject> _instrument;
+		private readonly IProcedure<TSubject> _procedure;
 		private readonly ISource<TSubject> _source;
-		private readonly ThrowingSpecification.Factory<TSpecification, TSubject> _specificationFactory;
+		private readonly VoidSpecification.Factory<TSpecification, TSubject> _specificationFactory;
 
 		public ThrowingSpecificationBuilder([CanBeNull] ISource<TSubject> source,
-			[NotNull] IThrowingInstrument<TSubject> instrument,
+			[NotNull] IProcedure<TSubject> procedure,
 			[NotNull] IExceptionFilter exceptionFilter,
-			[NotNull] ThrowingSpecification.Factory<TSpecification, TSubject> specificationFactory)
+			[NotNull] VoidSpecification.Factory<TSpecification, TSubject> specificationFactory)
 		{
 			_source = source;
-			_instrument = instrument.ValidateArgumentIsNotNull();
+			_procedure = procedure.ValidateArgumentIsNotNull();
 			_exceptionFilter = exceptionFilter.ValidateArgumentIsNotNull();
 			_specificationFactory = specificationFactory.ValidateArgumentIsNotNull();
 		}
 
 		public TSpecification Build()
 		{
-			return _specificationFactory.Invoke(_instrument, _exceptionFilter, _source);
+			return _specificationFactory.Invoke(_procedure, _exceptionFilter, _source);
 		}
 	}
 
 	public class ThrowingSpecificationBuilder<TSpecification, TSubject, TResult> :
 		IThrowingSpecificationBuilder<TSpecification, TSubject, TResult>
-		where TSpecification : class, ISpecification<TSubject, TResult>
+		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 	{
-		private readonly ISource<TSubject> _source;
-		private readonly IInstrument<TSubject, TResult> _instrument;
 		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
+		private readonly IInstrument<TSubject, TResult> _instrument;
+		private readonly ISource<TSubject> _source;
 		private readonly Specification.Factory<TSpecification, TSubject, TResult> _specificationFactory;
 
 		public ThrowingSpecificationBuilder([CanBeNull] ISource<TSubject> source,
@@ -75,7 +74,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 
 		public TSpecification Build()
 		{
-			return _specificationFactory.Invoke(_source, _instrument, Criterion<TResult>.UnconditionalAcceptance, _exceptionFilter);
+			return _specificationFactory.Invoke(_source,
+				_instrument,
+				Criterion<TResult>.UnconditionalAcceptance,
+				_exceptionFilter);
 		}
 	}
 }

@@ -4,11 +4,11 @@
 #endregion
 
 #region using...
+using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
@@ -17,10 +17,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 
 	public interface IHas<out TSpecification, TSubject, out TResult> : IHas,
 		IHides<IHasState<TSpecification, TSubject, TResult>>
-		where TSpecification : class, ISpecification<TSubject, TResult> {}
+		where TSpecification : class, IChainableSpecification {}
 
 	public interface IHasState<out TSpecification, TSubject, out TResult>
-		where TSpecification : class, ISpecification<TSubject, TResult>
+		where TSpecification : class, IChainableSpecification
 	{
 		[NotNull]
 		IInstrument<TSubject, TResult> Instrument { get; }
@@ -31,15 +31,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 		TSpecification Make(ICriterion<TResult> criterion);
 	}
 
-	public class Has<TSpecification, TSubject, TResult> :
-		IHas<TSpecification, TSubject, TResult>,
+	public class Has<TSpecification, TSubject, TResult> : IHas<TSpecification, TSubject, TResult>,
 		IHasState<TSpecification, TSubject, TResult>
-		where TSpecification : class, ISpecification<TSubject, TResult>
+		where TSpecification : class, IChainableSpecification
 	{
-		private readonly Specification.Factory<TSpecification, TSubject, TResult> _specificationFactory;
+		private readonly Func<ICriterion<TResult>, IExceptionFilter<TSubject, TResult>, TSpecification> _specificationFactory;
 
 		public Has([NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] Specification.Factory<TSpecification, TSubject, TResult> specificationFactory,
+			[NotNull] Func<ICriterion<TResult>, IExceptionFilter<TSubject, TResult>, TSpecification> specificationFactory,
 			ISource<TSubject> source = null)
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
@@ -57,7 +56,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 
 		public TSpecification Make(ICriterion<TResult> criterion)
 		{
-			TSpecification specification = _specificationFactory.Invoke(Source, Instrument, criterion);
+			TSpecification specification = _specificationFactory.Invoke(criterion, null);
 			return specification;
 		}
 	}

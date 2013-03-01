@@ -11,19 +11,24 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 
 namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 {
-	public interface IBoundPredicateBuilder : IPredicateBuilder {}
+	public interface IBoundExpectationBuilder : IExpectationBuilder {}
 
-	public interface IBoundPredicateBuilder<TSpecification, TSubject, TResult> : IBoundPredicateBuilder,
-		IPredicateBuilder<TSpecification, TSubject, TResult>
-		where TSpecification : class, IBoundSpecification<TSubject, TResult> {}
+	public interface IBoundExpectationBuilder<out TSpecification, TSubject, TResult> : IBoundExpectationBuilder,
+		IExpectationBuilder<TSpecification, TSubject, TResult>
+		where TSpecification : class, IBoundSpecification<TSubject, TResult>, IChainableSpecification {}
 
-	public class BoundPredicateBuilder<TSpecification, TSubject, TResult> :
-		PredicateBuilder<TSpecification, TSubject, TResult>,
-		IBoundPredicateBuilder<TSpecification, TSubject, TResult>
-		where TSpecification : class, IBoundSpecification<TSubject, TResult>
+	public class BoundExpectationBuilder<TSpecification, TSubject, TResult, TPredicateBuilder> :
+		ExpectationBuilder
+			<TSpecification, TSubject, TResult,
+				BoundExpectationBuilder<TSpecification, TSubject, TResult, TPredicateBuilder>>,
+		IBoundExpectationBuilder<TSpecification, TSubject, TResult>
+		where TSpecification : class, IBoundSpecification<TSubject, TResult, TPredicateBuilder>
+		where TPredicateBuilder : class, IExpectationBuilder<TSpecification, TSubject, TResult>
 	{
-		public BoundPredicateBuilder(Instrument<TSubject, TResult> instrument,
-			[NotNull] Specification.Factory<TSpecification, TSubject, TResult> specificationFactory,
+		public BoundExpectationBuilder(IInstrument<TSubject, TResult> instrument,
+			[NotNull] Specification.Factory
+				<TSpecification, TSubject, TResult,
+					BoundExpectationBuilder<TSpecification, TSubject, TResult, TPredicateBuilder>> specificationFactory,
 			ISource<TSubject> source = null)
 			: base(instrument, specificationFactory, source) {}
 	}

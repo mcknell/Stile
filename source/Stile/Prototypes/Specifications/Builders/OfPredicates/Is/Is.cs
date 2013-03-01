@@ -15,25 +15,23 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 {
 	public interface IIs {}
 
-	public interface IResultIs<TSpecification, out TResult> : IIs
-		where TSpecification : class, IResultSpecification<TResult> {}
+	public interface IResultIs<out TSpecification, out TResult> : IIs
+		where TSpecification : class, IChainableSpecification {}
 
-	public interface IIs<TSpecification, TSubject, out TResult> :
-		IResultIs<TSpecification, TResult>,
+	public interface IIs<out TSpecification, TSubject, out TResult> : IResultIs<TSpecification, TResult>,
 		IHides<IIsState<TSpecification, TSubject, TResult>>
-		where TSpecification : class, ISpecification<TSubject, TResult> {}
+		where TSpecification : class, IChainableSpecification {}
 
 	public interface INegatableIs : IIs {}
 
-	public interface INegatableIs<TSpecification, TSubject, out TResult, out TNegated> :
-		INegatableIs,
+	public interface INegatableIs<out TSpecification, TSubject, out TResult, out TNegated> : INegatableIs,
 		IIs<TSpecification, TSubject, TResult>,
 		INegatable<TNegated>
-		where TSpecification : class, ISpecification<TSubject, TResult>
+		where TSpecification : class, IChainableSpecification
 		where TNegated : class, IIs<TSpecification, TSubject, TResult> {}
 
 	public interface IIsState<out TSpecification, TSubject, out TResult>
-		where TSpecification : class, ISpecification<TSubject, TResult>
+		where TSpecification : class, IChainableSpecification
 	{
 		[NotNull]
 		IInstrument<TSubject, TResult> Instrument { get; }
@@ -48,7 +46,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 	public class Is<TSpecification, TSubject, TResult> :
 		INegatableIs<TSpecification, TSubject, TResult, IIs<TSpecification, TSubject, TResult>>,
 		IIsState<TSpecification, TSubject, TResult>
-		where TSpecification : class, ISpecification<TSubject, TResult>
+		where TSpecification : class, IChainableSpecification
 	{
 		private readonly Specification.Factory<TSpecification, TSubject, TResult> _specificationFactory;
 
@@ -67,13 +65,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 		public Negated Negated { get; private set; }
 		public IIs<TSpecification, TSubject, TResult> Not
 		{
-			get
-			{
-				return new Is<TSpecification, TSubject, TResult>(Instrument,
-					Negated.True,
-					_specificationFactory,
-					Source);
-			}
+			get { return new Is<TSpecification, TSubject, TResult>(Instrument, Negated.True, _specificationFactory, Source); }
 		}
 		public ISource<TSubject> Source { get; private set; }
 		public IIsState<TSpecification, TSubject, TResult> Xray

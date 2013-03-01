@@ -17,7 +17,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
 		[Pure]
 		public static TSpecification HashCode<TSpecification, TSubject, TResult>(
 			this IHas<TSpecification, TSubject, TResult> has, int hashCode)
-			where TSpecification : class, ISpecification<TSubject, TResult>
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		{
 			var criterion =
 				new Criterion<TResult>(x => x.GetHashCode() == hashCode ? Outcome.Succeeded : Outcome.Failed);

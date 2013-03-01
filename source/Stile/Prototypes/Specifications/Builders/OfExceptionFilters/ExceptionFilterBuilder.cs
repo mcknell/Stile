@@ -19,10 +19,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 
 	public interface IExceptionFilterBuilder<out TSpecification, TSubject> : IExceptionFilterBuilder,
 		IHides<IExceptionFilterBuilderState<TSubject>>
-		where TSpecification : class, IThrowingSpecification<TSubject>
+		where TSpecification : class, IVoidSpecification<TSubject>
 	{
-		IThrowingSpecificationBuilder<TSpecification, TSubject> Throws<TException>()
-			where TException : Exception;
+		IThrowingSpecificationBuilder<TSpecification, TSubject> Throws<TException>() where TException : Exception;
 	}
 
 	public interface IExceptionFilterBuilderState {}
@@ -30,7 +29,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 	public interface IExceptionFilterBuilderState<TSubject> : IExceptionFilterBuilderState
 	{
 		[NotNull]
-		IThrowingInstrument<TSubject> Instrument { get; }
+		IProcedure<TSubject> Procedure { get; }
 		[CanBeNull]
 		ISource<TSubject> Source { get; }
 	}
@@ -38,20 +37,20 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 	public class ExceptionFilterBuilder<TSpecification, TSubject> :
 		IExceptionFilterBuilder<TSpecification, TSubject>,
 		IExceptionFilterBuilderState<TSubject>
-		where TSpecification : class, IThrowingSpecification<TSubject>
+		where TSpecification : class, IVoidSpecification<TSubject>
 	{
-		private readonly ThrowingSpecification.Factory<TSpecification, TSubject> _specificationFactory;
+		private readonly VoidSpecification.Factory<TSpecification, TSubject> _specificationFactory;
 
-		protected ExceptionFilterBuilder([NotNull] IThrowingInstrument<TSubject> instrument,
-			[NotNull] ThrowingSpecification.Factory<TSpecification, TSubject> specificationFactory,
+		protected ExceptionFilterBuilder([NotNull] IProcedure<TSubject> procedure,
+			[NotNull] VoidSpecification.Factory<TSpecification, TSubject> specificationFactory,
 			ISource<TSubject> source = null)
 		{
-			Instrument = instrument.ValidateArgumentIsNotNull();
+			Procedure = procedure.ValidateArgumentIsNotNull();
 			_specificationFactory = specificationFactory.ValidateArgumentIsNotNull();
 			Source = source;
 		}
 
-		public IThrowingInstrument<TSubject> Instrument { get; private set; }
+		public IProcedure<TSubject> Procedure { get; private set; }
 		public ISource<TSubject> Source { get; private set; }
 		public IExceptionFilterBuilderState<TSubject> Xray
 		{
@@ -63,23 +62,24 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 		{
 			var exceptionFilter = new ExceptionFilter(exception => exception is TException);
 			var builder = new ThrowingSpecificationBuilder<TSpecification, TSubject>(Source,
-				Instrument, exceptionFilter,
+				Procedure,
+				exceptionFilter,
 				_specificationFactory);
 			return builder;
 		}
 
 		public static ExceptionFilterBuilder<TSpecification, TSubject> Make(
-			[NotNull] IThrowingInstrument<TSubject> instrument,
-			[NotNull] ThrowingSpecification.Factory<TSpecification, TSubject> specificationFactory)
+			[NotNull] IProcedure<TSubject> procedure,
+			[NotNull] VoidSpecification.Factory<TSpecification, TSubject> specificationFactory)
 		{
-			return new ExceptionFilterBuilder<TSpecification, TSubject>(instrument, specificationFactory);
+			return new ExceptionFilterBuilder<TSpecification, TSubject>(procedure, specificationFactory);
 		}
 
 		public static ExceptionFilterBuilder<TSpecification, TSubject> MakeBound([NotNull] ISource<TSubject> source,
-			[NotNull] IThrowingInstrument<TSubject> instrument,
-			[NotNull] ThrowingSpecification.Factory<TSpecification, TSubject> specificationFactory)
+			[NotNull] IProcedure<TSubject> procedure,
+			[NotNull] VoidSpecification.Factory<TSpecification, TSubject> specificationFactory)
 		{
-			return new ExceptionFilterBuilder<TSpecification, TSubject>(instrument, specificationFactory, source);
+			return new ExceptionFilterBuilder<TSpecification, TSubject>(procedure, specificationFactory, source);
 		}
 	}
 
@@ -88,11 +88,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 	{
 		public static IThrowingSpecificationBuilder<TSpecification, TSubject, TException> Throws
 			<TSpecification, TSubject, TException>(this IExceptionFilterBuilder<TSpecification, TSubject> builder)
-			where TException : Exception where TSpecification : class, IThrowingSpecification<TSubject>
+			where TException : Exception where TSpecification : class, IVoidSpecification<TSubject>
 		{
-			IThrowingInstrument<TSubject> instrument = builder.Xray.Instrument;
+			IThrowingInstrument<TSubject> procedure = builder.Xray.Instrument;
 			ISource<TSubject> source = builder.Xray.Source;
-			return ThrowingSpecificationFactory.Resolve<TSpecification, TSubject, TException>(instrument, source);
+			return ThrowingSpecificationFactory.Resolve<TSpecification, TSubject, TException>(procedure, source);
 		}
 	}
 */

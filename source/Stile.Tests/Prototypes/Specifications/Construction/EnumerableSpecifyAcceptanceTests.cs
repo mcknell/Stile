@@ -22,7 +22,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		[Test]
 		public void BoundToExpression()
 		{
-			IBoundSpecification<Foo<int>, IEnumerable<int>> specification =
+			ISimpleBoundSpecification<Foo<int>, IEnumerable<int>> specification =
 				Specify.For(() => new Foo<int>()).That(x => Enumerable.Reverse(x)).OfItemsLike(0).Has.All.ItemsSatisfying(
 					x => x > 3);
 			Assert.That(specification, Is.Not.Null);
@@ -32,7 +32,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		[Test]
 		public void BoundToInstance()
 		{
-			IBoundSpecification<Foo<int>, IEnumerable<int>> specification =
+			ISimpleBoundSpecification<Foo<int>, IEnumerable<int>> specification =
 				Specify.For(new Foo<int>()).That(x => Enumerable.Reverse(x)).OfItemsLike(0).Has.All.ItemsSatisfying(
 					x => x > 3);
 			Assert.That(specification, Is.Not.Null);

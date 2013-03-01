@@ -11,19 +11,19 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 
 namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 {
-	public interface ISimplePredicateBuilder<TSubject, TResult> :
-		IPredicateBuilder
-			<ISimpleSpecification<TSubject, TResult>, TSubject, TResult, ISimplePredicateBuilder<TSubject, TResult>> {}
+	public interface ISimpleExpectationBuilder<TSubject, TResult> :
+		IExpectationBuilder<ISimpleSpecification<TSubject, TResult>, TSubject, TResult> {}
 
-	public class SimplePredicateBuilder<TSubject, TResult> :
-		PredicateBuilder
-			<ISimpleSpecification<TSubject, TResult>, TSubject, TResult, ISimplePredicateBuilder<TSubject, TResult>>,
-		ISimplePredicateBuilder<TSubject, TResult>
+	public class SimpleExpectationBuilder<TSubject, TResult> :
+		ExpectationBuilder
+			<ISimpleSpecification<TSubject, TResult>, TSubject, TResult, SimpleExpectationBuilder<TSubject, TResult>>,
+		ISimpleExpectationBuilder<TSubject, TResult>
 	{
-		public SimplePredicateBuilder(IInstrument<TSubject, TResult> instrument,
+		public SimpleExpectationBuilder(IInstrument<TSubject, TResult> instrument,
 			[NotNull] Specification.Factory<ISimpleSpecification<TSubject, TResult>, TSubject, TResult>
 				specificationFactory,
 			ISource<TSubject> source = null)
-			: base(instrument, specificationFactory, source) {}
+			: base(instrument, (source1, instrument1, criterion, builder, filter) => 
+				specificationFactory.Invoke(source1,instrument1,criterion), source) {}
 	}
 }

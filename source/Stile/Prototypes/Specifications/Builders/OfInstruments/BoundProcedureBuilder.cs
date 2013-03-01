@@ -14,10 +14,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 	/// <summary>
 	/// This non-generic interface exists for typewashing, such as in collections.
 	/// </summary>
-	public interface IBoundInstrumentBuilder : IInstrumentBuilder {}
+	public interface IBoundProcedureBuilder : IProcedureBuilder {}
 
-	public interface IBoundInstrumentBuilder<out TSubject> : IBoundInstrumentBuilder,
-		IInstrumentBuilder<TSubject>,
+	public interface IBoundProcedureBuilder<out TSubject> : IBoundProcedureBuilder,
+		IProcedureBuilder<TSubject>,
 		IHides<IBoundInstrumentBuilderState<TSubject>> {}
 
 	public interface IBoundInstrumentBuilderState<out TSubject> : IInstrumentBuilderState<TSubject>
@@ -26,11 +26,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 		ISource<TSubject> Source { get; }
 	}
 
-	public class BoundInstrumentBuilder<TSubject> : InstrumentBuilder<TSubject>,
-		IBoundInstrumentBuilder<TSubject>,
+	public class BoundProcedureBuilder<TSubject> : ProcedureBuilder<TSubject>,
+		IBoundProcedureBuilder<TSubject>,
 		IBoundInstrumentBuilderState<TSubject>
 	{
-		public BoundInstrumentBuilder(ISource<TSubject> source)
+		public BoundProcedureBuilder(ISource<TSubject> source)
 		{
 			Source = source;
 		}

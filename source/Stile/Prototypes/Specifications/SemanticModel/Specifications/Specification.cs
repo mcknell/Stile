@@ -27,19 +27,18 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 	public interface ISpecification<in TSubject> : ISpecification {}
 
-	public interface ISpecification<TSubject, TResult> : ISpecification<TSubject>,
-		IResultSpecification<TResult>,
-		IHides<ISpecificationState<TSubject, TResult>>
+	public interface ISpecification<in TSubject, out TResult> : ISpecification<TSubject>,
+		IResultSpecification<TResult>
 	{
 		[NotNull]
 		IEvaluation<TSubject, TResult> Evaluate(TSubject subject);
 	}
 
-	public interface ISpecification<TSubject, TResult, out TPredicateBuilder> : ISpecification<TSubject, TResult>
-		where TPredicateBuilder : class, IPredicateBuilder
-	{
-		TPredicateBuilder AndThen { get; }
-	}
+	public interface ISpecification<TSubject, TResult, out TExpectationBuilder> :
+		ISpecification<TSubject, TResult>,
+		IChainableSpecification<TExpectationBuilder>,
+		IHides<ISpecificationState<TSubject, TResult, TExpectationBuilder>>
+		where TExpectationBuilder : class, IExpectationBuilder {}
 
 	public interface ISpecificationState {}
 
@@ -51,7 +50,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		ISource<TSubject> Source { get; }
 	}
 
-	public interface ISpecificationState<TSubject, TResult> : ISpecificationState<TSubject>
+	public interface ISpecificationState<TSubject, TResult, out TExpectationBuilder> :
+		ISpecificationState<TSubject>
+		where TExpectationBuilder : class, IExpectationBuilder
 	{
 		[NotNull]
 		ICriterion<TResult> Criterion { get; }
@@ -66,7 +67,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			IInstrument<TSubject, TResult> instrument,
 			ICriterion<TResult> criterion,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
-			where TSpecification : class, ISpecification<TSubject, TResult>;
+			where TSpecification : class, IChainableSpecification;
+
+		public delegate TSpecification Factory<out TSpecification, TSubject, TResult, in TExpectationBuilder>(
+			ISource<TSubject> source,
+			IInstrument<TSubject, TResult> instrument,
+			ICriterion<TResult> criterion,
+			TExpectationBuilder expectationBuilder,
+			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
+			where TSpecification : class, IChainableSpecification
+			where TExpectationBuilder : class, IExpectationBuilder;
 
 		protected static readonly IError[] NoErrors = new IError[0];
 	}
@@ -84,14 +94,17 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public ISource<TSubject> Source { get; private set; }
 	}
 
-	public class Specification<TSubject, TResult> : Specification<TSubject>,
-		IBoundSpecification<TSubject, TResult>,
-		ISpecificationState<TSubject, TResult>
+	public class Specification<TSubject, TResult, TExpectationBuilder> : Specification<TSubject>,
+		IBoundSpecification<TSubject, TResult, TExpectationBuilder>,
+		ISpecificationState<TSubject, TResult, TExpectationBuilder>
+		where TExpectationBuilder : class, IExpectationBuilder
 	{
 		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
+		private readonly TExpectationBuilder _expectationBuilder;
 
 		protected Specification([NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] ICriterion<TResult> criterion,
+			[NotNull] TExpectationBuilder expectationBuilder,
 			ISource<TSubject> source = null,
 			string because = null,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
@@ -99,19 +112,20 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
 			Criterion = criterion.ValidateArgumentIsNotNull();
+			_expectationBuilder = expectationBuilder.ValidateArgumentIsNotNull();
 			_exceptionFilter = exceptionFilter;
+		}
+
+		public TExpectationBuilder AndThen
+		{
+			get { return _expectationBuilder; }
 		}
 
 		public ICriterion<TResult> Criterion { get; private set; }
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
-		public ISpecificationState<TSubject, TResult> Xray
+		public ISpecificationState<TSubject, TResult, TExpectationBuilder> Xray
 		{
 			get { return this; }
-		}
-
-		public IEvaluation<TResult> Evaluate()
-		{
-			return Evaluate(Source.Get);
 		}
 
 		public IEvaluation<TSubject, TResult> Evaluate(TSubject subject)
@@ -119,25 +133,36 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return Evaluate(() => subject);
 		}
 
-		public static Specification<TSubject, TResult> Make([CanBeNull] ISource<TSubject> source,
+		public IEvaluation<TSubject, TResult> Evaluate()
+		{
+			return Evaluate(Source.Get);
+		}
+
+		public static Specification<TSubject, TResult, TExpectationBuilder> Make(
+			[CanBeNull] ISource<TSubject> source,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] ICriterion<TResult> criterion,
+			[NotNull] TExpectationBuilder expectationBuilder,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 		{
-			return new Specification<TSubject, TResult>(instrument,
+			return new Specification<TSubject, TResult, TExpectationBuilder>(instrument,
 				criterion,
+				expectationBuilder,
 				source,
 				exceptionFilter : exceptionFilter);
 		}
 
-		public static Specification<TSubject, TResult> MakeBound([NotNull] ISource<TSubject> source,
+		public static Specification<TSubject, TResult, TExpectationBuilder> MakeBound(
+			[NotNull] ISource<TSubject> source,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] ICriterion<TResult> criterion,
+			[NotNull] TExpectationBuilder expectationBuilder,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 		{
 			ISource<TSubject> validatedSource = source.ValidateArgumentIsNotNull();
-			return new Specification<TSubject, TResult>(instrument,
+			return new Specification<TSubject, TResult, TExpectationBuilder>(instrument,
 				criterion,
+				expectationBuilder,
 				validatedSource,
 				exceptionFilter : exceptionFilter);
 		}
@@ -176,29 +201,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			Outcome outcome = Criterion.Accept(result);
 			evaluation = new Evaluation<TSubject, TResult>(this, outcome, result, errors);
 			return evaluation;
-		}
-	}
-
-	public class Specification<TSpecification, TSubject, TResult, TPredicateBuilder> :
-		Specification<TSubject, TResult>,
-		ISpecification<TSubject, TResult, TPredicateBuilder>
-		where TSpecification : class, ISpecification<TSubject, TResult>
-		where TPredicateBuilder : class, IPredicateBuilder<TSpecification, TSubject, TResult, TPredicateBuilder>
-	{
-		private readonly TPredicateBuilder _predicateBuilder;
-
-		protected Specification([NotNull] TPredicateBuilder predicateBuilder,
-			[NotNull] ICriterion<TResult> criterion,
-			string because = null,
-			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
-			: base(predicateBuilder.Xray.Instrument, criterion, predicateBuilder.Xray.Source, because, exceptionFilter)
-		{
-			_predicateBuilder = predicateBuilder;
-		}
-
-		public TPredicateBuilder AndThen
-		{
-			get { return _predicateBuilder; }
 		}
 	}
 }

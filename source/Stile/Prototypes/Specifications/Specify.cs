@@ -19,32 +19,32 @@ namespace Stile.Prototypes.Specifications
 	public static class Specify
 	{
 		[System.Diagnostics.Contracts.Pure]
-		public static IBoundInstrumentBuilder<TSubject> For<TSubject>([CanBeNull] TSubject subject)
+		public static IBoundProcedureBuilder<TSubject> For<TSubject>([CanBeNull] TSubject subject)
 		{
 			var source = new Source<TSubject>(subject);
-			return new BoundInstrumentBuilder<TSubject>(source);
+			return new BoundProcedureBuilder<TSubject>(source);
 		}
 
 		[System.Diagnostics.Contracts.Pure]
-		public static IBoundInstrumentBuilder<TSubject> For<TSubject>(
+		public static IBoundProcedureBuilder<TSubject> For<TSubject>(
 			[NotNull] Expression<Func<TSubject>> expression)
 		{
 			var source = new Source<TSubject>(expression.ValidateArgumentIsNotNull());
-			return new BoundInstrumentBuilder<TSubject>(source);
+			return new BoundProcedureBuilder<TSubject>(source);
 		}
 
 		[System.Diagnostics.Contracts.Pure]
-		public static IInstrumentBuilder<TSubject> ForAny<TSubject>()
+		public static IProcedureBuilder<TSubject> ForAny<TSubject>()
 		{
-			return new InstrumentBuilder<TSubject>();
+			return new ProcedureBuilder<TSubject>();
 		}
 
 		[System.Diagnostics.Contracts.Pure]
-		public static IPredicateBuilder<ISpecification<TSubject, TSubject>, TSubject, TSubject> ThatAny<TSubject>()
+		public static ISimpleExpectationBuilder<TSubject, TSubject> ThatAny<TSubject>()
 		{
 			var instrument = new Instrument<TSubject, TSubject>(x => x);
-			return new PredicateBuilder<ISpecification<TSubject, TSubject>, TSubject, TSubject>(instrument,
-				Specification<TSubject, TSubject>.Make);
+			return new SimpleExpectationBuilder<TSubject, TSubject>(instrument,
+				SimpleSpecification<TSubject, TSubject>.Make);
 		}
 	}
 }

@@ -20,9 +20,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		void Sample([NotNull] TSubject subject);
 	}
 
-	public class ThrowingInstrument : Instrument
+	public class ThrowingInstrument 
 	{
-		public new static class Trivial<TSubject>
+		public static class Trivial<TSubject>
 		{
 			public static readonly Lazy<Action<TSubject>> Map = new Lazy<Action<TSubject>>(() => x => {});
 		}

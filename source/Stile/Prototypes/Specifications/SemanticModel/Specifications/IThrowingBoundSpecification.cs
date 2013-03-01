@@ -10,12 +10,13 @@ using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
-	public interface IThrowingBoundSpecification : IThrowingSpecification,
+	public interface IVoidBoundSpecification : IVoidSpecification,
 		IBoundSpecification {}
 
-	public interface IThrowingBoundSpecification<TSubject> : IThrowingBoundSpecification,
-		IThrowingSpecification<TSubject>,
-		IBoundSpecification<TSubject>
+	public interface IVoidBoundSpecification<TSubject> : IVoidBoundSpecification,
+		IVoidSpecification<TSubject>,
+		IBoundSpecification<TSubject>,
+		IChainableSpecification
 	{
 		[NotNull]
 		IEvaluation Evaluate();
