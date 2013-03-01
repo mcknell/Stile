@@ -4,9 +4,6 @@
 #endregion
 
 #region using...
-#endregion
-
-#region using...
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
@@ -143,33 +140,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		{
 			return new Is<TSpecification, TSubject, TResult>(Instrument,
 				Negated.False,
-				(source, instrument, criterion, filter) => Make(criterion),
+				criterion => Make(criterion),
 				Source);
 		}
-	}
-
-/*
-	public abstract class ExpectationBuilder<TSpecification, TSubject, TResult, TPredicateBuilder> :
-		ExpectationBuilder<TSpecification, TSubject, TResult>
-		where TSpecification : class, ISpecification<TSubject, TResult, TPredicateBuilder>, IChainableSpecification
-		where TPredicateBuilder : class, IExpectationBuilder<TSpecification, TSubject, TResult>
-	{
-		protected ExpectationBuilder(IInstrument<TSubject, TResult> instrument,
-			[NotNull] Specification.Factory<TSpecification, TSubject, TResult> specificationFactory,
-			ISource<TSubject> source = null)
-			: base(instrument, specificationFactory, source) {}
-	}
-*/
-
-	public class ExpectationBuilder<TSpecification, TSubject, TResult> :
-		ExpectationBuilder<TSpecification, TSubject, TResult, ExpectationBuilder<TSpecification, TSubject, TResult>>
-		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
-	{
-		public ExpectationBuilder(IInstrument<TSubject, TResult> instrument,
-			[NotNull] Specification.Factory
-				<TSpecification, TSubject, TResult, ExpectationBuilder<TSpecification, TSubject, TResult>>
-				specificationFactory,
-			ISource<TSubject> source = null)
-			: base(instrument, specificationFactory, source) {}
 	}
 }

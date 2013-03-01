@@ -4,11 +4,11 @@
 #endregion
 
 #region using...
+using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
@@ -48,11 +48,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 		IIsState<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
-		private readonly Specification.Factory<TSpecification, TSubject, TResult> _specificationFactory;
+		private readonly Func<ICriterion<TResult>, TSpecification> _specificationFactory;
 
 		public Is([NotNull] IInstrument<TSubject, TResult> instrument,
 			Negated negated,
-			[NotNull] Specification.Factory<TSpecification, TSubject, TResult> specificationFactory,
+			[NotNull] Func<ICriterion<TResult>, TSpecification> specificationFactory,
 			ISource<TSubject> source = null)
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
@@ -75,7 +75,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 
 		public TSpecification Make(ICriterion<TResult> criterion)
 		{
-			return _specificationFactory.Invoke(Source, Instrument, criterion);
+			return _specificationFactory.Invoke(criterion);
 		}
 	}
 }

@@ -20,10 +20,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		ISimpleExpectationBuilder<TSubject, TResult>
 	{
 		public SimpleExpectationBuilder(IInstrument<TSubject, TResult> instrument,
-			[NotNull] Specification.Factory<ISimpleSpecification<TSubject, TResult>, TSubject, TResult>
+			[NotNull] Specification.Factory
+				<ISimpleSpecification<TSubject, TResult>, TSubject, TResult, SimpleExpectationBuilder<TSubject, TResult>>
 				specificationFactory,
 			ISource<TSubject> source = null)
-			: base(instrument, (source1, instrument1, criterion, builder, filter) => 
-				specificationFactory.Invoke(source1,instrument1,criterion), source) {}
+			: base(instrument, specificationFactory, source) {}
 	}
 }

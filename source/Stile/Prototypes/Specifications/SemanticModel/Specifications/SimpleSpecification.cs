@@ -27,10 +27,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public static ISimpleSpecification<TSubject, TResult> Make([CanBeNull] ISource<TSubject> source,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] ICriterion<TResult> criterion,
+			SimpleExpectationBuilder<TSubject, TResult> expectationBuilder,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 		{
 			return new SimpleSpecification<TSubject, TResult>(instrument,
-				new SimpleExpectationBuilder<TSubject, TResult>(instrument, Make, source),
+				expectationBuilder,
 				criterion,
 				exceptionFilter : exceptionFilter);
 		}

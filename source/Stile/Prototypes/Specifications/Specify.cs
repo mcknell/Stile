@@ -26,8 +26,7 @@ namespace Stile.Prototypes.Specifications
 		}
 
 		[System.Diagnostics.Contracts.Pure]
-		public static IBoundProcedureBuilder<TSubject> For<TSubject>(
-			[NotNull] Expression<Func<TSubject>> expression)
+		public static IBoundProcedureBuilder<TSubject> For<TSubject>([NotNull] Expression<Func<TSubject>> expression)
 		{
 			var source = new Source<TSubject>(expression.ValidateArgumentIsNotNull());
 			return new BoundProcedureBuilder<TSubject>(source);
