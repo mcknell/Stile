@@ -6,6 +6,7 @@
 #region using...
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.Builders.OfPredicates;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -57,27 +58,19 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 	{
 		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
-		private readonly IInstrument<TSubject, TResult> _instrument;
-		private readonly ISource<TSubject> _source;
-		private readonly Specification.Factory<TSpecification, TSubject, TResult> _specificationFactory;
+		private readonly ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification>
+			_specificationFactory;
 
-		public ThrowingSpecificationBuilder([CanBeNull] ISource<TSubject> source,
-			[NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] IExceptionFilter<TSubject, TResult> exceptionFilter,
-			[NotNull] Specification.Factory<TSpecification, TSubject, TResult> specificationFactory)
+		public ThrowingSpecificationBuilder([NotNull] IExceptionFilter<TSubject, TResult> exceptionFilter,
+			[NotNull] ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification> specificationFactory)
 		{
-			_source = source;
-			_instrument = instrument.ValidateArgumentIsNotNull();
 			_exceptionFilter = exceptionFilter.ValidateArgumentIsNotNull();
 			_specificationFactory = specificationFactory.ValidateArgumentIsNotNull();
 		}
 
 		public TSpecification Build()
 		{
-			return _specificationFactory.Invoke(_source,
-				_instrument,
-				Criterion<TResult>.UnconditionalAcceptance,
-				_exceptionFilter);
+			return _specificationFactory.Invoke(Criterion<TResult>.UnconditionalAcceptance, _exceptionFilter);
 		}
 	}
 }

@@ -62,13 +62,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 	public abstract class Specification
 	{
-		public delegate TSpecification Factory<out TSpecification, TSubject, TResult>(
-			ISource<TSubject> source,
-			IInstrument<TSubject, TResult> instrument,
-			ICriterion<TResult> criterion,
-			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
-			where TSpecification : class, IChainableSpecification;
-
 		public delegate TSpecification Factory<out TSpecification, TSubject, TResult, in TExpectationBuilder>(
 			ISource<TSubject> source,
 			IInstrument<TSubject, TResult> instrument,

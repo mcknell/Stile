@@ -47,7 +47,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null);
 	}
 
+	public abstract class ExpectationBuilder
+	{
+		public delegate TSpecification SpecificationFactory<TSubject, TResult, out TSpecification>(
+			[NotNull] ICriterion<TResult> criterion, IExceptionFilter<TSubject, TResult> exceptionFilter = null);
+	}
+
 	public abstract class ExpectationBuilder<TSpecification, TSubject, TResult, THas, TIs, TBuilder> :
+		ExpectationBuilder,
 		IExpectationBuilder<TSpecification, TSubject, TResult, THas, TIs>,
 		IExpectationBuilderState<TSpecification, TSubject, TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
@@ -99,10 +106,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 			where TException : Exception
 		{
 			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(exception => exception is TException);
-			var builder = new ThrowingSpecificationBuilder<TSpecification, TSubject, TResult>(Source,
-				Instrument,
-				exceptionFilter,
-				(source, instrument, criterion, filter) => Make(criterion, exceptionFilter));
+			var builder = new ThrowingSpecificationBuilder<TSpecification, TSubject, TResult>(exceptionFilter, Make);
 			return builder;
 		}
 
