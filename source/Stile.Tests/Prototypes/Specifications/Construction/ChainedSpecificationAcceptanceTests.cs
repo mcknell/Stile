@@ -7,7 +7,6 @@
 using NUnit.Framework;
 using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
-using Stile.Prototypes.Specifications.Builders.OfPredicates;
 using Stile.Prototypes.Specifications.Builders.OfPredicates.Has;
 using Stile.Prototypes.Specifications.Builders.OfPredicates.Is;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
@@ -23,14 +22,18 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		[Test]
 		public void BoundToInstance()
 		{
-			ISimpleBoundExpectationBuilder<Foo<int>, int> expectationBuilder =
-				Specify.For(new Foo<int>()).That(x => x.Count);
-			var specification = expectationBuilder.Is.Not.EqualTo(12) //
-				.AndThen.Is.Not.EqualTo(12);
+			ISimpleBoundSpecification<Foo<int>, int> specification = //
+				Specify.For(new Foo<int>()).That(x => x.Count) //
+					.Is.Not.EqualTo(12) //
+					.AndThen.Is.Not.EqualTo(12);
 			Assert.That(specification, Is.Not.Null);
-			IEvaluation<int> evaluation = specification.Evaluate();
+			IBoundEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.Value, Is.EqualTo(0));
+
+			IBoundEvaluation<Foo<int>, int> secondEvaluation = evaluation.Evaluate();
+			Assert.That(secondEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
+			Assert.That(secondEvaluation.Value, Is.Not.EqualTo(12));
 		}
 
 		[Test]

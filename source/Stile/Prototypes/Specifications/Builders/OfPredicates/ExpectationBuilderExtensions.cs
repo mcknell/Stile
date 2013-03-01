@@ -12,7 +12,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 
 namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 {
-	public static class PredicateBuilderExtensions
+	public static class ExpectationBuilderExtensions
 	{
 		[Pure]
 		public static IEnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> OfItemsLike
@@ -24,8 +24,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		{
 			IExpectationBuilderState<TSpecification, TSubject, TResult> state = builder.Xray;
 			IInstrument<TSubject, TResult> instrument = state.Instrument;
-
-			// Specification<TSubject, TResult, EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>>. Make
 			return new EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>(instrument,
 				(source, instrument1, criterion, expectationBuilder, filter) => builder.Xray.Make(criterion),
 				state.Source);
@@ -50,13 +48,4 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 					state.Source);
 		}
 	}
-
-	public interface IFluentEnumerableBoundSpecification<TSubject, TResult, TItem> :
-		IBoundSpecification<TSubject, TResult, IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>>
-		where TResult : class, IEnumerable<TItem> {}
-
-	public interface IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem> :
-		IEnumerableBoundExpectationBuilder
-			<IFluentEnumerableBoundSpecification<TSubject, TResult, TItem>, TSubject, TResult, TItem>
-		where TResult : class, IEnumerable<TItem> {}
 }

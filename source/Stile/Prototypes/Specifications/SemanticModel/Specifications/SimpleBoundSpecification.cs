@@ -25,7 +25,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 			: base(instrument, criterion, expectationBuilder, source, because, exceptionFilter) {}
 
-		public new static ISimpleBoundSpecification<TSubject, TResult> MakeBound([NotNull] ISource<TSubject> source,
+		public static ISimpleBoundSpecification<TSubject, TResult> MakeBound([NotNull] ISource<TSubject> source,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] ICriterion<TResult> criterion,
 			[NotNull] ISimpleBoundExpectationBuilder<TSubject, TResult> expectationBuilder,

@@ -8,7 +8,6 @@ using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
-using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel
@@ -26,12 +25,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		/// </summary>
 		/// <param name="result"></param>
 		/// <returns></returns>
-		IEvaluation<TSubject, TResult> Fail(TResult result);
+		TEvaluation Fail<TEvaluation>(TResult result) where TEvaluation : class, IEvaluation<TSubject, TResult>;
 
-		bool TryFilter(ISpecification<TSubject, TResult> specification,
-			TResult result,
+		bool TryFilter<TEvaluation>(TResult result,
 			[NotNull] Exception e,
-			out IEvaluation<TSubject, TResult> evaluation);
+			[NotNull] Func<Outcome, TResult, IError, TEvaluation> factory,
+			out TEvaluation evaluation) where TEvaluation : class, IEvaluation<TSubject, TResult>;
 	}
 
 	public class ExceptionFilter : IExceptionFilter
@@ -66,25 +65,27 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		public ExceptionFilter([NotNull] Predicate<Exception> predicate)
 			: base(predicate) {}
 
-		public IEvaluation<TSubject, TResult> Fail(TResult result)
+		public TEvaluation Fail<TEvaluation>(TResult result)
+			where TEvaluation : class, IEvaluation<TSubject, TResult>
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool TryFilter(ISpecification<TSubject, TResult> specification,
-			TResult result,
+		public bool TryFilter<TEvaluation>(TResult result,
 			Exception e,
-			out IEvaluation<TSubject, TResult> evaluation)
+			Func<Outcome, TResult, IError, TEvaluation> factory,
+			out TEvaluation evaluation) where TEvaluation : class, IEvaluation<TSubject, TResult>
 		{
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+			e.ValidateArgumentIsNotNull();
+			factory.ValidateArgumentIsNotNull();
+// ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			if (Predicate.Invoke(e))
 			{
-				evaluation = new Evaluation<TSubject, TResult>(specification, Outcome.Succeeded, result, new Error(e));
+				evaluation = factory.Invoke(Outcome.Succeeded, result, new Error(e));
 				return true;
 			}
-			evaluation = new Evaluation<TSubject, TResult>(specification,
-				Outcome.Interrupted,
-				result,
-				new Error(e, false));
+			evaluation = factory.Invoke(Outcome.Interrupted, result, new Error(e, false));
 			return false;
 		}
 	}

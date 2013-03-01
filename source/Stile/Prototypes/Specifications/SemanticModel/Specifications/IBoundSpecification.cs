@@ -23,7 +23,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		ISpecification<TSubject, TResult>,
 		IChainableSpecification
 	{
-		IEvaluation<TSubject, TResult> Evaluate();
+		IBoundEvaluation<TSubject, TResult> Evaluate();
 	}
 
 	public interface IBoundSpecification<TSubject, TResult, out TExpectationBuilder> :

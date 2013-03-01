@@ -9,8 +9,8 @@
 #region using...
 using System;
 using JetBrains.Annotations;
-using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
@@ -29,6 +29,31 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	public interface IEvaluation<in TSubject, out TResult> : IEvaluation<TResult>
 	{
 		IEvaluation<TResult> Evaluate(TSubject subject);
+	}
+
+	public interface IBoundEvaluation<in TSubject, out TResult> : IEvaluation<TSubject, TResult>
+	{
+		IBoundEvaluation<TSubject, TResult> Evaluate();
+	}
+
+	public class BoundEvaluation<TSubject, TResult> : Evaluation<TSubject, TResult>,
+		IBoundEvaluation<TSubject, TResult>
+	{
+		private readonly IBoundSpecification<TSubject, TResult> _specification;
+
+		public BoundEvaluation([NotNull] IBoundSpecification<TSubject, TResult> specification,
+			Outcome outcome,
+			TResult value,
+			params IError[] errors)
+			: base(specification, outcome, value, errors)
+		{
+			_specification = specification;
+		}
+
+		public IBoundEvaluation<TSubject, TResult> Evaluate()
+		{
+			return _specification.Evaluate();
+		}
 	}
 
 	public class Evaluation : IEvaluation
@@ -63,7 +88,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	{
 		private readonly ISpecification<TSubject, TResult> _specification;
 
-		public Evaluation([NotNull] ISpecification<TSubject, TResult>specification ,Outcome outcome, TResult value, params IError[] errors)
+		public Evaluation([NotNull] ISpecification<TSubject, TResult> specification,
+			Outcome outcome,
+			TResult value,
+			params IError[] errors)
 			: base(outcome, value, errors)
 		{
 			_specification = specification.ValidateArgumentIsNotNull();

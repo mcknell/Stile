@@ -37,7 +37,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public interface ISpecification<TSubject, TResult, out TExpectationBuilder> :
 		ISpecification<TSubject, TResult>,
 		IChainableSpecification<TExpectationBuilder>,
-		IHides<ISpecificationState<TSubject, TResult, TExpectationBuilder>>
+		IHides<ISpecificationState<TSubject, TResult>>
 		where TExpectationBuilder : class, IExpectationBuilder {}
 
 	public interface ISpecificationState {}
@@ -50,9 +50,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		ISource<TSubject> Source { get; }
 	}
 
-	public interface ISpecificationState<TSubject, TResult, out TExpectationBuilder> :
-		ISpecificationState<TSubject>
-		where TExpectationBuilder : class, IExpectationBuilder
+	public interface ISpecificationState<TSubject, TResult> : ISpecificationState<TSubject>
 	{
 		[NotNull]
 		ICriterion<TResult> Criterion { get; }
@@ -89,7 +87,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 	public class Specification<TSubject, TResult, TExpectationBuilder> : Specification<TSubject>,
 		IBoundSpecification<TSubject, TResult, TExpectationBuilder>,
-		ISpecificationState<TSubject, TResult, TExpectationBuilder>
+		ISpecificationState<TSubject, TResult>
 		where TExpectationBuilder : class, IExpectationBuilder
 	{
 		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
@@ -116,48 +114,19 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public ICriterion<TResult> Criterion { get; private set; }
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
-		public ISpecificationState<TSubject, TResult, TExpectationBuilder> Xray
+		public ISpecificationState<TSubject, TResult> Xray
 		{
 			get { return this; }
 		}
 
 		public IEvaluation<TSubject, TResult> Evaluate(TSubject subject)
 		{
-			return Evaluate(() => subject);
+			return Evaluate(() => subject, UnboundFactory);
 		}
 
-		public IEvaluation<TSubject, TResult> Evaluate()
+		public IBoundEvaluation<TSubject, TResult> Evaluate()
 		{
-			return Evaluate(Source.Get);
-		}
-
-		public static Specification<TSubject, TResult, TExpectationBuilder> Make(
-			[CanBeNull] ISource<TSubject> source,
-			[NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] ICriterion<TResult> criterion,
-			[NotNull] TExpectationBuilder expectationBuilder,
-			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
-		{
-			return new Specification<TSubject, TResult, TExpectationBuilder>(instrument,
-				criterion,
-				expectationBuilder,
-				source,
-				exceptionFilter : exceptionFilter);
-		}
-
-		public static Specification<TSubject, TResult, TExpectationBuilder> MakeBound(
-			[NotNull] ISource<TSubject> source,
-			[NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] ICriterion<TResult> criterion,
-			[NotNull] TExpectationBuilder expectationBuilder,
-			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
-		{
-			ISource<TSubject> validatedSource = source.ValidateArgumentIsNotNull();
-			return new Specification<TSubject, TResult, TExpectationBuilder>(instrument,
-				criterion,
-				expectationBuilder,
-				validatedSource,
-				exceptionFilter : exceptionFilter);
+			return Evaluate(Source.Get, BoundFactory);
 		}
 
 		private bool ExpectsException
@@ -165,11 +134,18 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			get { return _exceptionFilter != null; }
 		}
 
-		private IEvaluation<TSubject, TResult> Evaluate(Func<TSubject> subjectGetter)
+		private IBoundEvaluation<TSubject, TResult> BoundFactory(Outcome outcome,
+			TResult result,
+			params IError[] error)
+		{
+			return new BoundEvaluation<TSubject, TResult>(this, outcome, result, error);
+		}
+
+		private TEvaluation Evaluate<TEvaluation>(Func<TSubject> subjectGetter,
+			SuccessFactory<TEvaluation> successFactory) where TEvaluation : class, IEvaluation<TSubject, TResult>
 		{
 			TResult result = default(TResult);
 			IError[] errors = NoErrors;
-			IEvaluation<TSubject, TResult> evaluation;
 			try
 			{
 				// only trap exceptions while getting the subject or instrumenting it, not while accepting it
@@ -177,7 +153,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 				result = Instrument.Sample(subject);
 			} catch (Exception e)
 			{
-				if (ExpectsException && _exceptionFilter.TryFilter(this, result, e, out evaluation))
+				TEvaluation evaluation;
+				if (ExpectsException
+				    && _exceptionFilter.TryFilter(result, e, (o, r, ex) => successFactory(o, r, ex), out evaluation))
 				{
 					return evaluation;
 				}
@@ -188,12 +166,19 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			if (ExpectsException)
 			{
 				// exception was expected but none was thrown
-				return _exceptionFilter.Fail(result);
+				return _exceptionFilter.Fail<TEvaluation>(result);
 			}
 
 			Outcome outcome = Criterion.Accept(result);
-			evaluation = new Evaluation<TSubject, TResult>(this, outcome, result, errors);
-			return evaluation;
+			return successFactory.Invoke(outcome, result, errors);
 		}
+
+		private IEvaluation<TSubject, TResult> UnboundFactory(Outcome outcome, TResult result, params IError[] error)
+		{
+			return new Evaluation<TSubject, TResult>(this, outcome, result, error);
+		}
+
+		private delegate TEvaluation SuccessFactory<TEvaluation>(
+			Outcome outcome, TResult result, params IError[] error);
 	}
 }

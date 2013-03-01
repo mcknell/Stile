@@ -86,7 +86,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\ExceptionFilterBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Has\HasExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfPredicates\Is\IsExtensions.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\PredicateBuilderExtensions.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfPredicates\ExpectationBuilderExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfInstruments\BoundProcedureBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfInstruments\ProcedureBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfPredicates\EnumerableExpectationBuilder.cs" />
