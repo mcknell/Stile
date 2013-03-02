@@ -76,6 +76,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentBoundExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Chained\SpecificationExtensions.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\BoundEvaluation.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\IChainableSpecification.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Measurement.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Observation.cs" />

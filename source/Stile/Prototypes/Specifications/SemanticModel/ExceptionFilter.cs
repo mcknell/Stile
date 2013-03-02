@@ -24,12 +24,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		/// If exception was expected but none was thrown.
 		/// </summary>
 		/// <param name="result"></param>
+		/// <param name="factory"></param>
 		/// <returns></returns>
-		TEvaluation Fail<TEvaluation>(TResult result) where TEvaluation : class, IEvaluation<TSubject, TResult>;
+		TEvaluation Fail<TEvaluation>(TResult result,
+			Evaluation.Factory<TSubject, TResult, TEvaluation> factory) where TEvaluation : class, IEvaluation<TSubject, TResult>;
 
 		bool TryFilter<TEvaluation>(TResult result,
 			[NotNull] Exception e,
-			[NotNull] Func<Outcome, TResult, IError, TEvaluation> factory,
+			[NotNull] Evaluation.Factory<TSubject, TResult, TEvaluation> factory,
 			out TEvaluation evaluation) where TEvaluation : class, IEvaluation<TSubject, TResult>;
 	}
 
@@ -42,7 +44,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 		public IEvaluation FailBeforeResult()
 		{
-			throw new NotImplementedException();
+			return new Evaluation(Outcome.Failed);
 		}
 
 		public bool TryFilterBeforeResult(Exception e, out IEvaluation evaluation)
@@ -65,15 +67,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		public ExceptionFilter([NotNull] Predicate<Exception> predicate)
 			: base(predicate) {}
 
-		public TEvaluation Fail<TEvaluation>(TResult result)
+		public TEvaluation Fail<TEvaluation>(TResult result,
+			Evaluation.Factory<TSubject, TResult, TEvaluation> factory)
 			where TEvaluation : class, IEvaluation<TSubject, TResult>
 		{
-			throw new NotImplementedException();
+			return factory.Invoke(Outcome.Failed, result);
 		}
 
 		public bool TryFilter<TEvaluation>(TResult result,
 			Exception e,
-			Func<Outcome, TResult, IError, TEvaluation> factory,
+			Evaluation.Factory<TSubject, TResult, TEvaluation> factory,
 			out TEvaluation evaluation) where TEvaluation : class, IEvaluation<TSubject, TResult>
 		{
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed

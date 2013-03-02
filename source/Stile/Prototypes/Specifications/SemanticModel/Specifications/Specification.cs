@@ -93,7 +93,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
 		private readonly TExpectationBuilder _expectationBuilder;
 
-	    public Specification([NotNull] IInstrument<TSubject, TResult> instrument,
+		public Specification([NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] ICriterion<TResult> criterion,
 			[NotNull] TExpectationBuilder expectationBuilder,
 			ISource<TSubject> source = null,
@@ -142,7 +142,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		}
 
 		private TEvaluation Evaluate<TEvaluation>(Func<TSubject> subjectGetter,
-			SuccessFactory<TEvaluation> successFactory) where TEvaluation : class, IEvaluation<TSubject, TResult>
+			Evaluation.Factory<TSubject, TResult, TEvaluation> evaluationFactory)
+			where TEvaluation : class, IEvaluation<TSubject, TResult>
 		{
 			TResult result = default(TResult);
 			IError[] errors = NoErrors;
@@ -155,7 +156,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			{
 				TEvaluation evaluation;
 				if (ExpectsException
-				    && _exceptionFilter.TryFilter(result, e, (o, r, ex) => successFactory(o, r, ex), out evaluation))
+					&& _exceptionFilter.TryFilter(result, e, (o, r, ex) => evaluationFactory(o, r, ex), out evaluation))
 				{
 					return evaluation;
 				}
@@ -166,19 +167,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			if (ExpectsException)
 			{
 				// exception was expected but none was thrown
-				return _exceptionFilter.Fail<TEvaluation>(result);
+				return _exceptionFilter.Fail(result, evaluationFactory);
 			}
 
 			Outcome outcome = Criterion.Accept(result);
-			return successFactory.Invoke(outcome, result, errors);
+			return evaluationFactory.Invoke(outcome, result, errors);
 		}
 
 		private IEvaluation<TSubject, TResult> UnboundFactory(Outcome outcome, TResult result, params IError[] error)
 		{
 			return new Evaluation<TSubject, TResult>(this, outcome, result, error);
 		}
-
-		private delegate TEvaluation SuccessFactory<TEvaluation>(
-			Outcome outcome, TResult result, params IError[] error);
 	}
 }

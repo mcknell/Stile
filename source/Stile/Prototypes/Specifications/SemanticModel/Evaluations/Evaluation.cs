@@ -4,9 +4,6 @@
 #endregion
 
 #region using...
-#endregion
-
-#region using...
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
@@ -31,33 +28,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		IEvaluation<TResult> Evaluate(TSubject subject);
 	}
 
-	public interface IBoundEvaluation<in TSubject, out TResult> : IEvaluation<TSubject, TResult>
-	{
-		IBoundEvaluation<TSubject, TResult> Evaluate();
-	}
-
-	public class BoundEvaluation<TSubject, TResult> : Evaluation<TSubject, TResult>,
-		IBoundEvaluation<TSubject, TResult>
-	{
-		private readonly IBoundSpecification<TSubject, TResult> _specification;
-
-		public BoundEvaluation([NotNull] IBoundSpecification<TSubject, TResult> specification,
-			Outcome outcome,
-			TResult value,
-			params IError[] errors)
-			: base(specification, outcome, value, errors)
-		{
-			_specification = specification;
-		}
-
-		public IBoundEvaluation<TSubject, TResult> Evaluate()
-		{
-			return _specification.Evaluate();
-		}
-	}
-
 	public class Evaluation : IEvaluation
 	{
+		public delegate TEvaluation Factory<in TSubject, in TResult, out TEvaluation>(
+			Outcome outcome, TResult result, params IError[] errors)
+			where TEvaluation : class, IEvaluation<TSubject, TResult>;
+
 		public Evaluation(Outcome outcome, Exception handledExpectedException)
 			: this(outcome, new Error(handledExpectedException)) {}
 
