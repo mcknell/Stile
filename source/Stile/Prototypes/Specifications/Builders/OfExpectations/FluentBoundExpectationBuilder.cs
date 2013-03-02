@@ -24,7 +24,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		IFluentBoundExpectationBuilder<TSubject, TResult>
 	{
 		public FluentBoundExpectationBuilder(IInstrument<TSubject, TResult> instrument,
-			IBoundProcedureBuilderState<TSubject> state)
+			IProcedureBuilderState<TSubject> state)
 			: base(instrument, state.Source) {}
 
 		protected override

@@ -14,21 +14,13 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 {
 	public interface IHas {}
 
-	public interface IHas<out TSpecification, TSubject, out TResult> : IHas,
+	public interface IHas<out TSpecification, TSubject, TResult> : IHas,
 		IHides<IHasState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, IChainableSpecification {}
 
-	public interface IHasState<out TSpecification, TSubject, out TResult>
-		where TSpecification : class, IChainableSpecification
-	{
-		[NotNull]
-		IInstrument<TSubject, TResult> Instrument { get; }
-		[CanBeNull]
-		ISource<TSubject> Source { get; }
-
-		[NotNull]
-		TSpecification Make(ICriterion<TResult> criterion);
-	}
+	public interface IHasState<out TSpecification, TSubject, TResult> :
+		IExpectationBuilderState<TSpecification, TSubject, TResult>
+		where TSpecification : class, IChainableSpecification {}
 
 	public class Has<TSpecification, TSubject, TResult> : IHas<TSpecification, TSubject, TResult>,
 		IHasState<TSpecification, TSubject, TResult>
@@ -37,13 +29,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		private readonly ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification>
 			_specificationFactory;
 
-		public Has([NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification> specificationFactory,
-			ISource<TSubject> source = null)
+		public Has([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState)
 		{
-			Instrument = instrument.ValidateArgumentIsNotNull();
-			_specificationFactory = specificationFactory.ValidateArgumentIsNotNull();
-			Source = source;
+			Instrument = builderState.Instrument.ValidateArgumentIsNotNull();
+			_specificationFactory = builderState.Make;
+			Source = builderState.Source;
 		}
 
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
@@ -54,9 +44,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 			get { return this; }
 		}
 
-		public TSpecification Make(ICriterion<TResult> criterion)
+		public TSpecification Make(ICriterion<TResult> criterion, IExceptionFilter<TSubject, TResult> filter = null)
 		{
-			TSpecification specification = _specificationFactory.Invoke(criterion, null);
+			TSpecification specification = _specificationFactory.Invoke(criterion, filter);
 			return specification;
 		}
 	}

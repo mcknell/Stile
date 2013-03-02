@@ -16,60 +16,51 @@ using Stile.Types.Enumerables;
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 {
-    public interface IEnumerableIs<out TSpecification, TSubject, out TResult, TItem> :
-        IIs<TSpecification, TSubject, TResult>
-        where TResult : class, IEnumerable<TItem>
-        where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
-    {
-        [System.Diagnostics.Contracts.Pure]
-        TSpecification Empty { get; }
-    }
+	public interface IEnumerableIs<out TSpecification, TSubject, TResult, TItem> :
+		IIs<TSpecification, TSubject, TResult>
+		where TResult : class, IEnumerable<TItem>
+		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+	{
+		[System.Diagnostics.Contracts.Pure]
+		TSpecification Empty { get; }
+	}
 
-    public interface INegatableEnumerableIs<out TSpecification, TSubject, out TResult, out TNegated, TItem> :
-        IEnumerableIs<TSpecification, TSubject, TResult, TItem>,
-        INegatable<TNegated>
-        where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
-        where TNegated : class, IEnumerableIs<TSpecification, TSubject, TResult, TItem>
-        where TResult : class, IEnumerable<TItem> {}
+	public interface INegatableEnumerableIs<out TSpecification, TSubject, TResult, out TNegated, TItem> :
+		IEnumerableIs<TSpecification, TSubject, TResult, TItem>,
+		INegatable<TNegated>
+		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+		where TNegated : class, IEnumerableIs<TSpecification, TSubject, TResult, TItem>
+		where TResult : class, IEnumerable<TItem> {}
 
-    public class EnumerableIs<TSpecification, TSubject, TResult, TItem> : Is<TSpecification, TSubject, TResult>,
-        INegatableEnumerableIs
-            <TSpecification, TSubject, TResult, IEnumerableIs<TSpecification, TSubject, TResult, TItem>, TItem>
-        where TSpecification : class, IChainableSpecification, ISpecification<TSubject, TResult>
-        where TResult : class, IEnumerable<TItem>
-    {
-        private readonly Lazy<TSpecification> _lazyEmpty;
-        public EnumerableIs([NotNull] IInstrument<TSubject, TResult> instrument,
-            Negated negated,
-            [NotNull] ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification> specificationFactory,
-            ISource<TSubject> source = null)
-            : base(instrument, negated, specificationFactory, source)
-        {
-            _lazyEmpty =
-                new Lazy<TSpecification>(
-                    () =>
-                        Make(
-                            new Criterion<TResult>(
-                                x => Negated.AgreesWith(x.None()) ? Outcome.Succeeded : Outcome.Failed)));
-        }
+	public class EnumerableIs<TSpecification, TSubject, TResult, TItem> : Is<TSpecification, TSubject, TResult>,
+		INegatableEnumerableIs
+			<TSpecification, TSubject, TResult, IEnumerableIs<TSpecification, TSubject, TResult, TItem>, TItem>
+		where TSpecification : class, IChainableSpecification, ISpecification<TSubject, TResult>
+		where TResult : class, IEnumerable<TItem>
+	{
+		private readonly Lazy<TSpecification> _lazyEmpty;
 
-        public new IEnumerableIs<TSpecification, TSubject, TResult, TItem> Not
-        {
-            get
-            {
-                return new EnumerableIs<TSpecification, TSubject, TResult, TItem>(Instrument,
-                    Negated.True,
-                    SpecificationFactory,
-                    Source);
-            }
-        }
-        public TSpecification Empty
-        {
-            get
-            {
-                TSpecification specification = _lazyEmpty.Value;
-                return specification;
-            }
-        }
-    }
+		public EnumerableIs([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState,
+			Negated negated)
+			: base(builderState, negated)
+		{
+			_lazyEmpty =
+				new Lazy<TSpecification>(
+					() =>
+						Make(new Criterion<TResult>(x => Negated.AgreesWith(x.None()) ? Outcome.Succeeded : Outcome.Failed)));
+		}
+
+		public TSpecification Empty
+		{
+			get
+			{
+				TSpecification specification = _lazyEmpty.Value;
+				return specification;
+			}
+		}
+		public new IEnumerableIs<TSpecification, TSubject, TResult, TItem> Not
+		{
+			get { return new EnumerableIs<TSpecification, TSubject, TResult, TItem>(_builderState, Negated.True); }
+		}
+	}
 }

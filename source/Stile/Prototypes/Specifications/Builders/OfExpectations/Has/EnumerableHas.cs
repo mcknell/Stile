@@ -16,7 +16,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 {
 	public interface IEnumerableHas : IHas {}
 
-	public interface IEnumerableHas<out TSpecification, TSubject, out TResult, TItem> : IEnumerableHas,
+	public interface IEnumerableHas<out TSpecification, TSubject, TResult, TItem> : IEnumerableHas,
 		IHas<TSpecification, TSubject, TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>
@@ -31,15 +31,12 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 	{
 		private readonly Lazy<IQuantifiedHas<TSpecification, TItem>> _lazyAll;
 
-		public EnumerableHas([NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification> specificationFactory,
-			ISource<TSubject> source = null)
-			: base(instrument, specificationFactory, source)
+		public EnumerableHas([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState)
+			: base(builderState)
 		{
 			_lazyAll =
 				new Lazy<IQuantifiedHas<TSpecification, TItem>>(
-					() =>
-						new HasAll<TSpecification, TResult, TItem>(criterion => specificationFactory.Invoke(criterion, null)));
+					() => new HasAll<TSpecification, TResult, TItem>(criterion => Make(criterion)));
 		}
 
 		public IQuantifiedHas<TSpecification, TItem> All

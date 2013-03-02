@@ -4,7 +4,6 @@
 #endregion
 
 #region using...
-using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
@@ -18,31 +17,23 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 	public interface IResultIs<out TSpecification, out TResult> : IIs
 		where TSpecification : class, IChainableSpecification {}
 
-	public interface IIs<out TSpecification, TSubject, out TResult> : IResultIs<TSpecification, TResult>,
+	public interface IIs<out TSpecification, TSubject, TResult> : IResultIs<TSpecification, TResult>,
 		IHides<IIsState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, IChainableSpecification {}
 
 	public interface INegatableIs : IIs {}
 
-	public interface INegatableIs<out TSpecification, TSubject, out TResult, out TNegated> : INegatableIs,
+	public interface INegatableIs<out TSpecification, TSubject, TResult, out TNegated> : INegatableIs,
 		IIs<TSpecification, TSubject, TResult>,
 		INegatable<TNegated>
 		where TSpecification : class, IChainableSpecification
 		where TNegated : class, IIs<TSpecification, TSubject, TResult> {}
 
-	public interface IIsState<out TSpecification, TSubject, out TResult>
+	public interface IIsState<out TSpecification, TSubject, TResult> :
+		IExpectationBuilderState<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
-		[NotNull]
-		IInstrument<TSubject, TResult> Instrument { get; }
-
 		Negated Negated { get; }
-
-		[CanBeNull]
-		ISource<TSubject> Source { get; }
-
-		[NotNull]
-		TSpecification Make(ICriterion<TResult> criterion);
 	}
 
 	public class Is<TSpecification, TSubject, TResult> :
@@ -50,21 +41,12 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		IIsState<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
-		public ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification> SpecificationFactory { get; private set; }
+		protected readonly IExpectationBuilderState<TSpecification, TSubject, TResult> _builderState;
 
-		public Is([NotNull] IInstrument<TSubject, TResult> instrument,
-			Negated negated,
-			[NotNull] ExpectationBuilder.SpecificationFactory<TSubject,TResult, TSpecification> specificationFactory,
-			ISource<TSubject> source = null)
-		{
-			Instrument = instrument.ValidateArgumentIsNotNull();
-			Negated = negated;
-			SpecificationFactory = specificationFactory.ValidateArgumentIsNotNull();
-			Source = source;
-		}
-		public Is([NotNull] IExpectationBuilderState<TSpecification,TSubject, TResult> builderState,
+		public Is([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState,
 			Negated negated)
 		{
+			_builderState = builderState.ValidateArgumentIsNotNull();
 			Instrument = builderState.Instrument.ValidateArgumentIsNotNull();
 			Negated = negated;
 			SpecificationFactory = builderState.Make;
@@ -76,19 +58,20 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 
 		public IIs<TSpecification, TSubject, TResult> Not
 		{
-			get { return new Is<TSpecification, TSubject, TResult>(Instrument, Negated.True, SpecificationFactory, Source); }
+			get { return new Is<TSpecification, TSubject, TResult>(_builderState, Negated.True); }
 		}
 
 		public ISource<TSubject> Source { get; private set; }
+		public ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification> SpecificationFactory { get; private set; }
 
 		public IIsState<TSpecification, TSubject, TResult> Xray
 		{
 			get { return this; }
 		}
 
-		public TSpecification Make(ICriterion<TResult> criterion)
+		public TSpecification Make(ICriterion<TResult> criterion, IExceptionFilter<TSubject, TResult> filter = null)
 		{
-			return SpecificationFactory.Invoke(criterion);
+			return SpecificationFactory.Invoke(criterion, filter);
 		}
 	}
 }

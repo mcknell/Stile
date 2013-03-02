@@ -39,7 +39,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 
 		protected override IEnumerableHas<TSpecification, TSubject, TResult, TItem> MakeHas()
 		{
-			var has = new EnumerableHas<TSpecification, TSubject, TResult, TItem>(Instrument, Make, Source);
+			var has = new EnumerableHas<TSpecification, TSubject, TResult, TItem>(this);
 			return has;
 		}
 
@@ -48,7 +48,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 				<TSpecification, TSubject, TResult, IEnumerableIs<TSpecification, TSubject, TResult, TItem>, TItem> MakeIs
 			()
 		{
-			return new EnumerableIs<TSpecification, TSubject, TResult, TItem>(Instrument, Negated.False, Make, Source);
+			return new EnumerableIs<TSpecification, TSubject, TResult, TItem>(this, Negated.False);
 		}
 	}
 }

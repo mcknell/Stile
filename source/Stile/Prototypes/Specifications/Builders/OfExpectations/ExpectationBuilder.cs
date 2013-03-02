@@ -10,6 +10,7 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
+using Stile.Prototypes.Specifications.Builders.OfInstruments;
 using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
@@ -37,13 +38,12 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		IHides<IExpectationBuilderState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, IChainableSpecification {}
 
-	public interface IExpectationBuilderState<out TSpecification, TSubject, TResult>
+	public interface IExpectationBuilderState<out TSpecification, TSubject, TResult> :
+		IProcedureBuilderState<TSubject>
 		where TSpecification : class, IChainableSpecification
 	{
 		[NotNull]
 		IInstrument<TSubject, TResult> Instrument { get; }
-		[CanBeNull]
-		ISource<TSubject> Source { get; }
 
 		TSpecification Make([NotNull] ICriterion<TResult> criterion,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null);
@@ -158,14 +158,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 
 		protected override IHas<TSpecification, TSubject, TResult> MakeHas()
 		{
-			var has = new Has<TSpecification, TSubject, TResult>(Instrument, Make, Source);
+			var has = new Has<TSpecification, TSubject, TResult>(this);
 			return has;
 		}
 
 		protected override INegatableIs<TSpecification, TSubject, TResult, IIs<TSpecification, TSubject, TResult>>
 			MakeIs()
 		{
-			return new Is<TSpecification, TSubject, TResult>(Instrument, Negated.False, Make, Source);
+			return new Is<TSpecification, TSubject, TResult>(this, Negated.False);
 		}
 	}
 }
