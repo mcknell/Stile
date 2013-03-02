@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
@@ -28,5 +29,17 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 				specificationFactory,
 			ISource<TSubject> source = null)
 			: base(instrument, specificationFactory, source) {}
+
+		protected override IFluentBoundExpectationBuilder<TSubject, TResult> Builder
+		{
+			get { return this; }
+		}
+		protected override
+			Func
+				<ICriterion<TResult>, IExceptionFilter<TSubject, TResult>,
+					IBoundSpecification<TSubject, TResult, IFluentBoundExpectationBuilder<TSubject, TResult>>> SpecFactory
+		{
+			get { return MakeBoundSpecification; }
+		}
 	}
 }

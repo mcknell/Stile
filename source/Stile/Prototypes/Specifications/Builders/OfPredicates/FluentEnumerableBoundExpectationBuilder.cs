@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel;
@@ -32,5 +33,29 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 				specificationFactory,
 			ISource<TSubject> source = null)
 			: base(instrument, specificationFactory, source) {}
+
+		public FluentEnumerableBoundExpectationBuilder(
+			IExpectationBuilderState
+				<IBoundSpecification<TSubject, TResult, IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>>,
+					TSubject, TResult> state,
+			[NotNull] SpecificationFactory
+				<TSubject, TResult, IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>,
+					IBoundSpecification<TSubject, TResult, IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>>>
+				specificationFactory,
+			ISource<TSubject> source = null)
+			: base(state.Instrument, specificationFactory, source) {}
+
+		protected override IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem> Builder
+		{
+			get { return this; }
+		}
+		protected override
+			Func
+				<ICriterion<TResult>, IExceptionFilter<TSubject, TResult>,
+					IBoundSpecification<TSubject, TResult, IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>>>
+			SpecFactory
+		{
+			get { return MakeBoundSpecification; }
+		}
 	}
 }

@@ -22,7 +22,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		where TResult : class, IEnumerable<TItem> {}
 
-	public class EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem, TBuilder> :
+	public abstract class EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem, TBuilder> :
 		ExpectationBuilder
 			<TSpecification, TSubject, TResult, IEnumerableHas<TSpecification, TSubject, TResult, TItem>,
 				INegatableEnumerableIs
@@ -32,7 +32,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		where TResult : class, IEnumerable<TItem>
 		where TBuilder : class, IExpectationBuilder
 	{
-		public EnumerableExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
+		protected EnumerableExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] SpecificationFactory<TSubject, TResult, TBuilder, TSpecification> specificationFactory,
 			ISource<TSubject> source = null)
 			: base(instrument, specificationFactory, source) {}
@@ -54,7 +54,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		}
 	}
 
-	public class EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> :
+	public abstract class EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> :
 		EnumerableExpectationBuilder
 			<TSpecification, TSubject, TResult, TItem,
 				EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>>
@@ -62,7 +62,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 			IChainableSpecification<EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>>
 		where TResult : class, IEnumerable<TItem>
 	{
-		public EnumerableExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
+		protected EnumerableExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] SpecificationFactory
 				<TSubject, TResult, EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>, TSpecification>
 				specificationFactory,
