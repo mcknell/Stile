@@ -4,7 +4,7 @@
 #endregion
 
 #region using...
-using Stile.Prototypes.Specifications.Builders.OfPredicates;
+using Stile.Prototypes.Specifications.Builders.OfExpectations;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel

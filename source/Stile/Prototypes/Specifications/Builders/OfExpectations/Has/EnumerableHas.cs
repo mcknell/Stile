@@ -7,12 +7,12 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Stile.Prototypes.Specifications.Builders.OfPredicates.Has.Quantified;
+using Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantified;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
+namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 {
 	public interface IEnumerableHas : IHas {}
 

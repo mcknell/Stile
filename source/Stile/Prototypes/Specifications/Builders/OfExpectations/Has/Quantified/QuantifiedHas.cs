@@ -14,7 +14,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has.Quantified
+namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantified
 {
 	public interface IQuantifiedHas {}
 

@@ -7,9 +7,9 @@
 using System;
 using NUnit.Framework;
 using Stile.Prototypes.Specifications;
+using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
+using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
-using Stile.Prototypes.Specifications.Builders.OfPredicates.Has;
-using Stile.Prototypes.Specifications.Builders.OfPredicates.Is;
 using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;

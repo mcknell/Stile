@@ -11,7 +11,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
+namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 {
 	public static class IsComparableExtensions
 	{

@@ -10,7 +10,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
+namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 {
 	public static class HasExtensions
 	{

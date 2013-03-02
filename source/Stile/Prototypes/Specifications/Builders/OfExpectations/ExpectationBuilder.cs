@@ -8,14 +8,14 @@ using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
-using Stile.Prototypes.Specifications.Builders.OfPredicates.Has;
-using Stile.Prototypes.Specifications.Builders.OfPredicates.Is;
+using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
+using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfPredicates
+namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 {
 	public interface IExpectationBuilder {}
 

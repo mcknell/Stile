@@ -9,7 +9,7 @@ using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfPredicates
+namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 {
 	public interface IFluentExpectationBuilder<TSubject, TResult> :
 		IExpectationBuilder

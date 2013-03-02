@@ -11,7 +11,7 @@ using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has
+namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 {
 	public interface IHas {}
 

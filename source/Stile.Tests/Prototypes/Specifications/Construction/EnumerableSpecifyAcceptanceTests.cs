@@ -8,8 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Stile.Prototypes.Specifications;
+using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
-using Stile.Prototypes.Specifications.Builders.OfPredicates;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Tests.Prototypes.Specifications.SampleObjects;
 #endregion

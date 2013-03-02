@@ -11,7 +11,7 @@ using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
+namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 {
 	public interface IIs {}
 

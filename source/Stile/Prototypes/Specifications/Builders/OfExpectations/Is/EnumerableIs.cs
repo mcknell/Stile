@@ -14,7 +14,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Types.Enumerables;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
+namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 {
     public interface IEnumerableIs<out TSpecification, TSubject, out TResult, TItem> :
         IIs<TSpecification, TSubject, TResult>

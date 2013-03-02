@@ -13,7 +13,7 @@ using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Has.Quantified
+namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantified
 {
 	public class HasAll<TSpecification, TResult, TItem> : QuantifiedHas<TSpecification, TResult, TItem>
 		where TSpecification : class, ISpecification
