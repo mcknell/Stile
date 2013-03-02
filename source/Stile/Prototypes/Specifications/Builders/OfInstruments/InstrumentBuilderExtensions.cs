@@ -54,19 +54,16 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 				instrument,
 				VoidSpecification<TSubject>.MakeBound);
 		}
-	}
 
-	public static class BouldInstrumentBuilderExtensions
-	{
 		[System.Diagnostics.Contracts.Pure]
 		public static IFluentBoundExpectationBuilder<TSubject, TResult> That<TSubject, TResult>(
 			[NotNull] this IBoundProcedureBuilder<TSubject> builder, Expression<Func<TSubject, TResult>> expression)
 		{
-			// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
 			builder.ValidateArgumentIsNotNull();
-			// ReSharper restore ReturnValueOfPureMethodIsNotUsed
+// ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			var instrument = new Instrument<TSubject, TResult>(expression);
-			return new FluentBoundExpectationBuilder<TSubject, TResult>(instrument, builder.Xray.Source);
+			return new FluentBoundExpectationBuilder<TSubject, TResult>(instrument, builder.Xray);
 		}
 	}
 }

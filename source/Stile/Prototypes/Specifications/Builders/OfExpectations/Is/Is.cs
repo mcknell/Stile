@@ -42,9 +42,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		ISource<TSubject> Source { get; }
 
 		[NotNull]
-		Func<ICriterion<TResult>, TSpecification> SpecificationFactory { get; }
-
-		[NotNull]
 		TSpecification Make(ICriterion<TResult> criterion);
 	}
 
@@ -53,17 +50,25 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		IIsState<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
-		public Func<ICriterion<TResult>, TSpecification> SpecificationFactory { get; private set; }
+		public ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification> SpecificationFactory { get; private set; }
 
 		public Is([NotNull] IInstrument<TSubject, TResult> instrument,
 			Negated negated,
-			[NotNull] Func<ICriterion<TResult>, TSpecification> specificationFactory,
+			[NotNull] ExpectationBuilder.SpecificationFactory<TSubject,TResult, TSpecification> specificationFactory,
 			ISource<TSubject> source = null)
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
 			Negated = negated;
 			SpecificationFactory = specificationFactory.ValidateArgumentIsNotNull();
 			Source = source;
+		}
+		public Is([NotNull] IExpectationBuilderState<TSpecification,TSubject, TResult> builderState,
+			Negated negated)
+		{
+			Instrument = builderState.Instrument.ValidateArgumentIsNotNull();
+			Negated = negated;
+			SpecificationFactory = builderState.Make;
+			Source = builderState.Source;
 		}
 
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }

@@ -32,15 +32,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		private readonly Lazy<IQuantifiedHas<TSpecification, TItem>> _lazyAll;
 
 		public EnumerableHas([NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] Func<ICriterion<TResult>, IExceptionFilter<TSubject, TResult>, TSpecification>
-				specificationFactory,
+			[NotNull] ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification> specificationFactory,
 			ISource<TSubject> source = null)
 			: base(instrument, specificationFactory, source)
 		{
 			_lazyAll =
 				new Lazy<IQuantifiedHas<TSpecification, TItem>>(
 					() =>
-					new HasAll<TSpecification, TResult, TItem>(criterion => specificationFactory.Invoke(criterion, null)));
+						new HasAll<TSpecification, TResult, TItem>(criterion => specificationFactory.Invoke(criterion, null)));
 		}
 
 		public IQuantifiedHas<TSpecification, TItem> All

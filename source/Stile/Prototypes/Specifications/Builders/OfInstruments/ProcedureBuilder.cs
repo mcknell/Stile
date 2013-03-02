@@ -1,10 +1,9 @@
 ﻿#region License info...
-// Propter for .NET, Copyright 2011-2013 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Propter project on GitHub
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
-using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel;
 #endregion
 
@@ -17,11 +16,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 
 	public interface IProcedureBuilder<out TSubject> : IProcedureBuilder {}
 
-	public interface IProcedureBuilderState<out TSubject>
-	{
-		[CanBeNull]
-		ISource<TSubject> Source { get; }
-	}
+	public interface IProcedureBuilderState<out TSubject> {}
 
 	public class ProcedureBuilder<TSubject> : IProcedureBuilder<TSubject>,
 		IProcedureBuilderState<TSubject>

@@ -24,7 +24,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 	public interface IBoundProcedureBuilderState<out TSubject> : IProcedureBuilderState<TSubject>
 	{
 		[NotNull]
-		new ISource<TSubject> Source { get; }
+		ISource<TSubject> Source { get; }
 	}
 
 	public class BoundProcedureBuilder<TSubject> : ProcedureBuilder<TSubject>,

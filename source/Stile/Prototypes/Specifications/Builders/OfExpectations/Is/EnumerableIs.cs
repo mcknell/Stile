@@ -41,7 +41,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
         private readonly Lazy<TSpecification> _lazyEmpty;
         public EnumerableIs([NotNull] IInstrument<TSubject, TResult> instrument,
             Negated negated,
-            [NotNull] Func<ICriterion<TResult>, TSpecification> specificationFactory,
+            [NotNull] ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification> specificationFactory,
             ISource<TSubject> source = null)
             : base(instrument, negated, specificationFactory, source)
         {

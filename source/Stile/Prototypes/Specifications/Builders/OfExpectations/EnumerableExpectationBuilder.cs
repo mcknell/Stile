@@ -1,6 +1,6 @@
 #region License info...
-// Propter for .NET, Copyright 2011-2013 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Propter project on GitHub
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -33,9 +33,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		where TResult : class, IEnumerable<TItem>
 		where TBuilder : class, IExpectationBuilder
 	{
-		protected EnumerableExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
-			ISource<TSubject> source = null)
-			: base(instrument, source) {}
+		protected EnumerableExpectationBuilder(
+			[NotNull] IExpectationBuilderState<IChainableSpecification, TSubject, TResult> state)
+			: base(state.Instrument, state.Source) {}
 
 		protected override IEnumerableHas<TSpecification, TSubject, TResult, TItem> MakeHas()
 		{
@@ -48,10 +48,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 				<TSpecification, TSubject, TResult, IEnumerableIs<TSpecification, TSubject, TResult, TItem>, TItem> MakeIs
 			()
 		{
-			return new EnumerableIs<TSpecification, TSubject, TResult, TItem>(Instrument,
-				Negated.False,
-				criterion => Make(criterion),
-				Source);
+			return new EnumerableIs<TSpecification, TSubject, TResult, TItem>(Instrument, Negated.False, Make, Source);
 		}
 	}
 }

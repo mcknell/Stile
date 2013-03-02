@@ -40,7 +40,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 	public interface IExpectationBuilderState<out TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
+		[NotNull]
 		IInstrument<TSubject, TResult> Instrument { get; }
+		[CanBeNull]
 		ISource<TSubject> Source { get; }
 
 		TSpecification Make([NotNull] ICriterion<TResult> criterion,
@@ -49,9 +51,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 
 	public abstract class ExpectationBuilder
 	{
-		public delegate TSpecification SpecificationFactory<in TSubject, TResult, in TBuilder, out TSpecification>(
-			[NotNull] ICriterion<TResult> criterion, IExceptionFilter<TSubject, TResult> exceptionFilter = null)
-			where TBuilder : class, IExpectationBuilder where TSpecification : class, IChainableSpecification<TBuilder>;
+		public delegate TSpecification SpecificationFactory<in TSubject, TResult, out TSpecification>(
+			ICriterion<TResult> criterion, IExceptionFilter<TSubject, TResult> exceptionFilter = null)
+			where TSpecification : class, IChainableSpecification;
 	}
 
 	public abstract class ExpectationBuilder<TSpecification, TSubject, TResult, THas, TIs, TBuilder> :
@@ -150,7 +152,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification<TBuilder>
 		where TBuilder : class, IExpectationBuilder
 	{
-		protected ExpectationBuilder(IInstrument<TSubject, TResult> instrument, ISource<TSubject> source = null)
+		protected ExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
+			ISource<TSubject> source = null)
 			: base(instrument, source) {}
 
 		protected override IHas<TSpecification, TSubject, TResult> MakeHas()
@@ -162,10 +165,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		protected override INegatableIs<TSpecification, TSubject, TResult, IIs<TSpecification, TSubject, TResult>>
 			MakeIs()
 		{
-			return new Is<TSpecification, TSubject, TResult>(Instrument,
-				Negated.False,
-				criterion => Make(criterion),
-				Source);
+			return new Is<TSpecification, TSubject, TResult>(Instrument, Negated.False, Make, Source);
 		}
 	}
 }

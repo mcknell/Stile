@@ -16,17 +16,13 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 	{
 		[Pure]
 		public static IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem> OfItemsLike
-			<TSpecification, TSubject, TResult, TItem>(this IExpectationBuilder<TSpecification, TSubject, TResult> builder,
-				TItem throwaway)
+			<TSpecification, TSubject, TResult, TItem>(
+			this IExpectationBuilder<TSpecification, TSubject, TResult> builder, TItem throwaway)
 			where TSpecification : class,
 				ISpecification<TSubject, TResult, IExpectationBuilder<TSpecification, TSubject, TResult>>
 			where TResult : class, IEnumerable<TItem>
 		{
-			IExpectationBuilderState<TSpecification, TSubject, TResult> state = builder.Xray;
-			IInstrument<TSubject, TResult> instrument = state.Instrument;
-			ISource<TSubject> source = builder.Xray.Source;
-			return new FluentEnumerableExpectationBuilder<TSubject, TResult, TItem>(instrument,
-				state.Source);
+			return new FluentEnumerableExpectationBuilder<TSubject, TResult, TItem>(builder.Xray);
 		}
 
 		[Pure]
@@ -37,10 +33,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 				IBoundSpecification<TSubject, TResult, IBoundExpectationBuilder<TSpecification, TSubject, TResult>>
 			where TResult : class, IEnumerable<TItem>
 		{
-			IExpectationBuilderState<TSpecification, TSubject, TResult> state = builder.Xray;
-			IInstrument<TSubject, TResult> instrument = state.Instrument;
-			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(instrument,
-				state.Source);
+			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(builder.Xray);
 		}
 	}
 }

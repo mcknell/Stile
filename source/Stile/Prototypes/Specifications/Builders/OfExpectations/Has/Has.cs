@@ -4,7 +4,6 @@
 #endregion
 
 #region using...
-using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
@@ -35,10 +34,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		IHasState<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
-		private readonly Func<ICriterion<TResult>, IExceptionFilter<TSubject, TResult>, TSpecification> _specificationFactory;
+		private readonly ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification>
+			_specificationFactory;
 
 		public Has([NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] Func<ICriterion<TResult>, IExceptionFilter<TSubject, TResult>, TSpecification> specificationFactory,
+			[NotNull] ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification> specificationFactory,
 			ISource<TSubject> source = null)
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
