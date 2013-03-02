@@ -1,7 +1,6 @@
-﻿#region License statement
-// NJamb, a specification and delta-specification DSL
-// Copyright (c) 2010-2011, Mark Knell
-// Published under the MIT License; all other rights reserved
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -20,6 +19,7 @@ using System.Runtime.InteropServices;
 //[assembly : AssemblyProduct("Stile.Tests")]
 //[assembly : AssemblyCopyright("Copyright ©  2010 Mark Knell")]
 //[assembly : AssemblyTrademark("")]
+
 [assembly : AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

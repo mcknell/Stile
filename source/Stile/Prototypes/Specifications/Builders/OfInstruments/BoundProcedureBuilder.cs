@@ -5,6 +5,7 @@
 
 #region using...
 using JetBrains.Annotations;
+using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel;
 #endregion
@@ -18,25 +19,22 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 
 	public interface IBoundProcedureBuilder<out TSubject> : IBoundProcedureBuilder,
 		IProcedureBuilder<TSubject>,
-		IHides<IBoundInstrumentBuilderState<TSubject>> {}
+		IHides<IBoundProcedureBuilderState<TSubject>> {}
 
-	public interface IBoundInstrumentBuilderState<out TSubject> : IInstrumentBuilderState<TSubject>
+	public interface IBoundProcedureBuilderState<out TSubject> : IProcedureBuilderState<TSubject>
 	{
 		[NotNull]
-		ISource<TSubject> Source { get; }
+		new ISource<TSubject> Source { get; }
 	}
 
 	public class BoundProcedureBuilder<TSubject> : ProcedureBuilder<TSubject>,
 		IBoundProcedureBuilder<TSubject>,
-		IBoundInstrumentBuilderState<TSubject>
+		IBoundProcedureBuilderState<TSubject>
 	{
-		public BoundProcedureBuilder(ISource<TSubject> source)
-		{
-			Source = source;
-		}
+		public BoundProcedureBuilder([NotNull] ISource<TSubject> source)
+			: base(source.ValidateArgumentIsNotNull()) {}
 
-		public ISource<TSubject> Source { get; private set; }
-		public IBoundInstrumentBuilderState<TSubject> Xray
+		public IBoundProcedureBuilderState<TSubject> Xray
 		{
 			get { return this; }
 		}

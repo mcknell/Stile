@@ -1,7 +1,6 @@
-﻿#region License statement
-// NJamb, a specification and delta-specification DSL
-// Copyright (c) 2010-2011, Mark Knell
-// Published under the MIT License; all other rights reserved
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -15,28 +14,28 @@ using Stile.Types.Reflection;
 
 namespace Stile.Tests.Types.Reflection
 {
-    [TestFixture]
-    public class TypeExtensionsFixture
-    {
-        private int _field = -5;
+	[TestFixture]
+	public class TypeExtensionsFixture
+	{
+		private int _field = -5;
 
-        [Test]
-        public void Implements()
-        {
-            Assert.That(typeof(int).Implements<IComparable>(), Is.True);
-            Assert.That(typeof(int).Implements<IList>(), Is.False);
-            Assert.That(typeof(int[]).Implements<IEnumerable>(), Is.True);
-            Assert.That(typeof(int[]).Implements<IEnumerable<int>>(), Is.True);
-            Assert.That(typeof(int[]).Implements<IEnumerable<string>>(), Is.False);
-            Assert.That(typeof(int[]).Implements(typeof(IEnumerable<>)), Is.True);
+		[Test]
+		public void Implements()
+		{
+			Assert.That(typeof(int).Implements<IComparable>(), Is.True);
+			Assert.That(typeof(int).Implements<IList>(), Is.False);
+			Assert.That(typeof(int[]).Implements<IEnumerable>(), Is.True);
+			Assert.That(typeof(int[]).Implements<IEnumerable<int>>(), Is.True);
+			Assert.That(typeof(int[]).Implements<IEnumerable<string>>(), Is.False);
+			Assert.That(typeof(int[]).Implements(typeof(IEnumerable<>)), Is.True);
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => typeof(int).Implements(typeof(int)));
-        }
+			Assert.Throws<ArgumentOutOfRangeException>(() => typeof(int).Implements(typeof(int)));
+		}
 
-        [Test]
-        public void IsCapturingClosure()
-        {
-            /* We only really have to worry about local variables and value parameters. From the C#4 spec:
+		[Test]
+		public void IsCapturingClosure()
+		{
+			/* We only really have to worry about local variables and value parameters. From the C#4 spec:
              * 7.15.5 Outer variables
              * Any local variable, value parameter, or parameter array whose scope includes the lambda-expression 
              * or anonymous-method-expression is called an outer variable of the anonymous function. In an instance 
@@ -49,133 +48,134 @@ namespace Stile.Tests.Types.Reflection
              * captured outer variable is extended at least until the delegate or expression tree created from the 
              * anonymous function becomes eligible for garbage collection.
              */
-            Assert.That(typeof(int).IsCapturingClosure(), Is.False);
-            Assert.That(typeof(List<>).IsCapturingClosure(), Is.False);
+			Assert.That(typeof(int).IsCapturingClosure(), Is.False);
+			Assert.That(typeof(List<>).IsCapturingClosure(), Is.False);
 
-            int i = 2;
-            Expression<Func<int>> closure = () => i;
-            Assert.That(closure.GetType().IsCapturingClosure(), Is.False);
+			int i = 2;
+			Expression<Func<int>> closure = () => i;
+			Assert.That(closure.GetType().IsCapturingClosure(), Is.False);
 
-            closure = () => 3;
-            Assert.That(closure.GetType().IsCapturingClosure(), Is.False);
+			closure = () => 3;
+			Assert.That(closure.GetType().IsCapturingClosure(), Is.False);
 
-            _field++; // so nobody will change to (and nothing will automatically refactor to or even suggest) a constant
-            closure = () => _field;
-            Assert.That(closure.GetType().IsCapturingClosure(), Is.False);
+			_field++;
+				// so nobody will change to (and nothing will automatically refactor to or even suggest) a constant
+			closure = () => _field;
+			Assert.That(closure.GetType().IsCapturingClosure(), Is.False);
 
-            AssertTypeAndBodyTypeAreNotClosures(GetClosureOverConstant());
-            AssertTypeAndBodyTypeAreNotClosures(GetClosureOverLiteral());
-            AssertTypeAndBodyTypeAreNotClosures(LocallyNestedHelper.GetClosureOverStaticField());
-            AssertTypeAndBodyTypeAreNotClosures(TypeExtensionsFixtureHelper.GetClosureOverStaticField());
-            AssertTypeAndBodyTypeAreNotClosuresButBodyExpressionTypeIs(GetClosureOverFieldFromSameClass(), false);
-            AssertTypeAndBodyTypeAreNotClosuresButBodyExpressionTypeIs(new LocallyNestedHelper().GetClosureOverMemberField(),
-                false);
-            AssertTypeAndBodyTypeAreNotClosuresButBodyExpressionTypeIs(
-                new TypeExtensionsFixtureHelper().GetClosureOverMemberField(), false);
+			AssertTypeAndBodyTypeAreNotClosures(GetClosureOverConstant());
+			AssertTypeAndBodyTypeAreNotClosures(GetClosureOverLiteral());
+			AssertTypeAndBodyTypeAreNotClosures(LocallyNestedHelper.GetClosureOverStaticField());
+			AssertTypeAndBodyTypeAreNotClosures(TypeExtensionsFixtureHelper.GetClosureOverStaticField());
+			AssertTypeAndBodyTypeAreNotClosuresButBodyExpressionTypeIs(GetClosureOverFieldFromSameClass(), false);
+			AssertTypeAndBodyTypeAreNotClosuresButBodyExpressionTypeIs(
+				new LocallyNestedHelper().GetClosureOverMemberField(), false);
+			AssertTypeAndBodyTypeAreNotClosuresButBodyExpressionTypeIs(
+				new TypeExtensionsFixtureHelper().GetClosureOverMemberField(), false);
 
-            AssertTypeAndBodyTypeAreNotClosuresButBodyExpressionTypeIs(GetClosureOverVariable(), true);
-            AssertTypeAndBodyTypeAreNotClosuresButBodyExpressionTypeIs(GetClosureOverParameter(4), true);
-        }
+			AssertTypeAndBodyTypeAreNotClosuresButBodyExpressionTypeIs(GetClosureOverVariable(), true);
+			AssertTypeAndBodyTypeAreNotClosuresButBodyExpressionTypeIs(GetClosureOverParameter(4), true);
+		}
 
-    	[Test]
-    	public void IsNullable()
-    	{
-    		Assert.That(typeof(int).IsNullable(), Is.False);
-    		Assert.That(typeof(string).IsNullable(), Is.False);
-    		Assert.That(GetType().IsNullable(), Is.False);
-    		Assert.That(typeof(Nullable<>).IsNullable(), Is.False);
-    		Assert.That(typeof(int?).IsNullable(), Is.True);
-    	}
+		[Test]
+		public void IsNullable()
+		{
+			Assert.That(typeof(int).IsNullable(), Is.False);
+			Assert.That(typeof(string).IsNullable(), Is.False);
+			Assert.That(GetType().IsNullable(), Is.False);
+			Assert.That(typeof(Nullable<>).IsNullable(), Is.False);
+			Assert.That(typeof(int?).IsNullable(), Is.True);
+		}
 
-        private static void AssertTypeAndBodyTypeAreNotClosures(Expression<Func<int>> expression)
-        {
-            Assert.That(expression.GetType().IsCapturingClosure(), Is.False);
-            Assert.That(expression.Body.GetType().IsCapturingClosure(), Is.False);
-        }
+		private static void AssertTypeAndBodyTypeAreNotClosures(Expression<Func<int>> expression)
+		{
+			Assert.That(expression.GetType().IsCapturingClosure(), Is.False);
+			Assert.That(expression.Body.GetType().IsCapturingClosure(), Is.False);
+		}
 
-        private static void AssertTypeAndBodyTypeAreNotClosuresButBodyExpressionTypeIs(Expression<Func<int>> expression,
-            bool expected)
-        {
-            AssertTypeAndBodyTypeAreNotClosures(expression);
-            Assert.That(((MemberExpression) expression.Body).Expression.Type.IsCapturingClosure(), Is.EqualTo(expected));
-        }
+		private static void AssertTypeAndBodyTypeAreNotClosuresButBodyExpressionTypeIs(
+			Expression<Func<int>> expression, bool expected)
+		{
+			AssertTypeAndBodyTypeAreNotClosures(expression);
+			Assert.That(((MemberExpression) expression.Body).Expression.Type.IsCapturingClosure(), Is.EqualTo(expected));
+		}
 
-        private static Expression<Func<int>> GetClosureOverConstant()
-        {
-            const int i = 3;
-            return () => i;
-        }
+		private static Expression<Func<int>> GetClosureOverConstant()
+		{
+			const int i = 3;
+			return () => i;
+		}
 
-        private Expression<Func<int>> GetClosureOverFieldFromSameClass()
-        {
-            return () => _field;
-        }
+		private Expression<Func<int>> GetClosureOverFieldFromSameClass()
+		{
+			return () => _field;
+		}
 
-        private static Expression<Func<int>> GetClosureOverLiteral()
-        {
-            return () => 3;
-        }
+		private static Expression<Func<int>> GetClosureOverLiteral()
+		{
+			return () => 3;
+		}
 
-        private static Expression<Func<int>> GetClosureOverParameter(int i)
-        {
-            return () => i;
-        }
+		private static Expression<Func<int>> GetClosureOverParameter(int i)
+		{
+			return () => i;
+		}
 
-        private static Expression<Func<int>> GetClosureOverVariable()
-        {
-            int j = 4;
-            j++; // so nobody will change to (and nothing will automatically refactor to or even suggest) a constant
-            return () => j;
-        }
+		private static Expression<Func<int>> GetClosureOverVariable()
+		{
+			int j = 4;
+			j++; // so nobody will change to (and nothing will automatically refactor to or even suggest) a constant
+			return () => j;
+		}
 
-        public class Base : IBase {}
+		public class Base : IBase {}
 
-        public class Derived : Base {}
+		public class Derived : Base {}
 
-        public interface IBase {}
+		public interface IBase {}
 
-        public class ListGeneric<T> : List<T> {}
+		public class ListGeneric<T> : List<T> {}
 
-        public class ListInt : List<int> {}
+		public class ListInt : List<int> {}
 
-        public class LocallyNestedHelper
-        {
-            private static int _sStaticFieldFromOtherClass = 4;
-            private int _memberFieldFromOtherClass = 3;
+		public class LocallyNestedHelper
+		{
+			private static int _sStaticFieldFromOtherClass = 4;
+			private int _memberFieldFromOtherClass = 3;
 
-            public Expression<Func<int>> GetClosureOverMemberField()
-            {
-                _memberFieldFromOtherClass++;
-                // so nobody will change to (and nothing will automatically refactor to or even suggest) a constant
-                return () => _memberFieldFromOtherClass;
-            }
+			public Expression<Func<int>> GetClosureOverMemberField()
+			{
+				_memberFieldFromOtherClass++;
+				// so nobody will change to (and nothing will automatically refactor to or even suggest) a constant
+				return () => _memberFieldFromOtherClass;
+			}
 
-            public static Expression<Func<int>> GetClosureOverStaticField()
-            {
-                _sStaticFieldFromOtherClass++;
-                // so nobody will change to (and nothing will automatically refactor to or even suggest) a constant
-                return () => _sStaticFieldFromOtherClass;
-            }
-        }
-    }
+			public static Expression<Func<int>> GetClosureOverStaticField()
+			{
+				_sStaticFieldFromOtherClass++;
+				// so nobody will change to (and nothing will automatically refactor to or even suggest) a constant
+				return () => _sStaticFieldFromOtherClass;
+			}
+		}
+	}
 
-    public class TypeExtensionsFixtureHelper
-    {
-        private static int _sStaticFieldFromOtherClass = 4;
-        private int _memberFieldFromOtherClass = 3;
+	public class TypeExtensionsFixtureHelper
+	{
+		private static int _sStaticFieldFromOtherClass = 4;
+		private int _memberFieldFromOtherClass = 3;
 
-        public Expression<Func<int>> GetClosureOverMemberField()
-        {
-            _memberFieldFromOtherClass++;
-            // so nobody will change to (and nothing will automatically refactor to or even suggest) a constant
-            return () => _memberFieldFromOtherClass;
-        }
+		public Expression<Func<int>> GetClosureOverMemberField()
+		{
+			_memberFieldFromOtherClass++;
+			// so nobody will change to (and nothing will automatically refactor to or even suggest) a constant
+			return () => _memberFieldFromOtherClass;
+		}
 
-        public static Expression<Func<int>> GetClosureOverStaticField()
-        {
-            _sStaticFieldFromOtherClass++;
-            // so nobody will change to (and nothing will automatically refactor to or even suggest) a constant
-            return () => _sStaticFieldFromOtherClass;
-        }
-    }
+		public static Expression<Func<int>> GetClosureOverStaticField()
+		{
+			_sStaticFieldFromOtherClass++;
+			// so nobody will change to (and nothing will automatically refactor to or even suggest) a constant
+			return () => _sStaticFieldFromOtherClass;
+		}
+	}
 }

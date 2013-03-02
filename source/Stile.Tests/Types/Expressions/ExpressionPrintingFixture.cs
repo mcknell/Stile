@@ -1,7 +1,6 @@
-﻿#region License statement
-// NJamb, a specification and delta-specification DSL
-// Copyright (c) 2010-2011, Mark Knell
-// Published under the MIT License; all other rights reserved
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -39,14 +38,11 @@ namespace Stile.Tests.Types.Expressions
 		protected static readonly Func<bool> StaticFuncBool;
 		protected static readonly MemberExpression StaticFuncBoolExpression;
 		private static readonly ExpressionType[] NotSupportedTypes = new[]
-		                                                             {
-		                                                             	ExpressionType.DebugInfo, ExpressionType.Dynamic,
-		                                                             	ExpressionType.Extension, ExpressionType.Goto,
-		                                                             	ExpressionType.Label, ExpressionType.PowerAssign,
-		                                                             	ExpressionType.RuntimeVariables, ExpressionType.Loop,
-		                                                             	ExpressionType.Switch, ExpressionType.Throw, ExpressionType.Try,
-		                                                             	ExpressionType.Unbox,
-		                                                             };
+		{
+			ExpressionType.DebugInfo, ExpressionType.Dynamic, ExpressionType.Extension, ExpressionType.Goto,
+			ExpressionType.Label, ExpressionType.PowerAssign, ExpressionType.RuntimeVariables, ExpressionType.Loop,
+			ExpressionType.Switch, ExpressionType.Throw, ExpressionType.Try, ExpressionType.Unbox,
+		};
 		private string _className;
 
 		static ExpressionPrintingFixture()
@@ -88,7 +84,8 @@ namespace Stile.Tests.Types.Expressions
 					new Expectation(Expression.Assign(VariableInt, Constant4), "i = 4"),
 					new Expectation(Expression.Block(Expression.MultiplyAssign(VariableInt, Constant4)), "{ i *= 4 }"),
 					new Expectation(
-						Expression.Block(Expression.MultiplyAssign(VariableInt, Constant4), Expression.AddAssign(VariableInt, Constant4)),
+						Expression.Block(Expression.MultiplyAssign(VariableInt, Constant4),
+							Expression.AddAssign(VariableInt, Constant4)),
 						"{ i *= 4; i += 4 }"), //
 					new Expectation(Expression.Call(null, GetMethodInfo()), "ExpressionPrintingFixture.DoNothing()"),
 					new Expectation(Expression.Coalesce(ConstantStringFoo, ConstantStringBar), "\"foo\" ?? \"bar\""),
@@ -118,7 +115,8 @@ namespace Stile.Tests.Types.Expressions
 					new Expectation(Expression.LessThan(Constant3, Constant4), "3 < 4"),
 					new Expectation(Expression.LessThanOrEqual(Constant3, Constant4), "3 <= 4"),
 					new Expectation(Expression.ListInit(Expression.New(typeof(List<int>)), Constant3, Constant4),
-						"new List<int>() {Add(3), Add(4)}"), new Expectation(ArrayStaticMember, _className + ".Ints"), //
+						"new List<int>() {Add(3), Add(4)}"),
+					new Expectation(ArrayStaticMember, _className + ".Ints"), //
 					new Expectation(Expression.MemberInit(Expression.New(typeof(int))), "new int()"),
 					new Expectation(Expression.Modulo(Constant3, Constant4), "3 % 4"),
 					new Expectation(Expression.ModuloAssign(VariableInt, Constant4), "i %= 4"),
@@ -126,12 +124,15 @@ namespace Stile.Tests.Types.Expressions
 					new Expectation(Expression.MultiplyAssign(VariableInt, Constant4), "i *= 4"),
 					new Expectation(Expression.MultiplyAssignChecked(VariableInt, Constant4), "i *= 4"),
 					new Expectation(Expression.MultiplyChecked(Constant3, Constant4), "3 * 4"),
-					new Expectation(Expression.Negate(VariableInt), "-i"), new Expectation(Expression.NegateChecked(VariableInt), "-i"),
+					new Expectation(Expression.Negate(VariableInt), "-i"),
+					new Expectation(Expression.NegateChecked(VariableInt), "-i"),
 					new Expectation(Expression.New(typeof(int)), "new int()"), //
 					new Expectation(Expression.NewArrayInit(typeof(int)), "new int[]"),
 					new Expectation(Expression.NewArrayBounds(typeof(int), Constant3), "new int[3]"),
-					new Expectation(Expression.Not(ConstantTrue), "!true"), new Expectation(Expression.NotEqual(Constant3, Constant4), "3 != 4"),
-					new Expectation(Expression.OnesComplement(Constant3), "~3"), new Expectation(Expression.Or(Constant3, Constant4), "3 | 4"),
+					new Expectation(Expression.Not(ConstantTrue), "!true"),
+					new Expectation(Expression.NotEqual(Constant3, Constant4), "3 != 4"),
+					new Expectation(Expression.OnesComplement(Constant3), "~3"),
+					new Expectation(Expression.Or(Constant3, Constant4), "3 | 4"),
 					new Expectation(Expression.OrAssign(VariableInt, Constant4), "i |= 4"),
 					new Expectation(Expression.OrElse(ConstantTrue, ConstantFalse), "true || false"),
 					new Expectation(Expression.Parameter(typeof(string), "s"), "s"),
@@ -149,7 +150,8 @@ namespace Stile.Tests.Types.Expressions
 					new Expectation(Expression.SubtractChecked(Constant3, Constant4), "3 - 4"),
 					new Expectation(Expression.TypeAs(Constant3, typeof(object)), "3 as object"),
 					new Expectation(Expression.TypeIs(Constant3, typeof(object)), "3 is object"),
-					new Expectation(Expression.TypeEqual(Expression.Constant(typeof(int)), typeof(object)), "int is type equal to object"),
+					new Expectation(Expression.TypeEqual(Expression.Constant(typeof(int)), typeof(object)),
+						"int is type equal to object"),
 					new Expectation(Expression.UnaryPlus(Constant3), "(+3)")
 				};
 
@@ -164,7 +166,8 @@ namespace Stile.Tests.Types.Expressions
 			List<ExpressionType> allExpressionTypes = Enum.GetValues(type).Cast<ExpressionType>() //
 				.Except(NotSupportedTypes) //
 				.Except(expectations.Select(x => x.ExpressionType)).ToList();
-			CollectionAssert.IsEmpty(allExpressionTypes, string.Format("{0} untested {1} values", allExpressionTypes.Count, type.Name));
+			CollectionAssert.IsEmpty(allExpressionTypes,
+				string.Format("{0} untested {1} values", allExpressionTypes.Count, type.Name));
 		}
 
 		protected virtual void AfterInit() {}

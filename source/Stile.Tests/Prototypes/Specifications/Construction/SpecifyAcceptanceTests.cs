@@ -64,7 +64,8 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 
 			saboteur.Load(() => new ArgumentException());
 			var target = new SabotageTarget(saboteur);
-			IThrowingSpecificationBuilder<IBoundSpecification<SabotageTarget, Saboteur>, SabotageTarget> specificationBuilder =
+			IThrowingSpecificationBuilder<IBoundSpecification<SabotageTarget, Saboteur>, SabotageTarget>
+				specificationBuilder =
 					Specify.For(target).That(x => x.Saboteur.SuicidalSideEffect).Throws<ArgumentException>();
 			Assert.That(specificationBuilder, Is.Not.Null);
 			IBoundSpecification<SabotageTarget, Saboteur> specification = specificationBuilder.Build();

@@ -16,66 +16,57 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 
 namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 {
-    public static class InstrumentBuilderExtensions
-    {
-        [System.Diagnostics.Contracts.Pure]
-        public static IFluentExpectationBuilder<TSubject, TResult> That<TSubject, TResult>(
-            [NotNull] this IProcedureBuilder<TSubject> builder, Expression<Func<TSubject, TResult>> expression)
-        {
+	public static class InstrumentBuilderExtensions
+	{
+		[System.Diagnostics.Contracts.Pure]
+		public static IFluentExpectationBuilder<TSubject, TResult> That<TSubject, TResult>(
+			[NotNull] this IProcedureBuilder<TSubject> builder, Expression<Func<TSubject, TResult>> expression)
+		{
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
-            builder.ValidateArgumentIsNotNull();
+			builder.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
-            var instrument = new Instrument<TSubject, TResult>(expression);
-            return new FluentExpectationBuilder<TSubject, TResult>(instrument,
-                (criterion, expectationBuilder, filter) =>
-                    new Specification<TSubject, TResult, IFluentExpectationBuilder<TSubject, TResult>>(instrument,
-                        criterion,
-                        expectationBuilder,
-                        exceptionFilter: filter));
-        }
+			var instrument = new Instrument<TSubject, TResult>(expression);
+			return new FluentExpectationBuilder<TSubject, TResult>(instrument);
+		}
 
-        [System.Diagnostics.Contracts.Pure]
-        public static IExceptionFilterBuilder<IVoidSpecification<TSubject>, TSubject> That<TSubject>(
-            [NotNull] this IProcedureBuilder<TSubject> builder, Expression<Action<TSubject>> expression)
-        {
+		[System.Diagnostics.Contracts.Pure]
+		public static IExceptionFilterBuilder<IVoidSpecification<TSubject>, TSubject> That<TSubject>(
+			[NotNull] this IProcedureBuilder<TSubject> builder, Expression<Action<TSubject>> expression)
+		{
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
-            builder.ValidateArgumentIsNotNull();
+			builder.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
-            var procedure = new Procedure<TSubject>(expression);
-            return ExceptionFilterBuilder<IVoidSpecification<TSubject>, TSubject>.Make(procedure,
-                VoidSpecification<TSubject>.Make);
-        }
+			var procedure = new Procedure<TSubject>(expression);
+			return ExceptionFilterBuilder<IVoidSpecification<TSubject>, TSubject>.Make(procedure,
+				VoidSpecification<TSubject>.Make);
+		}
 
-        [System.Diagnostics.Contracts.Pure]
-        public static IExceptionFilterBuilder<IVoidBoundSpecification<TSubject>, TSubject> That<TSubject>(
-            [NotNull] this IBoundProcedureBuilder<TSubject> builder, Expression<Action<TSubject>> expression)
-        {
+		[System.Diagnostics.Contracts.Pure]
+		public static IExceptionFilterBuilder<IVoidBoundSpecification<TSubject>, TSubject> That<TSubject>(
+			[NotNull] this IBoundProcedureBuilder<TSubject> builder, Expression<Action<TSubject>> expression)
+		{
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
-            builder.ValidateArgumentIsNotNull();
+			builder.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
-            IProcedure<TSubject> instrument = new Procedure<TSubject>(expression);
-            ISource<TSubject> source = builder.Xray.Source;
-            return ExceptionFilterBuilder<IVoidBoundSpecification<TSubject>, TSubject>.MakeBound(source,
-                instrument,
-                VoidSpecification<TSubject>.MakeBound);
-        }
-    }
+			IProcedure<TSubject> instrument = new Procedure<TSubject>(expression);
+			ISource<TSubject> source = builder.Xray.Source;
+			return ExceptionFilterBuilder<IVoidBoundSpecification<TSubject>, TSubject>.MakeBound(source,
+				instrument,
+				VoidSpecification<TSubject>.MakeBound);
+		}
+	}
 
-    public static class BouldInstrumentBuilderExtensions
-    {
-        [System.Diagnostics.Contracts.Pure]
-        public static IFluentBoundExpectationBuilder<TSubject, TResult> That<TSubject, TResult>(
-            [NotNull] this IBoundProcedureBuilder<TSubject> builder, Expression<Func<TSubject, TResult>> expression)
-        {
-            // ReSharper disable ReturnValueOfPureMethodIsNotUsed
-            builder.ValidateArgumentIsNotNull();
-            // ReSharper restore ReturnValueOfPureMethodIsNotUsed
-            var instrument = new Instrument<TSubject, TResult>(expression);
-            return new FluentBoundExpectationBuilder<TSubject, TResult>(instrument,
-                (criterion, expectationBuilder, filter) =>
-                    new Specification<TSubject, TResult, IFluentBoundExpectationBuilder<TSubject, TResult>>(
-                        instrument, criterion, expectationBuilder, builder.Xray.Source, exceptionFilter: filter),
-                builder.Xray.Source);
-        }
-    }
+	public static class BouldInstrumentBuilderExtensions
+	{
+		[System.Diagnostics.Contracts.Pure]
+		public static IFluentBoundExpectationBuilder<TSubject, TResult> That<TSubject, TResult>(
+			[NotNull] this IBoundProcedureBuilder<TSubject> builder, Expression<Func<TSubject, TResult>> expression)
+		{
+			// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+			builder.ValidateArgumentIsNotNull();
+			// ReSharper restore ReturnValueOfPureMethodIsNotUsed
+			var instrument = new Instrument<TSubject, TResult>(expression);
+			return new FluentBoundExpectationBuilder<TSubject, TResult>(instrument, builder.Xray.Source);
+		}
+	}
 }

@@ -1,7 +1,6 @@
-﻿#region License statement
-// NJamb, a specification and delta-specification DSL
-// Copyright (c) 2010-2011, Mark Knell
-// Published under the MIT License; all other rights reserved
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -29,7 +28,17 @@ namespace Stile.Tests.Types.Expressions
 		[Test]
 		public void FormatCSharp4()
 		{
-			AssertFormat("Here's my printout: '{0:" + ExpressionFormatProvider.CSharp4 + "}'!", "Here's my printout: '() => i.ToString()'!");
+			AssertFormat("Here's my printout: '{0:" + ExpressionFormatProvider.CSharp4 + "}'!",
+				"Here's my printout: '() => i.ToString()'!");
+		}
+
+		[Test]
+		public void FormatMixed()
+		{
+			AssertFormat("Here's printout number {0}: '{1}'!",
+				"Here's printout number 1: '() => i.ToString()'!",
+				1,
+				_expression);
 		}
 
 		[Test]
@@ -42,12 +51,6 @@ namespace Stile.Tests.Types.Expressions
 		public void FormatRaw()
 		{
 			AssertFormat("Here's my printout: '{0}'!", "Here's my printout: '() => i.ToString()'!");
-		}
-
-		[Test]
-		public void FormatMixed()
-		{
-			AssertFormat("Here's printout number {0}: '{1}'!", "Here's printout number 1: '() => i.ToString()'!", 1, _expression);
 		}
 
 		private void AssertFormat(string formatString, string expected, params object[] args)

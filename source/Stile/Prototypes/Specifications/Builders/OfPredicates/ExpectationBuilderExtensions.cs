@@ -26,9 +26,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 			IInstrument<TSubject, TResult> instrument = state.Instrument;
 			ISource<TSubject> source = builder.Xray.Source;
 			return new FluentEnumerableExpectationBuilder<TSubject, TResult, TItem>(instrument,
-				(criterion, builder1, filter) =>
-					new Specification<TSubject, TResult, IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem>>(
-						instrument, criterion, builder1, source, exceptionFilter: filter),
 				state.Source);
 		}
 
@@ -43,9 +40,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 			IExpectationBuilderState<TSpecification, TSubject, TResult> state = builder.Xray;
 			IInstrument<TSubject, TResult> instrument = state.Instrument;
 			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(instrument,
-				(criterion, expectationBuilder, filter) =>
-					new Specification<TSubject, TResult, IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>>(
-						instrument, criterion, expectationBuilder, state.Source, exceptionFilter: filter),
 				state.Source);
 		}
 	}

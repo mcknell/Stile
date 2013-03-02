@@ -1,13 +1,12 @@
 #region License info...
-// Stile for .NET, Copyright 2011-2013 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Stile project on GitHub
+// Propter for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Propter project on GitHub
 #endregion
 
 #region using...
 using System;
 using System.Linq.Expressions;
 using System.Threading;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Readability;
@@ -22,8 +21,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		Lazy<string> Description { get; }
 	}
 
-	public interface IProcedure<in TSubject> : IProcedure,
-		IHides<IProcedureState>
+	public interface IProcedureState<out TSubject> : IProcedure
+	{
+		[CanBeNull]
+		ISource<TSubject> Source { get; }
+	}
+
+	public interface IProcedure<TSubject> : IProcedure,
+		IHides<IProcedureState<TSubject>>
 	{
 		void Sample(TSubject subject, CancellationToken? cancellationToken = null);
 	}
@@ -46,17 +51,20 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 	public class Procedure<TSubject> : Procedure,
 		IProcedure<TSubject>,
-		IProcedureState
+		IProcedureState<TSubject>
 	{
 		private readonly Lazy<Action<TSubject>> _lazyAction;
 
-		public Procedure([NotNull] Expression<Action<TSubject>> expression)
+		public Procedure([NotNull] Expression<Action<TSubject>> expression, ISource<TSubject> source = null)
 			: base(expression.ToLazyDebugString())
 		{
 			_lazyAction = new Lazy<Action<TSubject>>(expression.Compile);
+			Source = source;
 		}
 
-		public IProcedureState Xray
+		public ISource<TSubject> Source { get; private set; }
+
+		public IProcedureState<TSubject> Xray
 		{
 			get { return this; }
 		}

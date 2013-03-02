@@ -1,7 +1,6 @@
-﻿#region License statement
-// Stile.Tests
-// Copyright (c) 2010-2012, Mark Knell
-// Published under the MIT License; all other rights reserved
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -16,29 +15,12 @@ namespace Stile.Tests.Patterns.Behavioral.Traversal
 	[TestFixture]
 	public class TraverserFixture
 	{
-		#region Setup/Teardown
+		protected HashSet<int> _traversed;
+
 		[SetUp]
 		public void Init()
 		{
 			_traversed = new HashSet<int>();
-		}
-		#endregion
-
-		protected HashSet<int> _traversed;
-
-		protected Traverser.Move BalkyAccepter(int i)
-		{
-			if (i % 2 == 0)
-			{
-				return Traverser.Move.Visit;
-			}
-			return Traverser.Move.Halt;
-		}
-
-		protected Traverser.Move AccumulatingAccepter(int i)
-		{
-			_traversed.Add(i);
-			return Traverser.Move.Visit;
 		}
 
 		[Test]
@@ -87,6 +69,21 @@ namespace Stile.Tests.Patterns.Behavioral.Traversal
 			// assert
 			Assert.That(result, Is.True);
 			Assert.That(_traversed.SequenceEqual(ints.Reverse()));
+		}
+
+		protected Traverser.Move AccumulatingAccepter(int i)
+		{
+			_traversed.Add(i);
+			return Traverser.Move.Visit;
+		}
+
+		protected Traverser.Move BalkyAccepter(int i)
+		{
+			if (i % 2 == 0)
+			{
+				return Traverser.Move.Visit;
+			}
+			return Traverser.Move.Halt;
 		}
 	}
 }

@@ -1,7 +1,6 @@
-﻿#region License statement
-// NJamb, a specification and delta-specification DSL
-// Copyright (c) 2010-2011, Mark Knell
-// Published under the MIT License; all other rights reserved
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -18,6 +17,20 @@ namespace Stile.Tests.Types.Expressions
 	[TestFixture]
 	public class ExpressionExtensionsFixture
 	{
+		[Test]
+		public void GetPropertyInfo()
+		{
+			// arrange
+			Expression<Func<Sample, int>> expression = x => x.Int;
+
+			// act
+			PropertyInfo propertyInfo = expression.GetPropertyInfo();
+
+			// assert
+			Assert.IsNotNull(propertyInfo);
+			Assert.That(propertyInfo.Name, Is.EqualTo("Int"));
+		}
+
 		[Test]
 		public void ToDebugString()
 		{
@@ -79,20 +92,6 @@ namespace Stile.Tests.Types.Expressions
 
 			Expression<Func<int, int, string>> lambdaParenthesized = (x, y) => (x + y).ToString();
 			Assert.That(lambdaParenthesized.ToDebugString(), Is.EqualTo("(x, y) => (x + y).ToString()"));
-		}
-
-		[Test]
-		public void GetPropertyInfo()
-		{
-			// arrange
-			Expression<Func<Sample, int>> expression = x => x.Int;
-
-			// act
-			PropertyInfo propertyInfo = expression.GetPropertyInfo();
-
-			// assert
-			Assert.IsNotNull(propertyInfo);
-			Assert.That(propertyInfo.Name, Is.EqualTo("Int"));
 		}
 
 		private static Expression<Func<TItem>> Capture<TItem>(TItem item)

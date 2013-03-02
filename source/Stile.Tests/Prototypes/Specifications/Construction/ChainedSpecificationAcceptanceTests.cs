@@ -7,9 +7,11 @@
 using NUnit.Framework;
 using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
+using Stile.Prototypes.Specifications.Builders.OfPredicates;
 using Stile.Prototypes.Specifications.Builders.OfPredicates.Has;
 using Stile.Prototypes.Specifications.Builders.OfPredicates.Is;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Tests.Prototypes.Specifications.SampleObjects;
 #endregion
 
@@ -22,7 +24,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		public void BoundToExpression()
 		{
 			var foo = new Foo<int>();
-			var specification = //
+			IBoundSpecification<Foo<int>, int, IFluentBoundExpectationBuilder<Foo<int>, int>> specification = //
 				Specify.For(() => foo).That(x => x.Count) //
 					.Is.Not.EqualTo(12) //
 					.AndThen.Is.Not.EqualTo(12);
@@ -39,7 +41,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		[Test]
 		public void BoundToInstance()
 		{
-			var specification = //
+			IBoundSpecification<Foo<int>, int, IFluentBoundExpectationBuilder<Foo<int>, int>> specification = //
 				Specify.For(new Foo<int>()).That(x => x.Count) //
 					.Is.Not.EqualTo(12) //
 					.AndThen.Is.Not.EqualTo(12);
@@ -56,7 +58,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		[Test]
 		public void Unbound()
 		{
-			var specification = //
+			ISpecification<Foo<int>, string, IFluentExpectationBuilder<Foo<int>, string>> specification = //
 				Specify.ForAny<Foo<int>>().That(x => x.ToString()).Has.HashCode(45) //
 					.AndThen.Has.HashCode(45);
 			Assert.That(specification, Is.Not.Null);

@@ -1,6 +1,6 @@
 #region License info...
-// Stile for .NET, Copyright 2011-2013 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Stile project on GitHub
+// Propter for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Propter project on GitHub
 #endregion
 
 #region using...
@@ -26,16 +26,16 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		ExpectationBuilder
 			<TSpecification, TSubject, TResult, IEnumerableHas<TSpecification, TSubject, TResult, TItem>,
 				INegatableEnumerableIs
-					<TSpecification, TSubject, TResult, IEnumerableIs<TSpecification, TSubject, TResult, TItem>, TItem>, TBuilder>,
+					<TSpecification, TSubject, TResult, IEnumerableIs<TSpecification, TSubject, TResult, TItem>, TItem>,
+				TBuilder>,
 		IEnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification<TBuilder>
 		where TResult : class, IEnumerable<TItem>
 		where TBuilder : class, IExpectationBuilder
 	{
 		protected EnumerableExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] SpecificationFactory<TSubject, TResult, TBuilder, TSpecification> specificationFactory,
 			ISource<TSubject> source = null)
-			: base(instrument, specificationFactory, source) {}
+			: base(instrument, source) {}
 
 		protected override IEnumerableHas<TSpecification, TSubject, TResult, TItem> MakeHas()
 		{
@@ -45,28 +45,13 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 
 		protected override
 			INegatableEnumerableIs
-				<TSpecification, TSubject, TResult, IEnumerableIs<TSpecification, TSubject, TResult, TItem>, TItem> MakeIs()
+				<TSpecification, TSubject, TResult, IEnumerableIs<TSpecification, TSubject, TResult, TItem>, TItem> MakeIs
+			()
 		{
 			return new EnumerableIs<TSpecification, TSubject, TResult, TItem>(Instrument,
 				Negated.False,
 				criterion => Make(criterion),
 				Source);
 		}
-	}
-
-	public abstract class EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> :
-		EnumerableExpectationBuilder
-			<TSpecification, TSubject, TResult, TItem,
-				EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>>
-		where TSpecification : class, ISpecification<TSubject, TResult>,
-			IChainableSpecification<EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>>
-		where TResult : class, IEnumerable<TItem>
-	{
-		protected EnumerableExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] SpecificationFactory
-				<TSubject, TResult, EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>, TSpecification>
-				specificationFactory,
-			ISource<TSubject> source = null)
-			: base(instrument, specificationFactory, source) {}
 	}
 }

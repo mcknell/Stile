@@ -11,7 +11,6 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
 using Stile.Prototypes.Specifications.Builders.OfPredicates;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications
@@ -42,12 +41,7 @@ namespace Stile.Prototypes.Specifications
 		public static IFluentExpectationBuilder<TSubject, TSubject> ThatAny<TSubject>()
 		{
 			var instrument = new Instrument<TSubject, TSubject>(x => x);
-			return new FluentExpectationBuilder<TSubject, TSubject>(instrument,
-				(criterion, builder, filter) =>
-					new Specification<TSubject, TSubject, IFluentExpectationBuilder<TSubject, TSubject>>(instrument,
-						criterion,
-						builder,
-						exceptionFilter: filter));
+			return new FluentExpectationBuilder<TSubject, TSubject>(instrument);
 		}
 	}
 }

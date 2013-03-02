@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Stile.Prototypes.Specifications;
@@ -21,11 +22,13 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		[Test]
 		public void BoundToExpression()
 		{
-			var specification =
-				Specify.For(() => new Foo<int>())
-					.That(x => Enumerable.Reverse(x))
-					.OfItemsLike(0)
-					.Has.All.ItemsSatisfying(x => x > 3);
+			IBoundSpecification
+				<Foo<int>, IEnumerable<int>, IFluentEnumerableBoundExpectationBuilder<Foo<int>, IEnumerable<int>, int>>
+				specification =
+					Specify.For(() => new Foo<int>())
+						.That(x => Enumerable.Reverse(x))
+						.OfItemsLike(0)
+						.Has.All.ItemsSatisfying(x => x > 3);
 			Assert.That(specification, Is.Not.Null);
 			Assert.DoesNotThrow(() => specification.Evaluate());
 		}
@@ -33,8 +36,13 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		[Test]
 		public void BoundToInstance()
 		{
-			var specification =
-				Specify.For(new Foo<int>()).That(x => Enumerable.Reverse(x)).OfItemsLike(0).Has.All.ItemsSatisfying(x => x > 3);
+			IBoundSpecification
+				<Foo<int>, IEnumerable<int>, IFluentEnumerableBoundExpectationBuilder<Foo<int>, IEnumerable<int>, int>>
+				specification =
+					Specify.For(new Foo<int>())
+						.That(x => Enumerable.Reverse(x))
+						.OfItemsLike(0)
+						.Has.All.ItemsSatisfying(x => x > 3);
 			Assert.That(specification, Is.Not.Null);
 			Assert.DoesNotThrow(() => specification.Evaluate());
 		}

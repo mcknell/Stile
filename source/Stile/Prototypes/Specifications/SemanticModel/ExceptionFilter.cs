@@ -18,7 +18,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		bool TryFilterBeforeResult([NotNull] Exception e, out IEvaluation evaluation);
 	}
 
-	public interface IExceptionFilter<TSubject, TResult> : IExceptionFilter
+	public interface IExceptionFilter<out TSubject, TResult> : IExceptionFilter
 	{
 		/// <summary>
 		/// If exception was expected but none was thrown.
