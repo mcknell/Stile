@@ -4,9 +4,9 @@
 #endregion
 
 #region using...
+using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Specifications.Builders.OfPredicates;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -58,11 +58,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 	{
 		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
-		private readonly ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification>
+		private readonly Func<ICriterion<TResult>, IExceptionFilter<TSubject, TResult>, TSpecification>
 			_specificationFactory;
 
 		public ThrowingSpecificationBuilder([NotNull] IExceptionFilter<TSubject, TResult> exceptionFilter,
-			[NotNull] ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification> specificationFactory)
+			[NotNull] Func<ICriterion<TResult>, IExceptionFilter<TSubject, TResult>, TSpecification> specificationFactory)
 		{
 			_exceptionFilter = exceptionFilter.ValidateArgumentIsNotNull();
 			_specificationFactory = specificationFactory.ValidateArgumentIsNotNull();

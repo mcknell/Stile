@@ -4,7 +4,6 @@
 #endregion
 
 #region using...
-using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.Builders.OfPredicates.Has;
@@ -18,23 +17,23 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 	public interface IEnumerableExpectationBuilder<out TSpecification, TSubject, TResult, TItem> :
 		IExpectationBuilder
 			<TSpecification, TSubject, TResult, IEnumerableHas<TSpecification, TSubject, TResult, TItem>,
-				INegatableIs<TSpecification, TSubject, TResult, IEnumerableIs<TSpecification, TSubject, TResult, TItem>>>
+				INegatableEnumerableIs
+					<TSpecification, TSubject, TResult, IEnumerableIs<TSpecification, TSubject, TResult, TItem>, TItem>>
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		where TResult : class, IEnumerable<TItem> {}
 
-	public class EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> :
+	public class EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem, TBuilder> :
 		ExpectationBuilder
 			<TSpecification, TSubject, TResult, IEnumerableHas<TSpecification, TSubject, TResult, TItem>,
-				INegatableIs<TSpecification, TSubject, TResult, IEnumerableIs<TSpecification, TSubject, TResult, TItem>>,
-				EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>>,
+				INegatableEnumerableIs
+					<TSpecification, TSubject, TResult, IEnumerableIs<TSpecification, TSubject, TResult, TItem>, TItem>, TBuilder>,
 		IEnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>
-		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification<TBuilder>
 		where TResult : class, IEnumerable<TItem>
+		where TBuilder : class, IExpectationBuilder
 	{
 		public EnumerableExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] Specification.Factory
-				<TSpecification, TSubject, TResult,
-					EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>> specificationFactory,
+			[NotNull] SpecificationFactory<TSubject, TResult, TBuilder, TSpecification> specificationFactory,
 			ISource<TSubject> source = null)
 			: base(instrument, specificationFactory, source) {}
 
@@ -45,10 +44,29 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		}
 
 		protected override
-			INegatableIs<TSpecification, TSubject, TResult, IEnumerableIs<TSpecification, TSubject, TResult, TItem>>
-			MakeIs()
+			INegatableEnumerableIs
+				<TSpecification, TSubject, TResult, IEnumerableIs<TSpecification, TSubject, TResult, TItem>, TItem> MakeIs()
 		{
-			throw new NotImplementedException();
+			return new EnumerableIs<TSpecification, TSubject, TResult, TItem>(Instrument,
+				Negated.False,
+				criterion => Make(criterion),
+				Source);
 		}
+	}
+
+	public class EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> :
+		EnumerableExpectationBuilder
+			<TSpecification, TSubject, TResult, TItem,
+				EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>>
+		where TSpecification : class, ISpecification<TSubject, TResult>,
+			IChainableSpecification<EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>>
+		where TResult : class, IEnumerable<TItem>
+	{
+		public EnumerableExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
+			[NotNull] SpecificationFactory
+				<TSubject, TResult, EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>, TSpecification>
+				specificationFactory,
+			ISource<TSubject> source = null)
+			: base(instrument, specificationFactory, source) {}
 	}
 }

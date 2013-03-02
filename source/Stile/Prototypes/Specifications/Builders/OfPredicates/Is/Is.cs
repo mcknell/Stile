@@ -35,9 +35,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 	{
 		[NotNull]
 		IInstrument<TSubject, TResult> Instrument { get; }
+
 		Negated Negated { get; }
+
 		[CanBeNull]
 		ISource<TSubject> Source { get; }
+
+		[NotNull]
+		Func<ICriterion<TResult>, TSpecification> SpecificationFactory { get; }
 
 		[NotNull]
 		TSpecification Make(ICriterion<TResult> criterion);
@@ -48,7 +53,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 		IIsState<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
-		private readonly Func<ICriterion<TResult>, TSpecification> _specificationFactory;
+		public Func<ICriterion<TResult>, TSpecification> SpecificationFactory { get; private set; }
 
 		public Is([NotNull] IInstrument<TSubject, TResult> instrument,
 			Negated negated,
@@ -57,17 +62,20 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
 			Negated = negated;
-			_specificationFactory = specificationFactory.ValidateArgumentIsNotNull();
+			SpecificationFactory = specificationFactory.ValidateArgumentIsNotNull();
 			Source = source;
 		}
 
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
 		public Negated Negated { get; private set; }
+
 		public IIs<TSpecification, TSubject, TResult> Not
 		{
-			get { return new Is<TSpecification, TSubject, TResult>(Instrument, Negated.True, _specificationFactory, Source); }
+			get { return new Is<TSpecification, TSubject, TResult>(Instrument, Negated.True, SpecificationFactory, Source); }
 		}
+
 		public ISource<TSubject> Source { get; private set; }
+
 		public IIsState<TSpecification, TSubject, TResult> Xray
 		{
 			get { return this; }
@@ -75,7 +83,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates.Is
 
 		public TSpecification Make(ICriterion<TResult> criterion)
 		{
-			return _specificationFactory.Invoke(criterion);
+			return SpecificationFactory.Invoke(criterion);
 		}
 	}
 }

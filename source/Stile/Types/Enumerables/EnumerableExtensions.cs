@@ -1,7 +1,6 @@
-﻿#region License statement
-// NJamb, a specification and delta-specification DSL
-// Copyright (c) 2010-2011, Mark Knell
-// Published under the MIT License; all other rights reserved
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -20,7 +19,8 @@ namespace Stile.Types.Enumerables
 		private static readonly MethodInfo ToDebugStringGenericMethodDefinition =
 			((EnumerableLazyPrintMethod<int>) ToDebugString).Method.GetGenericMethodDefinition();
 
-		public static string ToDebugString<TItem>(this IEnumerable<TItem> enumerable, int lengthLimit = Default.LengthLimit)
+		public static string ToDebugString<TItem>(this IEnumerable<TItem> enumerable,
+			int lengthLimit = Default.LengthLimit)
 		{
 			if (lengthLimit < 0)
 			{
@@ -41,8 +41,7 @@ namespace Stile.Types.Enumerables
 				{
 					sb.AppendFormat(", {0}", enumerator.Current.ToDebugString());
 				}
-			}
-			else
+			} else
 			{
 				sb.Append(PrintExtensions.ReadableEmpty);
 			}
@@ -67,6 +66,11 @@ namespace Stile.Types.Enumerables
 			return new Lazy<string>(() => ToDebugString(enumerable, itemType));
 		}
 
+		public static bool None<TItem>(this IEnumerable<TItem> items)
+		{
+			return items.Any() == false;
+		}
+
 		/// <summary>
 		/// Returns a sequence of '<paramref name="first"/>' followed by optional '<paramref name="others"/>' 
 		/// and finally the original sequence.
@@ -76,7 +80,9 @@ namespace Stile.Types.Enumerables
 		/// <param name="first"></param>
 		/// <param name="others"></param>
 		/// <returns></returns>
-		public static IEnumerable<TItem> Unshift<TItem>(this IEnumerable<TItem> enumerable, TItem first, params TItem[] others)
+		public static IEnumerable<TItem> Unshift<TItem>(this IEnumerable<TItem> enumerable,
+			TItem first,
+			params TItem[] others)
 		{
 			yield return first;
 			foreach (TItem other in others)

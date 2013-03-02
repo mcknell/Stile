@@ -9,6 +9,7 @@ namespace Stile.Patterns.Structural.FluentInterface
 
     public interface INegatable<out TReturn> : INegatable
     {
+        [System.Diagnostics.Contracts.Pure]
         TReturn Not { get; }
     }
 }

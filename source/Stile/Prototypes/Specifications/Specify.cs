@@ -39,11 +39,15 @@ namespace Stile.Prototypes.Specifications
 		}
 
 		[System.Diagnostics.Contracts.Pure]
-		public static ISimpleExpectationBuilder<TSubject, TSubject> ThatAny<TSubject>()
+		public static IFluentExpectationBuilder<TSubject, TSubject> ThatAny<TSubject>()
 		{
 			var instrument = new Instrument<TSubject, TSubject>(x => x);
-			return new SimpleExpectationBuilder<TSubject, TSubject>(instrument,
-				SimpleSpecification<TSubject, TSubject>.Make);
+			return new FluentExpectationBuilder<TSubject, TSubject>(instrument,
+				(criterion, builder, filter) =>
+					new Specification<TSubject, TSubject, IFluentExpectationBuilder<TSubject, TSubject>>(instrument,
+						criterion,
+						builder,
+						exceptionFilter: filter));
 		}
 	}
 }

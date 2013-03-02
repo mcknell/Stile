@@ -20,14 +20,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 	public class EnumerableBoundExpectationBuilder<TSpecification, TSubject, TResult, TPredicateBuilder, TItem> :
 		EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>,
 		IEnumerableBoundExpectationBuilder<TSpecification, TSubject, TResult, TItem>
-		where TSpecification : class, IBoundSpecification<TSubject, TResult, TPredicateBuilder>
+		where TSpecification : class, IBoundSpecification<TSubject, TResult, TPredicateBuilder>,
+			IChainableSpecification<EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>>
 		where TPredicateBuilder : class, IExpectationBuilder<TSpecification, TSubject, TResult>
 		where TResult : class, IEnumerable<TItem>
 	{
 		public EnumerableBoundExpectationBuilder(IInstrument<TSubject, TResult> instrument,
-			[NotNull] Specification.Factory
-				<TSpecification, TSubject, TResult,
-					EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>> specificationFactory,
+			[NotNull] SpecificationFactory
+				<TSubject, TResult, EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>, TSpecification>
+				specificationFactory,
 			ISource<TSubject> source = null)
 			: base(instrument, specificationFactory, source) {}
 	}

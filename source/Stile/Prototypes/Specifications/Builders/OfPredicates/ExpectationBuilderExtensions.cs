@@ -15,37 +15,38 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 	public static class ExpectationBuilderExtensions
 	{
 		[Pure]
-		public static IEnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> OfItemsLike
-			<TSpecification, TSubject, TResult, TItem>(
-			this IExpectationBuilder<TSpecification, TSubject, TResult> builder, TItem throwaway)
+		public static IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem> OfItemsLike
+			<TSpecification, TSubject, TResult, TItem>(this IExpectationBuilder<TSpecification, TSubject, TResult> builder,
+				TItem throwaway)
 			where TSpecification : class,
 				ISpecification<TSubject, TResult, IExpectationBuilder<TSpecification, TSubject, TResult>>
 			where TResult : class, IEnumerable<TItem>
 		{
 			IExpectationBuilderState<TSpecification, TSubject, TResult> state = builder.Xray;
 			IInstrument<TSubject, TResult> instrument = state.Instrument;
-			return new EnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem>(instrument,
-				(source, instrument1, criterion, expectationBuilder, filter) => builder.Xray.Make(criterion),
+			ISource<TSubject> source = builder.Xray.Source;
+			return new FluentEnumerableExpectationBuilder<TSubject, TResult, TItem>(instrument,
+				(criterion, builder1, filter) =>
+					new Specification<TSubject, TResult, IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem>>(
+						instrument, criterion, builder1, source, exceptionFilter: filter),
 				state.Source);
 		}
 
 		[Pure]
-		public static IEnumerableBoundExpectationBuilder<TSpecification, TSubject, TResult, TItem> OfItemsLike
-			<TSpecification, TSubject, TResult, TPredicateBuilder, TItem>(
+		public static IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem> OfItemsLike
+			<TSpecification, TSubject, TResult, TItem>(
 			this IBoundExpectationBuilder<TSpecification, TSubject, TResult> builder, TItem throwaway)
 			where TSpecification : class,
-				IBoundSpecification
-					<TSubject, TResult, IEnumerableBoundExpectationBuilder<TSpecification, TSubject, TResult, TItem>>,
-				IBoundSpecification<TSubject, TResult, TPredicateBuilder> where TResult : class, IEnumerable<TItem>
-			where TPredicateBuilder : class, IBoundExpectationBuilder<TSpecification, TSubject, TResult>
+				IBoundSpecification<TSubject, TResult, IBoundExpectationBuilder<TSpecification, TSubject, TResult>>
+			where TResult : class, IEnumerable<TItem>
 		{
 			IExpectationBuilderState<TSpecification, TSubject, TResult> state = builder.Xray;
 			IInstrument<TSubject, TResult> instrument = state.Instrument;
-			return
-				new EnumerableBoundExpectationBuilder<TSpecification, TSubject, TResult, TPredicateBuilder, TItem>(
-					instrument,
-					(source, instrument1, criterion, expectationBuilder, filter) => builder.Xray.Make(criterion),
-					state.Source);
+			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(instrument,
+				(criterion, expectationBuilder, filter) =>
+					new Specification<TSubject, TResult, IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>>(
+						instrument, criterion, expectationBuilder, state.Source, exceptionFilter: filter),
+				state.Source);
 		}
 	}
 }

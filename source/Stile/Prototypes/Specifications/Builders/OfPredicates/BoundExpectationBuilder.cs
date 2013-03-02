@@ -17,18 +17,18 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		IExpectationBuilder<TSpecification, TSubject, TResult>
 		where TSpecification : class, IBoundSpecification<TSubject, TResult>, IChainableSpecification {}
 
-	public class BoundExpectationBuilder<TSpecification, TSubject, TResult, TPredicateBuilder> :
+	public class BoundExpectationBuilder<TSpecification, TSubject, TResult, TBuilder> :
 		ExpectationBuilder
-			<TSpecification, TSubject, TResult,
-				BoundExpectationBuilder<TSpecification, TSubject, TResult, TPredicateBuilder>>,
+			<TSpecification, TSubject, TResult, BoundExpectationBuilder<TSpecification, TSubject, TResult, TBuilder>>,
 		IBoundExpectationBuilder<TSpecification, TSubject, TResult>
-		where TSpecification : class, IBoundSpecification<TSubject, TResult, TPredicateBuilder>
-		where TPredicateBuilder : class, IExpectationBuilder<TSpecification, TSubject, TResult>
+		where TSpecification : class, IBoundSpecification<TSubject, TResult, TBuilder>,
+			IChainableSpecification<BoundExpectationBuilder<TSpecification, TSubject, TResult, TBuilder>>
+		where TBuilder : class, IExpectationBuilder<TSpecification, TSubject, TResult>
 	{
 		public BoundExpectationBuilder(IInstrument<TSubject, TResult> instrument,
-			[NotNull] Specification.Factory
-				<TSpecification, TSubject, TResult,
-					BoundExpectationBuilder<TSpecification, TSubject, TResult, TPredicateBuilder>> specificationFactory,
+			[NotNull] SpecificationFactory
+				<TSubject, TResult, BoundExpectationBuilder<TSpecification, TSubject, TResult, TBuilder>, TSpecification>
+				specificationFactory,
 			ISource<TSubject> source = null)
 			: base(instrument, specificationFactory, source) {}
 	}

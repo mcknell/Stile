@@ -49,26 +49,29 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 
 	public abstract class ExpectationBuilder
 	{
-		public delegate TSpecification SpecificationFactory<TSubject, TResult, out TSpecification>(
-			[NotNull] ICriterion<TResult> criterion, IExceptionFilter<TSubject, TResult> exceptionFilter = null);
+		public delegate TSpecification SpecificationFactory<TSubject, TResult, TBuilder, out TSpecification>(
+			[NotNull] ICriterion<TResult> criterion,
+			TBuilder builder,
+			IExceptionFilter<TSubject, TResult> exceptionFilter = null) where TBuilder : class, IExpectationBuilder
+			where TSpecification : class, IChainableSpecification<TBuilder>;
 	}
 
 	public abstract class ExpectationBuilder<TSpecification, TSubject, TResult, THas, TIs, TBuilder> :
 		ExpectationBuilder,
 		IExpectationBuilder<TSpecification, TSubject, TResult, THas, TIs>,
 		IExpectationBuilderState<TSpecification, TSubject, TResult>
-		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification<TBuilder>
 		where THas : class, IHas, IHas<TSpecification, TSubject, TResult>
 		where TIs : class, IResultIs<TSpecification, TResult>
-		where TBuilder : ExpectationBuilder<TSpecification, TSubject, TResult, THas, TIs, TBuilder>
+		where TBuilder : class, IExpectationBuilder
 
 	{
 		private readonly Lazy<THas> _lazyHas;
 		private readonly Lazy<TIs> _lazyIs;
-		private readonly Specification.Factory<TSpecification, TSubject, TResult, TBuilder> _specificationFactory;
+		private readonly SpecificationFactory<TSubject, TResult, TBuilder, TSpecification> _specificationFactory;
 
 		protected ExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] Specification.Factory<TSpecification, TSubject, TResult, TBuilder> specificationFactory,
+			[NotNull] SpecificationFactory<TSubject, TResult, TBuilder, TSpecification> specificationFactory,
 			ISource<TSubject> source = null)
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
@@ -102,8 +105,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 			get { return this; }
 		}
 
-		public IThrowingSpecificationBuilder<TSpecification, TSubject> Throws<TException>()
-			where TException : Exception
+		public IThrowingSpecificationBuilder<TSpecification, TSubject> Throws<TException>() where TException : Exception
 		{
 			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(exception => exception is TException);
 			var builder = new ThrowingSpecificationBuilder<TSpecification, TSubject, TResult>(exceptionFilter, Make);
@@ -113,7 +115,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 		public TSpecification Make(ICriterion<TResult> criterion,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 		{
-			return _specificationFactory.Invoke(Source, Instrument, criterion, this as TBuilder, exceptionFilter);
+			return _specificationFactory.Invoke(criterion, this as TBuilder, exceptionFilter);
 		}
 
 		protected abstract THas MakeHas();
@@ -125,11 +127,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 			<TSpecification, TSubject, TResult, IHas<TSpecification, TSubject, TResult>,
 				INegatableIs<TSpecification, TSubject, TResult, IIs<TSpecification, TSubject, TResult>>, TBuilder>,
 		IExpectationBuilder<TSpecification, TSubject, TResult>
-		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
-		where TBuilder : ExpectationBuilder<TSpecification, TSubject, TResult, TBuilder>
+		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification<TBuilder>
+		where TBuilder : class, IExpectationBuilder
 	{
 		protected ExpectationBuilder(IInstrument<TSubject, TResult> instrument,
-			[NotNull] Specification.Factory<TSpecification, TSubject, TResult, TBuilder> specificationFactory,
+			[NotNull] SpecificationFactory<TSubject, TResult, TBuilder, TSpecification> specificationFactory,
 			ISource<TSubject> source = null)
 			: base(instrument, specificationFactory, source) {}
 
@@ -139,13 +141,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfPredicates
 			return has;
 		}
 
-		protected override INegatableIs<TSpecification, TSubject, TResult, IIs<TSpecification, TSubject, TResult>>
-			MakeIs()
+		protected override INegatableIs<TSpecification, TSubject, TResult, IIs<TSpecification, TSubject, TResult>> MakeIs
+			()
 		{
-			return new Is<TSpecification, TSubject, TResult>(Instrument,
-				Negated.False,
-				criterion => Make(criterion),
-				Source);
+			return new Is<TSpecification, TSubject, TResult>(Instrument, Negated.False, criterion => Make(criterion), Source);
 		}
 	}
 }

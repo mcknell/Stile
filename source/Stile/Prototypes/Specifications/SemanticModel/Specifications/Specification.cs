@@ -93,7 +93,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
 		private readonly TExpectationBuilder _expectationBuilder;
 
-		protected Specification([NotNull] IInstrument<TSubject, TResult> instrument,
+	    public Specification([NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] ICriterion<TResult> criterion,
 			[NotNull] TExpectationBuilder expectationBuilder,
 			ISource<TSubject> source = null,

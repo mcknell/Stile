@@ -29,5 +29,5 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public interface IBoundSpecification<TSubject, TResult, out TExpectationBuilder> :
 		IBoundSpecification<TSubject, TResult>,
 		ISpecification<TSubject, TResult, TExpectationBuilder>
-		where TExpectationBuilder : class, IExpectationBuilder {}
+	    where TExpectationBuilder : class, IExpectationBuilder {}
 }
