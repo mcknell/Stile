@@ -23,6 +23,27 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 	public class SpecifyAcceptanceTests
 	{
 		[Test]
+		public void BeforeBoundToInstance()
+		{
+			IBoundSpecification<Foo<int>, int> specification =
+				Specify.For(new Foo<int>()).That(x => x.Count).Is.Not.EqualTo(12).Before(TimeSpan.FromSeconds(20));
+			IEvaluation<int> evaluation = specification.Evaluate();
+			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
+
+/*
+			Assert.That(
+				Specify.For(new Foo<int>())
+					.That(x => x.Sleep(TimeSpan.FromSeconds(20)))
+					.Throws<ArgumentException>()
+					.Build()
+					.Before(TimeSpan.FromSeconds(2))
+					.Evaluate()
+					.Outcome,
+				Is.EqualTo(Outcome.Incomplete));
+*/
+		}
+
+		[Test]
 		public void BoundToExpression()
 		{
 			IBoundSpecification<Foo<int>, int> specification =

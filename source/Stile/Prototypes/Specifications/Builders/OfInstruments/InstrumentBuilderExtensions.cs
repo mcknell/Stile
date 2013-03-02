@@ -49,7 +49,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 			builder.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			IProcedure<TSubject> instrument = new Procedure<TSubject>(expression);
-			ISource<TSubject> source = builder.Xray.Source;
+			ISource<TSubject> source = builder.Xray.Source.ValidateArgumentIsNotNull();
 			return ExceptionFilterBuilder<IVoidBoundSpecification<TSubject>, TSubject>.MakeBound(source,
 				instrument,
 				VoidSpecification<TSubject>.MakeBound);

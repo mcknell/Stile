@@ -4,7 +4,9 @@
 #endregion
 
 #region using...
+using System;
 using System.Collections.Generic;
+using System.Threading;
 #endregion
 
 namespace Stile.Tests.Prototypes.Specifications.SampleObjects
@@ -14,6 +16,12 @@ namespace Stile.Tests.Prototypes.Specifications.SampleObjects
 		public int Jump()
 		{
 			return GetHashCode();
+		}
+
+		public bool Sleep(TimeSpan timeSpan)
+		{
+			Thread.Sleep(timeSpan);
+			return true;
 		}
 	}
 }

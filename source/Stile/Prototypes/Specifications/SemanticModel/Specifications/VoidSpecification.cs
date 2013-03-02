@@ -75,6 +75,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return Evaluate(() => subject);
 		}
 
+		public override object Clone(ISpecificationDeadline deadline)
+		{
+			return new VoidSpecification<TSubject>(Procedure, ExceptionFilter, Source, Because);
+		}
+
 		public static VoidSpecification<TSubject> Make([NotNull] IProcedure<TSubject> procedure,
 			IExceptionFilter exceptionFilter,
 			ISource<TSubject> source = null)

@@ -27,17 +27,16 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			IProcedureBuilderState<TSubject> state)
 			: base(instrument, state.Source) {}
 
+		protected override IFluentBoundExpectationBuilder<TSubject, TResult> Builder
+		{
+			get { return this; }
+		}
 		protected override
 			Func
 				<ICriterion<TResult>, IExceptionFilter<TSubject, TResult>,
 					IBoundSpecification<TSubject, TResult, IFluentBoundExpectationBuilder<TSubject, TResult>>> SpecFactory
 		{
 			get { return MakeBoundSpecification; }
-		}
-
-		protected override IFluentBoundExpectationBuilder<TSubject, TResult> Builder
-		{
-			get { return this; }
 		}
 	}
 }

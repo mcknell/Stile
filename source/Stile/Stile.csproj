@@ -75,13 +75,13 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantified\QuantifiedHas.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentBoundExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentExpectationBuilder.cs" />
-    <Compile Include="Prototypes\Specifications\Chained\SpecificationExtensions.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\BoundEvaluation.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\IChainableSpecification.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Measurement.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Observation.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Procedure.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\IThrowingBoundSpecification.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\SpecificationExtensions.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\VoidSpecification.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfInstruments\InstrumentBuilderExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\ExceptionFilterBuilder.cs" />
@@ -187,7 +187,9 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Prototypes\Specifications\Chained\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
