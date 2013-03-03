@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System.Diagnostics.Contracts;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 #endregion
@@ -24,6 +25,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		ISpecification<TSubject, TResult>,
 		IChainableSpecification
 	{
+		[Pure]
 		IBoundEvaluation<TSubject, TResult> Evaluate();
 	}
 

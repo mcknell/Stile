@@ -14,7 +14,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 {
 	public interface IEvaluation
 	{
+		[System.Diagnostics.Contracts.Pure]
 		IError[] Errors { get; }
+		[System.Diagnostics.Contracts.Pure]
 		Outcome Outcome { get; }
 	}
 

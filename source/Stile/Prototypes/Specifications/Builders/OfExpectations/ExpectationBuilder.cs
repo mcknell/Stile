@@ -26,8 +26,12 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		where THas : class, IHas<TSpecification, TSubject, TResult>
 		where TIs : class, IResultIs<TSpecification, TResult>
 	{
+		[System.Diagnostics.Contracts.Pure]
 		THas Has { get; }
+		[System.Diagnostics.Contracts.Pure]
 		TIs Is { get; }
+
+		[System.Diagnostics.Contracts.Pure]
 		IThrowingSpecificationBuilder<TSpecification, TSubject> Throws<TException>() where TException : Exception;
 	}
 

@@ -38,6 +38,13 @@ namespace Stile.Prototypes.Specifications
 		}
 
 		[System.Diagnostics.Contracts.Pure]
+		public static IFluentBoundExpectationBuilder<TSubject, TSubject> That<TSubject>(TSubject subject)
+		{
+			var instrument = new Instrument<TSubject, TSubject>(x => x);
+			return new FluentBoundExpectationBuilder<TSubject, TSubject>(instrument, For(subject).Xray);
+		}
+
+		[System.Diagnostics.Contracts.Pure]
 		public static IFluentExpectationBuilder<TSubject, TSubject> ThatAny<TSubject>()
 		{
 			var instrument = new Instrument<TSubject, TSubject>(x => x);

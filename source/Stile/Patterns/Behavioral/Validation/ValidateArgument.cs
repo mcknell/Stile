@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -19,12 +20,14 @@ namespace Stile.Patterns.Behavioral.Validation
 {
     public static class ValidateArgument
     {
+		[ContractArgumentValidator]
         public static TEnum IsInEnum<TEnum>(Expression<Func<TEnum>> expression) where TEnum : struct
         {
             TEnum invoked = expression.Compile().Invoke();
             return IsInEnum(invoked, expression);
         }
 
+		[ContractArgumentValidator]
         public static TEnum IsInEnum<TEnum>(TEnum arg, Expression<Func<TEnum>> expression) where TEnum : struct
         {
             if (Enumeration.IsDefined(arg) == false)
@@ -34,6 +37,7 @@ namespace Stile.Patterns.Behavioral.Validation
             return arg;
         }
 
+		[ContractArgumentValidator]
         public static TArg IsNotDefault<TArg>(Expression<Func<TArg>> expression)
         {
             TArg invoked = expression.Compile().Invoke();
@@ -41,6 +45,7 @@ namespace Stile.Patterns.Behavioral.Validation
             return IsNotDefault(invoked, lazyDebugString);
         }
 
+		[ContractArgumentValidator]
         public static TArg IsNotDefault<TArg>(TArg arg, Lazy<string> argumentName)
         {
             if (typeof(TArg).IsValueType == false)
@@ -58,6 +63,7 @@ namespace Stile.Patterns.Behavioral.Validation
             return arg;
         }
 
+		[ContractArgumentValidator]
         public static TArg IsNotNullOrEmpty<TArg, TItem>(this FluentEnumerableSource<TArg, TItem> builder)
             where TArg : class, IEnumerable<TItem>
         {
@@ -66,11 +72,13 @@ namespace Stile.Patterns.Behavioral.Validation
             return arg;
         }
 
+		[ContractArgumentValidator]
         public static FluentValidationBuilder<TArg> Validate<TArg>(this TArg arg)
         {
             return new FluentValidationBuilder<TArg>(arg, 1);
         }
 
+		[ContractArgumentValidator]
 		[NotNull,System.Diagnostics.Contracts.Pure]
         public static TArg ValidateArgumentIsNotNull<TArg>(this TArg arg) where TArg : class
         {

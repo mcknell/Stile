@@ -25,6 +25,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		}
 
 		[Pure]
+		public static TSpecification GreaterThan<TSpecification, TSubject, TResult>(
+			this IIs<TSpecification, TSubject, TResult> builder, TResult result)
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+			where TResult : IComparable<TResult>
+		{
+			return Make(builder, x => x > 0, result);
+		}
+
+		[Pure]
 		public static TSpecification Make<TSpecification, TSubject, TResult>(
 			IIs<TSpecification, TSubject, TResult> builder, Predicate<int> predicate, TResult result)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification

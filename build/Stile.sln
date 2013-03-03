@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stile.Testing", "..\source\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stile.DocumentationGeneration", "..\source\Stile.DocumentationGeneration\Stile.DocumentationGeneration.csproj", "{E209DC00-8737-4715-8C11-C67E5F2CF70D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stile.Contracts", "..\source\Stile.Contracts\Stile.Contracts.csproj", "{1AF7FEA4-CB72-4AA6-9E0C-FAF6AB5FF523}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{E209DC00-8737-4715-8C11-C67E5F2CF70D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E209DC00-8737-4715-8C11-C67E5F2CF70D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E209DC00-8737-4715-8C11-C67E5F2CF70D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AF7FEA4-CB72-4AA6-9E0C-FAF6AB5FF523}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AF7FEA4-CB72-4AA6-9E0C-FAF6AB5FF523}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AF7FEA4-CB72-4AA6-9E0C-FAF6AB5FF523}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AF7FEA4-CB72-4AA6-9E0C-FAF6AB5FF523}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
