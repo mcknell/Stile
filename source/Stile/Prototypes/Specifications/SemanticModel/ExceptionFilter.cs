@@ -25,9 +25,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		/// </summary>
 		/// <param name="result"></param>
 		/// <param name="factory"></param>
+		/// <param name="timedOut"></param>
 		/// <returns></returns>
-		TEvaluation Fail<TEvaluation>(TResult result,
-			Evaluation.Factory<TSubject, TResult, TEvaluation> factory) where TEvaluation : class, IEvaluation<TSubject, TResult>;
+		TEvaluation Fail<TEvaluation>(TResult result, Evaluation.Factory<TSubject, TResult, TEvaluation> factory, bool timedOut) where TEvaluation : class, IEvaluation<TSubject, TResult>;
 
 		bool TryFilter<TEvaluation>(TResult result,
 			[NotNull] Exception e,
@@ -44,7 +44,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 		public IEvaluation FailBeforeResult()
 		{
-			return new Evaluation(Outcome.Failed);
+			return new Evaluation(Outcome.Failed, false);
 		}
 
 		public bool TryFilterBeforeResult(Exception e, out IEvaluation evaluation)
@@ -54,7 +54,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 				evaluation = new Evaluation(Outcome.Succeeded, e);
 				return true;
 			}
-			evaluation = new Evaluation(Outcome.Failed);
+			evaluation = new Evaluation(Outcome.Failed, false);
 			return false;
 		}
 
@@ -67,11 +67,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		public ExceptionFilter([NotNull] Predicate<Exception> predicate)
 			: base(predicate) {}
 
-		public TEvaluation Fail<TEvaluation>(TResult result,
-			Evaluation.Factory<TSubject, TResult, TEvaluation> factory)
+		public TEvaluation Fail<TEvaluation>(TResult result, Evaluation.Factory<TSubject, TResult, TEvaluation> factory, bool timedOut)
 			where TEvaluation : class, IEvaluation<TSubject, TResult>
 		{
-			return factory.Invoke(Outcome.Failed, result);
+			return factory.Invoke(Outcome.Failed, result, timedOut);
 		}
 
 		public bool TryFilter<TEvaluation>(TResult result,
@@ -85,10 +84,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			if (Predicate.Invoke(e))
 			{
-				evaluation = factory.Invoke(Outcome.Succeeded, result, new Error(e));
+				evaluation = factory.Invoke(Outcome.Succeeded, result, false, new Error(e));
 				return true;
 			}
-			evaluation = factory.Invoke(Outcome.Interrupted, result, new Error(e, false));
+			evaluation = factory.Invoke(Outcome.Interrupted, result, false, new Error(e, false));
 			return false;
 		}
 	}

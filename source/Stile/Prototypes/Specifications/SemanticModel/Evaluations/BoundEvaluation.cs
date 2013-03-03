@@ -23,8 +23,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public BoundEvaluation([NotNull] IBoundSpecification<TSubject, TResult> specification,
 			Outcome outcome,
 			TResult value,
+			bool timedOut,
 			params IError[] errors)
-			: base(specification, outcome, value, errors)
+			: base(specification, outcome, value, timedOut, errors)
 		{
 			_specification = specification;
 		}

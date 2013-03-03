@@ -29,9 +29,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantified
 		where TSpecification : class, ISpecification
 		where TResult : class, IEnumerable<TItem>
 	{
-		private readonly Func<ICriterion<TResult>, TSpecification> _factory;
+		private readonly Func<IExpectation<TResult>, TSpecification> _factory;
 
-		protected QuantifiedHas([NotNull] Func<ICriterion<TResult>, TSpecification> factory)
+		protected QuantifiedHas([NotNull] Func<IExpectation<TResult>, TSpecification> factory)
 		{
 			_factory = factory.ValidateArgumentIsNotNull();
 		}
@@ -39,8 +39,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantified
 		public TSpecification ItemsSatisfying(Expression<Func<TItem, bool>> expression)
 		{
 			Func<TResult, bool> func = MakePredicate(expression);
-			var criterion = new Criterion<TResult>(result => func.Invoke(result) ? Outcome.Succeeded : Outcome.Failed);
-			return _factory.Invoke(criterion);
+			var expectation = new Expectation<TResult>(result => func.Invoke(result) ? Outcome.Succeeded : Outcome.Failed);
+			return _factory.Invoke(expectation);
 		}
 
 		protected abstract Func<TResult, bool> MakePredicate(Expression<Func<TItem, bool>> expression);

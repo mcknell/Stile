@@ -18,6 +18,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		IError[] Errors { get; }
 		[System.Diagnostics.Contracts.Pure]
 		Outcome Outcome { get; }
+		bool TimedOut { get; }
 	}
 
 	public interface IEvaluation<out TResult> : IEvaluation
@@ -33,27 +34,36 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	public class Evaluation : IEvaluation
 	{
 		public delegate TEvaluation Factory<in TSubject, in TResult, out TEvaluation>(
-			Outcome outcome, TResult result, params IError[] errors)
+			Outcome outcome, TResult result, bool timedOut, params IError[] errors)
 			where TEvaluation : class, IEvaluation<TSubject, TResult>;
 
 		public Evaluation(Outcome outcome, Exception handledExpectedException)
-			: this(outcome, new Error(handledExpectedException)) {}
+			: this(outcome, false, handledExpectedException) {}
 
-		public Evaluation(Outcome outcome, params IError[] errors)
+		public Evaluation(Outcome outcome, bool timedOut, Exception handledExpectedException)
+			: this(outcome, timedOut, new Error(handledExpectedException)) {}
+
+		public Evaluation(Outcome outcome, bool timedOut, params IError[] errors)
 		{
 			Errors = errors;
 			Outcome = outcome;
+			TimedOut = timedOut;
+			if (TimedOut)
+			{
+				Outcome = Outcome.Incomplete;
+			}
 		}
 
 		public IError[] Errors { get; private set; }
 		public Outcome Outcome { get; private set; }
+		public bool TimedOut { get; private set; }
 	}
 
 	public class Evaluation<TResult> : Evaluation,
 		IEvaluation<TResult>
 	{
-		public Evaluation(Outcome outcome, TResult value, params IError[] errors)
-			: base(outcome, errors)
+		public Evaluation(Outcome outcome, TResult value, bool timedOut, params IError[] errors)
+			: base(outcome, timedOut, errors)
 		{
 			Value = value;
 		}
@@ -69,8 +79,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public Evaluation([NotNull] ISpecification<TSubject, TResult> specification,
 			Outcome outcome,
 			TResult value,
+			bool timedOut,
 			params IError[] errors)
-			: base(outcome, value, errors)
+			: base(outcome, value, timedOut, errors)
 		{
 			_specification = specification.ValidateArgumentIsNotNull();
 		}

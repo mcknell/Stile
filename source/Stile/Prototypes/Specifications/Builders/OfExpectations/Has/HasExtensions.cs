@@ -19,9 +19,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 			this IHas<TSpecification, TSubject, TResult> has, int hashCode)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		{
-			var criterion =
-				new Criterion<TResult>(x => x.GetHashCode() == hashCode ? Outcome.Succeeded : Outcome.Failed);
-			TSpecification specification = has.Xray.Make(criterion);
+			var expectation =
+				new Expectation<TResult>(x => x.GetHashCode() == hashCode ? Outcome.Succeeded : Outcome.Failed);
+			TSpecification specification = has.Xray.Make(expectation);
 			return specification;
 		}
 	}

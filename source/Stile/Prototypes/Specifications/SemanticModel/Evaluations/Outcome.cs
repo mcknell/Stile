@@ -7,8 +7,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Reflection;
 using Stile.Types.Enumerables;
 #endregion
 
@@ -17,47 +19,51 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	public struct Outcome : IEquatable<Outcome>,
 		IComparable<Outcome>
 	{
-		public enum Enumerated:byte
+		[Flags]
+		public enum Enumerated : byte
 		{
-			Unclear = 0,
+			Failed = 0,
 			Succeeded = 1,
-			Completed = 2,
-			QuitVersusAborted = 4,
-			Waiting = 8,
+			Incomplete = 2,
+			Interrupted = 4,
+			TimedOut = 8,
 			Suspended = 16
 		}
-		public static readonly Outcome Unclear;
+
 		public static readonly Outcome Succeeded;
 		public static readonly Outcome Failed;
 		public static readonly Outcome Incomplete;
 		public static readonly Outcome Interrupted;
-		public static readonly Outcome Quit;
-		public static readonly ReadOnlyCollection<Outcome> Values;
+		public static readonly Outcome TimedOut;
+		private static readonly ReadOnlyCollection<Outcome> sValues;
 		private static readonly IEqualityComparer<Outcome> ValueComparerInstance = new ValueEqualityComparer();
-		private readonly int _value;
+		private readonly Enumerated _value;
 
 		static Outcome()
 		{
 			var outcomes = new List<Outcome>();
 
-			Unclear = MakeNext(outcomes);
-			Succeeded = MakeNext(outcomes);
-			Failed = MakeNext(outcomes);
-			Incomplete = MakeNext(outcomes);
-			Interrupted = MakeNext(outcomes);
-			Quit = MakeNext(outcomes);
+			Make(() => Failed, outcomes, Enumerated.Failed);
+			Make(() => Succeeded, outcomes, Enumerated.Succeeded);
+			Make(() => Incomplete, outcomes, Enumerated.Incomplete);
+			Make(() => Interrupted, outcomes, Enumerated.Interrupted);
+			Make(() => TimedOut, outcomes, Enumerated.Incomplete | Enumerated.TimedOut);
 
-			Values = outcomes.ToReadOnly();
+			sValues = outcomes.ToReadOnly();
 		}
 
-		private Outcome(int value)
+		private Outcome(Enumerated enumerated)
 		{
-			_value = value;
+			_value = enumerated;
 		}
 
 		public static IEqualityComparer<Outcome> ValueComparer
 		{
 			get { return ValueComparerInstance; }
+		}
+		public static ReadOnlyCollection<Outcome> Values
+		{
+			get { return sValues; }
 		}
 
 		public int CompareTo(Outcome other)
@@ -68,6 +74,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public bool Equals(Outcome other)
 		{
 			return _value == other._value;
+		}
+
+		[Pure]
+		public bool Covers(Outcome other)
+		{
+			return (_value & other._value) == other._value;
 		}
 
 		public override bool Equals(object obj)
@@ -81,23 +93,35 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 
 		public override int GetHashCode()
 		{
-			return _value;
+			return (int) _value;
+		}
+
+		[Pure]
+		public bool IsCoveredBy(Outcome other)
+		{
+			return other.Covers(this);
 		}
 
 		public override string ToString()
 		{
-			return _value.ToString(CultureInfo.InvariantCulture);
+			return _value.ToString();
 		}
 
-		private static void Make(Expression<Func<Outcome>> field)
+		private static void Make(Expression<Func<Outcome>> field, List<Outcome> outcomes, Enumerated enumerated)
 		{
 			var memberExpression = (MemberExpression) field.Body;
-			if (memberExpression.NodeType == ExpressionType.MemberAccess) {}
+			var fieldInfo = (FieldInfo) memberExpression.Member;
+			Outcome outcome = MakeNext(outcomes, enumerated);
+			fieldInfo.SetValue(null,
+				outcome,
+				BindingFlags.Static | BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Public,
+				null,
+				CultureInfo.InvariantCulture);
 		}
 
-		private static Outcome MakeNext(List<Outcome> outcomes)
+		private static Outcome MakeNext(List<Outcome> outcomes, Enumerated enumerated)
 		{
-			var outcome = new Outcome(outcomes.Count);
+			var outcome = new Outcome(enumerated);
 			outcomes.Add(outcome);
 			return outcome;
 		}
@@ -131,7 +155,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 
 			public int GetHashCode(Outcome obj)
 			{
-				return obj._value;
+				return obj.GetHashCode();
 			}
 		}
 	}

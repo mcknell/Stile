@@ -36,7 +36,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		}
 		protected override
 			Func
-				<ICriterion<TResult>, IExceptionFilter<TSubject, TResult>,
+				<IExpectation<TResult>, IExceptionFilter<TSubject, TResult>,
 					IBoundSpecification
 						<TSubject, TResult, IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>>> SpecFactory
 		{

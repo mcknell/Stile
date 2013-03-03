@@ -47,7 +47,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			_lazyEmpty =
 				new Lazy<TSpecification>(
 					() =>
-						Make(new Criterion<TResult>(x => Negated.AgreesWith(x.None()) ? Outcome.Succeeded : Outcome.Failed)));
+						Make(new Expectation<TResult>(x => Negated.AgreesWith(x.None()) ? Outcome.Succeeded : Outcome.Failed)));
 		}
 
 		public TSpecification Empty

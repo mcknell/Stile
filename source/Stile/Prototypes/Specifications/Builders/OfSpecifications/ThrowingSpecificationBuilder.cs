@@ -15,21 +15,24 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 {
 	public interface IThrowingSpecificationBuilder {}
 
-	public interface IThrowingSpecificationBuilder<out TSpecification, TSubject> : IThrowingSpecificationBuilder
+	public interface IThrowingSpecificationBuilder<out TSpecification, TSubject, TException> : IThrowingSpecificationBuilder
 		where TSpecification : class, IChainableSpecification
+		where TException: Exception
 	{
 		TSpecification Build();
 	}
 
-	public interface IThrowingSpecificationBuilder<out TSpecification, TSubject, TResult> :
-		IThrowingSpecificationBuilder<TSpecification, TSubject>
-		where TSpecification : class, IChainableSpecification {}
+	public interface IThrowingSpecificationBuilder<out TSpecification, TSubject, TResult, TException> :
+		IThrowingSpecificationBuilder<TSpecification, TSubject, TException>
+		where TSpecification : class, IChainableSpecification
+		where TException : Exception {}
 
 	public abstract class ThrowingSpecificationBuilder {}
 
-	public class ThrowingSpecificationBuilder<TSpecification, TSubject> : ThrowingSpecificationBuilder,
-		IThrowingSpecificationBuilder<TSpecification, TSubject>
+	public class ThrowingSpecificationBuilder<TSpecification, TSubject, TException> : ThrowingSpecificationBuilder,
+		IThrowingSpecificationBuilder<TSpecification, TSubject, TException>
 		where TSpecification : class, IChainableSpecification, ISpecification<TSubject>
+		where TException : Exception
 	{
 		private readonly IExceptionFilter _exceptionFilter;
 		private readonly IProcedure<TSubject> _procedure;
@@ -53,16 +56,17 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 		}
 	}
 
-	public class ThrowingSpecificationBuilder<TSpecification, TSubject, TResult> :
-		IThrowingSpecificationBuilder<TSpecification, TSubject, TResult>
+	public class ThrowingSpecificationBuilder<TSpecification, TSubject, TResult, TException> :
+		IThrowingSpecificationBuilder<TSpecification, TSubject, TResult, TException>
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+		where TException : Exception
 	{
 		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
-		private readonly Func<ICriterion<TResult>, IExceptionFilter<TSubject, TResult>, TSpecification>
+		private readonly Func<IExpectation<TResult>, IExceptionFilter<TSubject, TResult>, TSpecification>
 			_specificationFactory;
 
 		public ThrowingSpecificationBuilder([NotNull] IExceptionFilter<TSubject, TResult> exceptionFilter,
-			[NotNull] Func<ICriterion<TResult>, IExceptionFilter<TSubject, TResult>, TSpecification> specificationFactory)
+			[NotNull] Func<IExpectation<TResult>, IExceptionFilter<TSubject, TResult>, TSpecification> specificationFactory)
 		{
 			_exceptionFilter = exceptionFilter.ValidateArgumentIsNotNull();
 			_specificationFactory = specificationFactory.ValidateArgumentIsNotNull();
@@ -70,7 +74,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 
 		public TSpecification Build()
 		{
-			return _specificationFactory.Invoke(Criterion<TResult>.UnconditionalAcceptance, _exceptionFilter);
+			return _specificationFactory.Invoke(Expectation<TResult>.UnconditionalAcceptance, _exceptionFilter);
 		}
 	}
 }

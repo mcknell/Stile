@@ -44,9 +44,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 			get { return this; }
 		}
 
-		public TSpecification Make(ICriterion<TResult> criterion, IExceptionFilter<TSubject, TResult> filter = null)
+		public TSpecification Make(IExpectation<TResult> expectation, IExceptionFilter<TSubject, TResult> filter = null)
 		{
-			TSpecification specification = _specificationFactory.Invoke(criterion, filter);
+			TSpecification specification = _specificationFactory.Invoke(expectation, filter);
 			return specification;
 		}
 	}

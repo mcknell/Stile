@@ -98,7 +98,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfSources\SourceBuilder.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Source.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Instrument.cs" />
-    <Compile Include="Prototypes\Specifications\SemanticModel\Criterion.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Expectation.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\ExceptionFilter.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Negated.cs" />
     <Compile Include="Prototypes\Collections\HashBucket.cs" />

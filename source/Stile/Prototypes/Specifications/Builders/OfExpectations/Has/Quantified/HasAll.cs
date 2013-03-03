@@ -19,7 +19,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantified
 		where TSpecification : class, ISpecification
 		where TResult : class, IEnumerable<TItem>
 	{
-		public HasAll([NotNull] Func<ICriterion<TResult>, TSpecification> factory)
+		public HasAll([NotNull] Func<IExpectation<TResult>, TSpecification> factory)
 			: base(factory) {}
 
 		protected override Func<TResult, bool> MakePredicate(Expression<Func<TItem, bool>> expression)

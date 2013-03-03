@@ -14,20 +14,20 @@ using Stile.Types.Expressions;
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface ICriterion<in TResult>
+	public interface IExpectation<in TResult>
 	{
 		Lazy<string> Description { get; }
 		Outcome Accept(TResult result);
 	}
 
-	public class Criterion<TResult> : ICriterion<TResult>
+	public class Expectation<TResult> : IExpectation<TResult>
 	{
 		private readonly Lazy<Func<TResult, Outcome>> _lazyPredicate;
 
-		public Criterion([NotNull] Expression<Func<TResult, Outcome>> expression)
+		public Expectation([NotNull] Expression<Func<TResult, Outcome>> expression)
 			: this(expression.Compile, expression.ToLazyDebugString()) {}
 
-		private Criterion([NotNull] Func<Func<TResult, Outcome>> predicateSource, [NotNull] Lazy<string> description)
+		private Expectation([NotNull] Func<Func<TResult, Outcome>> predicateSource, [NotNull] Lazy<string> description)
 		{
 			Func<Func<TResult, Outcome>> source = predicateSource.ValidateArgumentIsNotNull();
 			_lazyPredicate = new Lazy<Func<TResult, Outcome>>(source);
@@ -36,9 +36,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 		public Lazy<string> Description { get; private set; }
 
-		public static Criterion<TResult> UnconditionalAcceptance
+		public static Expectation<TResult> UnconditionalAcceptance
 		{
-			get { return new Criterion<TResult>(result => Outcome.Succeeded); }
+			get { return new Expectation<TResult>(result => Outcome.Succeeded); }
 		}
 
 		public Outcome Accept(TResult result)

@@ -26,21 +26,22 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		public void BeforeBoundToInstance()
 		{
 			IBoundSpecification<Foo<int>, int> specification =
-				Specify.For(new Foo<int>()).That(x => x.Count).Is.Not.EqualTo(12).Before(TimeSpan.FromSeconds(20));
+				Specify.For(new Foo<int>()).That(x => x.Count).Is.Not.EqualTo(12).Before(TimeSpan.FromSeconds(1));
 			IEvaluation<int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
+			Assert.That(evaluation.TimedOut, Is.False);
+			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
 
-/*
-			Assert.That(
+			IBoundEvaluation<Foo<int>, bool> boundEvaluation =
 				Specify.For(new Foo<int>())
-					.That(x => x.Sleep(TimeSpan.FromSeconds(20)))
+					.That(x => x.Sleep(TimeSpan.FromMilliseconds(100)))
 					.Throws<ArgumentException>()
 					.Build()
-					.Before(TimeSpan.FromSeconds(2))
-					.Evaluate()
-					.Outcome,
-				Is.EqualTo(Outcome.Incomplete));
-*/
+					.Before(TimeSpan.FromMilliseconds(40))
+					.Evaluate();
+			Assert.That(boundEvaluation.Outcome, Is.EqualTo(Outcome.Incomplete));
+			Assert.That(boundEvaluation.TimedOut, Is.True);
+			Assert.That(boundEvaluation.Errors.Length, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -95,8 +96,8 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
-			IThrowingSpecificationBuilder<IVoidBoundSpecification<Saboteur>, Saboteur> specificationBuilder =
-				Specify.For(saboteur).That(x => x.Throw()).Throws<ArgumentException>();
+			IThrowingSpecificationBuilder<IVoidBoundSpecification<Saboteur>, Saboteur, ArgumentException>
+				specificationBuilder = Specify.For(saboteur).That(x => x.Throw()).Throws<ArgumentException>();
 			IVoidBoundSpecification<Saboteur> specification = specificationBuilder.Build();
 			IEvaluation evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
@@ -110,9 +111,10 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 
 			saboteur.Load(() => new ArgumentException());
 			var target = new SabotageTarget(saboteur);
-			IThrowingSpecificationBuilder<IBoundSpecification<SabotageTarget, Saboteur>, SabotageTarget>
-				specificationBuilder =
-					Specify.For(target).That(x => x.Saboteur.SuicidalSideEffect).Throws<ArgumentException>();
+			IThrowingSpecificationBuilder
+				<IBoundSpecification<SabotageTarget, Saboteur, IFluentBoundExpectationBuilder<SabotageTarget, Saboteur>>,
+					SabotageTarget, ArgumentException> specificationBuilder =
+						Specify.For(target).That(x => x.Saboteur.SuicidalSideEffect).Throws<ArgumentException>();
 			IBoundSpecification<SabotageTarget, Saboteur> specification = specificationBuilder.Build();
 			IEvaluation<SabotageTarget, Saboteur> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
@@ -124,8 +126,8 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
-			IThrowingSpecificationBuilder<IVoidSpecification<Saboteur>, Saboteur> specificationBuilder =
-				Specify.ForAny<Saboteur>().That(x => x.Throw()).Throws<ArgumentException>();
+			IThrowingSpecificationBuilder<IVoidSpecification<Saboteur>, Saboteur, ArgumentException>
+				specificationBuilder = Specify.ForAny<Saboteur>().That(x => x.Throw()).Throws<ArgumentException>();
 			IVoidSpecification<Saboteur> specification = specificationBuilder.Build();
 			IEvaluation evaluation = specification.Evaluate(saboteur);
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));

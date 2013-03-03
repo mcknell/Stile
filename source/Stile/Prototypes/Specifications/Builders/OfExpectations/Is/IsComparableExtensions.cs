@@ -41,8 +41,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		{
 			IIsState<TSpecification, TSubject, TResult> state = builder.Xray;
 			Predicate<TResult> accepter = x => state.Negated.AgreesWith(predicate.Invoke(x.CompareTo(result)));
-			var criterion = new Criterion<TResult>(x => accepter.Invoke(x) ? Outcome.Succeeded : Outcome.Failed);
-			return state.Make(criterion);
+			var expectation = new Expectation<TResult>(x => accepter.Invoke(x) ? Outcome.Succeeded : Outcome.Failed);
+			return state.Make(expectation);
 		}
 	}
 }

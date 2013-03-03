@@ -18,13 +18,20 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			TimeSpan timeout) where TSpecification : class, ISpecification, ISpecificationState
 		{
 			object clone = specification.Clone(new SpecificationDeadline(timeout));
-			return (TSpecification) clone;
+			return (TSpecification) clone; // hackish dodge around strong chain-of-custody of type
 		}
 
 		[System.Diagnostics.Contracts.Pure]
 		public static bool IsTrue<TSubject, TResult>(this IBoundSpecification<TSubject, TResult> boundSpecification)
 		{
 			return boundSpecification.Evaluate().Outcome == Outcome.Succeeded;
+		}
+
+		[System.Diagnostics.Contracts.Pure]
+		public static bool IsTrueFor<TSubject, TResult>(this ISpecification<TSubject, TResult> boundSpecification,
+			TSubject subject)
+		{
+			return boundSpecification.Evaluate(subject).Outcome == Outcome.Succeeded;
 		}
 	}
 }
