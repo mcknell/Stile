@@ -5,12 +5,15 @@
 
 #region using...
 using System;
+using System.Diagnostics;
+using System.Threading;
 #endregion
 
 namespace Stile.Tests.Prototypes.Specifications.SampleObjects
 {
 	public class Saboteur
 	{
+		public TimeSpan? Fuse { get; set; }
 		public Lazy<Exception> LazyThrower { get; private set; }
 		public Saboteur SuicidalSideEffect
 		{
@@ -29,7 +32,19 @@ namespace Stile.Tests.Prototypes.Specifications.SampleObjects
 
 		public void Throw()
 		{
+			var stopwatch = new Stopwatch();
+			if (Fuse.HasValue)
+			{
+				Console.WriteLine("Saboteur sleeping at {0:HH:mm:ss.fff} for {1}ms", DateTime.Now, Fuse.Value.TotalMilliseconds);
+				stopwatch.Start();
+				Thread.Sleep(Fuse.Value);
+			} else
+			{
+				stopwatch.Start();
+			}
 			ThrowCalled = true;
+			Console.WriteLine("Saboteur about to throw at: {0:HH:mm:ss.fff}", DateTime.Now);
+			Console.WriteLine("Elapsed Saboteur time: {0}ms", stopwatch.ElapsedMilliseconds);
 			throw LazyThrower.Value;
 		}
 	}

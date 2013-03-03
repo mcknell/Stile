@@ -37,6 +37,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			Outcome outcome, TResult result, bool timedOut, params IError[] errors)
 			where TEvaluation : class, IEvaluation<TSubject, TResult>;
 
+		public delegate TEvaluation Factory<out TEvaluation>(Outcome outcome, bool timedOut, params IError[] errors)
+			where TEvaluation : class, IEvaluation;
+
 		public Evaluation(Outcome outcome, Exception handledExpectedException)
 			: this(outcome, false, handledExpectedException) {}
 

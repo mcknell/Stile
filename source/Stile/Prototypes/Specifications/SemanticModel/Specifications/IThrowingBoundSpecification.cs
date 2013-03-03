@@ -15,10 +15,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 	public interface IVoidBoundSpecification<TSubject> : IVoidBoundSpecification,
 		IVoidSpecification<TSubject>,
-		IBoundSpecification<TSubject>,
-		IChainableSpecification
+		IBoundSpecification<TSubject>
 	{
 		[NotNull]
-		IEvaluation Evaluate();
+		IEvaluation Evaluate(bool onThisThread = false);
 	}
 }

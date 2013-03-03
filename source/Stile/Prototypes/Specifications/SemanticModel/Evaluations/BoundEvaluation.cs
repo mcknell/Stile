@@ -10,9 +10,12 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 {
-	public interface IBoundEvaluation<in TSubject, out TResult> : IEvaluation<TSubject, TResult>
+	public interface IBoundEvaluation : IEvaluation {}
+
+	public interface IBoundEvaluation<in TSubject, out TResult> : IBoundEvaluation,
+		IEvaluation<TSubject, TResult>
 	{
-		IBoundEvaluation<TSubject, TResult> Evaluate();
+		IBoundEvaluation<TSubject, TResult> Evaluate(bool onThisThread = false);
 	}
 
 	public class BoundEvaluation<TSubject, TResult> : Evaluation<TSubject, TResult>,
@@ -30,9 +33,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			_specification = specification;
 		}
 
-		public IBoundEvaluation<TSubject, TResult> Evaluate()
+		public IBoundEvaluation<TSubject, TResult> Evaluate(bool onThisThread = false)
 		{
-			return _specification.Evaluate();
+			return _specification.Evaluate(onThisThread);
 		}
 	}
 }

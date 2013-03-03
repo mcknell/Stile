@@ -31,17 +31,28 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.TimedOut, Is.False);
 			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
+		}
 
-			IBoundEvaluation<Foo<int>, bool> boundEvaluation =
-				Specify.For(new Foo<int>())
-					.That(x => x.Sleep(TimeSpan.FromMilliseconds(100)))
+		[Test]
+		public void BeforeBoundToInstanceOnlyTimesOutOnAsync()
+		{
+			var saboteur = new Saboteur();
+			saboteur.Load(() => new ArgumentException());
+			saboteur.Fuse = TimeSpan.FromMilliseconds(1000);
+			IVoidBoundSpecification<Saboteur> boundSpecification =
+				Specify.For(saboteur)
+					.That(x => x.Throw())
 					.Throws<ArgumentException>()
 					.Build()
-					.Before(TimeSpan.FromMilliseconds(40))
-					.Evaluate();
+					.Before(TimeSpan.FromMilliseconds(40));
+			IEvaluation boundEvaluation = boundSpecification.Evaluate();
 			Assert.That(boundEvaluation.Outcome, Is.EqualTo(Outcome.Incomplete));
 			Assert.That(boundEvaluation.TimedOut, Is.True);
 			Assert.That(boundEvaluation.Errors.Length, Is.EqualTo(0));
+
+			IEvaluation synchronousEvaluation = boundSpecification.Evaluate(true);
+			Assert.That(synchronousEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
+			Assert.That(synchronousEvaluation.TimedOut, Is.False);
 		}
 
 		[Test]

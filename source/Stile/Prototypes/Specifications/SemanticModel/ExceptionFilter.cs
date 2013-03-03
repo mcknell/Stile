@@ -14,8 +14,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 {
 	public interface IExceptionFilter
 	{
-		IEvaluation FailBeforeResult();
-		bool TryFilterBeforeResult([NotNull] Exception e, out IEvaluation evaluation);
+		IEvaluation FailBeforeResult(bool timedOut);
+
+		bool TryFilterBeforeResult([NotNull] Exception e,
+			out IEvaluation evaluation) ;
 	}
 
 	public interface IExceptionFilter<out TSubject, TResult> : IExceptionFilter
@@ -27,7 +29,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		/// <param name="factory"></param>
 		/// <param name="timedOut"></param>
 		/// <returns></returns>
-		TEvaluation Fail<TEvaluation>(TResult result, Evaluation.Factory<TSubject, TResult, TEvaluation> factory, bool timedOut) where TEvaluation : class, IEvaluation<TSubject, TResult>;
+		TEvaluation Fail<TEvaluation>(TResult result,
+			Evaluation.Factory<TSubject, TResult, TEvaluation> factory,
+			bool timedOut) where TEvaluation : class, IEvaluation<TSubject, TResult>;
 
 		bool TryFilter<TEvaluation>(TResult result,
 			[NotNull] Exception e,
@@ -42,12 +46,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			Predicate = predicate.ValidateArgumentIsNotNull();
 		}
 
-		public IEvaluation FailBeforeResult()
+		public IEvaluation FailBeforeResult(bool timedOut)
 		{
-			return new Evaluation(Outcome.Failed, false);
+			return new Evaluation(Outcome.Failed, timedOut);
 		}
 
-		public bool TryFilterBeforeResult(Exception e, out IEvaluation evaluation)
+		public bool TryFilterBeforeResult(Exception e,
+			out IEvaluation evaluation)
 		{
 			if (Predicate.Invoke(e))
 			{
@@ -67,8 +72,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		public ExceptionFilter([NotNull] Predicate<Exception> predicate)
 			: base(predicate) {}
 
-		public TEvaluation Fail<TEvaluation>(TResult result, Evaluation.Factory<TSubject, TResult, TEvaluation> factory, bool timedOut)
-			where TEvaluation : class, IEvaluation<TSubject, TResult>
+		public TEvaluation Fail<TEvaluation>(TResult result,
+			Evaluation.Factory<TSubject, TResult, TEvaluation> factory,
+			bool timedOut) where TEvaluation : class, IEvaluation<TSubject, TResult>
 		{
 			return factory.Invoke(Outcome.Failed, result, timedOut);
 		}

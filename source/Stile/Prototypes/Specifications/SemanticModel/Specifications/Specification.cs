@@ -34,7 +34,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		IResultSpecification<TResult>
 	{
 		[NotNull]
-		IEvaluation<TSubject, TResult> Evaluate(TSubject subject);
+		IEvaluation<TSubject, TResult> Evaluate(TSubject subject, bool onThisThread = false);
 	}
 
 	public interface ISpecification<TSubject, TResult, out TExpectationBuilder> :
@@ -163,14 +163,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 				deadline);
 		}
 
-		public IEvaluation<TSubject, TResult> Evaluate(TSubject subject)
+		public IEvaluation<TSubject, TResult> Evaluate(TSubject subject, bool onThisThread = false)
 		{
-			return Evaluate(() => subject, UnboundFactory);
+			return Evaluate(() => subject, UnboundFactory, onThisThread);
 		}
 
-		public IBoundEvaluation<TSubject, TResult> Evaluate()
+		public IBoundEvaluation<TSubject, TResult> Evaluate(bool onThisThread = false)
 		{
-			return Evaluate(Source.Get, BoundFactory);
+			return Evaluate(Source.Get, BoundFactory, onThisThread);
 		}
 
 		private bool ExpectsException
@@ -188,6 +188,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		private TEvaluation Evaluate<TEvaluation>(Func<TSubject> subjectGetter,
 			Evaluation.Factory<TSubject, TResult, TEvaluation> evaluationFactory,
+			bool onThisThread,
 			CancellationToken? cancellationToken = null) where TEvaluation : class, IEvaluation<TSubject, TResult>
 		{
 			TResult result = default(TResult);
@@ -215,8 +216,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 					TSubject subject = subjectGetter.Invoke();
 					return Instrument.Sample(subject);
 				});
-				//task.RunSynchronously();
-				task.Start();
+				if (onThisThread)
+				{
+					task.RunSynchronously();
+				} else
+				{
+					task.Start();
+				}
 				if (cancellationToken.HasValue)
 				{
 					timedOut = !task.Wait(millisecondsTimeout, cancellationToken.Value);

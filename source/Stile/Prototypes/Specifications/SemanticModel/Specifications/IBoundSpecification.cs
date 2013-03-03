@@ -26,7 +26,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		IChainableSpecification
 	{
 		[Pure]
-		IBoundEvaluation<TSubject, TResult> Evaluate();
+		IBoundEvaluation<TSubject, TResult> Evaluate(bool onThisThread = false);
 	}
 
 	public interface IBoundSpecification<TSubject, TResult, out TExpectationBuilder> :
