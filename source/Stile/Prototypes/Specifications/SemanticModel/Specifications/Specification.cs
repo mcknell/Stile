@@ -45,7 +45,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 	public interface ISpecificationState
 	{
-		object Clone(ISpecificationDeadline deadline);
+		ISpecification Clone(ISpecificationDeadline deadline);
 	}
 
 	public interface ISpecificationState<out TSubject> : ISpecificationState
@@ -99,7 +99,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
 		protected static readonly IError[] NoErrors = new IError[0];
 
-		public abstract object Clone(ISpecificationDeadline deadline);
+		public abstract ISpecification Clone(ISpecificationDeadline deadline);
 	}
 
 	public abstract class Specification<TSubject> : Specification,
@@ -152,7 +152,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			get { return this; }
 		}
 
-		public override object Clone(ISpecificationDeadline deadline)
+		public override ISpecification Clone(ISpecificationDeadline deadline)
 		{
 			return new Specification<TSubject, TResult, TExpectationBuilder>(Instrument,
 				Expectation,

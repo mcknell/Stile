@@ -73,7 +73,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			get { return this; }
 		}
 
-		public override object Clone(ISpecificationDeadline deadline)
+		public override ISpecification Clone(ISpecificationDeadline deadline)
 		{
 			return new VoidSpecification<TSubject>(Procedure, ExceptionFilter, Source, Because, deadline);
 		}
