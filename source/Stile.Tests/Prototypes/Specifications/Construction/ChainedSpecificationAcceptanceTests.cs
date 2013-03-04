@@ -66,7 +66,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(evaluation.Value, Is.Not.EqualTo(45));
 
-			IEvaluation<string> secondEvaluation = evaluation.Evaluate(new Foo<int>());
+			IEvaluation<Foo<int>, string> secondEvaluation = evaluation.Evaluate(new Foo<int>());
 			Assert.That(secondEvaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(secondEvaluation.Value, Is.Not.EqualTo(45));
 		}

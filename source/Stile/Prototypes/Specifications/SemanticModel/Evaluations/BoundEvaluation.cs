@@ -12,7 +12,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 {
 	public interface IBoundEvaluation : IEvaluation {}
 
-	public interface IBoundEvaluation<in TSubject, out TResult> : IBoundEvaluation,
+	public interface IBoundEvaluation<TSubject, TResult> : IBoundEvaluation,
 		IEvaluation<TSubject, TResult>
 	{
 		IBoundEvaluation<TSubject, TResult> Evaluate(IDeadline deadline = null);
@@ -28,7 +28,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			TResult value,
 			bool timedOut,
 			params IError[] errors)
-			: base(specification, outcome, value, timedOut, errors)
+			: base(specification,
+				outcome,
+				value,
+				timedOut,
+				// ReSharper disable AssignNullToNotNullAttribute
+				specification.Xray.Source,
+				// ReSharper restore AssignNullToNotNullAttribute
+				errors)
 		{
 			_specification = specification;
 		}

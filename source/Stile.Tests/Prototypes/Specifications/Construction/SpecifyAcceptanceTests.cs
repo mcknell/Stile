@@ -108,7 +108,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
-			IThrowingSpecificationBuilder<IVoidBoundSpecification<Saboteur>, Saboteur, ArgumentException>
+			IVoidSpecificationBuilder<IVoidBoundSpecification<Saboteur>, Saboteur, ArgumentException>
 				specificationBuilder = Specify.For(saboteur).That(x => x.Throw()).Throws<ArgumentException>();
 			IVoidBoundSpecification<Saboteur> specification = specificationBuilder.Build();
 			IEvaluation evaluation = specification.Evaluate();
@@ -122,7 +122,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
 			var target = new SabotageTarget(saboteur);
-			IThrowingSpecificationBuilder
+			IVoidSpecificationBuilder
 				<IBoundSpecification<SabotageTarget, Saboteur, IFluentBoundExpectationBuilder<SabotageTarget, Saboteur>>,
 					SabotageTarget, ArgumentException> specificationBuilder =
 						Specify.For(target).That(x => x.Saboteur.SuicidalSideEffect).Throws<ArgumentException>();
@@ -139,7 +139,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
-			IThrowingSpecificationBuilder<IVoidSpecification<Saboteur>, Saboteur, ArgumentException>
+			IVoidSpecificationBuilder<IVoidSpecification<Saboteur>, Saboteur, ArgumentException>
 				specificationBuilder = Specify.ForAny<Saboteur>().That(x => x.Throw()).Throws<ArgumentException>();
 			IVoidSpecification<Saboteur> specification = specificationBuilder.Build();
 			IEvaluation evaluation = specification.Evaluate(saboteur);

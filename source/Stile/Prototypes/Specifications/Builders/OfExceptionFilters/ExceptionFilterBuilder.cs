@@ -21,7 +21,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 		IHides<IExceptionFilterBuilderState<TSubject>>
 		where TSpecification : class, IVoidSpecification<TSubject>
 	{
-		IThrowingSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>() where TException : Exception;
+		IVoidSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>() where TException : Exception;
 	}
 
 	public interface IExceptionFilterBuilderState {}
@@ -57,11 +57,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 			get { return this; }
 		}
 
-		public IThrowingSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
+		public IVoidSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
 			where TException : Exception
 		{
 			var exceptionFilter = new ExceptionFilter(exception => exception is TException);
-			var builder = new ThrowingSpecificationBuilder<TSpecification, TSubject, TException>(Source,
+			var builder = new VoidSpecificationBuilder<TSpecification, TSubject, TException>(Source,
 				Procedure,
 				exceptionFilter,
 				_specificationFactory);

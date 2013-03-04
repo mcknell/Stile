@@ -8,9 +8,9 @@ using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
+using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
-using Stile.Prototypes.Specifications.Builders.OfInstruments;
 using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
@@ -32,7 +32,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		TIs Is { get; }
 
 		[System.Diagnostics.Contracts.Pure]
-		IThrowingSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>() where TException : Exception;
+		IVoidSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
+			where TException : Exception;
 	}
 
 	public interface IExpectationBuilder<out TSpecification, TSubject, TResult> :
@@ -43,12 +44,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		where TSpecification : class, IChainableSpecification {}
 
 	public interface IExpectationBuilderState<out TSpecification, TSubject, TResult> :
-		IProcedureBuilderState<TSubject>
+		IHasInstrument<TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
-		[NotNull]
-		IInstrument<TSubject, TResult> Instrument { get; }
-
 		TSpecification Make([NotNull] IExpectation<TResult> expectation,
 			IExceptionFilter<TResult> exceptionFilter = null);
 	}
@@ -106,11 +104,12 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			get { return this; }
 		}
 
-		public IThrowingSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
+		public IVoidSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
 			where TException : Exception
 		{
 			var exceptionFilter = new ExceptionFilter<TResult>(exception => exception is TException);
-			var builder = new ThrowingSpecificationBuilder<TSpecification, TSubject, TResult, TException>(exceptionFilter, Make);
+			var builder =
+				new VoidSpecificationBuilder<TSpecification, TSubject, TResult, TException>(exceptionFilter, Make);
 			return builder;
 		}
 
@@ -121,8 +120,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		}
 
 		protected abstract TBuilder Builder { get; }
-		protected abstract Func<IExpectation<TResult>, IExceptionFilter<TResult>, TSpecification>
-			SpecFactory { get; }
+		protected abstract Func<IExpectation<TResult>, IExceptionFilter<TResult>, TSpecification> SpecFactory { get; }
 
 		protected IBoundSpecification<TSubject, TResult, TBuilder> MakeBoundSpecification(
 			IExpectation<TResult> expectation, IExceptionFilter<TResult> exceptionFilter = null)

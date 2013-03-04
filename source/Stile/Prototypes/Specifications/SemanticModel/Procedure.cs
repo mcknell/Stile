@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
+using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Readability;
@@ -20,24 +21,22 @@ using Stile.Readability;
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IProcedure {}
+	public interface IInspection {}
+
+	public interface IProcedure : IInspection {}
 
 	public interface IProcedureState
 	{
 		Lazy<string> Description { get; }
 	}
 
-	public interface IProcedureState<out TSubject> : IProcedure
-	{
-		[CanBeNull]
-		ISource<TSubject> Source { get; }
-	}
+	public interface IProcedureState<TSubject> : IProcedureState,
+		IHasSource<TSubject> {}
 
 	public interface IProcedure<TSubject> : IProcedure,
 		IHides<IProcedureState<TSubject>>
 	{
-		IObservation Sample(TSubject subject, IDeadline deadline = null);
-		IObservation Sample(Func<TSubject> subjectGetter, IDeadline deadline = null);
+		IObservation Sample([NotNull] ISource<TSubject> source, IDeadline deadline = null);
 	}
 
 	public abstract class Procedure : IProcedure
@@ -76,15 +75,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			get { return this; }
 		}
 
-		public IObservation Sample(TSubject subject, IDeadline deadline = null)
-		{
-			return Sample(() => subject, deadline);
-		}
-
-		public IObservation Sample(Func<TSubject> subjectGetter, IDeadline deadline = null)
+		public IObservation Sample(ISource<TSubject> source, IDeadline deadline = null)
 		{
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
-			subjectGetter.ValidateArgumentIsNotNull();
+			source.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			var errors = new List<IError>();
 			bool onThisThread = false;
@@ -100,7 +94,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 			var task = new Task(() =>
 			{
-				TSubject subject = subjectGetter.Invoke();
+				TSubject subject = source.Get();
 				_lazyAction.Value.Invoke(subject);
 			});
 

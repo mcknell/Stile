@@ -16,7 +16,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 	/// </summary>
 	public interface IBoundProcedureBuilder : IProcedureBuilder {}
 
-	public interface IBoundProcedureBuilder<out TSubject> : IBoundProcedureBuilder,
+	public interface IBoundProcedureBuilder<TSubject> : IBoundProcedureBuilder,
 		IProcedureBuilder<TSubject> {}
 
 	public class BoundProcedureBuilder<TSubject> : ProcedureBuilder<TSubject>,

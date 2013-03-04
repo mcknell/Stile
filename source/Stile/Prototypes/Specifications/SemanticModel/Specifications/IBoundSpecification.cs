@@ -20,7 +20,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public interface IBoundSpecification<in TSubject> : IBoundSpecification,
 		ISpecification<TSubject> {}
 
-	public interface IBoundSpecification<in TSubject, out TResult> : IBoundSpecification<TSubject>,
+	public interface IBoundSpecification<TSubject, TResult> : IBoundSpecification<TSubject>,
 		IResultBoundSpecification<TResult>,
 		ISpecification<TSubject, TResult>,
 		IChainableSpecification

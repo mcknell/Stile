@@ -64,6 +64,7 @@
     <Compile Include="Patterns\Structural\FluentInterface\IHides.cs" />
     <Compile Include="Patterns\Structural\FluentInterface\INegatable.cs" />
     <Compile Include="Patterns\Lifetimes\Lazy\Lazier.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\Lifecycle\IHasSource.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\BoundExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentEnumerableBoundExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentEnumerableExpectationBuilder.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantified\QuantifiedHas.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentBoundExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentExpectationBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Past\PastEvaluations.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\BoundEvaluation.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\IChainableSpecification.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Measurement.cs" />
@@ -122,13 +124,18 @@
     <Compile Include="Patterns\Behavioral\Traversal\Traverser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\Specification.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfSpecifications\ThrowingSpecificationBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfSpecifications\VoidSpecificationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Specify.cs" />
     <Compile Include="Readability\Empty.cs" />
     <Compile Include="Readability\Identity.cs" />
     <Compile Include="Readability\Null.cs" />
     <Compile Include="Readability\Nullable.cs" />
     <Compile Include="Readability\PrintExtensions.cs" />
+    <Compile Include="Resources\PastTenseEvaluations.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PastTenseEvaluations.resx</DependentUpon>
+    </Compile>
     <Compile Include="Types\Comparison\ComparerHelper.cs" />
     <Compile Include="Types\CSharp4Types.cs" />
     <Compile Include="Types\Enumerables\ArrayExtensions.cs" />
@@ -184,7 +191,13 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\PastTenseEvaluations.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>PastTenseEvaluations.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

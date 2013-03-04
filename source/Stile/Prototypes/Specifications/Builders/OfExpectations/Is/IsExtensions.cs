@@ -18,14 +18,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		[Pure]
 		public static TSpecification EqualTo<TSpecification, TSubject, TResult>(
 			this IIs<TSpecification, TSubject, TResult> builder, TResult result)
-			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification where TResult : IEquatable<TResult>
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		{
 			return Make(builder, x => x.Equals(result));
 		}
 
 		private static TSpecification Make<TSpecification, TSubject, TResult>(
 			IIs<TSpecification, TSubject, TResult> builder, Predicate<TResult> predicate)
-			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification where TResult : IEquatable<TResult>
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		{
 			IIsState<TSpecification, TSubject, TResult> state = builder.Xray;
 			Predicate<TResult> accepter = x => state.Negated.AgreesWith(predicate.Invoke(x));

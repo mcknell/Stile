@@ -13,24 +13,25 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 
 namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 {
-	public interface IThrowingSpecificationBuilder {}
+	public interface IVoidSpecificationBuilder {}
 
-	public interface IThrowingSpecificationBuilder<out TSpecification, TSubject, TException> : IThrowingSpecificationBuilder
+	public interface IVoidSpecificationBuilder<out TSpecification, TSubject, TException> :
+		IVoidSpecificationBuilder
 		where TSpecification : class, IChainableSpecification
-		where TException: Exception
+		where TException : Exception
 	{
 		TSpecification Build();
 	}
 
-	public interface IThrowingSpecificationBuilder<out TSpecification, TSubject, TResult, TException> :
-		IThrowingSpecificationBuilder<TSpecification, TSubject, TException>
+	public interface IVoidSpecificationBuilder<out TSpecification, TSubject, TResult, TException> :
+		IVoidSpecificationBuilder<TSpecification, TSubject, TException>
 		where TSpecification : class, IChainableSpecification
 		where TException : Exception {}
 
-	public abstract class ThrowingSpecificationBuilder {}
+	public abstract class VoidSpecificationBuilder : IVoidSpecificationBuilder {}
 
-	public class ThrowingSpecificationBuilder<TSpecification, TSubject, TException> : ThrowingSpecificationBuilder,
-		IThrowingSpecificationBuilder<TSpecification, TSubject, TException>
+	public class VoidSpecificationBuilder<TSpecification, TSubject, TException> : VoidSpecificationBuilder,
+		IVoidSpecificationBuilder<TSpecification, TSubject, TException>
 		where TSpecification : class, IChainableSpecification, ISpecification<TSubject>
 		where TException : Exception
 	{
@@ -39,7 +40,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 		private readonly ISource<TSubject> _source;
 		private readonly VoidSpecification.Factory<TSpecification, TSubject> _specificationFactory;
 
-		public ThrowingSpecificationBuilder([CanBeNull] ISource<TSubject> source,
+		public VoidSpecificationBuilder([CanBeNull] ISource<TSubject> source,
 			[NotNull] IProcedure<TSubject> procedure,
 			[NotNull] IExceptionFilter exceptionFilter,
 			[NotNull] VoidSpecification.Factory<TSpecification, TSubject> specificationFactory)
@@ -56,8 +57,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 		}
 	}
 
-	public class ThrowingSpecificationBuilder<TSpecification, TSubject, TResult, TException> :
-		IThrowingSpecificationBuilder<TSpecification, TSubject, TResult, TException>
+	public class VoidSpecificationBuilder<TSpecification, TSubject, TResult, TException> :
+		IVoidSpecificationBuilder<TSpecification, TSubject, TResult, TException>
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		where TException : Exception
 	{
@@ -65,7 +66,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 		private readonly Func<IExpectation<TResult>, IExceptionFilter<TResult>, TSpecification>
 			_specificationFactory;
 
-		public ThrowingSpecificationBuilder([NotNull] IExceptionFilter<TResult> exceptionFilter,
+		public VoidSpecificationBuilder([NotNull] IExceptionFilter<TResult> exceptionFilter,
 			[NotNull] Func<IExpectation<TResult>, IExceptionFilter<TResult>, TSpecification> specificationFactory)
 		{
 			_exceptionFilter = exceptionFilter.ValidateArgumentIsNotNull();

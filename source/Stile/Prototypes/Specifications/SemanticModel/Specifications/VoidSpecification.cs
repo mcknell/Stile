@@ -4,7 +4,6 @@
 #endregion
 
 #region using...
-using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
@@ -76,12 +75,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public IEvaluation Evaluate(IDeadline deadline = null)
 		{
-			return Evaluate(Source.Get, deadline);
+			return Evaluate(Source, deadline);
 		}
 
 		public IEvaluation Evaluate(TSubject subject, IDeadline deadline = null)
 		{
-			return Evaluate(() => subject, deadline);
+			return Evaluate(new Source<TSubject>(subject), deadline);
 		}
 
 		public static VoidSpecification<TSubject> Make([NotNull] IProcedure<TSubject> procedure,
@@ -98,9 +97,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return new VoidSpecification<TSubject>(procedure, exceptionFilter, source, null);
 		}
 
-		private IEvaluation Evaluate(Func<TSubject> subjectGetter, IDeadline deadline = null)
+		private IEvaluation Evaluate(ISource<TSubject> source, IDeadline deadline = null)
 		{
-			IObservation observation = Procedure.Sample(subjectGetter, deadline ?? _deadline);
+			IObservation observation = Procedure.Sample(source, deadline ?? _deadline);
 			observation = ExceptionFilter.Filter(observation);
 			return Expectation.Evaluate(observation, true);
 		}

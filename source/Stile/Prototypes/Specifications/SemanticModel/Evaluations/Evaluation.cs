@@ -7,6 +7,8 @@
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Patterns.Structural.FluentInterface;
+using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
@@ -26,10 +28,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		TResult Value { get; }
 	}
 
-	public interface IEvaluation<in TSubject, out TResult> : IEvaluation<TResult>
-	{
-		IEvaluation<TResult> Evaluate(TSubject subject);
-	}
+	public interface IEvaluation<TSubject, TResult> : IEvaluation<TResult>,
+		IEvaluable<TSubject, TResult, IEvaluation<TSubject, TResult>>,
+		IHides<IEvaluationState<TSubject, TResult>> {}
+
+	public interface IEvaluationState<TSubject, TResult> : IHasSpecification<TSubject, TResult> {}
 
 	public class Evaluation : IEvaluation
 	{
@@ -72,23 +75,36 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	}
 
 	public class Evaluation<TSubject, TResult> : Evaluation<TResult>,
-		IEvaluation<TSubject, TResult>
+		IEvaluation<TSubject, TResult>,
+		IEvaluationState<TSubject, TResult>
 	{
-		private readonly ISpecification<TSubject, TResult> _specification;
-
 		public Evaluation([NotNull] ISpecification<TSubject, TResult> specification,
 			Outcome outcome,
 			TResult value,
 			bool timedOut,
+			[NotNull] ISource<TSubject> source,
 			params IError[] errors)
 			: base(outcome, value, timedOut, errors)
 		{
-			_specification = specification.ValidateArgumentIsNotNull();
+			Specification = specification.ValidateArgumentIsNotNull();
+			ISpecificationState<TSubject, TResult> xray = Specification.Xray;
+			Expectation = xray.Expectation.ValidateArgumentIsNotNull();
+			Instrument = xray.Instrument.ValidateArgumentIsNotNull();
+			Source = source.ValidateArgumentIsNotNull();
 		}
 
-		public IEvaluation<TResult> Evaluate(TSubject subject)
+		public IExpectation<TResult> Expectation { get; private set; }
+		public IInstrument<TSubject, TResult> Instrument { get; private set; }
+		public ISource<TSubject> Source { get; private set; }
+		public ISpecification<TSubject, TResult> Specification { get; private set; }
+		public IEvaluationState<TSubject, TResult> Xray
 		{
-			return _specification.Evaluate(subject);
+			get { return this; }
+		}
+
+		public IEvaluation<TSubject, TResult> Evaluate(TSubject subject, IDeadline deadline = null)
+		{
+			return Specification.Evaluate(subject, deadline);
 		}
 	}
 }

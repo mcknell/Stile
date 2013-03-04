@@ -56,6 +56,7 @@
     <Compile Include="Prototypes\Specifications\Construction\ChainedSpecificationAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Construction\EnumerableSpecifyAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Deadlines\Deadline.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Past\PrintablePastAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\SampleObjects\Foo.cs" />
     <Compile Include="Prototypes\Specifications\Construction\SpecifyAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\SampleObjects\SabotageTarget.cs" />

@@ -4,8 +4,8 @@
 #endregion
 
 #region using...
-using JetBrains.Annotations;
 using Stile.Patterns.Structural.FluentInterface;
+using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.SemanticModel;
 #endregion
 
@@ -16,14 +16,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 	/// </summary>
 	public interface IProcedureBuilder {}
 
-	public interface IProcedureBuilder<out TSubject> : IProcedureBuilder,
+	public interface IProcedureBuilder<TSubject> : IProcedureBuilder,
 		IHides<IProcedureBuilderState<TSubject>> {}
 
-	public interface IProcedureBuilderState<out TSubject>
-	{
-		[CanBeNull]
-		ISource<TSubject> Source { get; }
-	}
+	public interface IProcedureBuilderState<TSubject> : IHasSource<TSubject> {}
 
 	public class ProcedureBuilder<TSubject> : IProcedureBuilder<TSubject>,
 		IProcedureBuilderState<TSubject>

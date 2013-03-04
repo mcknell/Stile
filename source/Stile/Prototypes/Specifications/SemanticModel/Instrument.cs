@@ -19,13 +19,12 @@ using Stile.Types.Expressions;
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IInstrument : IProcedure {}
+	public interface IInstrument : IInspection {}
 
 	public interface IInstrument<TSubject, out TResult> : IInstrument,
 		IProcedure<TSubject>
 	{
-		new IMeasurement<TResult> Sample(TSubject subject, IDeadline deadline = null);
-		new IMeasurement<TResult> Sample([NotNull] Func<TSubject> subjectGetter, IDeadline deadline = null);
+		new IMeasurement<TResult> Sample([NotNull] ISource<TSubject> source, IDeadline deadline = null);
 	}
 
 	public class Instrument<TSubject, TResult> : IInstrument<TSubject, TResult>,
@@ -48,20 +47,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			get { return this; }
 		}
 
-		public IMeasurement<TResult> Sample(TSubject subject, IDeadline deadline = null)
-		{
-			return Sample(() => subject, deadline);
-		}
-
-		IObservation IProcedure<TSubject>.Sample(Func<TSubject> subjectGetter, IDeadline deadline)
-		{
-			return Sample(subjectGetter, deadline);
-		}
-
-		public IMeasurement<TResult> Sample(Func<TSubject> subjectGetter, IDeadline deadline = null)
+		public IMeasurement<TResult> Sample(ISource<TSubject> source, IDeadline deadline = null)
 		{
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
-			subjectGetter.ValidateArgumentIsNotNull();
+			source.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			var errors = new List<IError>();
 			bool onThisThread = false;
@@ -77,7 +66,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 			var task = new Task<TResult>(() =>
 			{
-				TSubject subject = subjectGetter.Invoke();
+				TSubject subject = source.Get();
 				return _lazyFunc.Value.Invoke(subject);
 			});
 
@@ -115,10 +104,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			return measurement;
 		}
 
-
-		IObservation IProcedure<TSubject>.Sample(TSubject subject, IDeadline deadline)
+		IObservation IProcedure<TSubject>.Sample(ISource<TSubject> source, IDeadline deadline)
 		{
-			return Sample(subject, deadline);
+			return Sample(source, deadline);
+		}
+
+		public IMeasurement<TResult> Sample(TSubject subject, IDeadline deadline = null)
+		{
+			return Sample(new Source<TSubject>(subject), deadline);
 		}
 	}
 }
