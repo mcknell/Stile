@@ -15,7 +15,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	public interface IBoundEvaluation<in TSubject, out TResult> : IBoundEvaluation,
 		IEvaluation<TSubject, TResult>
 	{
-		IBoundEvaluation<TSubject, TResult> Evaluate(bool onThisThread = false);
+		IBoundEvaluation<TSubject, TResult> Evaluate(IDeadline deadline = null);
 	}
 
 	public class BoundEvaluation<TSubject, TResult> : Evaluation<TSubject, TResult>,
@@ -33,9 +33,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			_specification = specification;
 		}
 
-		public IBoundEvaluation<TSubject, TResult> Evaluate(bool onThisThread = false)
+		public IBoundEvaluation<TSubject, TResult> Evaluate(IDeadline deadline = null)
 		{
-			return _specification.Evaluate(onThisThread);
+			return _specification.Evaluate(deadline);
 		}
 	}
 }

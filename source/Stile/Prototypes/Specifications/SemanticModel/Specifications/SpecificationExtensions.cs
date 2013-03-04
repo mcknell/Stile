@@ -17,7 +17,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public static TSpecification Before<TSpecification>([NotNull] this TSpecification specification,
 			TimeSpan timeout) where TSpecification : class, ISpecification, ISpecificationState
 		{
-			object clone = specification.Clone(new SpecificationDeadline(timeout));
+			object clone = specification.Clone(new Deadline(timeout));
 			return (TSpecification) clone; // hackish dodge around strong chain-of-custody of type
 		}
 

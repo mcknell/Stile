@@ -5,6 +5,8 @@
 
 #region using...
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
@@ -16,8 +18,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 	{
 		IEvaluation FailBeforeResult(bool timedOut);
 
-		bool TryFilterBeforeResult([NotNull] Exception e,
-			out IEvaluation evaluation) ;
+		bool TryFilterBeforeResult([NotNull] Exception e, out IEvaluation evaluation);
 	}
 
 	public interface IExceptionFilter<out TSubject, TResult> : IExceptionFilter
@@ -32,6 +33,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		TEvaluation Fail<TEvaluation>(TResult result,
 			Evaluation.Factory<TSubject, TResult, TEvaluation> factory,
 			bool timedOut) where TEvaluation : class, IEvaluation<TSubject, TResult>;
+
+		IMeasurement<TResult> Filter(IMeasurement<TResult> measurement);
 
 		bool TryFilter<TEvaluation>(TResult result,
 			[NotNull] Exception e,
@@ -51,8 +54,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			return new Evaluation(Outcome.Failed, timedOut);
 		}
 
-		public bool TryFilterBeforeResult(Exception e,
-			out IEvaluation evaluation)
+		public bool TryFilterBeforeResult(Exception e, out IEvaluation evaluation)
 		{
 			if (Predicate.Invoke(e))
 			{
@@ -79,6 +81,21 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			return factory.Invoke(Outcome.Failed, result, timedOut);
 		}
 
+		public IMeasurement<TResult> Filter(IMeasurement<TResult> measurement)
+		{
+			var errors = new List<IError>();
+			foreach (IError error in measurement.Errors)
+			{
+				if (Predicate.Invoke(error.Exception))
+				{
+					errors.Add(new Error(error.Exception, true));
+				}
+			}
+			
+			var filtered = new Measurement<TResult>(measurement.Value, measurement.TaskStatus, measurement.TimedOut, errors.ToArray());
+			return filtered;
+		}
+
 		public bool TryFilter<TEvaluation>(TResult result,
 			Exception e,
 			Evaluation.Factory<TSubject, TResult, TEvaluation> factory,
@@ -90,7 +107,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			if (Predicate.Invoke(e))
 			{
-				evaluation = factory.Invoke(Outcome.Succeeded, result, false, new Error(e));
+				evaluation = factory.Invoke(Outcome.Succeeded, result, false, new Error(e, true));
 				return true;
 			}
 			evaluation = factory.Invoke(Outcome.Interrupted, result, false, new Error(e, false));

@@ -11,7 +11,9 @@ using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using Stile.Types.Enumerables;
+using Stile.Types.Enums;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
@@ -35,6 +37,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public static readonly Outcome Incomplete;
 		public static readonly Outcome Interrupted;
 		public static readonly Outcome TimedOut;
+		public static readonly Outcome Suspended;
 		private static readonly ReadOnlyCollection<Outcome> sValues;
 		private static readonly IEqualityComparer<Outcome> ValueComparerInstance = new ValueEqualityComparer();
 		private readonly Enumerated _value;
@@ -48,6 +51,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			Make(() => Incomplete, outcomes, Enumerated.Incomplete);
 			Make(() => Interrupted, outcomes, Enumerated.Interrupted);
 			Make(() => TimedOut, outcomes, Enumerated.Incomplete | Enumerated.TimedOut);
+			Make(() => Suspended, outcomes, Enumerated.Suspended);
 
 			sValues = outcomes.ToReadOnly();
 		}
@@ -139,6 +143,26 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public static implicit operator bool(Outcome outcome)
 		{
 			return outcome.Equals(Succeeded);
+		}
+
+		public static implicit operator Outcome(TaskStatus taskStatus)
+		{
+			switch (taskStatus)
+			{
+				case TaskStatus.RanToCompletion:
+					return Succeeded;
+				case TaskStatus.Canceled:
+				case TaskStatus.Created:
+				case TaskStatus.Running:
+					return Incomplete;
+				case TaskStatus.Faulted:
+					return Interrupted;
+				case TaskStatus.WaitingForActivation:
+				case TaskStatus.WaitingForChildrenToComplete:
+				case TaskStatus.WaitingToRun:
+					return Suspended;
+			}
+			throw Enumeration.FailedToRecognize(() => taskStatus);
 		}
 
 		public static bool operator !=(Outcome left, Outcome right)

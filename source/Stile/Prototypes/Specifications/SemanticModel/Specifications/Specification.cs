@@ -5,9 +5,6 @@
 
 #region using...
 using System;
-using System.Collections;
-using System.Threading;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
@@ -33,8 +30,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public interface ISpecification<in TSubject, out TResult> : ISpecification<TSubject>,
 		IResultSpecification<TResult>
 	{
+		[System.Diagnostics.Contracts.Pure]
 		[NotNull]
-		IEvaluation<TSubject, TResult> Evaluate(TSubject subject, bool onThisThread = false);
+		IEvaluation<TSubject, TResult> Evaluate(TSubject subject, IDeadline deadline = null);
 	}
 
 	public interface ISpecification<TSubject, TResult, out TExpectationBuilder> :
@@ -45,7 +43,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 	public interface ISpecificationState
 	{
-		ISpecification Clone(ISpecificationDeadline deadline);
+		[System.Diagnostics.Contracts.Pure]
+		ISpecification Clone(IDeadline deadline);
 	}
 
 	public interface ISpecificationState<out TSubject> : ISpecificationState
@@ -64,27 +63,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		IInstrument<TSubject, TResult> Instrument { get; }
 	}
 
-	public interface ISpecificationDeadline
-	{
-		CancellationToken? CancellationToken { get; }
-		TimeSpan? Timeout { get; }
-	}
-
-	public class SpecificationDeadline : ISpecificationDeadline
-	{
-		public SpecificationDeadline(TimeSpan timeout)
-			: this(timeout.Duration(), null) {}
-
-		private SpecificationDeadline(TimeSpan? timeout, CancellationToken? cancellationToken)
-		{
-			Timeout = timeout;
-			CancellationToken = cancellationToken;
-		}
-
-		public CancellationToken? CancellationToken { get; private set; }
-		public TimeSpan? Timeout { get; private set; }
-	}
-
 	public abstract class Specification : ISpecificationState
 	{
 		public delegate TSpecification Factory<out TSpecification, TSubject, TResult, in TExpectationBuilder>(
@@ -96,10 +74,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			where TSpecification : class, IChainableSpecification
 			where TExpectationBuilder : class, IExpectationBuilder;
 
-		public static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
-		protected static readonly IError[] NoErrors = new IError[0];
-
-		public abstract ISpecification Clone(ISpecificationDeadline deadline);
+		public abstract ISpecification Clone(IDeadline deadline);
 	}
 
 	public abstract class Specification<TSubject> : Specification,
@@ -120,7 +95,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		ISpecificationState<TSubject, TResult>
 		where TExpectationBuilder : class, IExpectationBuilder
 	{
-		private readonly ISpecificationDeadline _deadline;
+		private readonly IDeadline _deadline;
 		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
 		private readonly TExpectationBuilder _expectationBuilder;
 
@@ -130,7 +105,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			ISource<TSubject> source = null,
 			string because = null,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null,
-			ISpecificationDeadline deadline = null)
+			IDeadline deadline = null)
 			: base(source, because)
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
@@ -152,7 +127,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			get { return this; }
 		}
 
-		public override ISpecification Clone(ISpecificationDeadline deadline)
+		public override ISpecification Clone(IDeadline deadline)
 		{
 			return new Specification<TSubject, TResult, TExpectationBuilder>(Instrument,
 				Expectation,
@@ -163,14 +138,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 				deadline);
 		}
 
-		public IEvaluation<TSubject, TResult> Evaluate(TSubject subject, bool onThisThread = false)
+		public IEvaluation<TSubject, TResult> Evaluate(TSubject subject, IDeadline deadline = null)
 		{
-			return Evaluate(() => subject, UnboundFactory, onThisThread);
+			return Evaluate(() => subject, UnboundFactory, deadline);
 		}
 
-		public IBoundEvaluation<TSubject, TResult> Evaluate(bool onThisThread = false)
+		public IBoundEvaluation<TSubject, TResult> Evaluate(IDeadline deadline = null)
 		{
-			return Evaluate(Source.Get, BoundFactory, onThisThread);
+			return Evaluate(Source.Get, BoundFactory, deadline);
 		}
 
 		private bool ExpectsException
@@ -188,86 +163,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		private TEvaluation Evaluate<TEvaluation>(Func<TSubject> subjectGetter,
 			Evaluation.Factory<TSubject, TResult, TEvaluation> evaluationFactory,
-			bool onThisThread,
-			CancellationToken? cancellationToken = null) where TEvaluation : class, IEvaluation<TSubject, TResult>
+			IDeadline deadline = null) where TEvaluation : class, IEvaluation<TSubject, TResult>
 		{
-			TResult result = default(TResult);
-			IError[] errors = NoErrors;
-
-			TimeSpan timeout = DefaultTimeout;
-			if (_deadline != null)
+			IMeasurement<TResult> measurement = Instrument.Sample(subjectGetter, deadline ?? _deadline);
+			if (ExpectsException)
 			{
-				if (_deadline.Timeout.HasValue)
-				{
-					timeout = _deadline.Timeout.Value;
-				}
-				cancellationToken = cancellationToken ?? _deadline.CancellationToken;
+				measurement = _exceptionFilter.Filter(measurement);
 			}
-			var millisecondsTimeout = (int) timeout.TotalMilliseconds;
-
-			Task<TResult> task;
-			bool timedOut;
-			try
-			{
-				// only trap exceptions while getting the subject or instrumenting it, not while accepting it
-
-				task = new Task<TResult>(() =>
-				{
-					TSubject subject = subjectGetter.Invoke();
-					return Instrument.Sample(subject);
-				});
-				if (onThisThread)
-				{
-					task.RunSynchronously();
-				} else
-				{
-					task.Start();
-				}
-				if (cancellationToken.HasValue)
-				{
-					timedOut = !task.Wait(millisecondsTimeout, cancellationToken.Value);
-				} else
-				{
-					timedOut = !task.Wait(millisecondsTimeout);
-				}
-				result = task.Result;
-			} catch (Exception e)
-			{
-				Exception thrownException = e;
-				if (e is AggregateException)
-				{
-					thrownException = e.InnerException;
-					if (thrownException == null)
-					{
-						foreach (DictionaryEntry dictionaryEntry in e.Data)
-						{
-							thrownException = (Exception) dictionaryEntry.Value;
-							break;
-						}
-					}
-				}
-				TEvaluation evaluation;
-				if (ExpectsException
-					&& _exceptionFilter.TryFilter(result, thrownException, evaluationFactory, out evaluation))
-				{
-					return evaluation;
-				}
-				// allow unexpected exceptions to bubble out
-				throw;
-			}
-
-			if (ExpectsException && !timedOut && !task.IsFaulted)
-			{
-				// exception was expected but none was thrown
-				return _exceptionFilter.Fail(result, evaluationFactory, timedOut);
-			}
-
-			Outcome outcome = Expectation.Accept(result);
-			if (task.IsFaulted)
-			{
-				errors = new IError[] {new Error(task.Exception.GetBaseException())};
-			}
-			return evaluationFactory.Invoke(outcome, result, timedOut, errors);
+			return Expectation.Evaluate(measurement, ExpectsException, evaluationFactory);
 		}
 
 		private IEvaluation<TSubject, TResult> UnboundFactory(Outcome outcome,

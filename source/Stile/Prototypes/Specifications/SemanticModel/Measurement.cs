@@ -5,6 +5,7 @@
 
 #region using...
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 #endregion
 
@@ -12,19 +13,28 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 {
 	public interface IMeasurement : IObservation {}
 
-	public interface IMeasurement<TResult> : IMeasurement {}
+	public interface IMeasurement<out TResult> : IMeasurement
+	{
+		[CanBeNull]
+		TResult Value { get; }
+	}
 
 	public abstract class Measurement : Observation,
 		IMeasurement
 	{
-		protected Measurement(TaskStatus taskStatus, params IError[] errors)
-			: base(taskStatus, errors) {}
+		protected Measurement(TaskStatus taskStatus, bool timedOut, params IError[] errors)
+			: base(taskStatus, timedOut, errors) {}
 	}
 
 	public class Measurement<TResult> : Measurement,
 		IMeasurement<TResult>
 	{
-		public Measurement(TaskStatus taskStatus, params IError[] errors)
-			: base(taskStatus, errors) {}
+		public Measurement(TResult value, TaskStatus taskStatus, bool timedOut, params IError[] errors)
+			: base(taskStatus, timedOut, errors)
+		{
+			Value = value;
+		}
+
+		public TResult Value { get; private set; }
 	}
 }

@@ -51,13 +51,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		IVoidBoundSpecification<TSubject>,
 		IVoidSpecificationState<TSubject>
 	{
-		private readonly ISpecificationDeadline _deadline;
+		private readonly IDeadline _deadline;
 
 		protected VoidSpecification([NotNull] IProcedure<TSubject> procedure,
 			[NotNull] IExceptionFilter exceptionFilter,
 			[CanBeNull] ISource<TSubject> source,
 			[CanBeNull] string because,
-			ISpecificationDeadline deadline = null)
+			IDeadline deadline = null)
 			: base(source, because)
 		{
 			Procedure = procedure.ValidateArgumentIsNotNull();
@@ -73,7 +73,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			get { return this; }
 		}
 
-		public override ISpecification Clone(ISpecificationDeadline deadline)
+		public override ISpecification Clone(IDeadline deadline)
 		{
 			return new VoidSpecification<TSubject>(Procedure, ExceptionFilter, Source, Because, deadline);
 		}
@@ -106,7 +106,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			bool onThisThread,
 			CancellationToken? cancellationToken = null)
 		{
-			TimeSpan timeout = DefaultTimeout;
+			TimeSpan timeout = Deadline.DefaultTimeout;
 			if (_deadline != null)
 			{
 				if (_deadline.Timeout.HasValue)

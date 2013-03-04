@@ -81,6 +81,7 @@
     <Compile Include="Prototypes\Specifications\SemanticModel\Observation.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Procedure.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\IThrowingBoundSpecification.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\Deadline.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\SpecificationExtensions.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\VoidSpecification.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfInstruments\InstrumentBuilderExtensions.cs" />

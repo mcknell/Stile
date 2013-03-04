@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
@@ -14,10 +15,15 @@ using Stile.Types.Expressions;
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IExpectation<in TResult>
+	public interface IExpectation<TResult>
 	{
 		Lazy<string> Description { get; }
 		Outcome Accept(TResult result);
+
+		TEvaluation Evaluate<TSubject, TEvaluation>(IMeasurement<TResult> measurement,
+			bool expectedAnException,
+			Evaluation.Factory<TSubject, TResult, TEvaluation> factory)
+			where TEvaluation : class, IEvaluation<TSubject, TResult>;
 	}
 
 	public class Expectation<TResult> : IExpectation<TResult>
@@ -27,7 +33,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		public Expectation([NotNull] Expression<Func<TResult, Outcome>> expression)
 			: this(expression.Compile, expression.ToLazyDebugString()) {}
 
-		private Expectation([NotNull] Func<Func<TResult, Outcome>> predicateSource, [NotNull] Lazy<string> description)
+		private Expectation([NotNull] Func<Func<TResult, Outcome>> predicateSource,
+			[NotNull] Lazy<string> description)
 		{
 			Func<Func<TResult, Outcome>> source = predicateSource.ValidateArgumentIsNotNull();
 			_lazyPredicate = new Lazy<Func<TResult, Outcome>>(source);
@@ -44,6 +51,34 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		public Outcome Accept(TResult result)
 		{
 			return _lazyPredicate.Value.Invoke(result);
+		}
+
+		public TEvaluation Evaluate<TSubject, TEvaluation>(IMeasurement<TResult> measurement,
+			bool expectedAnException,
+			Evaluation.Factory<TSubject, TResult, TEvaluation> factory)
+			where TEvaluation : class, IEvaluation<TSubject, TResult>
+		{
+			int handledErrors = measurement.Errors.Count(x => x.Handled);
+			int allErrorsIfAny = measurement.Errors.Length;
+
+			Outcome outcome;
+			if (handledErrors < allErrorsIfAny)
+			{
+				outcome = Outcome.Failed;
+			} else if (expectedAnException && handledErrors == 0)
+			{
+				outcome = Outcome.Failed;
+			} else if (handledErrors == allErrorsIfAny && handledErrors > 0)
+			{
+				outcome = Outcome.Succeeded;
+			} else if (_lazyPredicate.Value.Invoke(measurement.Value))
+			{
+				outcome = measurement.TaskStatus;
+			} else
+			{
+				outcome = Outcome.Failed;
+			}
+			return factory.Invoke(outcome, measurement.Value, measurement.TimedOut, measurement.Errors);
 		}
 	}
 }

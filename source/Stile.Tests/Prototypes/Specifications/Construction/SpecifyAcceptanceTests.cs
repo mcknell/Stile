@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using System.Linq;
 using NUnit.Framework;
 using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
@@ -119,7 +120,6 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		public void ThrowingBoundInstrument()
 		{
 			var saboteur = new Saboteur();
-
 			saboteur.Load(() => new ArgumentException());
 			var target = new SabotageTarget(saboteur);
 			IThrowingSpecificationBuilder
@@ -128,6 +128,8 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 						Specify.For(target).That(x => x.Saboteur.SuicidalSideEffect).Throws<ArgumentException>();
 			IBoundSpecification<SabotageTarget, Saboteur> specification = specificationBuilder.Build();
 			IEvaluation<SabotageTarget, Saboteur> evaluation = specification.Evaluate();
+			Assert.That(evaluation.Errors.Any(), Is.True);
+			Assert.That(evaluation.Errors.First().Exception, Is.InstanceOf<ArgumentException>());
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(saboteur.ThrowCalled);
 		}

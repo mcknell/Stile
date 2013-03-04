@@ -18,7 +18,7 @@ namespace Stile.Tests.Prototypes.Specifications.SemanticModel
 		{
 			const int subject = 5;
 			var instrument = new Instrument<int, string>(x => x.ToString());
-			Assert.That(instrument.Sample(subject), Is.EqualTo(subject.ToString()));
+			Assert.That(instrument.Sample(subject).Value, Is.EqualTo(subject.ToString()));
 		}
 
 		[Test]
@@ -26,7 +26,7 @@ namespace Stile.Tests.Prototypes.Specifications.SemanticModel
 		{
 			const int subject = 5;
 			var instrument = new Instrument<int, string>(x => x.ToString());
-			Assert.That(instrument.Sample(subject), Is.EqualTo(subject.ToString()));
+			Assert.That(instrument.Sample(subject).Value, Is.EqualTo(subject.ToString()));
 		}
 	}
 }

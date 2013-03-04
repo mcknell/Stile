@@ -44,7 +44,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			: this(outcome, false, handledExpectedException) {}
 
 		public Evaluation(Outcome outcome, bool timedOut, Exception handledExpectedException)
-			: this(outcome, timedOut, new Error(handledExpectedException)) {}
+			: this(outcome, timedOut, new Error(handledExpectedException, true)) {}
 
 		public Evaluation(Outcome outcome, bool timedOut, params IError[] errors)
 		{

@@ -1,14 +1,19 @@
 ﻿#region License info...
-// Propter for .NET, Copyright 2011-2013 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Propter project on GitHub
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Types.Expressions;
 #endregion
 
@@ -19,7 +24,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 	public interface IInstrument<TSubject, out TResult> : IInstrument,
 		IProcedure<TSubject>
 	{
-		new TResult Sample(TSubject subject, CancellationToken? cancellationToken = null);
+		IMeasurement<TResult> Sample(TSubject subject, IDeadline deadline = null);
+		IMeasurement<TResult> Sample([NotNull] Func<TSubject> subjectGetter, IDeadline deadline = null);
 	}
 
 	public class Instrument<TSubject, TResult> : IInstrument<TSubject, TResult>,
@@ -42,9 +48,64 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			get { return this; }
 		}
 
-		public TResult Sample(TSubject subject, CancellationToken? cancellationToken = null)
+		public IMeasurement<TResult> Sample(TSubject subject, IDeadline deadline = null)
 		{
-			return _lazyFunc.Value.Invoke(subject);
+			return Sample(() => subject, deadline);
+		}
+
+		public IMeasurement<TResult> Sample(Func<TSubject> subjectGetter, IDeadline deadline = null)
+		{
+			subjectGetter.ValidateArgumentIsNotNull();
+			var errors = new List<IError>();
+			bool onThisThread = false;
+			CancellationToken cancellationToken = CancellationToken.None;
+			TimeSpan timeout = Deadline.DefaultTimeout;
+			if (deadline != null)
+			{
+				onThisThread = deadline.OnThisThread;
+				cancellationToken = deadline.CancellationToken ?? cancellationToken;
+				timeout = deadline.Timeout ?? timeout;
+			}
+			var millisecondsTimeout = (int) timeout.TotalMilliseconds;
+
+			var task = new Task<TResult>(() =>
+			{
+				TSubject subject = subjectGetter.Invoke();
+				return _lazyFunc.Value.Invoke(subject);
+			});
+
+			bool timedOut = false;
+			TResult result = default(TResult);
+			try
+			{
+				if (onThisThread)
+				{
+					task.RunSynchronously();
+				} else
+				{
+					task.Start();
+				}
+				timedOut = !task.Wait(millisecondsTimeout, cancellationToken);
+				result = task.Result;
+			} catch (Exception e)
+			{
+				if (e is AggregateException)
+				{
+					if (e.InnerException != null)
+					{
+						errors.Add(new Error(e.InnerException, false));
+					} else
+					{
+						foreach (DictionaryEntry dictionaryEntry in e.Data)
+						{
+							var additionalException = (Exception) dictionaryEntry.Value;
+							errors.Add(new Error(additionalException, false));
+						}
+					}
+				}
+			}
+			var measurement = new Measurement<TResult>(result, task.Status, timedOut, errors.ToArray());
+			return measurement;
 		}
 
 		void IProcedure<TSubject>.Sample(TSubject subject, CancellationToken? cancellationToken)
