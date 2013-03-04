@@ -8,6 +8,7 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
@@ -62,14 +63,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		}
 
 		public ISource<TSubject> Source { get; private set; }
-		public ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification> SpecificationFactory { get; private set; }
+		public ExpectationBuilder.SpecificationFactory<TResult, TSpecification> SpecificationFactory { get; private set; }
 
 		public IIsState<TSpecification, TSubject, TResult> Xray
 		{
 			get { return this; }
 		}
 
-		public TSpecification Make(IExpectation<TResult> expectation, IExceptionFilter<TSubject, TResult> filter = null)
+		public TSpecification Make(IExpectation<TResult> expectation, IExceptionFilter<TResult> filter = null)
 		{
 			return SpecificationFactory.Invoke(expectation, filter);
 		}

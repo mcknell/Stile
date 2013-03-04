@@ -82,18 +82,4 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 			return new ExceptionFilterBuilder<TSpecification, TSubject>(procedure, specificationFactory, source);
 		}
 	}
-
-/*
-	public static class ExceptionFilterBuilderExtensions
-	{
-		public static IThrowingSpecificationBuilder<TSpecification, TSubject, TException> Throws
-			<TSpecification, TSubject, TException>(this IExceptionFilterBuilder<TSpecification, TSubject> builder)
-			where TException : Exception where TSpecification : class, IVoidSpecification<TSubject>
-		{
-			IThrowingInstrument<TSubject> procedure = builder.Xray.Instrument;
-			ISource<TSubject> source = builder.Xray.Source;
-			return ThrowingSpecificationFactory.Resolve<TSpecification, TSubject, TException>(procedure, source);
-		}
-	}
-*/
 }

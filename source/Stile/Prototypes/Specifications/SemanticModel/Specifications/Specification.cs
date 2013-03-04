@@ -70,7 +70,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			IInstrument<TSubject, TResult> instrument,
 			IExpectation<TResult> expectation,
 			TExpectationBuilder expectationBuilder,
-			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
+			IExceptionFilter<TResult> exceptionFilter = null)
 			where TSpecification : class, IChainableSpecification
 			where TExpectationBuilder : class, IExpectationBuilder;
 
@@ -96,7 +96,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		where TExpectationBuilder : class, IExpectationBuilder
 	{
 		private readonly IDeadline _deadline;
-		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
+		private readonly IExceptionFilter<TResult> _exceptionFilter;
 		private readonly TExpectationBuilder _expectationBuilder;
 
 		public Specification([NotNull] IInstrument<TSubject, TResult> instrument,
@@ -104,7 +104,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			[NotNull] TExpectationBuilder expectationBuilder,
 			ISource<TSubject> source = null,
 			string because = null,
-			IExceptionFilter<TSubject, TResult> exceptionFilter = null,
+			IExceptionFilter<TResult> exceptionFilter = null,
 			IDeadline deadline = null)
 			: base(source, because)
 		{
@@ -170,7 +170,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			{
 				measurement = _exceptionFilter.Filter(measurement);
 			}
-			return Expectation.Evaluate(measurement, ExpectsException, evaluationFactory);
+			TEvaluation evaluation = Expectation.Evaluate(measurement, ExpectsException, evaluationFactory);
+			return evaluation;
 		}
 
 		private IEvaluation<TSubject, TResult> UnboundFactory(Outcome outcome,

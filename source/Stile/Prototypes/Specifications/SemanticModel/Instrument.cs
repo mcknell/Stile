@@ -24,8 +24,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 	public interface IInstrument<TSubject, out TResult> : IInstrument,
 		IProcedure<TSubject>
 	{
-		IMeasurement<TResult> Sample(TSubject subject, IDeadline deadline = null);
-		IMeasurement<TResult> Sample([NotNull] Func<TSubject> subjectGetter, IDeadline deadline = null);
+		new IMeasurement<TResult> Sample(TSubject subject, IDeadline deadline = null);
+		new IMeasurement<TResult> Sample([NotNull] Func<TSubject> subjectGetter, IDeadline deadline = null);
 	}
 
 	public class Instrument<TSubject, TResult> : IInstrument<TSubject, TResult>,
@@ -53,9 +53,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			return Sample(() => subject, deadline);
 		}
 
+		IObservation IProcedure<TSubject>.Sample(Func<TSubject> subjectGetter, IDeadline deadline)
+		{
+			return Sample(subjectGetter, deadline);
+		}
+
 		public IMeasurement<TResult> Sample(Func<TSubject> subjectGetter, IDeadline deadline = null)
 		{
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
 			subjectGetter.ValidateArgumentIsNotNull();
+// ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			var errors = new List<IError>();
 			bool onThisThread = false;
 			CancellationToken cancellationToken = CancellationToken.None;
@@ -63,8 +70,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			if (deadline != null)
 			{
 				onThisThread = deadline.OnThisThread;
-				cancellationToken = deadline.CancellationToken ?? cancellationToken;
-				timeout = deadline.Timeout ?? timeout;
+				cancellationToken = deadline.CancellationToken;
+				timeout = deadline.Timeout;
 			}
 			var millisecondsTimeout = (int) timeout.TotalMilliseconds;
 
@@ -108,9 +115,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			return measurement;
 		}
 
-		void IProcedure<TSubject>.Sample(TSubject subject, CancellationToken? cancellationToken)
+
+		IObservation IProcedure<TSubject>.Sample(TSubject subject, IDeadline deadline)
 		{
-			((IInstrument<TSubject, TResult>) this).Sample(subject);
+			return Sample(subject, deadline);
 		}
 	}
 }

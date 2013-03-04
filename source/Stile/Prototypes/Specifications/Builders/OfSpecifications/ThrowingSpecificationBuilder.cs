@@ -61,12 +61,12 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		where TException : Exception
 	{
-		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
-		private readonly Func<IExpectation<TResult>, IExceptionFilter<TSubject, TResult>, TSpecification>
+		private readonly IExceptionFilter<TResult> _exceptionFilter;
+		private readonly Func<IExpectation<TResult>, IExceptionFilter<TResult>, TSpecification>
 			_specificationFactory;
 
-		public ThrowingSpecificationBuilder([NotNull] IExceptionFilter<TSubject, TResult> exceptionFilter,
-			[NotNull] Func<IExpectation<TResult>, IExceptionFilter<TSubject, TResult>, TSpecification> specificationFactory)
+		public ThrowingSpecificationBuilder([NotNull] IExceptionFilter<TResult> exceptionFilter,
+			[NotNull] Func<IExpectation<TResult>, IExceptionFilter<TResult>, TSpecification> specificationFactory)
 		{
 			_exceptionFilter = exceptionFilter.ValidateArgumentIsNotNull();
 			_specificationFactory = specificationFactory.ValidateArgumentIsNotNull();

@@ -18,7 +18,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 	public interface IExpectation<TResult>
 	{
 		Lazy<string> Description { get; }
-		Outcome Accept(TResult result);
 
 		TEvaluation Evaluate<TSubject, TEvaluation>(IMeasurement<TResult> measurement,
 			bool expectedAnException,
@@ -26,7 +25,33 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			where TEvaluation : class, IEvaluation<TSubject, TResult>;
 	}
 
-	public class Expectation<TResult> : IExpectation<TResult>
+	public class Expectation
+	{
+		public static IEvaluation Evaluate(IObservation measurement, bool expectedAnException)
+		{
+			int handledErrors = measurement.Errors.Count(x => x.Handled);
+			int allErrorsIfAny = measurement.Errors.Length;
+
+			Outcome outcome;
+			if (handledErrors < allErrorsIfAny)
+			{
+				outcome = Outcome.Failed;
+			} else if (expectedAnException && handledErrors == 0)
+			{
+				outcome = Outcome.Failed;
+			} else if (handledErrors == allErrorsIfAny && handledErrors > 0)
+			{
+				outcome = Outcome.Succeeded;
+			} else
+			{
+				outcome = Outcome.Failed;
+			}
+			return new Evaluation(outcome, measurement.TimedOut, measurement.Errors);
+		}
+	}
+
+	public class Expectation<TResult> : Expectation,
+		IExpectation<TResult>
 	{
 		private readonly Lazy<Func<TResult, Outcome>> _lazyPredicate;
 
@@ -46,11 +71,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		public static Expectation<TResult> UnconditionalAcceptance
 		{
 			get { return new Expectation<TResult>(result => Outcome.Succeeded); }
-		}
-
-		public Outcome Accept(TResult result)
-		{
-			return _lazyPredicate.Value.Invoke(result);
 		}
 
 		public TEvaluation Evaluate<TSubject, TEvaluation>(IMeasurement<TResult> measurement,

@@ -30,7 +30,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		}
 		protected override
 			Func
-				<IExpectation<TResult>, IExceptionFilter<TSubject, TResult>,
+				<IExpectation<TResult>, IExceptionFilter<TResult>,
 					ISpecification<TSubject, TResult, IFluentExpectationBuilder<TSubject, TResult>>> SpecFactory
 		{
 			get { return MakeUnboundSpecification; }

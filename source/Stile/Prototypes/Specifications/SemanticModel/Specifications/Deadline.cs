@@ -12,27 +12,37 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
 	public interface IDeadline
 	{
-		CancellationToken? CancellationToken { get; }
+		CancellationToken CancellationToken { get; }
 		bool OnThisThread { get; }
-		TimeSpan? Timeout { get; }
+		TimeSpan Timeout { get; }
 	}
 
 	public class Deadline : IDeadline
 	{
 		public static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
+		public static readonly Deadline Async = new Deadline(false);
+		public static readonly Deadline Synchronous = new Deadline(true);
 
-		public Deadline(TimeSpan timeout, bool onThisThread = false)
-			: this(timeout.Duration(), null, onThisThread) {}
+		protected Deadline(bool onThisThread)
+			: this(DefaultTimeout, onThisThread) {}
 
-		private Deadline(TimeSpan? timeout, CancellationToken? cancellationToken, bool onThisThread)
+		public Deadline(TimeSpan timeout, bool onThisThread )
+			: this(timeout.Duration(), CancellationToken.None, onThisThread) {}
+
+		private Deadline(TimeSpan timeout, CancellationToken cancellationToken, bool onThisThread)
 		{
 			Timeout = timeout;
 			CancellationToken = cancellationToken;
 			OnThisThread = onThisThread;
 		}
 
-		public CancellationToken? CancellationToken { get; private set; }
+		public CancellationToken CancellationToken { get; private set; }
 		public bool OnThisThread { get; private set; }
-		public TimeSpan? Timeout { get; private set; }
+		public TimeSpan Timeout { get; private set; }
+
+		public static implicit operator Deadline(TimeSpan timeSpan)
+		{
+			return new Deadline(timeSpan, false);
+		}
 	}
 }

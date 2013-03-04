@@ -4,7 +4,6 @@
 #endregion
 
 #region using...
-using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 

@@ -1,14 +1,20 @@
 #region License info...
-// Propter for .NET, Copyright 2011-2013 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Propter project on GitHub
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
+using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Readability;
 #endregion
 
@@ -30,7 +36,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 	public interface IProcedure<TSubject> : IProcedure,
 		IHides<IProcedureState<TSubject>>
 	{
-		void Sample(TSubject subject, CancellationToken? cancellationToken = null);
+		IObservation Sample(TSubject subject, IDeadline deadline = null);
+		IObservation Sample(Func<TSubject> subjectGetter, IDeadline deadline = null);
 	}
 
 	public abstract class Procedure : IProcedure
@@ -69,9 +76,64 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			get { return this; }
 		}
 
-		public void Sample(TSubject subject, CancellationToken? cancellationToken = null)
+		public IObservation Sample(TSubject subject, IDeadline deadline = null)
 		{
-			_lazyAction.Value.Invoke(subject);
+			return Sample(() => subject, deadline);
+		}
+
+		public IObservation Sample(Func<TSubject> subjectGetter, IDeadline deadline = null)
+		{
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+			subjectGetter.ValidateArgumentIsNotNull();
+// ReSharper restore ReturnValueOfPureMethodIsNotUsed
+			var errors = new List<IError>();
+			bool onThisThread = false;
+			CancellationToken cancellationToken = CancellationToken.None;
+			TimeSpan timeout = Deadline.DefaultTimeout;
+			if (deadline != null)
+			{
+				onThisThread = deadline.OnThisThread;
+				cancellationToken = deadline.CancellationToken;
+				timeout = deadline.Timeout;
+			}
+			var millisecondsTimeout = (int) timeout.TotalMilliseconds;
+
+			var task = new Task(() =>
+			{
+				TSubject subject = subjectGetter.Invoke();
+				_lazyAction.Value.Invoke(subject);
+			});
+
+			bool timedOut = false;
+			try
+			{
+				if (onThisThread)
+				{
+					task.RunSynchronously();
+				} else
+				{
+					task.Start();
+				}
+				timedOut = !task.Wait(millisecondsTimeout, cancellationToken);
+			} catch (Exception e)
+			{
+				if (e is AggregateException)
+				{
+					if (e.InnerException != null)
+					{
+						errors.Add(new Error(e.InnerException, false));
+					} else
+					{
+						foreach (DictionaryEntry dictionaryEntry in e.Data)
+						{
+							var additionalException = (Exception) dictionaryEntry.Value;
+							errors.Add(new Error(additionalException, false));
+						}
+					}
+				}
+			}
+			var observation = new Observation(task.Status, timedOut, errors.ToArray());
+			return observation;
 		}
 	}
 }

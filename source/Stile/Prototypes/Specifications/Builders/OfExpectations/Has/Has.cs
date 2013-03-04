@@ -8,6 +8,7 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
@@ -26,7 +27,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		IHasState<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
-		private readonly ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification>
+		private readonly ExpectationBuilder.SpecificationFactory<TResult, TSpecification>
 			_specificationFactory;
 
 		public Has([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState)
@@ -44,7 +45,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 			get { return this; }
 		}
 
-		public TSpecification Make(IExpectation<TResult> expectation, IExceptionFilter<TSubject, TResult> filter = null)
+		public TSpecification Make(IExpectation<TResult> expectation, IExceptionFilter<TResult> filter = null)
 		{
 			TSpecification specification = _specificationFactory.Invoke(expectation, filter);
 			return specification;

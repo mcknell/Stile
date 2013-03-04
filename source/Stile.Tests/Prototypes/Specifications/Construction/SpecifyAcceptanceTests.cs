@@ -51,7 +51,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			Assert.That(boundEvaluation.TimedOut, Is.True);
 			Assert.That(boundEvaluation.Errors.Length, Is.EqualTo(0));
 
-			IEvaluation synchronousEvaluation = boundSpecification.Evaluate(true);
+			IEvaluation synchronousEvaluation = boundSpecification.Evaluate(Deadline.Synchronous);
 			Assert.That(synchronousEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(synchronousEvaluation.TimedOut, Is.False);
 		}

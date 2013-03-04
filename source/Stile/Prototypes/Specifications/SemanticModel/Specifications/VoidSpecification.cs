@@ -5,10 +5,6 @@
 
 #region using...
 using System;
-using System.Collections;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
@@ -25,7 +21,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		IChainableSpecification
 	{
 		[NotNull]
-		IEvaluation Evaluate(TSubject subject, bool onThisThread = false);
+		IEvaluation Evaluate(TSubject subject, IDeadline deadline = null);
 	}
 
 	public interface IVoidSpecificationState {}
@@ -33,7 +29,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public interface IVoidSpecificationState<TSubject> : IVoidSpecificationState,
 		ISpecificationState<TSubject>
 	{
-		[CanBeNull]
+		[NotNull]
 		IExceptionFilter ExceptionFilter { get; }
 		[NotNull]
 		IProcedure<TSubject> Procedure { get; }
@@ -78,14 +74,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return new VoidSpecification<TSubject>(Procedure, ExceptionFilter, Source, Because, deadline);
 		}
 
-		public IEvaluation Evaluate(bool onThisThread = false)
+		public IEvaluation Evaluate(IDeadline deadline = null)
 		{
-			return Evaluate(Source.Get, onThisThread);
+			return Evaluate(Source.Get, deadline);
 		}
 
-		public IEvaluation Evaluate(TSubject subject, bool onThisThread = false)
+		public IEvaluation Evaluate(TSubject subject, IDeadline deadline = null)
 		{
-			return Evaluate(() => subject, onThisThread);
+			return Evaluate(() => subject, deadline);
 		}
 
 		public static VoidSpecification<TSubject> Make([NotNull] IProcedure<TSubject> procedure,
@@ -102,82 +98,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return new VoidSpecification<TSubject>(procedure, exceptionFilter, source, null);
 		}
 
-		private IEvaluation Evaluate(Func<TSubject> subjectGetter,
-			bool onThisThread,
-			CancellationToken? cancellationToken = null)
+		private IEvaluation Evaluate(Func<TSubject> subjectGetter, IDeadline deadline = null)
 		{
-			TimeSpan timeout = Deadline.DefaultTimeout;
-			if (_deadline != null)
-			{
-				if (_deadline.Timeout.HasValue)
-				{
-					timeout = _deadline.Timeout.Value;
-				}
-				cancellationToken = cancellationToken ?? _deadline.CancellationToken;
-			}
-			var millisecondsTimeout = (int) timeout.TotalMilliseconds;
-
-			var stopwatch = new Stopwatch();
-			var now = DateTime.Now;
-			Console.WriteLine("Current Time: {0:HH:mm:ss.fff}", now);
-			Console.WriteLine("Expected Timeout duration: {0}ms", timeout.TotalMilliseconds);
-			Console.WriteLine("Expected Timeout: {0:HH:mm:ss.fff}", now.Add(timeout));
-
-			Task task;
-			bool timedOut;
-			try
-			{
-				task = new Task(() =>
-				{
-					stopwatch.Start();
-					TSubject subject = subjectGetter.Invoke();
-					Procedure.Sample(subject);
-				});
-				if (onThisThread)
-				{
-					task.RunSynchronously();
-				} else
-				{
-					task.Start();
-				}
-				if (cancellationToken.HasValue)
-				{
-					timedOut = !task.Wait(millisecondsTimeout, cancellationToken.Value);
-				} else
-				{
-					timedOut = !task.Wait(millisecondsTimeout);
-				}
-				stopwatch.Stop();
-			} catch (Exception e)
-			{
-				Exception thrownException = e;
-				if (e is AggregateException)
-				{
-					thrownException = e.InnerException;
-					if (thrownException == null)
-					{
-						foreach (DictionaryEntry dictionaryEntry in e.Data)
-						{
-							thrownException = (Exception) dictionaryEntry.Value;
-							break;
-						}
-					}
-				}
-				IEvaluation evaluation;
-				if (ExceptionFilter.TryFilterBeforeResult(thrownException, out evaluation))
-				{
-					Console.WriteLine("Finishing with exception at: {0:HH:mm:ss.fff}", DateTime.Now);
-					Console.WriteLine("Elapsed time: {0}ms", stopwatch.ElapsedMilliseconds);
-					return evaluation;
-				}
-				// allow unexpected exceptions to bubble out
-				throw;
-			}
-
-			// exception was expected but none was thrown
-			Console.WriteLine("Finishing with no exception at: {0:HH:mm:ss.fff}", DateTime.Now);
-			Console.WriteLine("Elapsed time: {0}ms", stopwatch.ElapsedMilliseconds);
-			return ExceptionFilter.FailBeforeResult(timedOut);
+			IObservation observation = Procedure.Sample(subjectGetter, deadline ?? _deadline);
+			observation = ExceptionFilter.Filter(observation);
+			return Expectation.Evaluate(observation, true);
 		}
 	}
 }

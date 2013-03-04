@@ -7,7 +7,7 @@
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 #endregion
 
-namespace Stile.Prototypes.Specifications.SemanticModel
+namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
 	public interface IChainableSpecification {}
 

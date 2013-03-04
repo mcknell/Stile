@@ -17,8 +17,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 
 	public class Error : IError
 	{
-		public static readonly IError[] None = new IError[0];
-
 		public Error(Exception exception, bool handled)
 		{
 			Exception = exception;
