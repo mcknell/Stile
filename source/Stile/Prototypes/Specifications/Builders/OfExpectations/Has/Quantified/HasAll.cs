@@ -15,14 +15,15 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantified
 {
-	public class HasAll<TSpecification, TResult, TItem> : QuantifiedHas<TSpecification, TResult, TItem>
+	public class HasAll<TSpecification, TSubject, TResult, TItem> :
+		QuantifiedHas<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification
 		where TResult : class, IEnumerable<TItem>
 	{
-		public HasAll([NotNull] Func<IExpectation<TResult>, TSpecification> factory)
+		public HasAll([NotNull] Func<IExpectation<TSubject, TResult>, TSpecification> factory)
 			: base(factory) {}
 
-		protected override Func<TResult, bool> MakePredicate(Expression<Func<TItem, bool>> expression)
+		protected override Predicate<TResult> MakePredicate(Expression<Func<TItem, bool>> expression)
 		{
 			return result => result.All(expression.Compile());
 		}

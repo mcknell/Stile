@@ -56,6 +56,7 @@
     <Compile Include="Prototypes\Specifications\Construction\ChainedSpecificationAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Construction\EnumerableSpecifyAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Deadlines\Deadline.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Past\PastTenseEvaluationDescriberFixture.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Past\PrintablePastAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\SampleObjects\Foo.cs" />
     <Compile Include="Prototypes\Specifications\Construction\SpecifyAcceptanceTests.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Types\Expressions\ExpressionExtensionsFixture.cs" />
     <Compile Include="Types\Expressions\ExpressionFormatProviderFixture.cs" />
     <Compile Include="Types\Expressions\ExpressionPrintingFixture.cs" />
+    <Compile Include="Types\Expressions\LazyDescriptionOfLambdaFixture.cs" />
     <Compile Include="Types\Expressions\Printing\ExpressionParsers\MethodCallExpressionParserFixture.cs" />
     <Compile Include="Types\Expressions\ExpressionPrinterFixture.cs" />
     <Compile Include="Types\Reflection\CSharp4TypesFixture.cs" />

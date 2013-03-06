@@ -17,11 +17,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public interface IVoidSpecification<TSubject> : IVoidSpecification,
 		ISpecification<TSubject>,
 		IHides<IVoidSpecificationState<TSubject>>,
-		IChainableSpecification
-	{
-		[NotNull]
-		IEvaluation Evaluate(TSubject subject, IDeadline deadline = null);
-	}
+		IChainableSpecification,
+		IEvaluable<TSubject> {}
 
 	public interface IVoidSpecificationState {}
 
@@ -29,7 +26,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		ISpecificationState<TSubject>
 	{
 		[NotNull]
-		IExceptionFilter ExceptionFilter { get; }
+		IExceptionFilter<TSubject> ExceptionFilter { get; }
 		[NotNull]
 		IProcedure<TSubject> Procedure { get; }
 	}
@@ -38,7 +35,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	{
 		public delegate TSpecification Factory<out TSpecification, TSubject>(
 			[NotNull] IProcedure<TSubject> procedure,
-			[NotNull] IExceptionFilter exceptionFilter,
+			[NotNull] IExceptionFilter<TSubject> exceptionFilter,
 			ISource<TSubject> source = null) where TSpecification : class, ISpecification<TSubject>;
 	}
 
@@ -49,7 +46,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		private readonly IDeadline _deadline;
 
 		protected VoidSpecification([NotNull] IProcedure<TSubject> procedure,
-			[NotNull] IExceptionFilter exceptionFilter,
+			[NotNull] IExceptionFilter<TSubject> exceptionFilter,
 			[CanBeNull] ISource<TSubject> source,
 			[CanBeNull] string because,
 			IDeadline deadline = null)
@@ -60,7 +57,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			_deadline = deadline;
 		}
 
-		public IExceptionFilter ExceptionFilter { get; private set; }
+		public IExceptionFilter<TSubject> ExceptionFilter { get; private set; }
 		public IProcedure<TSubject> Procedure { get; private set; }
 
 		public IVoidSpecificationState<TSubject> Xray
@@ -78,30 +75,25 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return Evaluate(Source, deadline);
 		}
 
-		public IEvaluation Evaluate(TSubject subject, IDeadline deadline = null)
+		public IEvaluation<TSubject> Evaluate(ISource<TSubject> source, IDeadline deadline = null)
 		{
-			return Evaluate(new Source<TSubject>(subject), deadline);
+			IObservation<TSubject> observation = Procedure.Observe(source, deadline ?? _deadline);
+			observation = ExceptionFilter.Filter(observation);
+			return Expectation<TSubject>.Evaluate(observation, true);
 		}
 
 		public static VoidSpecification<TSubject> Make([NotNull] IProcedure<TSubject> procedure,
-			IExceptionFilter exceptionFilter,
+			IExceptionFilter<TSubject> exceptionFilter,
 			ISource<TSubject> source = null)
 		{
 			return new VoidSpecification<TSubject>(procedure, exceptionFilter, null, null);
 		}
 
 		public static VoidSpecification<TSubject> MakeBound([NotNull] IProcedure<TSubject> procedure,
-			[NotNull] IExceptionFilter exceptionFilter,
+			[NotNull] IExceptionFilter<TSubject> exceptionFilter,
 			[NotNull] ISource<TSubject> source)
 		{
 			return new VoidSpecification<TSubject>(procedure, exceptionFilter, source, null);
-		}
-
-		private IEvaluation Evaluate(ISource<TSubject> source, IDeadline deadline = null)
-		{
-			IObservation observation = Procedure.Sample(source, deadline ?? _deadline);
-			observation = ExceptionFilter.Filter(observation);
-			return Expectation.Evaluate(observation, true);
 		}
 	}
 }

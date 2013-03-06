@@ -36,9 +36,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		[System.Diagnostics.Contracts.Pure]
 		public static bool IsTrueFor<TSubject, TResult>(this ISpecification<TSubject, TResult> boundSpecification,
-			TSubject subject)
+			ISource<TSubject> source)
 		{
-			return boundSpecification.Evaluate(subject).Outcome == Outcome.Succeeded;
+			return boundSpecification.Evaluate(source).Outcome == Outcome.Succeeded;
 		}
 	}
 }

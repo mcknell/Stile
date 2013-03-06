@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using JetBrains.Annotations;
 using Stile.Types.Expressions.Printing.Tokens;
 using Stile.Types.Reflection;
 #endregion
@@ -73,6 +74,12 @@ namespace Stile.Types.Expressions.Printing
 				Append(separator);
 				Append(expression);
 			}
+		}
+
+		[CanBeNull]
+		protected string GetAlias(ParameterExpression expression)
+		{
+			return _printStrategy.ParameterAlias(expression);
 		}
 	}
 

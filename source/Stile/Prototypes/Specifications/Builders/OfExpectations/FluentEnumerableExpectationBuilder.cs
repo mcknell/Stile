@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -30,13 +31,18 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			[NotNull] IExpectationBuilderState<IChainableSpecification, TSubject, TResult> state)
 			: base(state) {}
 
+		public override void Accept(IDescriptionVisitor visitor)
+		{
+			visitor.DescribeOverload4(this);
+		}
+
 		protected override IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem> Builder
 		{
 			get { return this; }
 		}
 		protected override
 			Func
-				<IExpectation<TResult>, IExceptionFilter<TResult>,
+				<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>,
 					ISpecification<TSubject, TResult, IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem>>>
 			SpecFactory
 		{

@@ -6,8 +6,8 @@
 #region using...
 using System;
 using System.Diagnostics.Contracts;
+using System.Linq.Expressions;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
@@ -20,16 +20,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			this IIs<TSpecification, TSubject, TResult> builder, TResult result)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		{
-			return Make(builder, x => x.Equals(result));
+			return Make(x => x.Equals(result), builder.Xray, Clause.IsEqualTo);
 		}
 
 		private static TSpecification Make<TSpecification, TSubject, TResult>(
-			IIs<TSpecification, TSubject, TResult> builder, Predicate<TResult> predicate)
-			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+			Expression<Predicate<TResult>> expression,
+			IIsState<TSpecification, TSubject, TResult> state,
+			IClause clause) where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		{
-			IIsState<TSpecification, TSubject, TResult> state = builder.Xray;
-			Predicate<TResult> accepter = x => state.Negated.AgreesWith(predicate.Invoke(x));
-			var expectation = new Expectation<TResult>(x => accepter.Invoke(x) ? Outcome.Succeeded : Outcome.Failed);
+			Expectation<TSubject, TResult> expectation = Expectation<TSubject>.From(expression, state.Negated, clause);
 			return state.Make(expectation);
 		}
 	}

@@ -22,13 +22,13 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Is
 			var subject = new Foo<int>();
 
 			IEvaluation<Foo<int>, Foo<int>> evaluationOfNew = Specify.ThatAny<Foo<int>>().OfItemsLike(0).Is.Empty //
-				.AndThen.Is.Not.Empty.Evaluate(subject);
+				.AndThen.Is.Not.Empty.Evaluate(() => subject);
 
 			Assert.That(evaluationOfNew.Outcome, NUnit.Framework.Is.EqualTo(Outcome.Failed));
 
 			subject.Add(1);
 			IEvaluation<Foo<int>, Foo<int>> evaluationOfOne =
-				Specify.ThatAny<Foo<int>>().OfItemsLike(0).Is.Not.Empty.Evaluate(subject);
+				Specify.ThatAny<Foo<int>>().OfItemsLike(0).Is.Not.Empty.Evaluate(() => subject);
 
 			Assert.That(evaluationOfOne.Outcome, NUnit.Framework.Is.EqualTo(Outcome.Succeeded));
 		}

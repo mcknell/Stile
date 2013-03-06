@@ -120,7 +120,13 @@
   <data name="Expected" xml:space="preserve">
     <value>Expected</value>
   </data>
+  <data name="InstrumentedBy" xml:space="preserve">
+    <value>instrumented by</value>
+  </data>
   <data name="That" xml:space="preserve">
     <value>that</value>
+  </data>
+  <data name="WouldBeButWas" xml:space="preserve">
+    <value>would be{0}but was</value>
   </data>
 </root>

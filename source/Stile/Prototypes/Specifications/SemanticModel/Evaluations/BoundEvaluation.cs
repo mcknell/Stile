@@ -24,11 +24,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		private readonly IBoundSpecification<TSubject, TResult> _specification;
 
 		public BoundEvaluation([NotNull] IBoundSpecification<TSubject, TResult> specification,
+			ISample<TSubject> sample,
 			Outcome outcome,
 			TResult value,
 			bool timedOut,
 			params IError[] errors)
 			: base(specification,
+				sample,
 				outcome,
 				value,
 				timedOut,

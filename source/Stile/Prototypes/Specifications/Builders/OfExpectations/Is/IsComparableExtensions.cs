@@ -6,8 +6,8 @@
 #region using...
 using System;
 using System.Diagnostics.Contracts;
+using System.Linq.Expressions;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
@@ -21,7 +21,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
-			return Make(builder, x => x == 0, result);
+			return Make(x => x.CompareTo(result) == 0, builder.Xray, Clause.IsComparablyEquivalentTo);
 		}
 
 		[Pure]
@@ -30,18 +30,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
-			return Make(builder, x => x > 0, result);
+			return Make(x => x.CompareTo(result) > 0, builder.Xray, Clause.IsGreaterThan);
 		}
 
-		[Pure]
-		public static TSpecification Make<TSpecification, TSubject, TResult>(
-			IIs<TSpecification, TSubject, TResult> builder, Predicate<int> predicate, TResult result)
-			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+		private static TSpecification Make<TSpecification, TSubject, TResult>(Expression<Predicate<TResult>> lambda,
+			IIsState<TSpecification, TSubject, TResult> state,
+			IClause clause) where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
-			IIsState<TSpecification, TSubject, TResult> state = builder.Xray;
-			Predicate<TResult> accepter = x => state.Negated.AgreesWith(predicate.Invoke(x.CompareTo(result)));
-			var expectation = new Expectation<TResult>(x => accepter.Invoke(x) ? Outcome.Succeeded : Outcome.Failed);
+			Expectation<TSubject, TResult> expectation = Expectation<TSubject>.From(lambda, state.Negated, clause);
 			return state.Make(expectation);
 		}
 	}

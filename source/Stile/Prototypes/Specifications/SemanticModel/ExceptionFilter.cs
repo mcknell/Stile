@@ -13,34 +13,37 @@ using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IExceptionFilter
+	public interface IExceptionFilter<TSubject>
 	{
-		IObservation Filter(IObservation observation);
+		IObservation<TSubject> Filter(IObservation<TSubject> observation);
 	}
 
-	public interface IExceptionFilter<TResult> : IExceptionFilter
+	public interface IExceptionFilter<TSubject, TResult> : IExceptionFilter<TSubject>
 	{
-		IMeasurement<TResult> Filter(IMeasurement<TResult> measurement);
+		IMeasurement<TSubject, TResult> Filter(IMeasurement<TSubject, TResult> measurement);
 	}
 
-	public class ExceptionFilter : IExceptionFilter
+	public class ExceptionFilter<TSubject> : IExceptionFilter<TSubject>
 	{
 		public ExceptionFilter([NotNull] Predicate<Exception> predicate)
 		{
 			Predicate = predicate.ValidateArgumentIsNotNull();
 		}
 
-		public IObservation Filter(IObservation observation)
+		public IObservation<TSubject> Filter(IObservation<TSubject> observation)
 		{
 			List<IError> errors = ExtractHandledErrors(observation);
 
-			var filtered = new Observation(observation.TaskStatus, observation.TimedOut, errors.ToArray());
+			var filtered = new Observation<TSubject>(observation.TaskStatus,
+				observation.TimedOut,
+				observation.Sample,
+				errors.ToArray());
 			return filtered;
 		}
 
 		protected Predicate<Exception> Predicate { get; private set; }
 
-		protected List<IError> ExtractHandledErrors(IObservation observation)
+		protected List<IError> ExtractHandledErrors(IObservation<TSubject> observation)
 		{
 			var errors = new List<IError>();
 			foreach (IError error in observation.Errors)
@@ -54,17 +57,18 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		}
 	}
 
-	public class ExceptionFilter<TResult> : ExceptionFilter,
-		IExceptionFilter<TResult>
+	public class ExceptionFilter<TSubject, TResult> : ExceptionFilter<TSubject>,
+		IExceptionFilter<TSubject, TResult>
 	{
 		public ExceptionFilter([NotNull] Predicate<Exception> predicate)
 			: base(predicate) {}
 
-		public IMeasurement<TResult> Filter(IMeasurement<TResult> measurement)
+		public IMeasurement<TSubject, TResult> Filter(IMeasurement<TSubject, TResult> measurement)
 		{
 			List<IError> errors = ExtractHandledErrors(measurement);
 
-			var filtered = new Measurement<TResult>(measurement.Value,
+			var filtered = new Measurement<TSubject, TResult>(measurement.Sample,
+				measurement.Value,
 				measurement.TaskStatus,
 				measurement.TimedOut,
 				errors.ToArray());

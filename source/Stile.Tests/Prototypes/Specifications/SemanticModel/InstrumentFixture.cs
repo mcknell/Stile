@@ -16,17 +16,17 @@ namespace Stile.Tests.Prototypes.Specifications.SemanticModel
 		[Test]
 		public void Describes()
 		{
-			const int subject = 5;
+			int subject = 5;
 			var instrument = new Instrument<int, string>(x => x.ToString());
-			Assert.That(instrument.Sample(subject).Value, Is.EqualTo(subject.ToString()));
+			Assert.That(instrument.Measure(new Source<int>(() => subject)).Value, Is.EqualTo(subject.ToString()));
 		}
 
 		[Test]
 		public void Samples()
 		{
-			const int subject = 5;
+			int subject = 5;
 			var instrument = new Instrument<int, string>(x => x.ToString());
-			Assert.That(instrument.Sample(subject).Value, Is.EqualTo(subject.ToString()));
+			Assert.That(instrument.Measure(new Source<int>(() => subject)).Value, Is.EqualTo(subject.ToString()));
 		}
 	}
 }

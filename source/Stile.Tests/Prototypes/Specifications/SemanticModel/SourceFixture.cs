@@ -17,14 +17,14 @@ namespace Stile.Tests.Prototypes.Specifications.SemanticModel
 		public void FromExpression()
 		{
 			var source = new Source<int>(() => 4);
-			Assert.That(source.Get(), Is.EqualTo(4));
+			Assert.That(source.Get().Value, Is.EqualTo(4));
 		}
 
 		[Test]
 		public void FromInstance()
 		{
-			var source = new Source<int>(4);
-			Assert.That(source.Get(), Is.EqualTo(4));
+			var source = new Source<int>(() => 4);
+			Assert.That(source.Get().Value, Is.EqualTo(4));
 		}
 	}
 }

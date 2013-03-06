@@ -18,17 +18,17 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Is
 		[Test]
 		public void ComparablyEquivalentTo()
 		{
-			Assert.That(Specify.That(1).Is.ComparablyEquivalentTo(0).Evaluate().Outcome == Outcome.Failed);
-			Assert.That(Specify.That(1).Is.ComparablyEquivalentTo(1).Evaluate().Outcome == Outcome.Succeeded);
-			Assert.That(Specify.That(0).Is.ComparablyEquivalentTo(1).Evaluate().Outcome == Outcome.Failed);
+			Assert.That(Specify.That(() => 1).Is.ComparablyEquivalentTo(0).Evaluate().Outcome == Outcome.Failed);
+			Assert.That(Specify.That(() => 1).Is.ComparablyEquivalentTo(1).Evaluate().Outcome == Outcome.Succeeded);
+			Assert.That(Specify.That(() => 0).Is.ComparablyEquivalentTo(1).Evaluate().Outcome == Outcome.Failed);
 		}
 
 		[Test]
 		public void GreaterThan()
 		{
-			Assert.That(Specify.That(1).Is.GreaterThan(0).Evaluate().Outcome == Outcome.Succeeded);
-			Assert.That(Specify.That(1).Is.GreaterThan(1).Evaluate().Outcome == Outcome.Failed);
-			Assert.That(Specify.That(0).Is.GreaterThan(1).Evaluate().Outcome == Outcome.Failed);
+			Assert.That(Specify.That(() => 1).Is.GreaterThan(0).Evaluate().Outcome == Outcome.Succeeded);
+			Assert.That(Specify.That(() => 1).Is.GreaterThan(1).Evaluate().Outcome == Outcome.Failed);
+			Assert.That(Specify.That(() => 0).Is.GreaterThan(1).Evaluate().Outcome == Outcome.Failed);
 		}
 	}
 }

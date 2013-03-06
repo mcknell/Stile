@@ -6,6 +6,7 @@
 #region using...
 using System;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
+using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -27,13 +28,18 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			IProcedureBuilderState<TSubject> state)
 			: base(instrument, state.Source) {}
 
+		public override void Accept(IDescriptionVisitor visitor)
+		{
+			visitor.DescribeOverload3(this);
+		}
+
 		protected override IFluentBoundExpectationBuilder<TSubject, TResult> Builder
 		{
 			get { return this; }
 		}
 		protected override
 			Func
-				<IExpectation<TResult>, IExceptionFilter<TResult>,
+				<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>,
 					IBoundSpecification<TSubject, TResult, IFluentBoundExpectationBuilder<TSubject, TResult>>> SpecFactory
 		{
 			get { return MakeBoundSpecification; }

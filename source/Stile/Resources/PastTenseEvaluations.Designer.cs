@@ -70,11 +70,29 @@ namespace Stile.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to instrumented by.
+        /// </summary>
+        public static string InstrumentedBy {
+            get {
+                return ResourceManager.GetString("InstrumentedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to that.
         /// </summary>
         public static string That {
             get {
                 return ResourceManager.GetString("That", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to would be{0}but was.
+        /// </summary>
+        public static string WouldBeButWas {
+            get {
+                return ResourceManager.GetString("WouldBeButWas", resourceCulture);
             }
         }
     }

@@ -5,16 +5,22 @@
 
 #region using...
 using System.Threading.Tasks;
-using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using JetBrains.Annotations;
 #endregion
 
-namespace Stile.Prototypes.Specifications.SemanticModel
+namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 {
 	public interface IObservation
 	{
 		IError[] Errors { get; }
 		TaskStatus TaskStatus { get; }
 		bool TimedOut { get; }
+	}
+
+	public interface IObservation<out TSubject> : IObservation
+	{
+		[CanBeNull]
+		ISample<TSubject> Sample { get; }
 	}
 
 	public class Observation : IObservation
@@ -29,5 +35,20 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		public IError[] Errors { get; private set; }
 		public TaskStatus TaskStatus { get; private set; }
 		public bool TimedOut { get; private set; }
+	}
+
+	public class Observation<TSubject> : Observation,
+		IObservation<TSubject>
+	{
+		public Observation(TaskStatus taskStatus,
+			bool timedOut,
+			[CanBeNull] ISample<TSubject> sample,
+			params IError[] errors)
+			: base(taskStatus, timedOut, errors)
+		{
+			Sample = sample;
+		}
+
+		public ISample<TSubject> Sample { get; private set; }
 	}
 }

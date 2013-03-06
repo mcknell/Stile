@@ -6,6 +6,7 @@
 
 #region using...
 using System.Linq.Expressions;
+using JetBrains.Annotations;
 using Stile.Types.Expressions.Printing.Tokens;
 #endregion
 
@@ -17,5 +18,8 @@ namespace Stile.Types.Expressions.Printing
 		void Append(string value);
 		void Append(Expression expression, bool isTopLevel = false);
 		string Print();
+
+		[CanBeNull]
+		string ParameterAlias(ParameterExpression expression);
 	}
 }

@@ -6,7 +6,6 @@
 #region using...
 using System.Diagnostics.Contracts;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
@@ -19,8 +18,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 			this IHas<TSpecification, TSubject, TResult> has, int hashCode)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		{
-			var expectation =
-				new Expectation<TResult>(x => x.GetHashCode() == hashCode ? Outcome.Succeeded : Outcome.Failed);
+			var expectation = new Expectation<TSubject, TResult>(x => x.GetHashCode() == hashCode, Clause.HasHashCode);
 			TSpecification specification = has.Xray.Make(expectation);
 			return specification;
 		}

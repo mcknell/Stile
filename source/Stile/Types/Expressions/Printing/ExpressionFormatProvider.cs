@@ -1,11 +1,11 @@
-﻿#region License statement
-// NJamb, a specification and delta-specification DSL
-// Copyright (c) 2010-2011, Mark Knell
-// Published under the MIT License; all other rights reserved
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq.Expressions;
 using Stile.Types.Primitives;
@@ -17,6 +17,12 @@ namespace Stile.Types.Expressions.Printing
 		ICustomFormatter
 	{
 		public static readonly string CSharp4 = "CS4";
+		private readonly Dictionary<string, string> _parameterAliases;
+
+		public ExpressionFormatProvider(Dictionary<string, string> parameterAliases = null)
+		{
+			_parameterAliases = parameterAliases;
+		}
 
 		public string Format(string format, object arg, IFormatProvider formatProvider)
 		{
@@ -47,7 +53,7 @@ namespace Stile.Types.Expressions.Printing
 				}
 			}
 
-			string value = ExpressionPrinter.Make().Print(expression).Value;
+			string value = ExpressionPrinter.Make().Print(expression, _parameterAliases).Value;
 			return value;
 		}
 

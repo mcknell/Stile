@@ -35,7 +35,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		{
 			_lazyAll =
 				new Lazy<IQuantifiedHas<TSpecification, TItem>>(
-					() => new HasAll<TSpecification, TResult, TItem>(expectation => Make(expectation)));
+					() => new HasAll<TSpecification, TSubject, TResult, TItem>(expectation => Make(expectation)));
 		}
 
 		public IQuantifiedHas<TSpecification, TItem> All

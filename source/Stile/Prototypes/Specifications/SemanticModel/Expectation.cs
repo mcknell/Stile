@@ -9,28 +9,37 @@ using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Types.Expressions;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IExpectation<TResult>
+	public interface IExpectation
 	{
-		Lazy<string> Description { get; }
+		[NotNull]
+		IClause Clause { get; }
+		[NotNull]
+		ILazyDescriptionOfLambda Lambda { get; }
+		string Accept([NotNull] IExpectationFormatVisitor visitor);
+	}
 
-		TEvaluation Evaluate<TSubject, TEvaluation>(IMeasurement<TResult> measurement,
+	public interface IExpectation<TSubject,TResult> : IExpectation
+	{
+		TEvaluation Evaluate<TEvaluation>(IMeasurement<TSubject,TResult> measurement,
 			bool expectedAnException,
 			Evaluation.Factory<TSubject, TResult, TEvaluation> factory)
 			where TEvaluation : class, IEvaluation<TSubject, TResult>;
 	}
 
-	public class Expectation
+	public class Expectation<TSubject>
 	{
-		public static IEvaluation Evaluate(IObservation measurement, bool expectedAnException)
+		public static IEvaluation<TSubject> Evaluate(IObservation<TSubject> observation,
+			bool expectedAnException)
 		{
-			int handledErrors = measurement.Errors.Count(x => x.Handled);
-			int allErrorsIfAny = measurement.Errors.Length;
+			int handledErrors = observation.Errors.Count(x => x.Handled);
+			int allErrorsIfAny = observation.Errors.Length;
 
 			Outcome outcome;
 			if (handledErrors < allErrorsIfAny)
@@ -46,34 +55,49 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			{
 				outcome = Outcome.Failed;
 			}
-			return new Evaluation(outcome, measurement.TimedOut, measurement.Errors);
+			return new Evaluation<TSubject>(outcome, observation.TimedOut, observation.Sample, observation.Errors);
+		}
+
+		public static Expectation<TSubject, TResult> From<TResult>(Expression<Predicate<TResult>> expression,
+			Negated negated,
+			IClause clause)
+		{
+			Func<Predicate<TResult>> compiler = Expectation<TSubject,TResult>.MakeCompiler(expression, negated);
+			return new Expectation<TSubject, TResult>(compiler, new LazyDescriptionOfLambda(expression), clause);
 		}
 	}
 
-	public class Expectation<TResult> : Expectation,
-		IExpectation<TResult>
+	public class Expectation<TSubject, TResult> : Expectation<TSubject>,
+		IExpectation<TSubject, TResult>
 	{
-		private readonly Lazy<Func<TResult, Outcome>> _lazyPredicate;
+		private readonly Lazy<Predicate<IMeasurement<TSubject,TResult>>> _lazyPredicate;
 
-		public Expectation([NotNull] Expression<Func<TResult, Outcome>> expression)
-			: this(expression.Compile, expression.ToLazyDebugString()) {}
+		public Expectation([NotNull] Expression<Predicate<TResult>> expression, [NotNull] IClause clause)
+			: this(MakeCompiler(expression), new LazyDescriptionOfLambda(expression), clause) {}
 
-		private Expectation([NotNull] Func<Func<TResult, Outcome>> predicateSource,
-			[NotNull] Lazy<string> description)
+		public Expectation([NotNull] Func<Predicate<TResult>> predicateSource,
+			[NotNull] ILazyDescriptionOfLambda lambda,
+			[NotNull] IClause clause)
 		{
-			Func<Func<TResult, Outcome>> source = predicateSource.ValidateArgumentIsNotNull();
-			_lazyPredicate = new Lazy<Func<TResult, Outcome>>(source);
-			Description = description.ValidateArgumentIsNotNull();
+			Clause = clause;
+			Lambda = lambda;
+			Func<Predicate<TResult>> source = predicateSource.ValidateArgumentIsNotNull();
+			_lazyPredicate = new Lazy<Predicate<IMeasurement<TSubject,TResult>>>(() => x => source.Invoke().Invoke(x.Value));
 		}
 
-		public Lazy<string> Description { get; private set; }
-
-		public static Expectation<TResult> UnconditionalAcceptance
+		public IClause Clause { get; private set; }
+		public ILazyDescriptionOfLambda Lambda { get; private set; }
+		public static Expectation<TSubject,TResult> UnconditionalAcceptance
 		{
-			get { return new Expectation<TResult>(result => Outcome.Succeeded); }
+			get { return new Expectation<TSubject,TResult>(result => true, SemanticModel.Clause.AlwaysTrue); }
 		}
 
-		public TEvaluation Evaluate<TSubject, TEvaluation>(IMeasurement<TResult> measurement,
+		public string Accept(IExpectationFormatVisitor visitor)
+		{
+			return visitor.Format(this);
+		}
+
+		public TEvaluation Evaluate<TEvaluation>(IMeasurement<TSubject, TResult> measurement,
 			bool expectedAnException,
 			Evaluation.Factory<TSubject, TResult, TEvaluation> factory)
 			where TEvaluation : class, IEvaluation<TSubject, TResult>
@@ -91,14 +115,35 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			} else if (handledErrors == allErrorsIfAny && handledErrors > 0)
 			{
 				outcome = Outcome.Succeeded;
-			} else if (_lazyPredicate.Value.Invoke(measurement.Value))
+			} else if (_lazyPredicate.Value.Invoke(measurement))
 			{
 				outcome = measurement.TaskStatus;
 			} else
 			{
 				outcome = Outcome.Failed;
 			}
-			return factory.Invoke(outcome, measurement.Value, measurement.TimedOut, measurement.Errors);
+			return factory.Invoke(measurement.Sample,
+				outcome,
+				measurement.Value,
+				measurement.TimedOut,
+				measurement.Errors);
+		}
+
+		public static Func<Predicate<TResult>> MakeCompiler(Expression<Predicate<TResult>> expression)
+		{
+			var lazy = new Lazy<Predicate<TResult>>(expression.Compile);
+			Predicate<TResult> predicate = x => lazy.Value.Invoke(x);
+			Func<Predicate<TResult>> doubleFunc = () => predicate;
+			return doubleFunc;
+		}
+
+		public static Func<Predicate<TResult>> MakeCompiler(Expression<Predicate<TResult>> expression,
+			Negated negated)
+		{
+			var lazy = new Lazy<Predicate<TResult>>(expression.Compile);
+			Predicate<TResult> predicate = x => negated.AgreesWith(lazy.Value.Invoke(x));
+			Func<Predicate<TResult>> doubleFunc = () => predicate;
+			return doubleFunc;
 		}
 	}
 }

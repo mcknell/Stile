@@ -17,7 +17,7 @@ namespace Stile.Types.Expressions.Printing.ExpressionParsers
 
 		protected override void Parse(ParameterExpression expression)
 		{
-			Append(expression.Name);
+			Append(GetAlias(expression) ?? expression.Name);
 		}
 	}
 }

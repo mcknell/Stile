@@ -35,14 +35,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 		where TSpecification : class, IChainableSpecification, ISpecification<TSubject>
 		where TException : Exception
 	{
-		private readonly IExceptionFilter _exceptionFilter;
+		private readonly IExceptionFilter<TSubject> _exceptionFilter;
 		private readonly IProcedure<TSubject> _procedure;
 		private readonly ISource<TSubject> _source;
 		private readonly VoidSpecification.Factory<TSpecification, TSubject> _specificationFactory;
 
 		public VoidSpecificationBuilder([CanBeNull] ISource<TSubject> source,
 			[NotNull] IProcedure<TSubject> procedure,
-			[NotNull] IExceptionFilter exceptionFilter,
+			[NotNull] IExceptionFilter<TSubject> exceptionFilter,
 			[NotNull] VoidSpecification.Factory<TSpecification, TSubject> specificationFactory)
 		{
 			_source = source;
@@ -62,12 +62,13 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		where TException : Exception
 	{
-		private readonly IExceptionFilter<TResult> _exceptionFilter;
-		private readonly Func<IExpectation<TResult>, IExceptionFilter<TResult>, TSpecification>
+		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
+		private readonly Func<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>, TSpecification>
 			_specificationFactory;
 
-		public VoidSpecificationBuilder([NotNull] IExceptionFilter<TResult> exceptionFilter,
-			[NotNull] Func<IExpectation<TResult>, IExceptionFilter<TResult>, TSpecification> specificationFactory)
+		public VoidSpecificationBuilder([NotNull] IExceptionFilter<TSubject, TResult> exceptionFilter,
+			[NotNull] Func<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>, TSpecification>
+				specificationFactory)
 		{
 			_exceptionFilter = exceptionFilter.ValidateArgumentIsNotNull();
 			_specificationFactory = specificationFactory.ValidateArgumentIsNotNull();
@@ -75,7 +76,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 
 		public TSpecification Build()
 		{
-			return _specificationFactory.Invoke(Expectation<TResult>.UnconditionalAcceptance, _exceptionFilter);
+			return _specificationFactory.Invoke(Expectation<TSubject, TResult>.UnconditionalAcceptance,
+				_exceptionFilter);
 		}
 	}
 }

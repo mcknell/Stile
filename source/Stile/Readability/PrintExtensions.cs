@@ -93,7 +93,7 @@ namespace Stile.Readability
 
         public static Lazy<string> ToLazyDebugString(this object obj)
         {
-            return new Lazy<string>(() => obj.ToDebugString());
+            return new Lazy<string>(obj.ToDebugString);
         }
 
         public static Lazy<string> ToLazyDebugString<TItem>(this Lazy<TItem> lazy)

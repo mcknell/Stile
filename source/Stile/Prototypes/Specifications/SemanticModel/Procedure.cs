@@ -14,39 +14,40 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
+using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Readability;
+using Stile.Types.Expressions;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IInspection {}
-
-	public interface IProcedure : IInspection {}
-
-	public interface IProcedureState
-	{
-		Lazy<string> Description { get; }
-	}
-
-	public interface IProcedureState<TSubject> : IProcedureState,
-		IHasSource<TSubject> {}
+	public interface IProcedure {}
 
 	public interface IProcedure<TSubject> : IProcedure,
 		IHides<IProcedureState<TSubject>>
 	{
-		IObservation Sample([NotNull] ISource<TSubject> source, IDeadline deadline = null);
+		IObservation<TSubject> Observe([NotNull] ISource<TSubject> source, IDeadline deadline = null);
 	}
 
-	public abstract class Procedure : IProcedure
+	public interface IProcedureState
 	{
-		protected Procedure(Lazy<string> description)
+		ILazyDescriptionOfLambda Lambda { get; }
+	}
+
+	public interface IProcedureState<out TSubject> : IProcedureState,
+		IHasSource<TSubject> {}
+
+	public abstract class Procedure : IProcedure,
+		IProcedureState
+	{
+		protected Procedure(LambdaExpression lambda)
 		{
-			Description = description;
+			Lambda = new LazyDescriptionOfLambda(lambda);
 		}
 
-		public Lazy<string> Description { get; private set; }
+		public ILazyDescriptionOfLambda Lambda { get; private set; }
 
 		public static class Trivial<TSubject>
 		{
@@ -62,7 +63,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		private readonly Lazy<Action<TSubject>> _lazyAction;
 
 		public Procedure([NotNull] Expression<Action<TSubject>> expression, ISource<TSubject> source = null)
-			: base(expression.ToLazyDebugString())
+			: base(expression)
 		{
 			_lazyAction = new Lazy<Action<TSubject>>(expression.Compile);
 			Source = source;
@@ -75,7 +76,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			get { return this; }
 		}
 
-		public IObservation Sample(ISource<TSubject> source, IDeadline deadline = null)
+		public IObservation<TSubject> Observe(ISource<TSubject> source, IDeadline deadline = null)
 		{
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
 			source.ValidateArgumentIsNotNull();
@@ -92,9 +93,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			}
 			var millisecondsTimeout = (int) timeout.TotalMilliseconds;
 
+			ISample<TSubject> sample = null;
+
 			var task = new Task(() =>
 			{
-				TSubject subject = source.Get();
+				sample = source.Get();
+				TSubject subject = sample.Value;
 				_lazyAction.Value.Invoke(subject);
 			});
 
@@ -126,8 +130,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 					}
 				}
 			}
-			var observation = new Observation(task.Status, timedOut, errors.ToArray());
+			var observation = new Observation<TSubject>(task.Status, timedOut, sample, errors.ToArray());
 			return observation;
+		}
+
+		public void Accept(IDescriptionVisitor visitor)
+		{
+			visitor.DescribeOverload1(this);
 		}
 	}
 }

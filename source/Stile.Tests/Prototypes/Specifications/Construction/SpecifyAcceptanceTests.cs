@@ -27,8 +27,8 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		public void BeforeBoundToInstance()
 		{
 			IBoundSpecification<Foo<int>, int> specification =
-				Specify.For(new Foo<int>()).That(x => x.Count).Is.Not.EqualTo(12).Before(TimeSpan.FromSeconds(1));
-			IEvaluation<int> evaluation = specification.Evaluate();
+				Specify.For(() => new Foo<int>()).That(x => x.Count).Is.Not.EqualTo(12).Before(TimeSpan.FromSeconds(1));
+			IBoundEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.TimedOut, Is.False);
 			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
@@ -41,7 +41,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			saboteur.Load(() => new ArgumentException());
 			saboteur.Fuse = TimeSpan.FromMilliseconds(1000);
 			IVoidBoundSpecification<Saboteur> boundSpecification =
-				Specify.For(saboteur)
+				Specify.For(() => saboteur)
 					.That(x => x.Throw())
 					.Throws<ArgumentException>()
 					.Build()
@@ -61,7 +61,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			IBoundSpecification<Foo<int>, int> specification =
 				Specify.For(() => new Foo<int>()).That(x => x.Count).Is.ComparablyEquivalentTo(7);
-			IEvaluation<int> evaluation = specification.Evaluate();
+			IBoundEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(evaluation.Value, Is.EqualTo(0));
 		}
@@ -70,8 +70,8 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		public void BoundToInstance()
 		{
 			IBoundSpecification<Foo<int>, int> specification =
-				Specify.For(new Foo<int>()).That(x => x.Count).Is.Not.EqualTo(12);
-			IEvaluation<int> evaluation = specification.Evaluate();
+				Specify.For(() => new Foo<int>()).That(x => x.Count).Is.Not.EqualTo(12);
+			IBoundEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.Value, Is.EqualTo(0));
 		}
@@ -80,7 +80,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		public void FailsToThrowBound()
 		{
 			IVoidBoundSpecification<Foo<string>> specification =
-				Specify.For(new Foo<string>()).That(x => x.Clear()).Throws<ArgumentException>().Build();
+				Specify.For(() => new Foo<string>()).That(x => x.Clear()).Throws<ArgumentException>().Build();
 			IEvaluation evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 		}
@@ -89,7 +89,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		public void FailsToThrowBoundInstrument()
 		{
 			IBoundSpecification<Foo<int>, int, IFluentBoundExpectationBuilder<Foo<int>, int>> specification =
-				Specify.For(new Foo<int>()).That(x => x.Count).Throws<ArgumentException>().Build();
+				Specify.For(() => new Foo<int>()).That(x => x.Count).Throws<ArgumentException>().Build();
 			IBoundEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 		}
@@ -99,7 +99,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			IVoidSpecification<Foo<string>> specification =
 				Specify.ForAny<Foo<string>>().That(x => x.Clear()).Throws<ArgumentException>().Build();
-			IEvaluation evaluation = specification.Evaluate(new Foo<string>());
+			IEvaluation evaluation = specification.Evaluate(() => new Foo<string>());
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 		}
 
@@ -109,7 +109,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
 			IVoidSpecificationBuilder<IVoidBoundSpecification<Saboteur>, Saboteur, ArgumentException>
-				specificationBuilder = Specify.For(saboteur).That(x => x.Throw()).Throws<ArgumentException>();
+				specificationBuilder = Specify.For(() => saboteur).That(x => x.Throw()).Throws<ArgumentException>();
 			IVoidBoundSpecification<Saboteur> specification = specificationBuilder.Build();
 			IEvaluation evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
@@ -125,7 +125,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			IVoidSpecificationBuilder
 				<IBoundSpecification<SabotageTarget, Saboteur, IFluentBoundExpectationBuilder<SabotageTarget, Saboteur>>,
 					SabotageTarget, ArgumentException> specificationBuilder =
-						Specify.For(target).That(x => x.Saboteur.SuicidalSideEffect).Throws<ArgumentException>();
+						Specify.For(() => target).That(x => x.Saboteur.SuicidalSideEffect).Throws<ArgumentException>();
 			IBoundSpecification<SabotageTarget, Saboteur> specification = specificationBuilder.Build();
 			IEvaluation<SabotageTarget, Saboteur> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Errors.Any(), Is.True);
@@ -139,8 +139,8 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
-			IVoidSpecificationBuilder<IVoidSpecification<Saboteur>, Saboteur, ArgumentException>
-				specificationBuilder = Specify.ForAny<Saboteur>().That(x => x.Throw()).Throws<ArgumentException>();
+			IVoidSpecificationBuilder<IVoidSpecification<Saboteur>, Saboteur, ArgumentException> specificationBuilder =
+				Specify.ForAny<Saboteur>().That(x => x.Throw()).Throws<ArgumentException>();
 			IVoidSpecification<Saboteur> specification = specificationBuilder.Build();
 			IEvaluation evaluation = specification.Evaluate(saboteur);
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
@@ -152,7 +152,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			ISpecification<Foo<int>, string> specification =
 				Specify.ForAny<Foo<int>>().That(x => x.ToString()).Has.HashCode(45);
-			IEvaluation<string> evaluation = specification.Evaluate(new Foo<int>());
+			IEvaluation<Foo<int>, string> evaluation = specification.Evaluate(new Foo<int>());
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(evaluation.Value, Is.Not.EqualTo(45));
 		}

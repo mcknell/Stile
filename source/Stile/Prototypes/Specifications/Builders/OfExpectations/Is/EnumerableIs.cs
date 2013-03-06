@@ -6,10 +6,10 @@
 #region using...
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Types.Enumerables;
 #endregion
@@ -38,16 +38,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		where TSpecification : class, IChainableSpecification, ISpecification<TSubject, TResult>
 		where TResult : class, IEnumerable<TItem>
 	{
+		private static readonly Expression<Predicate<TResult>> _all = x => x.None();
 		private readonly Lazy<TSpecification> _lazyEmpty;
 
 		public EnumerableIs([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState,
 			Negated negated)
 			: base(builderState, negated)
 		{
-			_lazyEmpty =
-				new Lazy<TSpecification>(
-					() =>
-						Make(new Expectation<TResult>(x => Negated.AgreesWith(x.None()) ? Outcome.Succeeded : Outcome.Failed)));
+			_lazyEmpty = new Lazy<TSpecification>(() => Make(Expectation<TSubject>.From(_all, negated, Clause.HasAll)));
 		}
 
 		public TSpecification Empty

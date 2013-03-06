@@ -42,7 +42,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		public void BoundToInstance()
 		{
 			IBoundSpecification<Foo<int>, int, IFluentBoundExpectationBuilder<Foo<int>, int>> specification = //
-				Specify.For(new Foo<int>()).That(x => x.Count) //
+				Specify.For(() => new Foo<int>()).That(x => x.Count) //
 					.Is.Not.EqualTo(12) //
 					.AndThen.Is.Not.EqualTo(12);
 			Assert.That(specification, Is.Not.Null);
@@ -62,11 +62,11 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 				Specify.ForAny<Foo<int>>().That(x => x.ToString()).Has.HashCode(45) //
 					.AndThen.Has.HashCode(45);
 			Assert.That(specification, Is.Not.Null);
-			IEvaluation<Foo<int>, string> evaluation = specification.Evaluate(new Foo<int>());
+			IEvaluation<Foo<int>, string> evaluation = specification.Evaluate(() => new Foo<int>());
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(evaluation.Value, Is.Not.EqualTo(45));
 
-			IEvaluation<Foo<int>, string> secondEvaluation = evaluation.Evaluate(new Foo<int>());
+			IEvaluation<Foo<int>, string> secondEvaluation = evaluation.Evaluate(() => new Foo<int>());
 			Assert.That(secondEvaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(secondEvaluation.Value, Is.Not.EqualTo(45));
 		}

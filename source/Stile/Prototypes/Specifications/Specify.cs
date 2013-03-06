@@ -18,13 +18,6 @@ namespace Stile.Prototypes.Specifications
 	public static class Specify
 	{
 		[System.Diagnostics.Contracts.Pure]
-		public static IBoundProcedureBuilder<TSubject> For<TSubject>([CanBeNull] TSubject subject)
-		{
-			var source = new Source<TSubject>(subject);
-			return new BoundProcedureBuilder<TSubject>(source);
-		}
-
-		[System.Diagnostics.Contracts.Pure]
 		public static IBoundProcedureBuilder<TSubject> For<TSubject>([NotNull] Expression<Func<TSubject>> expression)
 		{
 			var source = new Source<TSubject>(expression.ValidateArgumentIsNotNull());
@@ -38,10 +31,11 @@ namespace Stile.Prototypes.Specifications
 		}
 
 		[System.Diagnostics.Contracts.Pure]
-		public static IFluentBoundExpectationBuilder<TSubject, TSubject> That<TSubject>(TSubject subject)
+		public static IFluentBoundExpectationBuilder<TSubject, TSubject> That<TSubject>(
+			[NotNull] Expression<Func<TSubject>> expression)
 		{
 			var instrument = new Instrument<TSubject, TSubject>(x => x);
-			return new FluentBoundExpectationBuilder<TSubject, TSubject>(instrument, For(subject).Xray);
+			return new FluentBoundExpectationBuilder<TSubject, TSubject>(instrument, For(expression).Xray);
 		}
 
 		[System.Diagnostics.Contracts.Pure]

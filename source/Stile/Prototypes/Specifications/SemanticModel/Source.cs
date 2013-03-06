@@ -7,39 +7,63 @@
 using System;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
+using Stile.Patterns.Behavioral.Validation;
+using Stile.Patterns.Structural.FluentInterface;
+using Stile.Prototypes.Specifications.Printable;
+using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Time;
+using Stile.Types.Expressions;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
 	public interface ISource {}
 
-	public interface ISource<out TSubject> : ISource
+	public interface ISource<out TSubject> : ISource,
+		IHides<ISourceState>
 	{
-		[CanBeNull]
-		TSubject Get();
+		[NotNull]
+		ISample<TSubject> Get();
 	}
 
-	public class Source<TSubject> : ISource<TSubject>
+	public interface ISourceState : IDescribable
 	{
-		private readonly Lazy<TSubject> _subjectGetter;
+		Lazy<string> Description { get; }
+	}
 
-		public Source()
-			: this(() => () => default(TSubject)) {}
+	public class Source<TSubject> : ISource<TSubject>,
+		ISourceState
+	{
+		private readonly IClock _clock;
+		private readonly Lazy<Func<TSubject>> _subjectGetter;
 
-		public Source([NotNull] Expression<Func<TSubject>> expression)
-			: this(expression.Compile) {}
-
-		public Source(TSubject subject)
-			: this(() => () => subject) {}
-
-		protected Source(Func<Func<TSubject>> doubleFunc)
+		public Source([NotNull] Expression<Func<TSubject>> expression, IClock clock = null)
+			: this(expression.Compile, expression.Body.ToLazyDebugString())
 		{
-			_subjectGetter = new Lazy<TSubject>(doubleFunc.Invoke());
+			_clock = clock ?? Clock.SystemClock;
 		}
 
-		public TSubject Get()
+		protected Source(Func<Func<TSubject>> doubleFunc, Lazy<string> description)
 		{
-			return _subjectGetter.Value;
+			_subjectGetter = new Lazy<Func<TSubject>>(doubleFunc);
+			Description = description.ValidateArgumentIsNotNull();
+		}
+
+		public Lazy<string> Description { get; private set; }
+		public ISourceState Xray
+		{
+			get { return this; }
+		}
+
+		public ISample<TSubject> Get()
+		{
+			TSubject subject = _subjectGetter.Value.Invoke();
+			return new Sample<TSubject>(subject, this, _clock.UtcNow);
+		}
+
+		public void Accept(IDescriptionVisitor visitor)
+		{
+			visitor.DescribeOverload1(this);
 		}
 	}
 }

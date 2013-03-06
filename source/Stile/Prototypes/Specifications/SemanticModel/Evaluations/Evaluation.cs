@@ -9,6 +9,7 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
+using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
@@ -23,20 +24,23 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		bool TimedOut { get; }
 	}
 
-	public interface IEvaluation<out TResult> : IEvaluation
+	public interface IEvaluation<out TSubject> : IEvaluation
+	{
+		ISample<TSubject> Sample { get; }
+	}
+
+	public interface IEvaluation<TSubject, TResult> : IEvaluation<TSubject>,
+		IEvaluable<TSubject, TResult>,
+		IHides<IEvaluationState<TSubject, TResult>>
 	{
 		TResult Value { get; }
 	}
-
-	public interface IEvaluation<TSubject, TResult> : IEvaluation<TResult>,
-		IEvaluable<TSubject, TResult, IEvaluation<TSubject, TResult>>,
-		IHides<IEvaluationState<TSubject, TResult>> {}
 
 	public interface IEvaluationState<TSubject, TResult> : IHasSpecification<TSubject, TResult> {}
 
 	public class Evaluation : IEvaluation
 	{
-		public delegate TEvaluation Factory<in TSubject, in TResult, out TEvaluation>(
+		public delegate TEvaluation Factory<in TSubject, in TResult, out TEvaluation>(ISample<TSubject> sample,
 			Outcome outcome, TResult result, bool timedOut, params IError[] errors)
 			where TEvaluation : class, IEvaluation<TSubject, TResult>;
 
@@ -62,49 +66,57 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public bool TimedOut { get; private set; }
 	}
 
-	public class Evaluation<TResult> : Evaluation,
-		IEvaluation<TResult>
+	public class Evaluation<TSubject> : Evaluation,
+		IEvaluation<TSubject>
 	{
-		public Evaluation(Outcome outcome, TResult value, bool timedOut, params IError[] errors)
+		public Evaluation(Outcome outcome, bool timedOut, [NotNull] ISample<TSubject> sample, params IError[] errors)
 			: base(outcome, timedOut, errors)
 		{
-			Value = value;
+			Sample = sample;
 		}
 
-		public TResult Value { get; private set; }
+		public ISample<TSubject> Sample { get; private set; }
 	}
 
-	public class Evaluation<TSubject, TResult> : Evaluation<TResult>,
+	public class Evaluation<TSubject, TResult> : Evaluation<TSubject>,
 		IEvaluation<TSubject, TResult>,
 		IEvaluationState<TSubject, TResult>
 	{
 		public Evaluation([NotNull] ISpecification<TSubject, TResult> specification,
+			[NotNull] ISample<TSubject> sample,
 			Outcome outcome,
 			TResult value,
 			bool timedOut,
 			[NotNull] ISource<TSubject> source,
 			params IError[] errors)
-			: base(outcome, value, timedOut, errors)
+			: base(outcome, timedOut, sample, errors)
 		{
 			Specification = specification.ValidateArgumentIsNotNull();
+			Value = value;
 			ISpecificationState<TSubject, TResult> xray = Specification.Xray;
 			Expectation = xray.Expectation.ValidateArgumentIsNotNull();
 			Instrument = xray.Instrument.ValidateArgumentIsNotNull();
 			Source = source.ValidateArgumentIsNotNull();
 		}
 
-		public IExpectation<TResult> Expectation { get; private set; }
+		public IExpectation<TSubject, TResult> Expectation { get; private set; }
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
 		public ISource<TSubject> Source { get; private set; }
 		public ISpecification<TSubject, TResult> Specification { get; private set; }
+		public TResult Value { get; private set; }
 		public IEvaluationState<TSubject, TResult> Xray
 		{
 			get { return this; }
 		}
 
-		public IEvaluation<TSubject, TResult> Evaluate(TSubject subject, IDeadline deadline = null)
+		public IEvaluation<TSubject, TResult> Evaluate(ISource<TSubject> source, IDeadline deadline = null)
 		{
-			return Specification.Evaluate(subject, deadline);
+			return Specification.Evaluate(source, deadline);
+		}
+
+		public void Accept(IDescriptionVisitor visitor)
+		{
+			visitor.DescribeOverload2(this);
 		}
 	}
 }

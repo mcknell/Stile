@@ -16,7 +16,7 @@ namespace Stile.Contracts
 	{
 		public bool ModIsOdd(int a, int b)
 		{
-			Contract.Requires(Specify.That(b).Is.GreaterThan(0).IsTrue());
+			Contract.Requires(Specify.That(() => b).Is.GreaterThan(0).IsTrue());
 
 			return (a % b) / 2 == 1;
 		}

@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Types.Expressions;
@@ -19,12 +20,12 @@ using Stile.Types.Expressions;
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IInstrument : IInspection {}
+	public interface IInstrument : IProcedure {}
 
 	public interface IInstrument<TSubject, out TResult> : IInstrument,
 		IProcedure<TSubject>
 	{
-		new IMeasurement<TResult> Sample([NotNull] ISource<TSubject> source, IDeadline deadline = null);
+		IMeasurement<TSubject, TResult> Measure([NotNull] ISource<TSubject> source, IDeadline deadline = null);
 	}
 
 	public class Instrument<TSubject, TResult> : IInstrument<TSubject, TResult>,
@@ -36,18 +37,18 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		{
 			Expression<Func<TSubject, TResult>> validatedExpression = expression.ValidateArgumentIsNotNull();
 			_lazyFunc = new Lazy<Func<TSubject, TResult>>(validatedExpression.Compile);
-			Description = validatedExpression.ToLazyDebugString();
 			Source = source;
+			Lambda = new LazyDescriptionOfLambda(expression);
 		}
 
-		public Lazy<string> Description { get; private set; }
+		public ILazyDescriptionOfLambda Lambda { get; private set; }
 		public ISource<TSubject> Source { get; private set; }
 		public IProcedureState<TSubject> Xray
 		{
 			get { return this; }
 		}
 
-		public IMeasurement<TResult> Sample(ISource<TSubject> source, IDeadline deadline = null)
+		public IMeasurement<TSubject, TResult> Measure(ISource<TSubject> source, IDeadline deadline = null)
 		{
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
 			source.ValidateArgumentIsNotNull();
@@ -64,9 +65,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			}
 			var millisecondsTimeout = (int) timeout.TotalMilliseconds;
 
+			ISample<TSubject> sample = null;
+
 			var task = new Task<TResult>(() =>
 			{
-				TSubject subject = source.Get();
+				sample = source.Get();
+				TSubject subject = sample.Value;
 				return _lazyFunc.Value.Invoke(subject);
 			});
 
@@ -100,18 +104,22 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 					}
 				}
 			}
-			var measurement = new Measurement<TResult>(result, task.Status, timedOut, errors.ToArray());
+			var measurement = new Measurement<TSubject, TResult>(sample,
+				result,
+				task.Status,
+				timedOut,
+				errors.ToArray());
 			return measurement;
 		}
 
-		IObservation IProcedure<TSubject>.Sample(ISource<TSubject> source, IDeadline deadline)
+		IObservation<TSubject> IProcedure<TSubject>.Observe(ISource<TSubject> source, IDeadline deadline)
 		{
-			return Sample(source, deadline);
+			return Measure(source, deadline);
 		}
 
-		public IMeasurement<TResult> Sample(TSubject subject, IDeadline deadline = null)
+		public void Accept(IDescriptionVisitor visitor)
 		{
-			return Sample(new Source<TSubject>(subject), deadline);
+			visitor.DescribeOverload2(this);
 		}
 	}
 }

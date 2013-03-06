@@ -6,6 +6,7 @@
 #region using...
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
+using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel;
 #endregion
 
@@ -16,10 +17,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 	/// </summary>
 	public interface IProcedureBuilder {}
 
-	public interface IProcedureBuilder<TSubject> : IProcedureBuilder,
+	public interface IProcedureBuilder<out TSubject> : IProcedureBuilder,
 		IHides<IProcedureBuilderState<TSubject>> {}
 
-	public interface IProcedureBuilderState<TSubject> : IHasSource<TSubject> {}
+	public interface IProcedureBuilderState<out TSubject> : IHasSource<TSubject> {}
 
 	public class ProcedureBuilder<TSubject> : IProcedureBuilder<TSubject>,
 		IProcedureBuilderState<TSubject>
@@ -33,6 +34,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 		public IProcedureBuilderState<TSubject> Xray
 		{
 			get { return this; }
+		}
+
+		public void Accept(IDescriptionVisitor visitor)
+		{
+			visitor.DescribeOverload1(this);
 		}
 	}
 }

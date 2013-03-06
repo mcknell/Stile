@@ -60,7 +60,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 		public IVoidSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
 			where TException : Exception
 		{
-			var exceptionFilter = new ExceptionFilter(exception => exception is TException);
+			var exceptionFilter = new ExceptionFilter<TSubject>(exception => exception is TException);
 			var builder = new VoidSpecificationBuilder<TSpecification, TSubject, TException>(Source,
 				Procedure,
 				exceptionFilter,

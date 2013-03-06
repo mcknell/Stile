@@ -1,17 +1,17 @@
-﻿#region License statement
-// NJamb, a specification and delta-specification DSL
-// Copyright (c) 2010-2011, Mark Knell
-// Published under the MIT License; all other rights reserved
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Stile.Readability;
-using Stile.Types.Expressions.Printing;
-using System.Linq;
 using Stile.Types.Enumerables;
+using Stile.Types.Expressions.Printing;
 #endregion
 
 namespace Stile.Types.Expressions
@@ -37,12 +37,13 @@ namespace Stile.Types.Expressions
 			return bodySubstring;
 		}
 
-		public static PropertyInfo GetPropertyInfo<THost, TProperty>(this Expression<Func<THost, TProperty>> expression)
+		public static PropertyInfo GetPropertyInfo<THost, TProperty>(
+			this Expression<Func<THost, TProperty>> expression)
 		{
 			PropertyInfo propertyInfo;
 			if (!expression.TryGetPropertyInfo(out propertyInfo))
 			{
-                //throw new ArgumentOutOfRangeException("expression", expression, "Expression did not describe a property.");
+				//throw new ArgumentOutOfRangeException("expression", expression, "Expression did not describe a property.");
 				throw new ArgumentOutOfRangeException("expression", "Expression did not describe a property.");
 			}
 			return propertyInfo;
@@ -53,15 +54,20 @@ namespace Stile.Types.Expressions
 			return ToLazyDebugString(expression).Value;
 		}
 
-		public static Lazy<string> ToLazyDebugString(this Expression expression)
+		public static Lazy<string> ToLazyDebugString(this Expression expression,
+				Dictionary<string, string> parameterAliases = null)
 		{
-			return expression.ToLazyDebugString(Identity.Format);
+			return expression.ToLazyDebugString(Identity.Format, parameterAliases);
 		}
 
-		public static Lazy<string> ToLazyDebugString(this Expression expression, string format, params object[] args)
+		public static Lazy<string> ToLazyDebugString(this Expression expression,
+			string format,
+			Dictionary<string, string> parameterAliases = null,
+			params object[] args)
 		{
 			object[] objects = args.Unshift(expression).ToArray();
-			return new Lazy<string>(() => string.Format(new ExpressionFormatProvider(), format, objects));
+			return
+				new Lazy<string>(() => string.Format(new ExpressionFormatProvider(parameterAliases), format, objects));
 		}
 
 		public static bool TryGetPropertyInfo<THost, TProperty>(this Expression<Func<THost, TProperty>> expression,
@@ -71,8 +77,7 @@ namespace Stile.Types.Expressions
 			if (memberExpression != null)
 			{
 				propertyInfo = memberExpression.Member as PropertyInfo;
-			}
-			else
+			} else
 			{
 				propertyInfo = null;
 			}
