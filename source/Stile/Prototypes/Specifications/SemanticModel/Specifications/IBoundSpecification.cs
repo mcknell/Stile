@@ -14,14 +14,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public interface IBoundSpecification : ISpecification,
 		ISpecificationState {}
 
-	public interface IResultBoundSpecification<out TResult> : IBoundSpecification,
-		IResultSpecification<TResult> {}
-
 	public interface IBoundSpecification<in TSubject> : IBoundSpecification,
 		ISpecification<TSubject> {}
 
 	public interface IBoundSpecification<TSubject, TResult> : IBoundSpecification<TSubject>,
-		IResultBoundSpecification<TResult>,
 		ISpecification<TSubject, TResult>,
 		IChainableSpecification
 	{

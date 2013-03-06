@@ -19,19 +19,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
 	public interface ISpecification {}
 
-// ReSharper disable UnusedTypeParameter
-	/// <summary>
-	/// Generalization so that Is and Has can have generic type constraints that don't specify a Subject.
-	/// </summary>
-	/// <typeparam name="TResult"></typeparam>
-	public interface IResultSpecification<out TResult> : ISpecification {}
-
-// ReSharper restore UnusedTypeParameter
-
 	public interface ISpecification<in TSubject> : ISpecification {}
 
 	public interface ISpecification<TSubject, TResult> : ISpecification<TSubject>,
-		IResultSpecification<TResult>,
 		IHides<ISpecificationState<TSubject, TResult>>,
 		IEvaluable<TSubject, TResult> {}
 
@@ -57,15 +47,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 	public abstract class Specification : ISpecificationState
 	{
-		public delegate TSpecification Factory<out TSpecification, TSubject, TResult, in TExpectationBuilder>(
-			ISource<TSubject> source,
-			IInstrument<TSubject, TResult> instrument,
-			IExpectation<TSubject, TResult> expectation,
-			TExpectationBuilder expectationBuilder,
-			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
-			where TSpecification : class, IChainableSpecification
-			where TExpectationBuilder : class, IExpectationBuilder;
-
 		public abstract ISpecification Clone(IDeadline deadline);
 	}
 
@@ -132,10 +113,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public IEvaluation<TSubject, TResult> Evaluate(ISource<TSubject> source, IDeadline deadline = null)
 		{
-			Evaluation.Factory<TSubject, TResult, IEvaluation<TSubject, TResult>> factory =
-				(sample, outcome, result, timedOut, errors) =>
-					UnboundFactory(sample, outcome, result, timedOut, source, errors);
-			return Evaluate(source, factory, deadline);
+			return Evaluate(source, UnboundFactory, deadline);
 		}
 
 		public IBoundEvaluation<TSubject, TResult> Evaluate(IDeadline deadline = null)
@@ -158,13 +136,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			get { return _exceptionFilter != null; }
 		}
 
-		private IBoundEvaluation<TSubject, TResult> BoundFactory(ISample<TSubject> sample,
-			Outcome outcome,
-			TResult result,
-			bool timedOut,
-			params IError[] error)
+		private IBoundEvaluation<TSubject, TResult> BoundFactory(IMeasurement<TSubject, TResult> measurement,
+			Outcome outcome)
 		{
-			return new BoundEvaluation<TSubject, TResult>(this, sample, outcome, result, timedOut, error);
+			return new BoundEvaluation<TSubject, TResult>(this, measurement, outcome);
 		}
 
 		private TEvaluation Evaluate<TEvaluation>(ISource<TSubject> source,
@@ -180,14 +155,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return evaluation;
 		}
 
-		private IEvaluation<TSubject, TResult> UnboundFactory(ISample<TSubject> sample,
-			Outcome outcome,
-			TResult result,
-			bool timedOut,
-			ISource<TSubject> source,
-			params IError[] errors)
+		private IEvaluation<TSubject, TResult> UnboundFactory(IMeasurement<TSubject, TResult> measurement,
+			Outcome outcome)
 		{
-			return new Evaluation<TSubject, TResult>(this, sample, outcome, result, timedOut, source, errors);
+			return new Evaluation<TSubject, TResult>(this, measurement, outcome);
 		}
 	}
 }

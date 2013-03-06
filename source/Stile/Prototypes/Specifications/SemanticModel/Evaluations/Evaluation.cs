@@ -4,7 +4,6 @@
 #endregion
 
 #region using...
-using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
@@ -38,23 +37,17 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 
 	public interface IEvaluationState<TSubject, TResult> : IHasSpecification<TSubject, TResult> {}
 
-	public class Evaluation : IEvaluation
+	public abstract class Evaluation : IEvaluation
 	{
-		public delegate TEvaluation Factory<in TSubject, in TResult, out TEvaluation>(ISample<TSubject> sample,
-			Outcome outcome, TResult result, bool timedOut, params IError[] errors)
+		public delegate TEvaluation Factory<in TSubject, in TResult, out TEvaluation>(
+			IMeasurement<TSubject, TResult> sample, Outcome outcome)
 			where TEvaluation : class, IEvaluation<TSubject, TResult>;
 
-		public Evaluation(Outcome outcome, Exception handledExpectedException)
-			: this(outcome, false, handledExpectedException) {}
-
-		public Evaluation(Outcome outcome, bool timedOut, Exception handledExpectedException)
-			: this(outcome, timedOut, new Error(handledExpectedException, true)) {}
-
-		public Evaluation(Outcome outcome, bool timedOut, params IError[] errors)
+		protected Evaluation(IObservation observation, Outcome outcome)
 		{
-			Errors = errors;
+			Errors = observation.ValidateArgumentIsNotNull().Errors;
 			Outcome = outcome;
-			TimedOut = timedOut;
+			TimedOut = observation.TimedOut;
 			if (TimedOut)
 			{
 				Outcome = Outcome.Incomplete;
@@ -69,10 +62,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	public class Evaluation<TSubject> : Evaluation,
 		IEvaluation<TSubject>
 	{
-		public Evaluation(Outcome outcome, bool timedOut, [NotNull] ISample<TSubject> sample, params IError[] errors)
-			: base(outcome, timedOut, errors)
+		public Evaluation(IObservation<TSubject> observation, Outcome outcome)
+			: base(observation, outcome)
 		{
-			Sample = sample;
+			Sample = observation.Sample;
 		}
 
 		public ISample<TSubject> Sample { get; private set; }
@@ -83,20 +76,17 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		IEvaluationState<TSubject, TResult>
 	{
 		public Evaluation([NotNull] ISpecification<TSubject, TResult> specification,
-			[NotNull] ISample<TSubject> sample,
-			Outcome outcome,
-			TResult value,
-			bool timedOut,
-			[NotNull] ISource<TSubject> source,
-			params IError[] errors)
-			: base(outcome, timedOut, sample, errors)
+			[NotNull] IMeasurement<TSubject, TResult> measurement,
+			Outcome outcome)
+			: base(measurement, outcome)
 		{
 			Specification = specification.ValidateArgumentIsNotNull();
-			Value = value;
+			IMeasurement<TSubject, TResult> validMeasurement = measurement.ValidateArgumentIsNotNull();
+			Value = validMeasurement.Value;
 			ISpecificationState<TSubject, TResult> xray = Specification.Xray;
 			Expectation = xray.Expectation.ValidateArgumentIsNotNull();
 			Instrument = xray.Instrument.ValidateArgumentIsNotNull();
-			Source = source.ValidateArgumentIsNotNull();
+			Source = xray.Source;
 		}
 
 		public IExpectation<TSubject, TResult> Expectation { get; private set; }

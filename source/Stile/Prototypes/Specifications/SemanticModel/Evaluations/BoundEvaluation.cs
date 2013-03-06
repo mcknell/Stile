@@ -5,6 +5,7 @@
 
 #region using...
 using JetBrains.Annotations;
+using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
@@ -24,22 +25,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		private readonly IBoundSpecification<TSubject, TResult> _specification;
 
 		public BoundEvaluation([NotNull] IBoundSpecification<TSubject, TResult> specification,
-			ISample<TSubject> sample,
-			Outcome outcome,
-			TResult value,
-			bool timedOut,
-			params IError[] errors)
-			: base(specification,
-				sample,
-				outcome,
-				value,
-				timedOut,
-				// ReSharper disable AssignNullToNotNullAttribute
-				specification.Xray.Source,
-				// ReSharper restore AssignNullToNotNullAttribute
-				errors)
+			[NotNull] IMeasurement<TSubject, TResult> measurement,
+			Outcome outcome)
+			: base(specification, measurement, outcome)
 		{
-			_specification = specification;
+			_specification = specification.ValidateArgumentIsNotNull();
 		}
 
 		public IBoundEvaluation<TSubject, TResult> Evaluate(IDeadline deadline = null)
