@@ -16,44 +16,46 @@ using Stile.Prototypes.Specifications.Builders.OfInstruments;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 using Stile.Resources;
 using Stile.Types.Expressions;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Past
 {
-	public interface IPastTenseEvaluationDescriber : IDescriptionVisitor {}
+	public interface IPastTenseEvaluationDescriber : IEvaluationVisitor {}
 
 	public class PastTenseEvaluationDescriber : IPastTenseEvaluationDescriber
 	{
-		private readonly IPastTenseExpectationFormatter _expectationFormatter;
+		private readonly Func<IPastTenseExpectationFormatVisitor> _expectationFormaterFactory;
 		private readonly StringBuilder _stringBuilder;
 
-		public PastTenseEvaluationDescriber(IPastTenseExpectationFormatter expectationFormatter = null)
+		public PastTenseEvaluationDescriber(Func<IPastTenseExpectationFormatVisitor> expectationFormatterFactory = null)
 		{
-			_expectationFormatter = expectationFormatter ?? new PastTenseExpectationFormatter();
+			_expectationFormaterFactory = expectationFormatterFactory ?? (()=> new PastTenseExpectationFormatVisitor());
 			_stringBuilder = new StringBuilder();
 		}
 
-		public void DescribeOverload1<TSubject>(IProcedure<TSubject> procedure)
+		public void Visit1<TSubject>(IProcedure<TSubject> procedure)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void DescribeOverload1<TSubject>(IProcedureBuilder<TSubject> builder)
+		public void Visit1<TSubject>(IProcedureBuilder<TSubject> builder)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void DescribeOverload1<TSubject>(ISource<TSubject> source)
+		public void Visit1<TSubject>(ISource<TSubject> source)
 		{
 			source.ValidateArgumentIsNotNull();
 		}
 
-		public void DescribeOverload2<TSubject,TResult>(IExpectation<TSubject, TResult> expectation)
+		public void Visit2<TSubject,TResult>(IExpectation<TSubject, TResult> expectation)
 		{
-			string description = expectation.Accept(_expectationFormatter);
-			_stringBuilder.Append(description);
+			var expectationFormater = _expectationFormaterFactory.Invoke();
+			expectation.Accept(expectationFormater);
+			_stringBuilder.Append(expectationFormater.ToString());
 		}
 
 		public virtual void DescribeOverload2<TSubject, TResult>(IEvaluation<TSubject, TResult> evaluation)
@@ -71,48 +73,58 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 				} else
 				{
 					_stringBuilder.AppendFormat("{0} {1} ", source, PastTenseEvaluations.InstrumentedBy);
-					DescribeOverload2(state.Instrument);
+					Visit2(state.Instrument);
 				}
 			}
-			DescribeOverload2(state.Expectation);
+			Visit2(state.Expectation);
 		}
 
-		public void DescribeOverload2<TSubject, TResult>(IInstrument<TSubject, TResult> instrument)
+		public void Visit2<TSubject, TResult>(IInstrument<TSubject, TResult> instrument)
 		{
 			IProcedureState<TSubject> state = instrument.ValidateArgumentIsNotNull().Xray;
 			_stringBuilder.Append(state.Lambda.Body);
 		}
 
-		public void DescribeOverload3<TSpecification, TSubject, TResult>(IHas<TSpecification, TSubject, TResult> has)
+		public void Visit3<TSpecification, TSubject, TResult>(IHas<TSpecification, TSubject, TResult> has)
 			where TSpecification : class, IChainableSpecification
 		{
 			throw new NotImplementedException();
 		}
 
-		public void DescribeOverload3<TSpecification, TSubject, TResult>(IIs<TSpecification, TSubject, TResult> @is)
+		public void Visit3<TSpecification, TSubject, TResult>(IIs<TSpecification, TSubject, TResult> @is)
 			where TSpecification : class, IChainableSpecification
 		{
 			throw new NotImplementedException();
 		}
 
-		public void DescribeOverload3<TSubject, TResult, TExpectationBuilder>(
+		public void Visit3<TSubject, TResult, TExpectationBuilder>(
 			ISpecification<TSubject, TResult, TExpectationBuilder> specification)
 			where TExpectationBuilder : class, IExpectationBuilder
 		{
 			throw new NotImplementedException();
 		}
 
-		public void DescribeOverload3<TSpecification, TSubject, TResult>(
+		public void Visit3<TSpecification, TSubject, TResult>(
 			IExpectationBuilder<TSpecification, TSubject, TResult> builder)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		{
 			throw new NotImplementedException();
 		}
 
-		public void DescribeOverload4<TSpecification, TSubject, TResult, TItem>(
+		public void Visit4<TSpecification, TSubject, TResult, TItem>(
 			IEnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> builder)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : class, IEnumerable<TItem>
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Visit2<TSubject, TResult>(IEvaluation<TSubject, TResult> evaluation)
+		{
+			throw new NotImplementedException();
+		}
+
+		public TData Visit2<TSubject, TResult, TData>(IEvaluation<TSubject, TResult> evaluation, TData data = default(TData))
 		{
 			throw new NotImplementedException();
 		}

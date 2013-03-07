@@ -6,8 +6,9 @@
 #region using...
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
-using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfInstruments
@@ -20,7 +21,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 	public interface IProcedureBuilder<out TSubject> : IProcedureBuilder,
 		IHides<IProcedureBuilderState<TSubject>> {}
 
-	public interface IProcedureBuilderState<out TSubject> : IHasSource<TSubject> {}
+	public interface IProcedureBuilderState<out TSubject> : IHasSource<TSubject>,
+		IAcceptSpecificationVisitors {}
 
 	public class ProcedureBuilder<TSubject> : IProcedureBuilder<TSubject>,
 		IProcedureBuilderState<TSubject>
@@ -36,9 +38,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 			get { return this; }
 		}
 
-		public void Accept(IDescriptionVisitor visitor)
+		public void Accept(ISpecificationVisitor visitor)
 		{
-			visitor.DescribeOverload1(this);
+			visitor.Visit1(this);
+		}
+
+		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit1(this, data);
 		}
 	}
 }

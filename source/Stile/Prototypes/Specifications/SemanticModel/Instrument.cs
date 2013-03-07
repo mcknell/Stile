@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Types.Expressions;
@@ -117,9 +116,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			return Measure(source, deadline);
 		}
 
-		public void Accept(IDescriptionVisitor visitor)
+		public void Accept(ISpecificationVisitor visitor)
 		{
-			visitor.DescribeOverload2(this);
+			visitor.Visit2(this);
+		}
+
+		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit2(this, data);
 		}
 	}
 }

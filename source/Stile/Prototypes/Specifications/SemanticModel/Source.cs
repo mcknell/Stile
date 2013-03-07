@@ -9,8 +9,9 @@ using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
-using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 using Stile.Prototypes.Time;
 using Stile.Types.Expressions;
 #endregion
@@ -26,7 +27,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		ISample<TSubject> Get();
 	}
 
-	public interface ISourceState : IDescribable
+	public interface ISourceState : IAcceptSpecificationVisitors
 	{
 		Lazy<string> Description { get; }
 	}
@@ -61,9 +62,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			return new Sample<TSubject>(subject, this, _clock.UtcNow);
 		}
 
-		public void Accept(IDescriptionVisitor visitor)
+		public void Accept(ISpecificationVisitor visitor)
 		{
-			visitor.DescribeOverload1(this);
+			visitor.Visit1(this);
+		}
+
+		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit1(this, data);
 		}
 	}
 }

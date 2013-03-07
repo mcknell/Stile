@@ -9,8 +9,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 using Stile.Types.Expressions;
 #endregion
 
@@ -22,7 +22,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		IClause Clause { get; }
 		[NotNull]
 		ILazyDescriptionOfLambda Lambda { get; }
-		string Accept([NotNull] IExpectationFormatVisitor visitor);
+		void Accept([NotNull] IExpectationVisitor visitor);
+		TData Accept<TData>([NotNull] IExpectationVisitor<TData> visitor, TData data = default(TData));
 	}
 
 	public interface IExpectation<TSubject, TResult> : IExpectation
@@ -92,11 +93,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			get { return new Expectation<TSubject, TResult>(result => true, SemanticModel.Clause.AlwaysTrue); }
 		}
 
-		public string Accept(IExpectationFormatVisitor visitor)
-		{
-			return visitor.Format(this);
-		}
-
 		public TEvaluation Evaluate<TEvaluation>(IMeasurement<TSubject, TResult> measurement,
 			bool expectedAnException,
 			Evaluation.Factory<TSubject, TResult, TEvaluation> factory)
@@ -123,6 +119,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 				outcome = Outcome.Failed;
 			}
 			return factory.Invoke(measurement, outcome);
+		}
+
+		public void Accept(IExpectationVisitor visitor)
+		{
+			visitor.Visit2(this);
+		}
+
+		public TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit2(this, data);
 		}
 
 		public static Func<Predicate<TResult>> MakeCompiler(Expression<Predicate<TResult>> expression)

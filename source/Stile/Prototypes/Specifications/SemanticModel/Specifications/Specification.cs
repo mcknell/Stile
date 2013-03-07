@@ -11,8 +11,8 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
-using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
@@ -43,7 +43,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	}
 
 	public interface ISpecificationState<TSubject, TResult> : ISpecificationState<TSubject>,
-		IHasExpectation<TSubject, TResult> {}
+		IHasExpectation<TSubject, TResult>,
+		IAcceptSpecificationVisitors {}
 
 	public abstract class Specification : ISpecificationState
 	{
@@ -121,9 +122,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return Evaluate(Source, BoundFactory, deadline);
 		}
 
-		public void Accept(IDescriptionVisitor visitor)
+		public void Accept(ISpecificationVisitor visitor)
 		{
-			visitor.DescribeOverload3(this);
+			visitor.Visit3(this);
+		}
+
+		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit3(this, data);
 		}
 
 		public IEvaluation<TSubject, TResult> Evaluate(Expression<Func<TSubject>> source, IDeadline deadline = null)

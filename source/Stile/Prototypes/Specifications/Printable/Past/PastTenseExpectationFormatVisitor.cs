@@ -6,6 +6,7 @@
 #region using...
 using System;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Past
@@ -23,18 +24,18 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 		}
 	}
 
-	public interface IPastTenseExpectationFormatter : IExpectationFormatVisitor {}
+	public interface IPastTenseExpectationFormatVisitor : IExpectationVisitor {}
 
-	public class PastTenseExpectationFormatter : IPastTenseExpectationFormatter
+	public class PastTenseExpectationFormatVisitor : IPastTenseExpectationFormatVisitor
 	{
 		private readonly IPhrasebook _phrasebook;
 
-		public PastTenseExpectationFormatter(IPhrasebook phrasebook = null)
+		public PastTenseExpectationFormatVisitor(IPhrasebook phrasebook = null)
 		{
 			_phrasebook = phrasebook ?? Phrasebook.Core;
 		}
 
-		public string Format<TSubject, TResult>(IExpectation<TSubject, TResult> expectation)
+		public void Visit2<TSubject, TResult>(IExpectation<TSubject, TResult> expectation)
 		{
 			// expectation needs to look up its clause, in the current formatter
 			// (this lets it adjust to the tense, etc.)
@@ -43,7 +44,7 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			// then, expectation can apply its private data to the clause, yielding a string
 
 			// may also need the measurement that the expectation judged
-			return format.ToString(expectation);
+			format.ToString(expectation);
 		}
 
 		public IExpectationFormat<TSubject, TResult> FindPhrase<TSubject, TResult>(

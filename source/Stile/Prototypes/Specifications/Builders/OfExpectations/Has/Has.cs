@@ -7,7 +7,6 @@
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
-using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -46,9 +45,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 			get { return this; }
 		}
 
-		public void Accept(IDescriptionVisitor visitor)
+		public void Accept(ISpecificationVisitor visitor)
 		{
-			visitor.DescribeOverload3(this);
+			visitor.Visit3(this);
+		}
+
+		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit3(this, data);
 		}
 
 		public TSpecification Make(IExpectation<TSubject, TResult> expectation,

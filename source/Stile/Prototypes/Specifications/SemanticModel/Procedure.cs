@@ -14,9 +14,9 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
-using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 using Stile.Readability;
 using Stile.Types.Expressions;
 #endregion
@@ -31,7 +31,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		IObservation<TSubject> Observe([NotNull] ISource<TSubject> source, IDeadline deadline = null);
 	}
 
-	public interface IProcedureState
+	public interface IProcedureState : IAcceptSpecificationVisitors
 	{
 		ILazyDescriptionOfLambda Lambda { get; }
 	}
@@ -48,6 +48,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		}
 
 		public ILazyDescriptionOfLambda Lambda { get; private set; }
+
+		public abstract void Accept(ISpecificationVisitor visitor);
+		public abstract TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data);
 
 		public static class Trivial<TSubject>
 		{
@@ -134,9 +137,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			return observation;
 		}
 
-		public void Accept(IDescriptionVisitor visitor)
+		public override void Accept(ISpecificationVisitor visitor)
 		{
-			visitor.DescribeOverload1(this);
+			visitor.Visit1(this);
+		}
+
+		public override TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit1(this, data);
 		}
 	}
 }

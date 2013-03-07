@@ -5,14 +5,14 @@
 
 #region using...
 using JetBrains.Annotations;
-using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.Lifecycle
 {
-	public interface IHasSource<out TSubject> : IDescribable
+	public interface IHasSource<out TSubject> 
 	{
 		[CanBeNull]
 		ISource<TSubject> Source { get; }
@@ -27,7 +27,7 @@ namespace Stile.Prototypes.Specifications.Builders.Lifecycle
 	public interface IHasExpectation<TSubject, TResult> : IHasInstrument<TSubject, TResult>
 	{
 		[NotNull]
-		IExpectation<TSubject,TResult> Expectation { get; }
+		IExpectation<TSubject, TResult> Expectation { get; }
 	}
 
 	public interface IHasSpecification<TSubject, TResult> : IHasExpectation<TSubject, TResult>

@@ -12,9 +12,9 @@ using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfSpecifications;
-using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations
@@ -45,7 +45,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		where TSpecification : class, IChainableSpecification {}
 
 	public interface IExpectationBuilderState<out TSpecification, TSubject, TResult> :
-		IHasInstrument<TSubject, TResult>
+		IHasInstrument<TSubject, TResult>,
+		IAcceptSpecificationVisitors
 		where TSpecification : class, IChainableSpecification
 	{
 		TSpecification Make([NotNull] IExpectation<TSubject, TResult> expectation,
@@ -114,7 +115,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			return builder;
 		}
 
-		public abstract void Accept(IDescriptionVisitor visitor);
+		public abstract void Accept(ISpecificationVisitor visitor);
+		public abstract TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data);
 
 		public TSpecification Make(IExpectation<TSubject, TResult> expectation,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null)

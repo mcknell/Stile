@@ -8,8 +8,8 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
-using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
@@ -35,7 +35,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		TResult Value { get; }
 	}
 
-	public interface IEvaluationState<TSubject, TResult> : IHasSpecification<TSubject, TResult> {}
+	public interface IEvaluationState<TSubject, TResult> : IHasSpecification<TSubject, TResult>,
+		IAcceptEvaluationVisitors {}
 
 	public abstract class Evaluation : IEvaluation
 	{
@@ -104,9 +105,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			return Specification.Evaluate(source, deadline);
 		}
 
-		public void Accept(IDescriptionVisitor visitor)
+		public void Accept(IEvaluationVisitor visitor)
 		{
-			visitor.DescribeOverload2(this);
+			visitor.Visit2(this);
 		}
 	}
 }
