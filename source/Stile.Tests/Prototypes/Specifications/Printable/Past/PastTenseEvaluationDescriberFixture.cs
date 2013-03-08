@@ -31,7 +31,7 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.Past
 
 		private static void AssertSingleToken(string sourceName, bool expected)
 		{
-			Assert.That(PastTenseEvaluationDescriber.IsSingleToken(sourceName),
+			Assert.That(PastEvaluationDescriber.IsSingleToken(sourceName),
 				Is.EqualTo(expected),
 				string.Format(">{0}< was expected to be {1}", sourceName, expected));
 		}

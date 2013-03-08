@@ -15,6 +15,7 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 using Stile.Resources;
@@ -23,16 +24,18 @@ using Stile.Types.Expressions;
 
 namespace Stile.Prototypes.Specifications.Printable.Past
 {
-	public interface IPastTenseEvaluationDescriber : IEvaluationVisitor {}
+	public interface IPastEvaluationDescriber : IEvaluationVisitor {}
 
-	public class PastTenseEvaluationDescriber : IPastTenseEvaluationDescriber
+	public class PastEvaluationDescriber : IPastEvaluationDescriber
 	{
-		private readonly Func<IPastTenseExpectationFormatVisitor> _expectationFormaterFactory;
+		private readonly Func<IPastExpectationDescriber> _expectationFormaterFactory;
 		private readonly StringBuilder _stringBuilder;
 
-		public PastTenseEvaluationDescriber(Func<IPastTenseExpectationFormatVisitor> expectationFormatterFactory = null)
+		public PastEvaluationDescriber(
+			Func<IPastExpectationDescriber> expectationFormatterFactory = null)
 		{
-			_expectationFormaterFactory = expectationFormatterFactory ?? (()=> new PastTenseExpectationFormatVisitor());
+			_expectationFormaterFactory = expectationFormatterFactory
+				?? (() => new PastExpectationDescriber());
 			_stringBuilder = new StringBuilder();
 		}
 
@@ -51,38 +54,28 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			source.ValidateArgumentIsNotNull();
 		}
 
-		public void Visit2<TSubject,TResult>(IExpectation<TSubject, TResult> expectation)
+		public void Visit2<TSubject, TResult>(IExpectation<TSubject, TResult> expectation)
 		{
-			var expectationFormater = _expectationFormaterFactory.Invoke();
+			IPastExpectationDescriber expectationFormater = _expectationFormaterFactory.Invoke();
 			expectation.Accept(expectationFormater);
-			_stringBuilder.Append(expectationFormater.ToString());
-		}
-
-		public virtual void DescribeOverload2<TSubject, TResult>(IEvaluation<TSubject, TResult> evaluation)
-		{
-			IEvaluationState<TSubject, TResult> state = evaluation.ValidateArgumentIsNotNull().Xray;
-			_stringBuilder.Append(PastTenseEvaluations.Expected + " ");
-			if (state.Source != null)
-			{
-				_stringBuilder.AppendFormat("{0} ", PastTenseEvaluations.That);
-				string source = state.Source.Xray.Description.Value;
-				if (IsSingleToken(source))
-				{
-					ILazyDescriptionOfLambda lambda = state.Instrument.Xray.Lambda;
-					_stringBuilder.AppendFormat("{0}", lambda.AliasParametersIntoBody(source));
-				} else
-				{
-					_stringBuilder.AppendFormat("{0} {1} ", source, PastTenseEvaluations.InstrumentedBy);
-					Visit2(state.Instrument);
-				}
-			}
-			Visit2(state.Expectation);
+			_stringBuilder.Append(expectationFormater);
 		}
 
 		public void Visit2<TSubject, TResult>(IInstrument<TSubject, TResult> instrument)
 		{
 			IProcedureState<TSubject> state = instrument.ValidateArgumentIsNotNull().Xray;
 			_stringBuilder.Append(state.Lambda.Body);
+		}
+
+		public void Visit2<TSubject, TResult>(IEvaluation<TSubject, TResult> evaluation)
+		{
+			throw new NotImplementedException();
+		}
+
+		public TData Visit2<TSubject, TResult, TData>(IEvaluation<TSubject, TResult> evaluation,
+			TData data = default(TData))
+		{
+			throw new NotImplementedException();
 		}
 
 		public void Visit3<TSpecification, TSubject, TResult>(IHas<TSpecification, TSubject, TResult> has)
@@ -119,20 +112,29 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			throw new NotImplementedException();
 		}
 
-		public void Visit2<TSubject, TResult>(IEvaluation<TSubject, TResult> evaluation)
-		{
-			throw new NotImplementedException();
-		}
-
-		public TData Visit2<TSubject, TResult, TData>(IEvaluation<TSubject, TResult> evaluation, TData data = default(TData))
-		{
-			throw new NotImplementedException();
-		}
-
 		public static string Describe<TSubject, TResult>(IEvaluation<TSubject, TResult> evaluation)
 		{
-			var describer = new PastTenseEvaluationDescriber();
-			describer.DescribeOverload2(evaluation);
+			var describer = new PastEvaluationDescriber();
+			IEvaluationState<TSubject, TResult> state = evaluation.ValidateArgumentIsNotNull().Xray;
+			describer._stringBuilder.Append(PastTenseEvaluations.Expected + " ");
+			var expectation = state.Specification.Xray.Expectation;
+			var instrument = expectation.Xray.Instrument;
+			var source = instrument.Xray.Source;
+			if (source != null)
+			{
+				describer._stringBuilder.AppendFormat("{0} ", PastTenseEvaluations.That);
+				string sourceDescription = source.Xray.Description.Value;
+				if (IsSingleToken(sourceDescription))
+				{
+					ILazyDescriptionOfLambda lambda = instrument.Xray.Lambda;
+					describer._stringBuilder.AppendFormat("{0}", lambda.AliasParametersIntoBody(sourceDescription));
+				} else
+				{
+					describer._stringBuilder.AppendFormat("{0} {1} ", sourceDescription, PastTenseEvaluations.InstrumentedBy);
+					describer.Visit2(instrument);
+				}
+			}
+			describer.Visit2(expectation);
 			return describer.ToString();
 		}
 

@@ -8,6 +8,7 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
@@ -47,10 +48,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		protected VoidSpecification([NotNull] IProcedure<TSubject> procedure,
 			[NotNull] IExceptionFilter<TSubject> exceptionFilter,
-			[CanBeNull] ISource<TSubject> source,
 			[CanBeNull] string because,
 			IDeadline deadline = null)
-			: base(source, because)
+			: base(because)
 		{
 			Procedure = procedure.ValidateArgumentIsNotNull();
 			ExceptionFilter = exceptionFilter.ValidateArgumentIsNotNull();
@@ -67,12 +67,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public override ISpecification Clone(IDeadline deadline)
 		{
-			return new VoidSpecification<TSubject>(Procedure, ExceptionFilter, Source, Because, deadline);
+			return new VoidSpecification<TSubject>(Procedure, ExceptionFilter, Because, deadline);
 		}
 
 		public IEvaluation Evaluate(IDeadline deadline = null)
 		{
-			return Evaluate(Source, deadline);
+			return Evaluate(Procedure.Xray.Source, deadline);
 		}
 
 		public IEvaluation<TSubject> Evaluate(ISource<TSubject> source, IDeadline deadline = null)
@@ -86,14 +86,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			IExceptionFilter<TSubject> exceptionFilter,
 			ISource<TSubject> source = null)
 		{
-			return new VoidSpecification<TSubject>(procedure, exceptionFilter, null, null);
+			return new VoidSpecification<TSubject>(procedure, exceptionFilter, null);
 		}
 
 		public static VoidSpecification<TSubject> MakeBound([NotNull] IProcedure<TSubject> procedure,
 			[NotNull] IExceptionFilter<TSubject> exceptionFilter,
 			[NotNull] ISource<TSubject> source)
 		{
-			return new VoidSpecification<TSubject>(procedure, exceptionFilter, source, null);
+			return new VoidSpecification<TSubject>(procedure, exceptionFilter, null);
 		}
 	}
 }

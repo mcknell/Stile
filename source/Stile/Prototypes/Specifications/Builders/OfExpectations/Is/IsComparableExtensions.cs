@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
@@ -38,7 +39,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			IClause clause) where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
-			Expectation<TSubject, TResult> expectation = Expectation<TSubject>.From(lambda, state.Negated, clause);
+			Expectation<TSubject, TResult> expectation = Expectation<TSubject>.From(lambda,
+				state.Negated,
+				clause,
+				state.Instrument);
 			return state.Make(expectation);
 		}
 	}

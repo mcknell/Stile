@@ -34,14 +34,15 @@ namespace Stile.Prototypes.Specifications
 		public static IFluentBoundExpectationBuilder<TSubject, TSubject> That<TSubject>(
 			[NotNull] Expression<Func<TSubject>> expression)
 		{
-			var instrument = new Instrument<TSubject, TSubject>(x => x);
+			var source = new Source<TSubject>(expression);
+			var instrument = new Instrument<TSubject, TSubject>(x => x, source);
 			return new FluentBoundExpectationBuilder<TSubject, TSubject>(instrument, For(expression).Xray);
 		}
 
 		[System.Diagnostics.Contracts.Pure]
 		public static IFluentExpectationBuilder<TSubject, TSubject> ThatAny<TSubject>()
 		{
-			var instrument = new Instrument<TSubject, TSubject>(x => x);
+			Instrument<TSubject, TSubject> instrument = Instrument.GetTrivial<TSubject>();
 			return new FluentExpectationBuilder<TSubject, TSubject>(instrument);
 		}
 	}

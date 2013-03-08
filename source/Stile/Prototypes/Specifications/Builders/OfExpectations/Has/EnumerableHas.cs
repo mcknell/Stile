@@ -7,7 +7,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantified;
+using Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
@@ -20,7 +20,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>
 	{
-		IQuantifiedHas<TSpecification, TItem> All { get; }
+		IQuantifier<TSpecification, TItem> All { get; }
 	}
 
 	public class EnumerableHas<TSpecification, TSubject, TResult, TItem> : Has<TSpecification, TSubject, TResult>,
@@ -28,21 +28,21 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>
 	{
-		private readonly Lazy<IQuantifiedHas<TSpecification, TItem>> _lazyAll;
+		private readonly Lazy<IQuantifier<TSpecification, TItem>> _lazyAll;
 
 		public EnumerableHas([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState)
 			: base(builderState)
 		{
 			_lazyAll =
-				new Lazy<IQuantifiedHas<TSpecification, TItem>>(
-					() => new HasAll<TSpecification, TSubject, TResult, TItem>(expectation => Make(expectation)));
+				new Lazy<IQuantifier<TSpecification, TItem>>(
+					() => new HasAll<TSpecification, TSubject, TResult, TItem>(Xray));
 		}
 
-		public IQuantifiedHas<TSpecification, TItem> All
+		public IQuantifier<TSpecification, TItem> All
 		{
 			get
 			{
-				IQuantifiedHas<TSpecification, TItem> all = _lazyAll.Value;
+				IQuantifier<TSpecification, TItem> all = _lazyAll.Value;
 				return all;
 			}
 		}

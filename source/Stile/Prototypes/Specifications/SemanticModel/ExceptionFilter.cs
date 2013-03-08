@@ -9,11 +9,14 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IExceptionFilter<TSubject>
+	public interface IExceptionFilter : ISpecificationTerm {}
+
+	public interface IExceptionFilter<TSubject> : IExceptionFilter
 	{
 		IObservation<TSubject> Filter(IObservation<TSubject> observation);
 	}

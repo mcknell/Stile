@@ -23,7 +23,7 @@ using Stile.Types.Expressions;
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IProcedure {}
+	public interface IProcedure : ISpecificationTerm { }
 
 	public interface IProcedure<TSubject> : IProcedure,
 		IHides<IProcedureState<TSubject>>

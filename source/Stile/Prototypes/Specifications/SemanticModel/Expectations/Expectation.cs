@@ -9,14 +9,17 @@ using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Patterns.Structural.FluentInterface;
+using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 using Stile.Types.Expressions;
 #endregion
 
-namespace Stile.Prototypes.Specifications.SemanticModel
+namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 {
-	public interface IExpectation
+	public interface IExpectation : ISpecificationTerm
 	{
 		[NotNull]
 		IClause Clause { get; }
@@ -26,13 +29,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		TData Accept<TData>([NotNull] IExpectationVisitor<TData> visitor, TData data = default(TData));
 	}
 
-	public interface IExpectation<TSubject, TResult> : IExpectation
+	public interface IExpectation<TSubject, TResult> : IExpectation,
+		IHides<IExpectationState<TSubject, TResult>>
 	{
 		TEvaluation Evaluate<TEvaluation>(IMeasurement<TSubject, TResult> measurement,
 			bool expectedAnException,
 			Evaluation.Factory<TSubject, TResult, TEvaluation> factory)
 			where TEvaluation : class, IEvaluation<TSubject, TResult>;
 	}
+
+	public interface IExpectationState<TSubject, out TResult> : IHasInstrument<TSubject, TResult> {}
 
 	public class Expectation<TSubject>
 	{
@@ -60,37 +66,67 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 		public static Expectation<TSubject, TResult> From<TResult>(Expression<Predicate<TResult>> expression,
 			Negated negated,
-			IClause clause)
+			IClause clause,
+			[NotNull] IInstrument<TSubject, TResult> instrument)
 		{
 			Func<Predicate<TResult>> compiler = Expectation<TSubject, TResult>.MakeCompiler(expression, negated);
-			return new Expectation<TSubject, TResult>(compiler, new LazyDescriptionOfLambda(expression), clause);
+			return new Expectation<TSubject, TResult>(compiler,
+				new LazyDescriptionOfLambda(expression),
+				clause,
+				instrument);
 		}
 	}
 
 	public class Expectation<TSubject, TResult> : Expectation<TSubject>,
-		IExpectation<TSubject, TResult>
+		IExpectation<TSubject, TResult>,
+		IExpectationState<TSubject, TResult>
 	{
 		private readonly Lazy<Predicate<IMeasurement<TSubject, TResult>>> _lazyPredicate;
 
-		public Expectation([NotNull] Expression<Predicate<TResult>> expression, [NotNull] IClause clause)
-			: this(MakeCompiler(expression), new LazyDescriptionOfLambda(expression), clause) {}
+		public Expectation([NotNull] Expression<Predicate<TResult>> expression,
+			[NotNull] IClause clause,
+			[NotNull] IInstrument<TSubject, TResult> instrument)
+			: this(MakeCompiler(expression), new LazyDescriptionOfLambda(expression), clause, instrument) {}
 
 		public Expectation([NotNull] Func<Predicate<TResult>> predicateSource,
 			[NotNull] ILazyDescriptionOfLambda lambda,
-			[NotNull] IClause clause)
+			[NotNull] IClause clause,
+			[NotNull] IInstrument<TSubject, TResult> instrument)
 		{
-			Clause = clause;
 			Lambda = lambda;
+			Clause = clause;
+			Instrument = instrument.ValidateArgumentIsNotNull();
+			Source = Instrument.Xray.Source;
 			Func<Predicate<TResult>> source = predicateSource.ValidateArgumentIsNotNull();
 			_lazyPredicate =
 				new Lazy<Predicate<IMeasurement<TSubject, TResult>>>(() => x => source.Invoke().Invoke(x.Value));
 		}
 
 		public IClause Clause { get; private set; }
+		public IInstrument<TSubject, TResult> Instrument { get; private set; }
 		public ILazyDescriptionOfLambda Lambda { get; private set; }
+		public ISource<TSubject> Source { get; private set; }
 		public static Expectation<TSubject, TResult> UnconditionalAcceptance
 		{
-			get { return new Expectation<TSubject, TResult>(result => true, SemanticModel.Clause.AlwaysTrue); }
+			get
+			{
+				var instrument = new Instrument<TSubject, TResult>(x => default(TResult));
+				return new Expectation<TSubject, TResult>(result => true, SemanticModel.Clause.AlwaysTrue, instrument);
+			}
+		}
+		public IExpectationState<TSubject, TResult> Xray
+		{
+			get { return this; }
+		}
+
+		public void Accept(IExpectationVisitor visitor)
+		{
+			visitor.Visit2(this);
+		}
+
+		public TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit2(this, data);
 		}
 
 		public TEvaluation Evaluate<TEvaluation>(IMeasurement<TSubject, TResult> measurement,
@@ -119,16 +155,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 				outcome = Outcome.Failed;
 			}
 			return factory.Invoke(measurement, outcome);
-		}
-
-		public void Accept(IExpectationVisitor visitor)
-		{
-			visitor.Visit2(this);
-		}
-
-		public TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
-		{
-			return visitor.Visit2(this, data);
 		}
 
 		public static Func<Predicate<TResult>> MakeCompiler(Expression<Predicate<TResult>> expression)

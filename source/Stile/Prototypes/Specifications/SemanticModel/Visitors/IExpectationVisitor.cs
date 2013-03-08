@@ -5,6 +5,9 @@
 
 #region using...
 using JetBrains.Annotations;
+using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
+using Stile.Prototypes.Specifications.SemanticModel.Expectations;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
@@ -18,10 +21,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 	public interface IExpectationVisitor
 	{
 		void Visit2<TSubject, TResult>([NotNull] IExpectation<TSubject, TResult> expectation);
+
+		void Visit3<TSpecification, TSubject, TResult>([NotNull] IHas<TSpecification, TSubject, TResult> expectation)
+			where TSpecification : class, IChainableSpecification;
 	}
 
 	public interface IExpectationVisitor<TData> : IExpectationVisitor
 	{
 		TData Visit2<TSubject, TResult>([NotNull] IExpectation<TSubject, TResult> expectation, TData data);
+
+		TData Visit3<TSpecification, TSubject, TResult>([NotNull] IHas<TSpecification, TSubject, TResult> target,
+			TData data) where TSpecification : class, IChainableSpecification;
 	}
 }

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 

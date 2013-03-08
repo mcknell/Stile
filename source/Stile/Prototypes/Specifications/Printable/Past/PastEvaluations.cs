@@ -14,7 +14,7 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 	{
 		public static string ToPastTense<TSubject, TResult>([NotNull] this IEvaluation<TSubject, TResult> evaluation)
 		{
-			return PastTenseEvaluationDescriber.Describe(evaluation);
+			return PastEvaluationDescriber.Describe(evaluation);
 		}
 	}
 }

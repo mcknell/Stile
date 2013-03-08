@@ -25,6 +25,15 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		IProcedure<TSubject>
 	{
 		IMeasurement<TSubject, TResult> Measure([NotNull] ISource<TSubject> source, IDeadline deadline = null);
+	
+	}
+
+	public static class Instrument
+	{
+		public static Instrument<TSubject, TSubject> GetTrivial<TSubject>()
+		{
+			return new Instrument<TSubject, TSubject>(x=>x);
+		}
 	}
 
 	public class Instrument<TSubject, TResult> : IInstrument<TSubject, TResult>,

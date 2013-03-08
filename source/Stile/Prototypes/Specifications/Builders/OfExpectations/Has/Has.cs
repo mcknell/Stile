@@ -5,10 +5,9 @@
 
 #region using...
 using JetBrains.Annotations;
-using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
-using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
@@ -19,47 +18,36 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		IHides<IHasState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, IChainableSpecification {}
 
-	public interface IHasState<out TSpecification, TSubject, TResult> :
-		IExpectationBuilderState<TSpecification, TSubject, TResult>
-		where TSpecification : class, IChainableSpecification {}
+	public interface IHasState<out TSpecification, TSubject, TResult> : IAcceptExpectationVisitors
+		where TSpecification : class, IChainableSpecification
+	{
+		IExpectationBuilderState<TSpecification, TSubject, TResult> ExpectationBuilder { get; }
+	}
 
 	public class Has<TSpecification, TSubject, TResult> : IHas<TSpecification, TSubject, TResult>,
 		IHasState<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
-		private readonly ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification>
-			_specificationFactory;
-
 		public Has([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState)
 		{
-			Instrument = builderState.Instrument.ValidateArgumentIsNotNull();
-			_specificationFactory = builderState.Make;
-			Source = builderState.Source;
+			ExpectationBuilder = builderState;
 		}
 
-		public IInstrument<TSubject, TResult> Instrument { get; private set; }
-		public ISource<TSubject> Source { get; private set; }
+		public IExpectationBuilderState<TSpecification, TSubject, TResult> ExpectationBuilder { get; private set; }
 
 		public IHasState<TSpecification, TSubject, TResult> Xray
 		{
 			get { return this; }
 		}
 
-		public void Accept(ISpecificationVisitor visitor)
+		public void Accept(IExpectationVisitor visitor)
 		{
 			visitor.Visit3(this);
 		}
 
-		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		public TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit3(this, data);
-		}
-
-		public TSpecification Make(IExpectation<TSubject, TResult> expectation,
-			IExceptionFilter<TSubject, TResult> filter = null)
-		{
-			TSpecification specification = _specificationFactory.Invoke(expectation, filter);
-			return specification;
 		}
 	}
 }

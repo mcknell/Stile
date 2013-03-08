@@ -35,7 +35,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 	{
 		protected EnumerableExpectationBuilder(
 			[NotNull] IExpectationBuilderState<IChainableSpecification, TSubject, TResult> state)
-			: base(state.Instrument, state.Source) {}
+			: base(state.Instrument) {}
 
 		protected override IEnumerableHas<TSpecification, TSubject, TResult, TItem> MakeHas()
 		{

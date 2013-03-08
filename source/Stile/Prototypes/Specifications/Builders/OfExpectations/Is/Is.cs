@@ -8,6 +8,7 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
@@ -51,7 +52,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			Instrument = builderState.Instrument.ValidateArgumentIsNotNull();
 			Negated = negated;
 			SpecificationFactory = builderState.Make;
-			Source = builderState.Source;
 		}
 
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
@@ -62,7 +62,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			get { return new Is<TSpecification, TSubject, TResult>(_builderState, Negated.True); }
 		}
 
-		public ISource<TSubject> Source { get; private set; }
 		public ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification> SpecificationFactory { get; private set; }
 
 		public IIsState<TSpecification, TSubject, TResult> Xray

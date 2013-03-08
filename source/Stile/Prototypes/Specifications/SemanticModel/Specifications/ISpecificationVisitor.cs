@@ -10,6 +10,7 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
+using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications

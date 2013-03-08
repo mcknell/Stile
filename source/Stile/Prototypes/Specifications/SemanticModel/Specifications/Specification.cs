@@ -12,6 +12,7 @@ using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
+using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
@@ -54,14 +55,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public abstract class Specification<TSubject> : Specification,
 		ISpecification<TSubject>
 	{
-		protected Specification([CanBeNull] ISource<TSubject> source, [CanBeNull] string because)
+		protected Specification([CanBeNull] string because)
 		{
-			Source = source;
 			Because = because;
 		}
 
 		public string Because { get; private set; }
-		public ISource<TSubject> Source { get; private set; }
 	}
 
 	public class Specification<TSubject, TResult, TExpectationBuilder> : Specification<TSubject>,
@@ -76,11 +75,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public Specification([NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] IExpectation<TSubject, TResult> expectation,
 			[NotNull] TExpectationBuilder expectationBuilder,
-			ISource<TSubject> source = null,
 			string because = null,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null,
 			IDeadline deadline = null)
-			: base(source, because)
+			: base(because)
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
 			Expectation = expectation.ValidateArgumentIsNotNull();
@@ -106,7 +104,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return new Specification<TSubject, TResult, TExpectationBuilder>(Instrument,
 				Expectation,
 				_expectationBuilder,
-				Source,
 				Because,
 				_exceptionFilter,
 				deadline);
@@ -119,7 +116,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public IBoundEvaluation<TSubject, TResult> Evaluate(IDeadline deadline = null)
 		{
-			return Evaluate(Source, BoundFactory, deadline);
+			return Evaluate(Instrument.Xray.Source, BoundFactory, deadline);
 		}
 
 		public void Accept(ISpecificationVisitor visitor)

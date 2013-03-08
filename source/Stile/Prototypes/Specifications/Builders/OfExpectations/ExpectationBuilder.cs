@@ -13,6 +13,7 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
@@ -73,11 +74,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		private readonly Lazy<THas> _lazyHas;
 		private readonly Lazy<TIs> _lazyIs;
 
-		protected ExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
-			ISource<TSubject> source = null)
+		protected ExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument)
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
-			Source = source;
 			_lazyHas = new Lazy<THas>(MakeHas);
 			_lazyIs = new Lazy<TIs>(MakeIs);
 		}
@@ -100,7 +99,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			}
 		}
 
-		public ISource<TSubject> Source { get; private set; }
 		public IExpectationBuilderState<TSpecification, TSubject, TResult> Xray
 		{
 			get { return this; }
@@ -134,7 +132,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			return new Specification<TSubject, TResult, TBuilder>(Instrument,
 				expectation,
 				Builder,
-				Source,
 				exceptionFilter : exceptionFilter);
 		}
 
@@ -147,7 +144,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			return new Specification<TSubject, TResult, TBuilder>(Instrument,
 				expectation,
 				Builder,
-				Source,
 				exceptionFilter : exceptionFilter);
 		}
 	}
@@ -162,7 +158,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 	{
 		protected ExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
 			ISource<TSubject> source = null)
-			: base(instrument, source) {}
+			: base(instrument) {}
 
 		protected override IHas<TSpecification, TSubject, TResult> MakeHas()
 		{

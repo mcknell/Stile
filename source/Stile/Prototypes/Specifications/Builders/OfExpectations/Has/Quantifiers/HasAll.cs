@@ -9,19 +9,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
-using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantified
+namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers
 {
 	public class HasAll<TSpecification, TSubject, TResult, TItem> :
-		QuantifiedHas<TSpecification, TSubject, TResult, TItem>
-		where TSpecification : class, ISpecification
+		Quantifier<TSpecification, TSubject, TResult, TItem>
+		where TSpecification : class, ISpecification, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>
 	{
-		public HasAll([NotNull] Func<IExpectation<TSubject, TResult>, TSpecification> factory)
-			: base(factory) {}
+		public HasAll([NotNull] IHasState<TSpecification, TSubject, TResult> hasState)
+			: base(hasState) {}
 
 		protected override Predicate<TResult> MakePredicate(Expression<Func<TItem, bool>> expression)
 		{

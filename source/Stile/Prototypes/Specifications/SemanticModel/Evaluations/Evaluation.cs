@@ -84,15 +84,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			Specification = specification.ValidateArgumentIsNotNull();
 			IMeasurement<TSubject, TResult> validMeasurement = measurement.ValidateArgumentIsNotNull();
 			Value = validMeasurement.Value;
-			ISpecificationState<TSubject, TResult> xray = Specification.Xray;
-			Expectation = xray.Expectation.ValidateArgumentIsNotNull();
-			Instrument = xray.Instrument.ValidateArgumentIsNotNull();
-			Source = xray.Source;
 		}
 
-		public IExpectation<TSubject, TResult> Expectation { get; private set; }
-		public IInstrument<TSubject, TResult> Instrument { get; private set; }
-		public ISource<TSubject> Source { get; private set; }
 		public ISpecification<TSubject, TResult> Specification { get; private set; }
 		public TResult Value { get; private set; }
 		public IEvaluationState<TSubject, TResult> Xray

@@ -18,7 +18,7 @@ using Stile.Types.Expressions;
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface ISource {}
+	public interface ISource : ISpecificationTerm { }
 
 	public interface ISource<out TSubject> : ISource,
 		IHides<ISourceState>

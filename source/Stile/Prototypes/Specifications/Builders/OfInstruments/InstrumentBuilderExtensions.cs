@@ -48,10 +48,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
 			builder.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
-			IProcedure<TSubject> instrument = new Procedure<TSubject>(expression);
 			ISource<TSubject> source = builder.Xray.Source.ValidateArgumentIsNotNull();
+			IProcedure<TSubject> procedure = new Procedure<TSubject>(expression, source);
 			return ExceptionFilterBuilder<IVoidBoundSpecification<TSubject>, TSubject>.MakeBound(source,
-				instrument,
+				procedure,
 				VoidSpecification<TSubject>.MakeBound);
 		}
 

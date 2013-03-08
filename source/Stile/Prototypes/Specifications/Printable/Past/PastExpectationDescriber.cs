@@ -5,7 +5,10 @@
 
 #region using...
 using System;
+using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Expectations;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
@@ -24,13 +27,13 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 		}
 	}
 
-	public interface IPastTenseExpectationFormatVisitor : IExpectationVisitor {}
+	public interface IPastExpectationDescriber : IExpectationVisitor {}
 
-	public class PastTenseExpectationFormatVisitor : IPastTenseExpectationFormatVisitor
+	public class PastExpectationDescriber : IPastExpectationDescriber
 	{
 		private readonly IPhrasebook _phrasebook;
 
-		public PastTenseExpectationFormatVisitor(IPhrasebook phrasebook = null)
+		public PastExpectationDescriber(IPhrasebook phrasebook = null)
 		{
 			_phrasebook = phrasebook ?? Phrasebook.Core;
 		}
@@ -41,10 +44,17 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			// (this lets it adjust to the tense, etc.)
 			IExpectationFormat<TSubject, TResult> format = FindPhrase(expectation);
 
+
+
 			// then, expectation can apply its private data to the clause, yielding a string
 
 			// may also need the measurement that the expectation judged
 			format.ToString(expectation);
+		}
+
+		public void Visit3<TSpecification, TSubject, TResult>(IHas<TSpecification, TSubject, TResult> expectation) where TSpecification : class, IChainableSpecification
+		{
+			throw new NotImplementedException();
 		}
 
 		public IExpectationFormat<TSubject, TResult> FindPhrase<TSubject, TResult>(

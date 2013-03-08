@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Types.Enumerables;
 #endregion
@@ -45,7 +46,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			Negated negated)
 			: base(builderState, negated)
 		{
-			_lazyEmpty = new Lazy<TSpecification>(() => Make(Expectation<TSubject>.From(_all, negated, Clause.HasAll)));
+			_lazyEmpty =
+				new Lazy<TSpecification>(
+					() => Make(Expectation<TSubject>.From(_all, negated, Clause.HasAll, builderState.Instrument)));
 		}
 
 		public TSpecification Empty
