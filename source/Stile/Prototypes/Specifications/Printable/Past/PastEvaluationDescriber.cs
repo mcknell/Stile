@@ -115,28 +115,22 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 		{
 			var describer = new PastEvaluationDescriber();
 			IEvaluationState<TSubject, TResult> state = evaluation.ValidateArgumentIsNotNull().Xray;
-			describer._stringBuilder.Append(PastTenseEvaluations.Expected + " ");
 			IExpectation<TSubject, TResult> expectation = state.Specification.Xray.Expectation;
 			IInstrument<TSubject, TResult> instrument = expectation.Xray.Instrument;
-			ISource<TSubject> source = instrument.Xray.Source;
-			if (source != null)
+			if (evaluation.Outcome)
 			{
-				describer._stringBuilder.AppendFormat("{0} ", PastTenseEvaluations.That);
-				string sourceDescription = source.Xray.Description.Value;
-				if (IsSingleToken(sourceDescription))
-				{
-					ILazyDescriptionOfLambda lambda = instrument.Xray.Lambda;
-					describer._stringBuilder.AppendFormat("{0}", lambda.AliasParametersIntoBody(sourceDescription));
-				} else
-				{
-					describer._stringBuilder.AppendFormat("{0} {1} ", sourceDescription, PastTenseEvaluations.InstrumentedBy);
-					describer.Visit2(instrument);
-				}
+				DescribeSourceAndInstrument(describer, instrument);
 			}
-			describer.Visit2(expectation);
-			describer._stringBuilder.AppendFormat("{0}{1} {2}",
-				Environment.NewLine,
-				PastTenseEvaluations.ButWas,
+			else
+			{
+				describer._stringBuilder.AppendFormat("{0} {1} ", PastTenseEvaluations.Expected, PastTenseEvaluations.That);
+				DescribeSourceAndInstrument(describer, instrument);
+				describer.Visit2(expectation);
+				describer._stringBuilder.Append(Environment.NewLine);
+				describer._stringBuilder.Append(PastTenseEvaluations.But);
+			}
+			describer._stringBuilder.AppendFormat(" {0} {1}",
+				PastTenseEvaluations.Was,
 				evaluation.Value.ToDebugString());
 			return describer.ToString();
 		}
@@ -149,6 +143,23 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 		public override string ToString()
 		{
 			return _stringBuilder.ToString();
+		}
+
+		private static void DescribeSourceAndInstrument<TSubject, TResult>(PastEvaluationDescriber describer,
+			IInstrument<TSubject, TResult> instrument)
+		{
+			ISource<TSubject> source = instrument.Xray.Source;
+			string sourceDescription = source.Xray.Description.Value;
+			if (IsSingleToken(sourceDescription))
+			{
+				ILazyDescriptionOfLambda lambda = instrument.Xray.Lambda;
+				describer._stringBuilder.AppendFormat("{0}", lambda.AliasParametersIntoBody(sourceDescription));
+			}
+			else
+			{
+				describer._stringBuilder.AppendFormat("{0} {1} ", sourceDescription, PastTenseEvaluations.InstrumentedBy);
+				describer.Visit2(instrument);
+			}
 		}
 	}
 }

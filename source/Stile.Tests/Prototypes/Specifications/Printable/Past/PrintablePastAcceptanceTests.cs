@@ -7,6 +7,7 @@
 using System;
 using NUnit.Framework;
 using Stile.Prototypes.Specifications;
+using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
 using Stile.Prototypes.Specifications.Printable.Past;
@@ -22,11 +23,13 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.Past
 		public void Bound()
 		{
 			int i = 4;
-			IBoundEvaluation<int, TypeCode> boundEvaluation =
-				Specify.For(() => i).That(x => x.GetTypeCode()).Is.EqualTo(TypeCode.DBNull).Evaluate();
+			IFluentBoundExpectationBuilder<int, TypeCode> builder = Specify.For(() => i).That(x => x.GetTypeCode());
+			IBoundEvaluation<int, TypeCode> boundEvaluation = builder.Is.EqualTo(TypeCode.DBNull).Evaluate();
 			string pastTense = boundEvaluation.ToPastTense();
 			Assert.That(pastTense, Is.EqualTo(@"Expected that i.GetTypeCode() would be DBNull
 but was Int32"));
+			Assert.That(builder.Is.EqualTo(TypeCode.Int32).Evaluate().ToPastTense(),
+				Is.EqualTo(@"i.GetTypeCode() was Int32"));
 		}
 	}
 }
