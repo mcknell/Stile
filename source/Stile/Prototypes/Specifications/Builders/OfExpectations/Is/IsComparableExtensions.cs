@@ -7,7 +7,6 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
-using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -22,7 +21,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
-			return Make(x => x.CompareTo(result) == 0, builder.Xray, Clause.IsComparablyEquivalentTo);
+			return Make(x => x.CompareTo(result) == 0, builder.Xray);
 		}
 
 		[Pure]
@@ -31,19 +30,19 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
-			return Make(x => x.CompareTo(result) > 0, builder.Xray, Clause.IsGreaterThan);
+			return Make(x => x.CompareTo(result) > 0, builder.Xray);
 		}
 
 		private static TSpecification Make<TSpecification, TSubject, TResult>(Expression<Predicate<TResult>> lambda,
-			IIsState<TSpecification, TSubject, TResult> state,
-			IClause clause) where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+			IIsState<TSpecification, TSubject, TResult> state)
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
 			Expectation<TSubject, TResult> expectation = Expectation<TSubject>.From(lambda,
 				state.Negated,
-				clause,
-				state.Instrument);
-			return state.Make(expectation);
+				state.BuilderState.Instrument,
+				state);
+			return state.BuilderState.Make(expectation);
 		}
 	}
 }

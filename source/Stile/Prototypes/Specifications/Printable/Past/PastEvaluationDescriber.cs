@@ -18,6 +18,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Readability;
 using Stile.Resources;
 using Stile.Types.Expressions;
 #endregion
@@ -31,11 +32,9 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 		private readonly Func<IPastExpectationDescriber> _expectationFormaterFactory;
 		private readonly StringBuilder _stringBuilder;
 
-		public PastEvaluationDescriber(
-			Func<IPastExpectationDescriber> expectationFormatterFactory = null)
+		public PastEvaluationDescriber(Func<IPastExpectationDescriber> expectationFormatterFactory = null)
 		{
-			_expectationFormaterFactory = expectationFormatterFactory
-				?? (() => new PastExpectationDescriber());
+			_expectationFormaterFactory = expectationFormatterFactory ?? (() => new PastExpectationDescriber());
 			_stringBuilder = new StringBuilder();
 		}
 
@@ -117,9 +116,9 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			var describer = new PastEvaluationDescriber();
 			IEvaluationState<TSubject, TResult> state = evaluation.ValidateArgumentIsNotNull().Xray;
 			describer._stringBuilder.Append(PastTenseEvaluations.Expected + " ");
-			var expectation = state.Specification.Xray.Expectation;
-			var instrument = expectation.Xray.Instrument;
-			var source = instrument.Xray.Source;
+			IExpectation<TSubject, TResult> expectation = state.Specification.Xray.Expectation;
+			IInstrument<TSubject, TResult> instrument = expectation.Xray.Instrument;
+			ISource<TSubject> source = instrument.Xray.Source;
 			if (source != null)
 			{
 				describer._stringBuilder.AppendFormat("{0} ", PastTenseEvaluations.That);
@@ -135,6 +134,10 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 				}
 			}
 			describer.Visit2(expectation);
+			describer._stringBuilder.AppendFormat("{0}{1} {2}",
+				Environment.NewLine,
+				PastTenseEvaluations.ButWas,
+				evaluation.Value.ToDebugString());
 			return describer.ToString();
 		}
 

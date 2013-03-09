@@ -11,7 +11,7 @@ using Stile.Prototypes.Specifications.Printable.Past;
 namespace Stile.Tests.Prototypes.Specifications.Printable.Past
 {
 	[TestFixture]
-	public class PastTenseEvaluationDescriberFixture
+	public class PastEvaluationDescriberFixture
 	{
 		[Test]
 		public void IsSingleToken()

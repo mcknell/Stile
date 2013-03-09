@@ -10,17 +10,33 @@ using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers
 {
+	public interface IHasAll<out TSpecification, TSubject, TResult, TItem> :
+		IQuantifier<TSpecification, TSubject, TResult, TItem>
+		where TSpecification : class, ISpecification, IChainableSpecification {}
+
 	public class HasAll<TSpecification, TSubject, TResult, TItem> :
-		Quantifier<TSpecification, TSubject, TResult, TItem>
+		Quantifier<TSpecification, TSubject, TResult, TItem>,
+		IHasAll<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>
 	{
 		public HasAll([NotNull] IHasState<TSpecification, TSubject, TResult> hasState)
 			: base(hasState) {}
+
+		public override void Accept(IExpectationVisitor visitor)
+		{
+			visitor.Visit4(this);
+		}
+
+		public override TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit4(this, data);
+		}
 
 		protected override Predicate<TResult> MakePredicate(Expression<Func<TItem, bool>> expression)
 		{

@@ -48,7 +48,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		{
 			_lazyEmpty =
 				new Lazy<TSpecification>(
-					() => Make(Expectation<TSubject>.From(_all, negated, Clause.HasAll, builderState.Instrument)));
+					() => builderState.Make(Expectation<TSubject>.From(_all, negated, builderState.Instrument, this)));
 		}
 
 		public TSpecification Empty
@@ -61,7 +61,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		}
 		public new IEnumerableIs<TSpecification, TSubject, TResult, TItem> Not
 		{
-			get { return new EnumerableIs<TSpecification, TSubject, TResult, TItem>(_builderState, Negated.True); }
+			get { return new EnumerableIs<TSpecification, TSubject, TResult, TItem>(BuilderState, Negated.True); }
 		}
 	}
 }

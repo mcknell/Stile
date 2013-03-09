@@ -18,6 +18,12 @@ namespace Stile.Prototypes.Specifications.Builders.Lifecycle
 		ISource<TSubject> Source { get; }
 	}
 
+	public interface IHasProcedure<TSubject>
+	{
+		[NotNull]
+		IProcedure<TSubject> Procedure { get; }
+	}
+
 	public interface IHasInstrument<TSubject, out TResult>
 	{
 		[NotNull]

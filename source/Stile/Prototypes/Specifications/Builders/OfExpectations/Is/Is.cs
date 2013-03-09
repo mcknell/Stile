@@ -8,18 +8,15 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 {
 	public interface IIs {}
 
-	public interface IResultIs<out TSpecification, out TResult> : IIs
-		where TSpecification : class, IChainableSpecification {}
-
-	public interface IIs<out TSpecification, TSubject, TResult> : IResultIs<TSpecification, TResult>,
+	public interface IIs<out TSpecification, TSubject, TResult> : IIs,
 		IHides<IIsState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, IChainableSpecification {}
 
@@ -31,10 +28,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		where TSpecification : class, IChainableSpecification
 		where TNegated : class, IIs<TSpecification, TSubject, TResult> {}
 
-	public interface IIsState<out TSpecification, TSubject, TResult> :
-		IExpectationBuilderState<TSpecification, TSubject, TResult>
+	public interface IIsState<out TSpecification, TSubject, TResult> : IAcceptExpectationVisitors
 		where TSpecification : class, IChainableSpecification
 	{
+		IExpectationBuilderState<TSpecification, TSubject, TResult> BuilderState { get; }
 		Negated Negated { get; }
 	}
 
@@ -43,46 +40,36 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		IIsState<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
-		protected readonly IExpectationBuilderState<TSpecification, TSubject, TResult> _builderState;
-
 		public Is([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState,
 			Negated negated)
 		{
-			_builderState = builderState.ValidateArgumentIsNotNull();
-			Instrument = builderState.Instrument.ValidateArgumentIsNotNull();
+			BuilderState = builderState.ValidateArgumentIsNotNull();
 			Negated = negated;
-			SpecificationFactory = builderState.Make;
+			Parent = null;
 		}
 
-		public IInstrument<TSubject, TResult> Instrument { get; private set; }
+		public IExpectationBuilderState<TSpecification, TSubject, TResult> BuilderState { get; private set; }
 		public Negated Negated { get; private set; }
 
 		public IIs<TSpecification, TSubject, TResult> Not
 		{
-			get { return new Is<TSpecification, TSubject, TResult>(_builderState, Negated.True); }
+			get { return new Is<TSpecification, TSubject, TResult>(BuilderState, Negated.True); }
 		}
 
-		public ExpectationBuilder.SpecificationFactory<TSubject, TResult, TSpecification> SpecificationFactory { get; private set; }
-
+		public IAcceptExpectationVisitors Parent { get; private set; }
 		public IIsState<TSpecification, TSubject, TResult> Xray
 		{
 			get { return this; }
 		}
 
-		public void Accept(ISpecificationVisitor visitor)
+		public void Accept(IExpectationVisitor visitor)
 		{
 			visitor.Visit3(this);
 		}
 
-		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		public TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit3(this, data);
-		}
-
-		public TSpecification Make(IExpectation<TSubject, TResult> expectation,
-			IExceptionFilter<TSubject, TResult> filter = null)
-		{
-			return SpecificationFactory.Invoke(expectation, filter);
 		}
 	}
 }

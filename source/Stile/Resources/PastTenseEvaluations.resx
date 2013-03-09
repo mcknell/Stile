@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ButWas" xml:space="preserve">
+    <value>but was</value>
+  </data>
   <data name="Expected" xml:space="preserve">
     <value>Expected</value>
   </data>
@@ -126,7 +129,7 @@
   <data name="That" xml:space="preserve">
     <value>that</value>
   </data>
-  <data name="WouldBeButWas" xml:space="preserve">
-    <value>would be{0}but was</value>
+  <data name="WouldBe" xml:space="preserve">
+    <value>would be</value>
   </data>
 </root>

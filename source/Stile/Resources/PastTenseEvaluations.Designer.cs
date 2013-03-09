@@ -61,6 +61,15 @@ namespace Stile.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to but was.
+        /// </summary>
+        public static string ButWas {
+            get {
+                return ResourceManager.GetString("ButWas", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Expected.
         /// </summary>
         public static string Expected {
@@ -88,11 +97,11 @@ namespace Stile.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to would be{0}but was.
+        ///   Looks up a localized string similar to would be.
         /// </summary>
-        public static string WouldBeButWas {
+        public static string WouldBe {
             get {
-                return ResourceManager.GetString("WouldBeButWas", resourceCulture);
+                return ResourceManager.GetString("WouldBe", resourceCulture);
             }
         }
     }

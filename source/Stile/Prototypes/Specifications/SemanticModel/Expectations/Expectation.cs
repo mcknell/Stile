@@ -22,8 +22,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 	public interface IExpectation : ISpecificationTerm
 	{
 		[NotNull]
-		IClause Clause { get; }
-		[NotNull]
 		ILazyDescriptionOfLambda Lambda { get; }
 		void Accept([NotNull] IExpectationVisitor visitor);
 		TData Accept<TData>([NotNull] IExpectationVisitor<TData> visitor, TData data = default(TData));
@@ -38,7 +36,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			where TEvaluation : class, IEvaluation<TSubject, TResult>;
 	}
 
-	public interface IExpectationState<TSubject, out TResult> : IHasInstrument<TSubject, TResult> {}
+	public interface IExpectationState<TSubject, out TResult> : IHasInstrument<TSubject, TResult>
+	{
+		IAcceptExpectationVisitors LastTerm { get; }
+	}
 
 	public class Expectation<TSubject>
 	{
@@ -66,13 +67,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 
 		public static Expectation<TSubject, TResult> From<TResult>(Expression<Predicate<TResult>> expression,
 			Negated negated,
-			IClause clause,
-			[NotNull] IInstrument<TSubject, TResult> instrument)
+			[NotNull] IInstrument<TSubject, TResult> instrument,
+			IAcceptExpectationVisitors lastTerm)
 		{
 			Func<Predicate<TResult>> compiler = Expectation<TSubject, TResult>.MakeCompiler(expression, negated);
 			return new Expectation<TSubject, TResult>(compiler,
 				new LazyDescriptionOfLambda(expression),
-				clause,
+				lastTerm,
 				instrument);
 		}
 	}
@@ -84,34 +85,42 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 		private readonly Lazy<Predicate<IMeasurement<TSubject, TResult>>> _lazyPredicate;
 
 		public Expectation([NotNull] Expression<Predicate<TResult>> expression,
-			[NotNull] IClause clause,
+			[NotNull] IAcceptExpectationVisitors lastTerm,
 			[NotNull] IInstrument<TSubject, TResult> instrument)
-			: this(MakeCompiler(expression), new LazyDescriptionOfLambda(expression), clause, instrument) {}
+			: this(MakeCompiler(expression), new LazyDescriptionOfLambda(expression), lastTerm, instrument) {}
 
-		public Expectation([NotNull] Func<Predicate<TResult>> predicateSource,
+		public Expectation([NotNull] Func<Predicate<TResult>> predicateFactory,
 			[NotNull] ILazyDescriptionOfLambda lambda,
-			[NotNull] IClause clause,
+			[NotNull] IAcceptExpectationVisitors lastTerm,
 			[NotNull] IInstrument<TSubject, TResult> instrument)
+			: this(predicateFactory, lambda, instrument, lastTerm.ValidateArgumentIsNotNull()) {}
+
+		private Expectation([NotNull] Func<Predicate<TResult>> predicateFactory,
+			[NotNull] ILazyDescriptionOfLambda lambda,
+			[NotNull] IInstrument<TSubject, TResult> instrument,
+			IAcceptExpectationVisitors lastTerm)
 		{
-			Lambda = lambda;
-			Clause = clause;
+			Lambda = lambda.ValidateArgumentIsNotNull();
+			LastTerm = lastTerm;
 			Instrument = instrument.ValidateArgumentIsNotNull();
 			Source = Instrument.Xray.Source;
-			Func<Predicate<TResult>> source = predicateSource.ValidateArgumentIsNotNull();
+			Func<Predicate<TResult>> source = predicateFactory.ValidateArgumentIsNotNull();
 			_lazyPredicate =
 				new Lazy<Predicate<IMeasurement<TSubject, TResult>>>(() => x => source.Invoke().Invoke(x.Value));
 		}
 
-		public IClause Clause { get; private set; }
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
 		public ILazyDescriptionOfLambda Lambda { get; private set; }
+		public IAcceptExpectationVisitors LastTerm { get; private set; }
 		public ISource<TSubject> Source { get; private set; }
 		public static Expectation<TSubject, TResult> UnconditionalAcceptance
 		{
 			get
 			{
 				var instrument = new Instrument<TSubject, TResult>(x => default(TResult));
-				return new Expectation<TSubject, TResult>(result => true, SemanticModel.Clause.AlwaysTrue, instrument);
+				Expression<Predicate<TResult>> expression = result => true;
+				var lambda = new LazyDescriptionOfLambda(expression);
+				return new Expectation<TSubject, TResult>(expression.Compile, lambda, instrument, null);
 			}
 		}
 		public IExpectationState<TSubject, TResult> Xray

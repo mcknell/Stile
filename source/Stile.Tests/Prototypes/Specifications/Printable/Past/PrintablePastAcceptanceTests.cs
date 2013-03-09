@@ -19,14 +19,13 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.Past
 	public class PrintablePastAcceptanceTests
 	{
 		[Test]
-		[Explicit]
 		public void Bound()
 		{
 			int i = 4;
 			IBoundEvaluation<int, TypeCode> boundEvaluation =
 				Specify.For(() => i).That(x => x.GetTypeCode()).Is.EqualTo(TypeCode.DBNull).Evaluate();
 			string pastTense = boundEvaluation.ToPastTense();
-			Assert.That(pastTense, Is.EqualTo(@"Expected that i.GetTypeCode() would be TypeCode.DBNull
+			Assert.That(pastTense, Is.EqualTo(@"Expected that i.GetTypeCode() would be DBNull
 but was Int32"));
 		}
 	}

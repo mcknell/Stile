@@ -22,20 +22,24 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 {
 	public interface IExpectationBuilder {}
 
+	public interface IExpectationBuilder<out TSpecification, TSubject> : IExpectationBuilder
+		where TSpecification : class, IChainableSpecification
+	{
+		[System.Diagnostics.Contracts.Pure]
+		IVoidSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
+			where TException : Exception;
+	}
+
 	public interface IExpectationBuilder<out TSpecification, TSubject, TResult, out THas, out TIs> :
-		IExpectationBuilder
+		IExpectationBuilder<TSpecification, TSubject>
 		where TSpecification : class, IChainableSpecification
 		where THas : class, IHas<TSpecification, TSubject, TResult>
-		where TIs : class, IResultIs<TSpecification, TResult>
+		where TIs : class, IIs<TSpecification, TSubject, TResult>
 	{
 		[System.Diagnostics.Contracts.Pure]
 		THas Has { get; }
 		[System.Diagnostics.Contracts.Pure]
 		TIs Is { get; }
-
-		[System.Diagnostics.Contracts.Pure]
-		IVoidSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
-			where TException : Exception;
 	}
 
 	public interface IExpectationBuilder<out TSpecification, TSubject, TResult> :
@@ -61,13 +65,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			where TSpecification : class, IChainableSpecification;
 	}
 
+	public abstract class ExpectationBuilder<TSpecification, TSubject, THas, TIs, TBuilder> : ExpectationBuilder {}
+
 	public abstract class ExpectationBuilder<TSpecification, TSubject, TResult, THas, TIs, TBuilder> :
 		ExpectationBuilder,
 		IExpectationBuilder<TSpecification, TSubject, TResult, THas, TIs>,
 		IExpectationBuilderState<TSpecification, TSubject, TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification<TBuilder>
 		where THas : class, IHas, IHas<TSpecification, TSubject, TResult>
-		where TIs : class, IResultIs<TSpecification, TResult>
+		where TIs : class, IIs<TSpecification, TSubject, TResult>
 		where TBuilder : class, IExpectationBuilder
 
 	{
