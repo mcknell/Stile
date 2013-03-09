@@ -25,7 +25,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
 			builder.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
-			var instrument = new Instrument<TSubject, TResult>(expression);
+			var instrument = new Instrument<TSubject, TResult>(expression, builder.Xray.Source);
 			return new FluentExpectationBuilder<TSubject, TResult>(instrument);
 		}
 

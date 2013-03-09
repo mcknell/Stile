@@ -4,11 +4,10 @@
 #endregion
 
 #region using...
-using System;
-using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
+using Stile.Patterns.Structural.Hierarchy;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
@@ -41,11 +40,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	{
 		[CanBeNull]
 		string Because { get; }
+
+		[NotNull]
+		IAcceptSpecificationVisitors LastTerm { get; }
 	}
 
 	public interface ISpecificationState<TSubject, TResult> : ISpecificationState<TSubject>,
 		IHasExpectation<TSubject, TResult>,
-		IAcceptSpecificationVisitors {}
+		IAcceptEvaluationVisitors {}
 
 	public abstract class Specification : ISpecificationState
 	{
@@ -72,17 +74,17 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
 		private readonly TExpectationBuilder _expectationBuilder;
 
-		public Specification([NotNull] IInstrument<TSubject, TResult> instrument,
-			[NotNull] IExpectation<TSubject, TResult> expectation,
+		public Specification([NotNull] IExpectation<TSubject, TResult> expectation,
 			[NotNull] TExpectationBuilder expectationBuilder,
+			[NotNull] IAcceptSpecificationVisitors lastTerm,
 			string because = null,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null,
 			IDeadline deadline = null)
 			: base(because)
 		{
-			Instrument = instrument.ValidateArgumentIsNotNull();
 			Expectation = expectation.ValidateArgumentIsNotNull();
 			_expectationBuilder = expectationBuilder.ValidateArgumentIsNotNull();
+			LastTerm = lastTerm.ValidateArgumentIsNotNull();
 			_exceptionFilter = exceptionFilter;
 			_deadline = deadline;
 		}
@@ -93,7 +95,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		}
 
 		public IExpectation<TSubject, TResult> Expectation { get; private set; }
-		public IInstrument<TSubject, TResult> Instrument { get; private set; }
+		public IAcceptSpecificationVisitors LastTerm { get; private set; }
+		public IAcceptSpecificationVisitors Parent
+		{
+			get { return null; }
+		}
 		public ISpecificationState<TSubject, TResult> Xray
 		{
 			get { return this; }
@@ -101,9 +107,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public override ISpecification Clone(IDeadline deadline)
 		{
-			return new Specification<TSubject, TResult, TExpectationBuilder>(Instrument,
-				Expectation,
+			return new Specification<TSubject, TResult, TExpectationBuilder>(Expectation,
 				_expectationBuilder,
+				LastTerm,
 				Because,
 				_exceptionFilter,
 				deadline);
@@ -116,7 +122,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public IBoundEvaluation<TSubject, TResult> Evaluate(IDeadline deadline = null)
 		{
-			return Evaluate(Instrument.Xray.Source, BoundFactory, deadline);
+			return Evaluate(Expectation.Xray.Instrument.Xray.Source, BoundFactory, deadline);
 		}
 
 		public void Accept(ISpecificationVisitor visitor)
@@ -129,9 +135,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return visitor.Visit3(this, data);
 		}
 
-		public IEvaluation<TSubject, TResult> Evaluate(Expression<Func<TSubject>> source, IDeadline deadline = null)
+		public void Accept(IEvaluationVisitor visitor)
 		{
-			return Evaluate(new Source<TSubject>(source), deadline);
+			visitor.Visit3(this);
+		}
+
+		IAcceptEvaluationVisitors IHasParent<IAcceptEvaluationVisitors>.Parent
+		{
+			get { return null; }
 		}
 
 		private bool ExpectsException
@@ -149,7 +160,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			Evaluation.Factory<TSubject, TResult, TEvaluation> evaluationFactory,
 			IDeadline deadline = null) where TEvaluation : class, IEvaluation<TSubject, TResult>
 		{
-			IMeasurement<TSubject, TResult> measurement = Instrument.Measure(source, deadline ?? _deadline);
+			IMeasurement<TSubject, TResult> measurement = Expectation.Xray.Instrument.Measure(source,
+				deadline ?? _deadline);
 			if (ExpectsException)
 			{
 				measurement = _exceptionFilter.Filter(measurement);

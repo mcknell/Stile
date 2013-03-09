@@ -42,7 +42,7 @@ namespace Stile.Prototypes.Specifications
 		[System.Diagnostics.Contracts.Pure]
 		public static IFluentExpectationBuilder<TSubject, TSubject> ThatAny<TSubject>()
 		{
-			Instrument<TSubject, TSubject> instrument = Instrument.GetTrivial<TSubject>();
+			Instrument<TSubject, TSubject> instrument = Instrument.GetTrivialUnbound<TSubject>();
 			return new FluentExpectationBuilder<TSubject, TSubject>(instrument);
 		}
 	}

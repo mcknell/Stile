@@ -104,6 +104,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 				return value;
 			}
 		}
+		public IAcceptSpecificationVisitors Parent
+		{
+			get { return Instrument; }
+		}
 
 		public IExpectationBuilderState<TSpecification, TSubject, TResult> Xray
 		{
@@ -113,7 +117,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		public IVoidSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
 			where TException : Exception
 		{
-			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(exception => exception is TException);
+			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(x => x is TException, Instrument);
 			var builder = new VoidSpecificationBuilder<TSpecification, TSubject, TResult, TException>(exceptionFilter,
 				Make);
 			return builder;
@@ -135,9 +139,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		protected IBoundSpecification<TSubject, TResult, TBuilder> MakeBoundSpecification(
 			IExpectation<TSubject, TResult> expectation, IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 		{
-			return new Specification<TSubject, TResult, TBuilder>(Instrument,
-				expectation,
+			return new Specification<TSubject, TResult, TBuilder>(expectation,
 				Builder,
+				expectation.Xray,
 				exceptionFilter : exceptionFilter);
 		}
 
@@ -147,9 +151,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		protected ISpecification<TSubject, TResult, TBuilder> MakeUnboundSpecification(
 			IExpectation<TSubject, TResult> expectation, IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 		{
-			return new Specification<TSubject, TResult, TBuilder>(Instrument,
-				expectation,
+			return new Specification<TSubject, TResult, TBuilder>(expectation,
 				Builder,
+				expectation.Xray,
 				exceptionFilter : exceptionFilter);
 		}
 	}

@@ -9,6 +9,7 @@ using Stile.Prototypes.Specifications.Builders.OfInstruments;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations
@@ -43,9 +44,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			get { return this; }
 		}
 		protected override
-			Func
-				<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>,
-					IBoundSpecification<TSubject, TResult, IFluentBoundExpectationBuilder<TSubject, TResult>>> SpecFactory
+			Func<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>, IBoundSpecification<TSubject, TResult, IFluentBoundExpectationBuilder<TSubject, TResult>>> SpecFactory
 		{
 			get { return MakeBoundSpecification; }
 		}

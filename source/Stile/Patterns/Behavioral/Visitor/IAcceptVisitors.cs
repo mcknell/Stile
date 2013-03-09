@@ -3,18 +3,22 @@
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
+#region using...
+using JetBrains.Annotations;
+#endregion
+
 namespace Stile.Patterns.Behavioral.Visitor
 {
 	public interface IAcceptVisitors<in TVisitor>
 		where TVisitor : class
 	{
-		void Accept(TVisitor visitor);
+		void Accept([NotNull] TVisitor visitor);
 	}
 
 	public interface IAcceptVisitors<in TVisitor1, in TVisitor2> : IAcceptVisitors<TVisitor1>
 		where TVisitor1 : class
 		where TVisitor2 : class, TVisitor1
 	{
-		TData Accept<TData>(TVisitor2 visitor, TData data);
+		TData Accept<TData>([NotNull] TVisitor2 visitor, TData data);
 	}
 }

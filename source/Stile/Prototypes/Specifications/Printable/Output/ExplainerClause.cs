@@ -20,7 +20,7 @@ namespace Stile.Prototypes.Specifications.Printable.Output
         {
             _verb = verb;
             _adjective = adjective;
-            _explainer = explainer ?? PrintExtensions.ToDebugString;
+            _explainer = explainer ?? Readability.PrintExtensions.ToDebugString;
         }
 
 	    protected virtual string Separator

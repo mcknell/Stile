@@ -7,6 +7,7 @@
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
+using Stile.Patterns.Structural.Hierarchy;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
@@ -101,6 +102,22 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public void Accept(IEvaluationVisitor visitor)
 		{
 			visitor.Visit2(this);
+		}
+
+		public IAcceptEvaluationVisitors Parent { get { return Specification.Xray; } }
+		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void Accept(ISpecificationVisitor visitor)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		IAcceptSpecificationVisitors IHasParent<IAcceptSpecificationVisitors>.Parent
+		{
+			get { return Parent; }
 		}
 	}
 }

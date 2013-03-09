@@ -5,11 +5,13 @@
 
 #region using...
 using System;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Types.Expressions;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
@@ -77,8 +79,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 
 		public TSpecification Build()
 		{
-			return _specificationFactory.Invoke(Expectation<TSubject, TResult>.UnconditionalAcceptance,
-				_exceptionFilter);
+			Expression<Predicate<TResult>> expression = result => true;
+			var lambda = new LazyDescriptionOfLambda(expression);
+			var expectation = new Expectation<TSubject, TResult>(expression.Compile,
+				lambda,
+				_exceptionFilter,
+				_exceptionFilter.Instrument);
+
+			return _specificationFactory.Invoke(expectation, _exceptionFilter);
 		}
 	}
 }

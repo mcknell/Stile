@@ -8,29 +8,65 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Patterns.Structural.Hierarchy;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IExceptionFilter : ISpecificationTerm {}
+	public interface IExceptionFilter : IAcceptSpecificationVisitors,
+		IAcceptExpectationVisitors {}
 
 	public interface IExceptionFilter<TSubject> : IExceptionFilter
 	{
+		ISource<TSubject> Source { get; }
 		IObservation<TSubject> Filter(IObservation<TSubject> observation);
 	}
 
 	public interface IExceptionFilter<TSubject, TResult> : IExceptionFilter<TSubject>
 	{
+		[NotNull]
+		IInstrument<TSubject, TResult> Instrument { get; }
 		IMeasurement<TSubject, TResult> Filter(IMeasurement<TSubject, TResult> measurement);
 	}
 
 	public class ExceptionFilter<TSubject> : IExceptionFilter<TSubject>
 	{
-		public ExceptionFilter([NotNull] Predicate<Exception> predicate)
+		public ExceptionFilter([NotNull] Predicate<Exception> predicate, [NotNull] IProcedure<TSubject> procedure)
+			: this(predicate, procedure, procedure.Xray.Source) {}
+
+		protected ExceptionFilter([NotNull] Predicate<Exception> predicate,
+			[NotNull] IAcceptSpecificationVisitors parent,
+			[CanBeNull] ISource<TSubject> source)
 		{
 			Predicate = predicate.ValidateArgumentIsNotNull();
+			Parent = parent.ValidateArgumentIsNotNull();
+			Source = source;
+		}
+
+		public IAcceptSpecificationVisitors Parent { get; private set; }
+		public ISource<TSubject> Source { get; private set; }
+
+		public TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit1(this, data);
+		}
+
+		public void Accept(ISpecificationVisitor visitor)
+		{
+			visitor.Visit1(this);
+		}
+
+		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit1(this, data);
+		}
+
+		public void Accept(IExpectationVisitor visitor)
+		{
+			visitor.Visit1(this);
 		}
 
 		public IObservation<TSubject> Filter(IObservation<TSubject> observation)
@@ -42,6 +78,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 				observation.Sample,
 				errors.ToArray());
 			return filtered;
+		}
+
+		IAcceptExpectationVisitors IHasParent<IAcceptExpectationVisitors>.Parent
+		{
+			get { return null; }
 		}
 
 		protected Predicate<Exception> Predicate { get; private set; }
@@ -63,8 +104,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 	public class ExceptionFilter<TSubject, TResult> : ExceptionFilter<TSubject>,
 		IExceptionFilter<TSubject, TResult>
 	{
-		public ExceptionFilter([NotNull] Predicate<Exception> predicate)
-			: base(predicate) {}
+		public ExceptionFilter([NotNull] Predicate<Exception> predicate,
+			[NotNull] IInstrument<TSubject, TResult> instrument)
+			: base(predicate, instrument, instrument.Xray.Source)
+		{
+			Instrument = instrument;
+		}
+
+		public IInstrument<TSubject, TResult> Instrument { get; private set; }
 
 		public IMeasurement<TSubject, TResult> Filter(IMeasurement<TSubject, TResult> measurement)
 		{

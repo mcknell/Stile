@@ -19,7 +19,7 @@ using Stile.Types.Expressions;
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 {
-	public interface IExpectation : ISpecificationTerm
+	public interface IExpectation : IAcceptSpecificationVisitors
 	{
 		[NotNull]
 		ILazyDescriptionOfLambda Lambda { get; }
@@ -36,8 +36,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			where TEvaluation : class, IEvaluation<TSubject, TResult>;
 	}
 
-	public interface IExpectationState<TSubject, out TResult> : IHasInstrument<TSubject, TResult>
+	public interface IExpectationState<TSubject, out TResult> : IHasInstrument<TSubject, TResult>,
+		IAcceptSpecificationVisitors
 	{
+		[NotNull]
 		IAcceptExpectationVisitors LastTerm { get; }
 	}
 
@@ -52,13 +54,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			if (handledErrors < allErrorsIfAny)
 			{
 				outcome = Outcome.Failed;
-			} else if (expectedAnException && handledErrors == 0)
+			}
+			else if (expectedAnException && handledErrors == 0)
 			{
 				outcome = Outcome.Failed;
-			} else if (handledErrors == allErrorsIfAny && handledErrors > 0)
+			}
+			else if (handledErrors == allErrorsIfAny && handledErrors > 0)
 			{
 				outcome = Outcome.Succeeded;
-			} else
+			}
+			else
 			{
 				outcome = Outcome.Failed;
 			}
@@ -82,7 +87,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 		IExpectation<TSubject, TResult>,
 		IExpectationState<TSubject, TResult>
 	{
+		private static readonly Expectation<TSubject, TResult> UnconditionalAcceptance;
 		private readonly Lazy<Predicate<IMeasurement<TSubject, TResult>>> _lazyPredicate;
+
+		static Expectation()
+		{
+			var instrument = new Instrument<TSubject, TResult>(x => default(TResult), null);
+			Expression<Predicate<TResult>> expression = result => true;
+			var lambda = new LazyDescriptionOfLambda(expression);
+			UnconditionalAcceptance = new Expectation<TSubject, TResult>(expression.Compile, lambda, instrument, null);
+		}
 
 		public Expectation([NotNull] Expression<Predicate<TResult>> expression,
 			[NotNull] IAcceptExpectationVisitors lastTerm,
@@ -112,17 +126,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
 		public ILazyDescriptionOfLambda Lambda { get; private set; }
 		public IAcceptExpectationVisitors LastTerm { get; private set; }
-		public ISource<TSubject> Source { get; private set; }
-		public static Expectation<TSubject, TResult> UnconditionalAcceptance
+		public IAcceptSpecificationVisitors Parent
 		{
-			get
-			{
-				var instrument = new Instrument<TSubject, TResult>(x => default(TResult));
-				Expression<Predicate<TResult>> expression = result => true;
-				var lambda = new LazyDescriptionOfLambda(expression);
-				return new Expectation<TSubject, TResult>(expression.Compile, lambda, instrument, null);
-			}
+			get { return Instrument; }
 		}
+		public ISource<TSubject> Source { get; private set; }
+
 		public IExpectationState<TSubject, TResult> Xray
 		{
 			get { return this; }
@@ -134,6 +143,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 		}
 
 		public TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit2(this, data);
+		}
+
+		public void Accept(ISpecificationVisitor visitor)
+		{
+			visitor.Visit2(this);
+		}
+
+		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit2(this, data);
 		}
@@ -150,20 +169,36 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			if (handledErrors < allErrorsIfAny)
 			{
 				outcome = Outcome.Failed;
-			} else if (expectedAnException && handledErrors == 0)
+			}
+			else if (expectedAnException && handledErrors == 0)
 			{
 				outcome = Outcome.Failed;
-			} else if (handledErrors == allErrorsIfAny && handledErrors > 0)
+			}
+			else if (handledErrors == allErrorsIfAny && handledErrors > 0)
 			{
 				outcome = Outcome.Succeeded;
-			} else if (_lazyPredicate.Value.Invoke(measurement))
+			}
+			else if (_lazyPredicate.Value.Invoke(measurement))
 			{
 				outcome = measurement.TaskStatus;
-			} else
+			}
+			else
 			{
 				outcome = Outcome.Failed;
 			}
 			return factory.Invoke(measurement, outcome);
+		}
+
+		public static Expectation<TSubject, TResult> GetUnconditionalAcceptance(ISource<TSubject> source)
+		{
+			if (source == null)
+			{ // if we don't need a bound Instrument, reuse the single static instance
+				return UnconditionalAcceptance;
+			}
+			var instrument = new Instrument<TSubject, TResult>(x => default(TResult), source);
+			Expression<Predicate<TResult>> expression = result => true;
+			var lambda = new LazyDescriptionOfLambda(expression);
+			return new Expectation<TSubject, TResult>(expression.Compile, lambda, instrument, null);
 		}
 
 		public static Func<Predicate<TResult>> MakeCompiler(Expression<Predicate<TResult>> expression)

@@ -14,6 +14,7 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 using Stile.Types.Expressions;
 #endregion
 
@@ -25,14 +26,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		IProcedure<TSubject>
 	{
 		IMeasurement<TSubject, TResult> Measure([NotNull] ISource<TSubject> source, IDeadline deadline = null);
-	
 	}
 
 	public static class Instrument
 	{
-		public static Instrument<TSubject, TSubject> GetTrivial<TSubject>()
+		public static Instrument<TSubject, TSubject> GetTrivialUnbound<TSubject>()
 		{
-			return new Instrument<TSubject, TSubject>(x=>x);
+			return new Instrument<TSubject, TSubject>(x => x, null);
 		}
 	}
 
@@ -41,7 +41,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 	{
 		private readonly Lazy<Func<TSubject, TResult>> _lazyFunc;
 
-		public Instrument([NotNull] Expression<Func<TSubject, TResult>> expression, ISource<TSubject> source = null)
+		public Instrument([NotNull] Expression<Func<TSubject, TResult>> expression,
+			[CanBeNull] ISource<TSubject> source)
 		{
 			Expression<Func<TSubject, TResult>> validatedExpression = expression.ValidateArgumentIsNotNull();
 			_lazyFunc = new Lazy<Func<TSubject, TResult>>(validatedExpression.Compile);
@@ -50,10 +51,24 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		}
 
 		public ILazyDescriptionOfLambda Lambda { get; private set; }
+		public IAcceptSpecificationVisitors Parent
+		{
+			get { return Source; }
+		}
 		public ISource<TSubject> Source { get; private set; }
 		public IProcedureState<TSubject> Xray
 		{
 			get { return this; }
+		}
+
+		public void Accept(ISpecificationVisitor visitor)
+		{
+			visitor.Visit2(this);
+		}
+
+		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit2(this, data);
 		}
 
 		public IMeasurement<TSubject, TResult> Measure(ISource<TSubject> source, IDeadline deadline = null)
@@ -89,20 +104,23 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 				if (onThisThread)
 				{
 					task.RunSynchronously();
-				} else
+				}
+				else
 				{
 					task.Start();
 				}
 				timedOut = !task.Wait(millisecondsTimeout, cancellationToken);
 				result = task.Result;
-			} catch (Exception e)
+			}
+			catch (Exception e)
 			{
 				if (e is AggregateException)
 				{
 					if (e.InnerException != null)
 					{
 						errors.Add(new Error(e.InnerException, false));
-					} else
+					}
+					else
 					{
 						foreach (DictionaryEntry dictionaryEntry in e.Data)
 						{
@@ -123,16 +141,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		IObservation<TSubject> IProcedure<TSubject>.Observe(ISource<TSubject> source, IDeadline deadline)
 		{
 			return Measure(source, deadline);
-		}
-
-		public void Accept(ISpecificationVisitor visitor)
-		{
-			visitor.Visit2(this);
-		}
-
-		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
-		{
-			return visitor.Visit2(this, data);
 		}
 	}
 }

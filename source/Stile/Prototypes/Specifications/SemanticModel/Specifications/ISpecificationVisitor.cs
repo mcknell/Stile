@@ -17,60 +17,62 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
 	public interface ISpecificationVisitor
 	{
-		void Visit1<TSubject>([NotNull] IProcedure<TSubject> procedure);
-		void Visit1<TSubject>([NotNull] IProcedureBuilder<TSubject> builder);
-		void Visit1<TSubject>([NotNull] ISource<TSubject> source);
+		void Visit1<TSubject>([NotNull] IExceptionFilter<TSubject> target);
+		void Visit1<TSubject>([NotNull] IProcedure<TSubject> target);
+		void Visit1<TSubject>([NotNull] IProcedureBuilder<TSubject> target);
+		void Visit1<TSubject>([NotNull] ISource<TSubject> target);
 
-		void Visit2<TSubject, TResult>([NotNull] IExpectation<TSubject, TResult> expectation);
+		void Visit2<TSubject, TResult>([NotNull] IExpectation<TSubject, TResult> target);
 
-		void Visit2<TSubject, TResult>([NotNull] IInstrument<TSubject, TResult> instrument);
+		void Visit2<TSubject, TResult>([NotNull] IInstrument<TSubject, TResult> target);
 
-		void Visit3<TSpecification, TSubject, TResult>([NotNull] IHas<TSpecification, TSubject, TResult> has)
+		void Visit3<TSpecification, TSubject, TResult>([NotNull] IHas<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification;
 
-		void Visit3<TSpecification, TSubject, TResult>([NotNull] IIs<TSpecification, TSubject, TResult> @is)
+		void Visit3<TSpecification, TSubject, TResult>([NotNull] IIs<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification;
 
 		void Visit3<TSpecification, TSubject, TResult>(
-			[NotNull] IExpectationBuilder<TSpecification, TSubject, TResult> builder)
+			[NotNull] IExpectationBuilder<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification;
 
 		void Visit3<TSubject, TResult, TExpectationBuilder>(
-			[NotNull] ISpecification<TSubject, TResult, TExpectationBuilder> specification)
+			[NotNull] ISpecification<TSubject, TResult, TExpectationBuilder> target)
 			where TExpectationBuilder : class, IExpectationBuilder;
 
 		void Visit4<TSpecification, TSubject, TResult, TItem>(
-			IEnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> builder)
+			IEnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : class, IEnumerable<TItem>;
 	}
 
 	public interface ISpecificationVisitor<TData> : ISpecificationVisitor
 	{
-		TData Visit1<TSubject>([NotNull] IProcedure<TSubject> procedure, TData data);
-		TData Visit1<TSubject>([NotNull] IProcedureBuilder<TSubject> builder, TData data);
-		TData Visit1<TSubject>([NotNull] ISource<TSubject> source, TData data);
+		TData Visit1<TSubject>([NotNull] IExceptionFilter<TSubject> target, TData data);
+		TData Visit1<TSubject>([NotNull] IProcedure<TSubject> target, TData data);
+		TData Visit1<TSubject>([NotNull] IProcedureBuilder<TSubject> target, TData data);
+		TData Visit1<TSubject>([NotNull] ISource<TSubject> target, TData data);
 
-		TData Visit2<TSubject, TResult>([NotNull] IExpectation<TSubject, TResult> expectation, TData data);
+		TData Visit2<TSubject, TResult>([NotNull] IExpectation<TSubject, TResult> target, TData data);
 
-		TData Visit2<TSubject, TResult>([NotNull] IInstrument<TSubject, TResult> instrument, TData data);
+		TData Visit2<TSubject, TResult>([NotNull] IInstrument<TSubject, TResult> target, TData data);
 
-		TData Visit3<TSpecification, TSubject, TResult>([NotNull] IHas<TSpecification, TSubject, TResult> has,
+		TData Visit3<TSpecification, TSubject, TResult>([NotNull] IHas<TSpecification, TSubject, TResult> target,
 			TData data) where TSpecification : class, IChainableSpecification;
 
-		TData Visit3<TSpecification, TSubject, TResult>([NotNull] IIs<TSpecification, TSubject, TResult> @is,
+		TData Visit3<TSpecification, TSubject, TResult>([NotNull] IIs<TSpecification, TSubject, TResult> target,
 			TData data) where TSpecification : class, IChainableSpecification;
 
 		TData Visit3<TSpecification, TSubject, TResult>(
-			[NotNull] IExpectationBuilder<TSpecification, TSubject, TResult> builder, TData data)
+			[NotNull] IExpectationBuilder<TSpecification, TSubject, TResult> target, TData data)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification;
 
 		TData Visit3<TSubject, TResult, TExpectationBuilder>(
-			[NotNull] ISpecification<TSubject, TResult, TExpectationBuilder> specification, TData data)
+			[NotNull] ISpecification<TSubject, TResult, TExpectationBuilder> target, TData data)
 			where TExpectationBuilder : class, IExpectationBuilder;
 
 		TData Visit4<TSpecification, TSubject, TResult, TItem>(
-			IEnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> builder, TData data)
+			IEnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> target, TData data)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : class, IEnumerable<TItem>;
 	}

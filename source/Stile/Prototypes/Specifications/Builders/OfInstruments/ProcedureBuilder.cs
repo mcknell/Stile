@@ -32,6 +32,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 			Source = source;
 		}
 
+		public IAcceptSpecificationVisitors Parent
+		{
+			get { return Source; }
+		}
+
 		public ISource<TSubject> Source { get; private set; }
 		public IProcedureBuilderState<TSubject> Xray
 		{

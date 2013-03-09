@@ -23,7 +23,7 @@ using Stile.Types.Expressions;
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IProcedure : ISpecificationTerm { }
+	public interface IProcedure : IAcceptSpecificationVisitors {}
 
 	public interface IProcedure<TSubject> : IProcedure,
 		IHides<IProcedureState<TSubject>>
@@ -48,6 +48,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		}
 
 		public ILazyDescriptionOfLambda Lambda { get; private set; }
+		public abstract IAcceptSpecificationVisitors Parent { get; }
 
 		public abstract void Accept(ISpecificationVisitor visitor);
 		public abstract TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data);
@@ -72,11 +73,26 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			Source = source;
 		}
 
+		public override IAcceptSpecificationVisitors Parent
+		{
+			get { return Source; }
+		}
+
 		public ISource<TSubject> Source { get; private set; }
 
 		public IProcedureState<TSubject> Xray
 		{
 			get { return this; }
+		}
+
+		public override void Accept(ISpecificationVisitor visitor)
+		{
+			visitor.Visit1(this);
+		}
+
+		public override TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit1(this, data);
 		}
 
 		public IObservation<TSubject> Observe(ISource<TSubject> source, IDeadline deadline = null)
@@ -111,19 +127,22 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 				if (onThisThread)
 				{
 					task.RunSynchronously();
-				} else
+				}
+				else
 				{
 					task.Start();
 				}
 				timedOut = !task.Wait(millisecondsTimeout, cancellationToken);
-			} catch (Exception e)
+			}
+			catch (Exception e)
 			{
 				if (e is AggregateException)
 				{
 					if (e.InnerException != null)
 					{
 						errors.Add(new Error(e.InnerException, false));
-					} else
+					}
+					else
 					{
 						foreach (DictionaryEntry dictionaryEntry in e.Data)
 						{
@@ -135,16 +154,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			}
 			var observation = new Observation<TSubject>(task.Status, timedOut, sample, errors.ToArray());
 			return observation;
-		}
-
-		public override void Accept(ISpecificationVisitor visitor)
-		{
-			visitor.Visit1(this);
-		}
-
-		public override TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
-		{
-			return visitor.Visit1(this, data);
 		}
 	}
 }

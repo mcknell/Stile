@@ -6,14 +6,11 @@
 #region using...
 using Stile.Patterns.Behavioral.Visitor;
 using Stile.Patterns.Structural.Hierarchy;
-using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 {
-	public interface IAcceptSpecificationVisitors : IAcceptVisitors<ISpecificationVisitor>,
-		IHasParent<IAcceptSpecificationVisitors>
-	{
-		TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data);
-	}
+	public interface IAcceptEvaluationVisitors : IAcceptSpecificationVisitors,
+		IAcceptVisitors<IEvaluationVisitor>,
+		IHasParent<IAcceptEvaluationVisitors> {}
 }

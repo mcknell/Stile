@@ -9,6 +9,7 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
@@ -55,9 +56,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			Procedure = procedure.ValidateArgumentIsNotNull();
 			ExceptionFilter = exceptionFilter.ValidateArgumentIsNotNull();
 			_deadline = deadline;
+			LastTerm = ExceptionFilter;
 		}
 
 		public IExceptionFilter<TSubject> ExceptionFilter { get; private set; }
+		public IAcceptSpecificationVisitors LastTerm { get; private set; }
 		public IProcedure<TSubject> Procedure { get; private set; }
 
 		public IVoidSpecificationState<TSubject> Xray

@@ -10,6 +10,7 @@ using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations
@@ -46,10 +47,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			get { return this; }
 		}
 		protected override
-			Func
-				<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>,
-					ISpecification<TSubject, TResult, IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem>>>
-			SpecFactory
+			Func<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>, ISpecification<TSubject, TResult, IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem>>> SpecFactory
 		{
 			get { return MakeUnboundSpecification; }
 		}

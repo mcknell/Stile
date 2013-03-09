@@ -1,4 +1,4 @@
-#region License info...
+﻿#region License info...
 // Stile for .NET, Copyright 2011-2013 by Mark Knell
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
@@ -15,12 +15,12 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Printable.Past
+namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 {
-	public interface IPastExpectationDescriber : IExpectationVisitor {}
+	public interface IShouldExpectationDescriber : IExpectationVisitor {}
 
-	public class PastExpectationDescriber : Describer<IPastExpectationDescriber, IAcceptExpectationVisitors>,
-		IPastExpectationDescriber
+	public class ShouldExpectationDescriber : Describer<IShouldExpectationDescriber, IAcceptExpectationVisitors>,
+		IShouldExpectationDescriber
 	{
 		public void Visit1<TSubject>(IExceptionFilter<TSubject> target)
 		{
@@ -42,27 +42,28 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			IEqualToState<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification
 		{
-			AppendFormat(" {0}", target.ValidateArgumentIsNotNull().Description.Value);
+			throw new NotImplementedException();
 		}
 
 		public void Visit3<TSpecification, TSubject, TResult>(IHas<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification
 		{
-			throw new NotImplementedException();
+			AppendFormat(" {0}", ShouldSpecifications.ShouldHave);
+			Unwind();
 		}
 
 		public void Visit3<TSpecification, TSubject, TResult>(
 			IHashcodeState<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification
 		{
-			throw new NotImplementedException();
+			AppendFormat(" {0} {1}", ShouldSpecifications.Hashcode, target.Expected);
+			Unwind();
 		}
 
 		public void Visit3<TSpecification, TSubject, TResult>(IIs<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification
 		{
-			AppendFormat(" {0}", PastTenseEvaluations.WouldBe);
-			Unwind();
+			throw new NotImplementedException();
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(

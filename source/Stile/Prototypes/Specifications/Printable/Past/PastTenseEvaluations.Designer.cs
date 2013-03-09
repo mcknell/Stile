@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Stile.Resources {
+namespace Stile.Prototypes.Specifications.Printable.Past {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Stile.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Stile.Resources.PastTenseEvaluations", typeof(PastTenseEvaluations).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Stile.Prototypes.Specifications.Printable.Past.PastTenseEvaluations", typeof(PastTenseEvaluations).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

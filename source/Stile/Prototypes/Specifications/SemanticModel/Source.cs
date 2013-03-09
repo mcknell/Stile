@@ -18,7 +18,7 @@ using Stile.Types.Expressions;
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface ISource : ISpecificationTerm { }
+	public interface ISource : IAcceptSpecificationVisitors {}
 
 	public interface ISource<out TSubject> : ISource,
 		IHides<ISourceState>
@@ -51,15 +51,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		}
 
 		public Lazy<string> Description { get; private set; }
+		public IAcceptSpecificationVisitors Parent
+		{
+			get { return null; }
+		}
 		public ISourceState Xray
 		{
 			get { return this; }
-		}
-
-		public ISample<TSubject> Get()
-		{
-			TSubject subject = _subjectGetter.Value.Invoke();
-			return new Sample<TSubject>(subject, this, _clock.UtcNow);
 		}
 
 		public void Accept(ISpecificationVisitor visitor)
@@ -70,6 +68,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit1(this, data);
+		}
+
+		public ISample<TSubject> Get()
+		{
+			TSubject subject = _subjectGetter.Value.Invoke();
+			return new Sample<TSubject>(subject, this, _clock.UtcNow);
 		}
 	}
 }
