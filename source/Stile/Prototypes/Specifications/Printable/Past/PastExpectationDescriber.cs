@@ -71,5 +71,10 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 		{
 			throw new NotImplementedException();
 		}
+
+		public void Visit4<TSpecification, TSubject, TResult, TItem>(IItemsSatisfying<TSpecification, TSubject, TResult, TItem> target) where TSpecification : class, ISpecification, IChainableSpecification
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

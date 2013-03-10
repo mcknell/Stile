@@ -31,7 +31,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 		IHides<IQuantifierState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, ISpecification, IChainableSpecification {}
 
-	public interface IQuantifierState<out TSpecification, TSubject, TResult> : IAcceptExpectationVisitors
+	public interface IQuantifierState : IAcceptExpectationVisitors {}
+
+	public interface IQuantifierState<out TSpecification, TSubject, TResult> : IQuantifierState
 		where TSpecification : class, IChainableSpecification
 	{
 		IHasState<TSpecification, TSubject, TResult> Has { get; }
@@ -64,9 +66,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 
 		public TSpecification ItemsSatisfying(Expression<Func<TItem, bool>> expression)
 		{
+			var itemsSatisfying = new ItemsSatisfying<TSpecification, TSubject, TResult, TItem>(expression, this);
 			Predicate<TResult> func = MakePredicate(expression);
 			var expectation = new Expectation<TSubject, TResult>(result => func(result),
-				this,
+				itemsSatisfying,
 				_hasState.ExpectationBuilder.Instrument);
 			return _hasState.ExpectationBuilder.Make(expectation);
 		}
@@ -75,4 +78,5 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 		public abstract TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data);
 		protected abstract Predicate<TResult> MakePredicate(Expression<Func<TItem, bool>> expression);
 	}
+
 }

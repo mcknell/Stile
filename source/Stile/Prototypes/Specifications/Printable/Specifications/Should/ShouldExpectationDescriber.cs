@@ -13,6 +13,7 @@ using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Types.Expressions;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
@@ -70,7 +71,14 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			IHasAll<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification
 		{
-			throw new NotImplementedException();
+			AppendFormat(" {0}", ShouldSpecifications.All);
+			Unwind();
+		}
+
+		public void Visit4<TSpecification, TSubject, TResult, TItem>(IItemsSatisfying<TSpecification, TSubject, TResult, TItem> target) where TSpecification : class, ISpecification, IChainableSpecification
+		{
+			AppendFormat(" {0}", target.Description.Value);
+			Unwind();
 		}
 	}
 }

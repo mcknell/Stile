@@ -71,6 +71,8 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentEnumerableBoundExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentEnumerableExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\ExpectationTerm.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Hashcode.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\ItemsSatisfying.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIs.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\ExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\EnumerableHas.cs" />

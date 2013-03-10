@@ -12,6 +12,7 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
 using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Tests.Prototypes.Specifications.SampleObjects;
 #endregion
 
 namespace Stile.Tests.Prototypes.Specifications.Printable.Specifications.Should
@@ -26,6 +27,14 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.Specifications.Should
 			IBoundSpecification<int, TypeCode, IFluentBoundExpectationBuilder<int, TypeCode>> specification =
 				Specify.For(() => i).That(x => x.GetTypeCode()).Has.HashCode(0);
 			Assert.That(specification.ToShould(), Is.EqualTo(@"i.GetTypeCode() should have hashcode 0"));
+		}
+
+		[Test]
+		public void Unbound()
+		{
+			ISpecification<Foo<int>, Foo<int>, IFluentEnumerableExpectationBuilder<Foo<int>, Foo<int>, int>>
+				specification = Specify.ThatAny<Foo<int>>().OfItemsLike(2).Has.All.ItemsSatisfying(x => x >= 0);
+			Assert.That(specification.ToShould(), Is.EqualTo(@"Any Foo<int> should have all items >= 0"));
 		}
 	}
 }

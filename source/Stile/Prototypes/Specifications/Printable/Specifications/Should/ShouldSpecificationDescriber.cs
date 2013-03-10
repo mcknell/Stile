@@ -15,6 +15,7 @@ using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Types.Reflection;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
@@ -55,7 +56,14 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 
 		public void Visit2<TSubject, TResult>(IInstrument<TSubject, TResult> instrument)
 		{
-			DescribeSourceAndInstrument(this, instrument, ShouldSpecifications.InstrumentedBy);
+			if (instrument.Xray.Source != null)
+			{
+				DescribeSourceAndInstrument(this, instrument, ShouldSpecifications.InstrumentedBy);
+			}
+			else
+			{
+				AppendFormat(ShouldSpecifications.AnyType, typeof(TSubject).ToDebugString());
+			}
 			Unwind();
 		}
 

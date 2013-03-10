@@ -62,6 +62,24 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to all items.
+        /// </summary>
+        internal static string All {
+            get {
+                return ResourceManager.GetString("All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Any {0}.
+        /// </summary>
+        internal static string AnyType {
+            get {
+                return ResourceManager.GetString("AnyType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to hashcode.
         /// </summary>
         internal static string Hashcode {
