@@ -26,7 +26,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		where TSpecification : class, IChainableSpecification
 	{
 		[System.Diagnostics.Contracts.Pure]
-		IVoidSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
+		IFaultSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
 			where TException : Exception;
 	}
 
@@ -58,14 +58,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null);
 	}
 
-	public abstract class ExpectationBuilder
-	{
-		public delegate TSpecification SpecificationFactory<TSubject, TResult, out TSpecification>(
-			IExpectation<TSubject, TResult> expectation, IExceptionFilter<TSubject, TResult> exceptionFilter = null)
-			where TSpecification : class, IChainableSpecification;
-	}
-
-	public abstract class ExpectationBuilder<TSpecification, TSubject, THas, TIs, TBuilder> : ExpectationBuilder {}
+	public abstract class ExpectationBuilder {}
 
 	public abstract class ExpectationBuilder<TSpecification, TSubject, TResult, THas, TIs, TBuilder> :
 		ExpectationBuilder,
@@ -114,12 +107,12 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			get { return this; }
 		}
 
-		public IVoidSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
+		public IFaultSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
 			where TException : Exception
 		{
 			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(x => x is TException, Instrument);
-			var builder = new VoidSpecificationBuilder<TSpecification, TSubject, TResult, TException>(exceptionFilter,
-				Make);
+			var builder = new FaultSpecificationBuilder<TSpecification, TSubject, TResult, TException>(
+				exceptionFilter, Make);
 			return builder;
 		}
 
@@ -142,7 +135,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			return new Specification<TSubject, TResult, TBuilder>(expectation,
 				Builder,
 				expectation.Xray,
-				exceptionFilter : exceptionFilter);
+				exceptionFilter);
 		}
 
 		protected abstract THas MakeHas();
@@ -154,7 +147,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			return new Specification<TSubject, TResult, TBuilder>(expectation,
 				Builder,
 				expectation.Xray,
-				exceptionFilter : exceptionFilter);
+				exceptionFilter);
 		}
 	}
 
@@ -166,8 +159,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification<TBuilder>
 		where TBuilder : class, IExpectationBuilder
 	{
-		protected ExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
-			ISource<TSubject> source = null)
+		protected ExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument)
 			: base(instrument) {}
 
 		protected override IHas<TSpecification, TSubject, TResult> MakeHas()

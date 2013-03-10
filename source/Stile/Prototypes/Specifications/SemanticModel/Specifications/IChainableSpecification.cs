@@ -9,7 +9,7 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations;
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
-	public interface IChainableSpecification {}
+	public interface IChainableSpecification : ISpecification {}
 
 	public interface IChainableSpecification<out TPredicateBuilder> : IChainableSpecification
 		where TPredicateBuilder : class, IExpectationBuilder

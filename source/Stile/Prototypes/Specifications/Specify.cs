@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
@@ -44,6 +45,13 @@ namespace Stile.Prototypes.Specifications
 		{
 			Instrument<TSubject, TSubject> instrument = Instrument.GetTrivialUnbound<TSubject>();
 			return new FluentExpectationBuilder<TSubject, TSubject>(instrument);
+		}
+
+		[System.Diagnostics.Contracts.Pure]
+		public static IFluentEnumerableExpectationBuilder<TSubject, TSubject, TItem> ThatAny<TSubject, TItem>()
+			where TSubject : class, IEnumerable<TItem>
+		{
+			return ThatAny<TSubject>().OfItemsLike(default(TItem));
 		}
 	}
 }

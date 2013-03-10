@@ -46,6 +46,11 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			Unwind();
 		}
 
+		public void Visit2<TSubject, TResult>(IExceptionFilter<TSubject, TResult> target)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void Visit2<TSubject, TResult>(IExpectation<TSubject, TResult> expectation)
 		{
 			var expectationDescriber = new ShouldExpectationDescriber();

@@ -11,18 +11,16 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
+using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
-using Stile.Types.Expressions;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 {
 	public interface IExpectation : IAcceptSpecificationVisitors
 	{
-		[NotNull]
-		ILazyDescriptionOfLambda Lambda { get; }
 		void Accept([NotNull] IExpectationVisitor visitor);
 		TData Accept<TData>([NotNull] IExpectationVisitor<TData> visitor, TData data = default(TData));
 	}
@@ -41,9 +39,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 	{
 		[NotNull]
 		IAcceptExpectationVisitors LastTerm { get; }
+
+		bool TryGetBuilder<TExpectationBuilder>(out TExpectationBuilder builder)
+			where TExpectationBuilder : class, IExpectationBuilder;
 	}
 
-	public class Expectation<TSubject>
+	public abstract class Expectation<TSubject>
 	{
 		public static IEvaluation<TSubject> Evaluate(IObservation<TSubject> observation, bool expectedAnException)
 		{
@@ -76,10 +77,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			IAcceptExpectationVisitors lastTerm)
 		{
 			Func<Predicate<TResult>> compiler = Expectation<TSubject, TResult>.MakeCompiler(expression, negated);
-			return new Expectation<TSubject, TResult>(compiler,
-				new LazyDescriptionOfLambda(expression),
-				lastTerm,
-				instrument);
+			return new Expectation<TSubject, TResult>(compiler, lastTerm, instrument);
 		}
 	}
 
@@ -87,50 +85,36 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 		IExpectation<TSubject, TResult>,
 		IExpectationState<TSubject, TResult>
 	{
-		private static readonly Expectation<TSubject, TResult> UnconditionalAcceptance;
 		private readonly Lazy<Predicate<IMeasurement<TSubject, TResult>>> _lazyPredicate;
-
-		static Expectation()
-		{
-			var instrument = new Instrument<TSubject, TResult>(x => default(TResult), null);
-			Expression<Predicate<TResult>> expression = result => true;
-			var lambda = new LazyDescriptionOfLambda(expression);
-			UnconditionalAcceptance = new Expectation<TSubject, TResult>(expression.Compile, lambda, instrument, null);
-		}
 
 		public Expectation([NotNull] Expression<Predicate<TResult>> expression,
 			[NotNull] IAcceptExpectationVisitors lastTerm,
 			[NotNull] IInstrument<TSubject, TResult> instrument)
-			: this(MakeCompiler(expression), new LazyDescriptionOfLambda(expression), lastTerm, instrument) {}
+			: this(MakeCompiler(expression), lastTerm, instrument) {}
 
 		public Expectation([NotNull] Func<Predicate<TResult>> predicateFactory,
-			[NotNull] ILazyDescriptionOfLambda lambda,
 			[NotNull] IAcceptExpectationVisitors lastTerm,
 			[NotNull] IInstrument<TSubject, TResult> instrument)
-			: this(predicateFactory, lambda, instrument, lastTerm.ValidateArgumentIsNotNull()) {}
+			: this(instrument, predicateFactory, lastTerm.ValidateArgumentIsNotNull()) {}
 
-		private Expectation([NotNull] Func<Predicate<TResult>> predicateFactory,
-			[NotNull] ILazyDescriptionOfLambda lambda,
-			[NotNull] IInstrument<TSubject, TResult> instrument,
+		private Expectation([NotNull] IInstrument<TSubject, TResult> instrument,
+			[NotNull] Func<Predicate<TResult>> predicateFactory,
 			IAcceptExpectationVisitors lastTerm)
 		{
-			Lambda = lambda.ValidateArgumentIsNotNull();
-			LastTerm = lastTerm;
 			Instrument = instrument.ValidateArgumentIsNotNull();
-			Source = Instrument.Xray.Source;
-			Func<Predicate<TResult>> source = predicateFactory.ValidateArgumentIsNotNull();
+			LastTerm = lastTerm;
+			Func<Predicate<TResult>> factory = predicateFactory.ValidateArgumentIsNotNull();
 			_lazyPredicate =
-				new Lazy<Predicate<IMeasurement<TSubject, TResult>>>(() => x => source.Invoke().Invoke(x.Value));
+				new Lazy<Predicate<IMeasurement<TSubject, TResult>>>(() => x => factory.Invoke().Invoke(x.Value));
 		}
 
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
-		public ILazyDescriptionOfLambda Lambda { get; private set; }
 		public IAcceptExpectationVisitors LastTerm { get; private set; }
+
 		public IAcceptSpecificationVisitors Parent
 		{
 			get { return Instrument; }
 		}
-		public ISource<TSubject> Source { get; private set; }
 
 		public IExpectationState<TSubject, TResult> Xray
 		{
@@ -189,16 +173,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			return factory.Invoke(measurement, outcome);
 		}
 
-		public static Expectation<TSubject, TResult> GetUnconditionalAcceptance(ISource<TSubject> source)
+		public bool TryGetBuilder<TExpectationBuilder>(out TExpectationBuilder builder)
+			where TExpectationBuilder : class, IExpectationBuilder
 		{
-			if (source == null)
-			{ // if we don't need a bound Instrument, reuse the single static instance
-				return UnconditionalAcceptance;
-			}
-			var instrument = new Instrument<TSubject, TResult>(x => default(TResult), source);
-			Expression<Predicate<TResult>> expression = result => true;
-			var lambda = new LazyDescriptionOfLambda(expression);
-			return new Expectation<TSubject, TResult>(expression.Compile, lambda, instrument, null);
+			throw new NotImplementedException();
 		}
 
 		public static Func<Predicate<TResult>> MakeCompiler(Expression<Predicate<TResult>> expression)

@@ -33,7 +33,7 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.Specifications.Should
 		public void Unbound()
 		{
 			ISpecification<Foo<int>, Foo<int>, IFluentEnumerableExpectationBuilder<Foo<int>, Foo<int>, int>>
-				specification = Specify.ThatAny<Foo<int>>().OfItemsLike(2).Has.All.ItemsSatisfying(x => x >= 0);
+				specification = Specify.ThatAny<Foo<int>, int>().Has.All.ItemsSatisfying(x => x >= 0);
 			Assert.That(specification.ToShould(), Is.EqualTo(@"Any Foo<int> should have all items >= 0"));
 		}
 	}

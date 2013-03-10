@@ -81,7 +81,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentBoundExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EqualTo.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfSpecifications\VoidSpecificationBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfSpecifications\FaultSpecificationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Describer.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldExpectationDescriber.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldSpecificationDescriber.cs" />
@@ -95,7 +95,7 @@
     <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\IAcceptSpecificationVisitors.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\IExpectationVisitor.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\IEvaluationVisitor.cs" />
-    <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\ISpecificationVisitor.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\ISpecificationVisitor.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Past\PastExpectationDescriber.cs" />
     <Compile Include="Prototypes\Specifications\Printable\PrintExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Past\PastEvaluationDescriber.cs" />
@@ -107,10 +107,10 @@
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\Measurement.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\Observation.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Procedure.cs" />
-    <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\IVoidBoundSpecification.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\IBoundFaultSpecification.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\Deadline.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\SpecificationExtensions.cs" />
-    <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\VoidSpecification.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\FaultSpecification.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfInstruments\InstrumentBuilderExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\ExceptionFilterBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\HasExtensions.cs" />

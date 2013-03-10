@@ -49,22 +49,22 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		public IAcceptSpecificationVisitors Parent { get; private set; }
 		public ISource<TSubject> Source { get; private set; }
 
-		public TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
+		public virtual TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit1(this, data);
 		}
 
-		public void Accept(ISpecificationVisitor visitor)
+		public virtual void Accept(ISpecificationVisitor visitor)
 		{
 			visitor.Visit1(this);
 		}
 
-		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		public virtual TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit1(this, data);
 		}
 
-		public void Accept(IExpectationVisitor visitor)
+		public virtual void Accept(IExpectationVisitor visitor)
 		{
 			visitor.Visit1(this);
 		}
@@ -123,6 +123,26 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 				measurement.TimedOut,
 				errors.ToArray());
 			return filtered;
+		}
+
+		public override TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit2(this, data);
+		}
+
+		public override void Accept(ISpecificationVisitor visitor)
+		{
+			visitor.Visit2(this);
+		}
+
+		public override TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit2(this, data);
+		}
+
+		public override void Accept(IExpectationVisitor visitor)
+		{
+			visitor.Visit2(this);
 		}
 	}
 }

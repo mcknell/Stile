@@ -19,9 +19,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 
 	public interface IExceptionFilterBuilder<out TSpecification, TSubject> : IExceptionFilterBuilder,
 		IHides<IExceptionFilterBuilderState<TSubject>>
-		where TSpecification : class, IVoidSpecification<TSubject>
+		where TSpecification : class, IFaultSpecification<TSubject>
 	{
-		IVoidSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>() where TException : Exception;
+		IFaultSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>() where TException : Exception;
 	}
 
 	public interface IExceptionFilterBuilderState {}
@@ -37,12 +37,12 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 	public class ExceptionFilterBuilder<TSpecification, TSubject> :
 		IExceptionFilterBuilder<TSpecification, TSubject>,
 		IExceptionFilterBuilderState<TSubject>
-		where TSpecification : class, IVoidSpecification<TSubject>
+		where TSpecification : class, IFaultSpecification<TSubject>
 	{
-		private readonly VoidSpecification.Factory<TSpecification, TSubject> _specificationFactory;
+		private readonly FaultSpecification.Factory<TSpecification, TSubject> _specificationFactory;
 
 		protected ExceptionFilterBuilder([NotNull] IProcedure<TSubject> procedure,
-			[NotNull] VoidSpecification.Factory<TSpecification, TSubject> specificationFactory,
+			[NotNull] FaultSpecification.Factory<TSpecification, TSubject> specificationFactory,
 			ISource<TSubject> source = null)
 		{
 			Procedure = procedure.ValidateArgumentIsNotNull();
@@ -57,12 +57,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 			get { return this; }
 		}
 
-		public IVoidSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
+		public IFaultSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
 			where TException : Exception
 		{
 			var exceptionFilter = new ExceptionFilter<TSubject>(x => x is TException, Procedure);
-			var builder = new VoidSpecificationBuilder<TSpecification, TSubject, TException>(Source,
-				Procedure,
+			var builder = new FaultSpecificationBuilder<TSpecification, TSubject, TException>(Procedure,
 				exceptionFilter,
 				_specificationFactory);
 			return builder;
@@ -70,14 +69,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 
 		public static ExceptionFilterBuilder<TSpecification, TSubject> Make(
 			[NotNull] IProcedure<TSubject> procedure,
-			[NotNull] VoidSpecification.Factory<TSpecification, TSubject> specificationFactory)
+			[NotNull] FaultSpecification.Factory<TSpecification, TSubject> specificationFactory)
 		{
 			return new ExceptionFilterBuilder<TSpecification, TSubject>(procedure, specificationFactory);
 		}
 
 		public static ExceptionFilterBuilder<TSpecification, TSubject> MakeBound([NotNull] ISource<TSubject> source,
 			[NotNull] IProcedure<TSubject> procedure,
-			[NotNull] VoidSpecification.Factory<TSpecification, TSubject> specificationFactory)
+			[NotNull] FaultSpecification.Factory<TSpecification, TSubject> specificationFactory)
 		{
 			return new ExceptionFilterBuilder<TSpecification, TSubject>(procedure, specificationFactory, source);
 		}

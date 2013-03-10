@@ -53,6 +53,11 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			source.ValidateArgumentIsNotNull();
 		}
 
+		public void Visit2<TSubject, TResult>(IExceptionFilter<TSubject, TResult> target)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void Visit2<TSubject, TResult>(IExpectation<TSubject, TResult> expectation)
 		{
 			IPastExpectationDescriber expectationFormater = _expectationFormaterFactory.Invoke();

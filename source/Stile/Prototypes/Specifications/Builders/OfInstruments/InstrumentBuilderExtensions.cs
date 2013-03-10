@@ -30,19 +30,19 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 		}
 
 		[System.Diagnostics.Contracts.Pure]
-		public static IExceptionFilterBuilder<IVoidSpecification<TSubject>, TSubject> That<TSubject>(
+		public static IExceptionFilterBuilder<IFaultSpecification<TSubject>, TSubject> That<TSubject>(
 			[NotNull] this IProcedureBuilder<TSubject> builder, Expression<Action<TSubject>> expression)
 		{
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
 			builder.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
-			var procedure = new Procedure<TSubject>(expression);
-			return ExceptionFilterBuilder<IVoidSpecification<TSubject>, TSubject>.Make(procedure,
-				VoidSpecification<TSubject>.Make);
+			var procedure = new Procedure<TSubject>(expression, null);
+			return ExceptionFilterBuilder<IFaultSpecification<TSubject>, TSubject>.Make(procedure,
+				FaultSpecification<TSubject>.Make);
 		}
 
 		[System.Diagnostics.Contracts.Pure]
-		public static IExceptionFilterBuilder<IVoidBoundSpecification<TSubject>, TSubject> That<TSubject>(
+		public static IExceptionFilterBuilder<IBoundFaultSpecification<TSubject>, TSubject> That<TSubject>(
 			[NotNull] this IBoundProcedureBuilder<TSubject> builder, Expression<Action<TSubject>> expression)
 		{
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
@@ -50,9 +50,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			ISource<TSubject> source = builder.Xray.Source.ValidateArgumentIsNotNull();
 			IProcedure<TSubject> procedure = new Procedure<TSubject>(expression, source);
-			return ExceptionFilterBuilder<IVoidBoundSpecification<TSubject>, TSubject>.MakeBound(source,
+			return ExceptionFilterBuilder<IBoundFaultSpecification<TSubject>, TSubject>.MakeBound(source,
 				procedure,
-				VoidSpecification<TSubject>.MakeBound);
+				FaultSpecification<TSubject>.MakeBound);
 		}
 
 		[System.Diagnostics.Contracts.Pure]

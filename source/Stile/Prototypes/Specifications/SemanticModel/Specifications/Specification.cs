@@ -10,6 +10,7 @@ using Stile.Patterns.Structural.FluentInterface;
 using Stile.Patterns.Structural.Hierarchy;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
+using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
@@ -54,38 +55,47 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public abstract ISpecification Clone(IDeadline deadline);
 	}
 
-	public abstract class Specification<TSubject> : Specification,
+	public abstract class Specification<TSubject, TExceptionFilter> : Specification,
 		ISpecification<TSubject>
+		where TExceptionFilter : class, IExceptionFilter<TSubject>
 	{
-		protected Specification([CanBeNull] string because)
+		protected Specification([NotNull] IAcceptSpecificationVisitors lastTerm,
+			[CanBeNull] TExceptionFilter exceptionFilter,
+			[Symbol] IDeadline deadline,
+			[CanBeNull] string because)
 		{
+			LastTerm = lastTerm.ValidateArgumentIsNotNull();
+			ExceptionFilter = exceptionFilter;
+			Deadline = deadline;
 			Because = because;
 		}
 
 		public string Because { get; private set; }
+		public TExceptionFilter ExceptionFilter { get; private set; }
+		public IDeadline Deadline { get; private set; }
+		public IAcceptSpecificationVisitors LastTerm { get; private set; }
 	}
 
-	public class Specification<TSubject, TResult, TExpectationBuilder> : Specification<TSubject>,
+	public class Specification<TSubject, TResult, TExpectationBuilder> :
+		Specification<TSubject, IExceptionFilter<TSubject, TResult>>,
 		IBoundSpecification<TSubject, TResult, TExpectationBuilder>,
 		ISpecificationState<TSubject, TResult>
 		where TExpectationBuilder : class, IExpectationBuilder
 	{
 		private readonly IDeadline _deadline;
-		private readonly IExceptionFilter<TSubject, TResult> _exceptionFilter;
 		private readonly TExpectationBuilder _expectationBuilder;
 
+		[Rule]
 		public Specification([NotNull] IExpectation<TSubject, TResult> expectation,
-			[NotNull] TExpectationBuilder expectationBuilder,
+			[Symbol] [NotNull] TExpectationBuilder expectationBuilder,
 			[NotNull] IAcceptSpecificationVisitors lastTerm,
-			string because = null,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null,
-			IDeadline deadline = null)
-			: base(because)
+			[Symbol] IDeadline deadline = null,
+			[Symbol] string because = null)
+			: base(lastTerm, exceptionFilter, deadline, because)
 		{
 			Expectation = expectation.ValidateArgumentIsNotNull();
 			_expectationBuilder = expectationBuilder.ValidateArgumentIsNotNull();
-			LastTerm = lastTerm.ValidateArgumentIsNotNull();
-			_exceptionFilter = exceptionFilter;
 			_deadline = deadline;
 		}
 
@@ -95,7 +105,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		}
 
 		public IExpectation<TSubject, TResult> Expectation { get; private set; }
-		public IAcceptSpecificationVisitors LastTerm { get; private set; }
 		public IAcceptSpecificationVisitors Parent
 		{
 			get { return null; }
@@ -110,9 +119,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return new Specification<TSubject, TResult, TExpectationBuilder>(Expectation,
 				_expectationBuilder,
 				LastTerm,
-				Because,
-				_exceptionFilter,
-				deadline);
+				ExceptionFilter,
+				deadline,
+				Because);
 		}
 
 		public IEvaluation<TSubject, TResult> Evaluate(ISource<TSubject> source, IDeadline deadline = null)
@@ -147,7 +156,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		private bool ExpectsException
 		{
-			get { return _exceptionFilter != null; }
+			get { return ExceptionFilter != null; }
 		}
 
 		private IBoundEvaluation<TSubject, TResult> BoundFactory(IMeasurement<TSubject, TResult> measurement,
@@ -164,7 +173,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 				deadline ?? _deadline);
 			if (ExpectsException)
 			{
-				measurement = _exceptionFilter.Filter(measurement);
+				measurement = ExceptionFilter.Filter(measurement);
 			}
 			TEvaluation evaluation = Expectation.Evaluate(measurement, ExpectsException, evaluationFactory);
 			return evaluation;

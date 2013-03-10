@@ -17,7 +17,6 @@ using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
-using Stile.Readability;
 using Stile.Types.Expressions;
 #endregion
 
@@ -52,12 +51,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 		public abstract void Accept(ISpecificationVisitor visitor);
 		public abstract TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data);
-
-		public static class Trivial<TSubject>
-		{
-			public static readonly Lazy<Func<TSubject, TSubject>> Map =
-				new Lazy<Func<TSubject, TSubject>>(Identity.Map<TSubject>);
-		}
 	}
 
 	public class Procedure<TSubject> : Procedure,
@@ -66,7 +59,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 	{
 		private readonly Lazy<Action<TSubject>> _lazyAction;
 
-		public Procedure([NotNull] Expression<Action<TSubject>> expression, ISource<TSubject> source = null)
+		public Procedure([NotNull] Expression<Action<TSubject>> expression, [CanBeNull] ISource<TSubject> source)
 			: base(expression)
 		{
 			_lazyAction = new Lazy<Action<TSubject>>(expression.Compile);

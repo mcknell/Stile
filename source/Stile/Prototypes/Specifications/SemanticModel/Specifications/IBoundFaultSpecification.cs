@@ -10,11 +10,11 @@ using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
-	public interface IVoidBoundSpecification : IVoidSpecification,
+	public interface IBoundFaultSpecification : IFaultSpecification,
 		IBoundSpecification {}
 
-	public interface IVoidBoundSpecification<TSubject> : IVoidBoundSpecification,
-		IVoidSpecification<TSubject>,
+	public interface IBoundFaultSpecification<TSubject> : IBoundFaultSpecification,
+		IFaultSpecification<TSubject>,
 		IBoundSpecification<TSubject>
 	{
 		[NotNull]
