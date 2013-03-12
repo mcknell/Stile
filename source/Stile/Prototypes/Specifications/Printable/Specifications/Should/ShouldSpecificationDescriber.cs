@@ -43,7 +43,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 
 		public void Visit1<TSubject>(ISource<TSubject> source)
 		{
-			Unwind();
+			// do nothin'
 		}
 
 		public void Visit2<TSubject, TResult>(IExceptionFilter<TSubject, TResult> target)
@@ -56,7 +56,6 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			var expectationDescriber = new ShouldExpectationDescriber();
 			expectationDescriber.Visit2(expectation.ValidateArgumentIsNotNull());
 			Append(expectationDescriber.ToString());
-			Unwind();
 		}
 
 		public void Visit2<TSubject, TResult>(IInstrument<TSubject, TResult> instrument)
@@ -69,7 +68,6 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			{
 				AppendFormat(ShouldSpecifications.AnyType, typeof(TSubject).ToDebugString());
 			}
-			Unwind();
 		}
 
 		public void Visit3<TSpecification, TSubject, TResult>(IHas<TSpecification, TSubject, TResult> has)
@@ -112,7 +110,25 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			where TExpectationBuilder : class, IExpectationBuilder
 		{
 			var describer = new ShouldSpecificationDescriber();
-			describer.Visit3(specification);
+			var stack = new Stack<ISpecification<TSubject, TResult>>();
+			ISpecification<TSubject, TResult> prior = specification;
+			while (prior != null)
+			{
+				stack.Push(prior);
+				prior = prior.Xray.Prior;
+			}
+			var first = (ISpecification<TSubject, TResult, TExpectationBuilder>) stack.Pop();
+			describer.Visit3(first);
+			if (stack.Count > 0)
+			{
+				describer.AppendFormat(" initially,\r\nthen");
+			}
+			while (stack.Count > 0)
+			{
+				var popped = (ISpecification<TSubject, TResult, TExpectationBuilder>) stack.Pop();
+				describer.Visit2(popped.Xray.Expectation);
+				describer.AppendFormat(" when sampled again");
+			}
 			return describer.ToString();
 		}
 	}

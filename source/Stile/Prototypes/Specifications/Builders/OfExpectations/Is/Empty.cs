@@ -9,27 +9,19 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
+namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 {
-	public interface IHashcodeState<TSpecification, TSubject, TResult> :
-		IExpectationTerm<IHasState<TSpecification, TSubject, TResult>>
+	public interface IEmpty<out TSpecification, TSubject, TResult> :
+		IExpectationTerm<IIsState<TSpecification, TSubject, TResult>>
+		where TSpecification : class, IChainableSpecification {}
+
+	public class Empty<TSpecification, TSubject, TResult> :
+		ExpectationTerm<IIsState<TSpecification, TSubject, TResult>>,
+		IEmpty<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
-		int Expected { get; }
-	}
-
-	public class Hashcode<TSpecification, TSubject, TResult> :
-		ExpectationTerm<IHasState<TSpecification, TSubject, TResult>>,
-		IHashcodeState<TSpecification, TSubject, TResult>
-		where TSpecification : class, IChainableSpecification
-	{
-		public Hashcode([NotNull] IHasState<TSpecification, TSubject, TResult> prior, int expected)
-			: base(prior)
-		{
-			Expected = expected;
-		}
-
-		public int Expected { get; private set; }
+		public Empty([NotNull] IIsState<TSpecification, TSubject, TResult> prior)
+			: base(prior) {}
 
 		public override void Accept(IExpectationVisitor visitor)
 		{

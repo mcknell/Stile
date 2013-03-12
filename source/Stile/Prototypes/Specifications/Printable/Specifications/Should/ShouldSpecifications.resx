@@ -123,13 +123,22 @@
   <data name="AnyType" xml:space="preserve">
     <value>Any {0}</value>
   </data>
+  <data name="Empty" xml:space="preserve">
+    <value>empty</value>
+  </data>
   <data name="Hashcode" xml:space="preserve">
     <value>hashcode</value>
   </data>
   <data name="InstrumentedBy" xml:space="preserve">
     <value>instrumented by</value>
   </data>
+  <data name="ShouldBe" xml:space="preserve">
+    <value>should be</value>
+  </data>
   <data name="ShouldHave" xml:space="preserve">
     <value>should have</value>
+  </data>
+  <data name="ShouldNotBe" xml:space="preserve">
+    <value>should not be</value>
   </data>
 </root>

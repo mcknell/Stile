@@ -26,7 +26,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 			builder.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			var instrument = new Instrument<TSubject, TResult>(expression, builder.Xray.Source);
-			return new FluentExpectationBuilder<TSubject, TResult>(instrument);
+			return new FluentExpectationBuilder<TSubject, TResult>(instrument, null);
 		}
 
 		[System.Diagnostics.Contracts.Pure]
@@ -63,7 +63,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 			builder.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			var instrument = new Instrument<TSubject, TResult>(expression, builder.Xray.Source);
-			return new FluentBoundExpectationBuilder<TSubject, TResult>(instrument, builder.Xray);
+			return new FluentBoundExpectationBuilder<TSubject, TResult>(instrument, null);
 		}
 	}
 }

@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
@@ -23,8 +24,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 				IFluentExpectationBuilder<TSubject, TResult>>,
 		IFluentExpectationBuilder<TSubject, TResult>
 	{
-		public FluentExpectationBuilder(IInstrument<TSubject, TResult> instrument)
-			: base(instrument) {}
+		public FluentExpectationBuilder(IInstrument<TSubject, TResult> instrument,
+			[CanBeNull] ISpecification<TSubject, TResult, IFluentExpectationBuilder<TSubject, TResult>> prior)
+			: base(instrument, prior) {}
 
 		public override void Accept(ISpecificationVisitor visitor)
 		{
@@ -34,6 +36,12 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		public override TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit3(this, data);
+		}
+
+		public override object CloneFor(object specification)
+		{
+			return new FluentExpectationBuilder<TSubject, TResult>(Instrument,
+				specification as ISpecification<TSubject, TResult, IFluentExpectationBuilder<TSubject, TResult>>);
 		}
 
 		protected override IFluentExpectationBuilder<TSubject, TResult> Builder

@@ -80,6 +80,15 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to empty.
+        /// </summary>
+        internal static string Empty {
+            get {
+                return ResourceManager.GetString("Empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to hashcode.
         /// </summary>
         internal static string Hashcode {
@@ -98,11 +107,29 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to should be.
+        /// </summary>
+        internal static string ShouldBe {
+            get {
+                return ResourceManager.GetString("ShouldBe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to should have.
         /// </summary>
         internal static string ShouldHave {
             get {
                 return ResourceManager.GetString("ShouldHave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to should not be.
+        /// </summary>
+        internal static string ShouldNotBe {
+            get {
+                return ResourceManager.GetString("ShouldNotBe", resourceCulture);
             }
         }
     }

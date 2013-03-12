@@ -38,6 +38,11 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			FillStackAndUnwind(lastTerm);
 		}
 
+		public void Visit3<TSpecification, TSubject, TResult>(IEmpty<TSpecification, TSubject, TResult> target) where TSpecification : class, IChainableSpecification
+		{
+			throw new NotImplementedException();
+		}
+
 		public void Visit3<TSpecification, TSubject, TResult>(
 			IEqualToState<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification
@@ -62,7 +67,6 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			where TSpecification : class, IChainableSpecification
 		{
 			AppendFormat(" {0}", PastTenseEvaluations.WouldBe);
-			Unwind();
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(

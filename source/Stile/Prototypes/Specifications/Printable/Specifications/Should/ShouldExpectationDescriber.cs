@@ -13,7 +13,6 @@ using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
-using Stile.Types.Expressions;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
@@ -39,6 +38,12 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			FillStackAndUnwind(lastTerm);
 		}
 
+		public void Visit3<TSpecification, TSubject, TResult>(IEmpty<TSpecification, TSubject, TResult> target)
+			where TSpecification : class, IChainableSpecification
+		{
+			AppendFormat(" {0}", ShouldSpecifications.Empty);
+		}
+
 		public void Visit3<TSpecification, TSubject, TResult>(
 			IEqualToState<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification
@@ -50,7 +55,6 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			where TSpecification : class, IChainableSpecification
 		{
 			AppendFormat(" {0}", ShouldSpecifications.ShouldHave);
-			Unwind();
 		}
 
 		public void Visit3<TSpecification, TSubject, TResult>(
@@ -58,13 +62,12 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			where TSpecification : class, IChainableSpecification
 		{
 			AppendFormat(" {0} {1}", ShouldSpecifications.Hashcode, target.Expected);
-			Unwind();
 		}
 
 		public void Visit3<TSpecification, TSubject, TResult>(IIs<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification
 		{
-			throw new NotImplementedException();
+			AppendFormat(" {0}", target.Xray.Negated ? ShouldSpecifications.ShouldNotBe : ShouldSpecifications.ShouldBe);
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
@@ -72,13 +75,13 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			where TSpecification : class, ISpecification, IChainableSpecification
 		{
 			AppendFormat(" {0}", ShouldSpecifications.All);
-			Unwind();
 		}
 
-		public void Visit4<TSpecification, TSubject, TResult, TItem>(IItemsSatisfying<TSpecification, TSubject, TResult, TItem> target) where TSpecification : class, ISpecification, IChainableSpecification
+		public void Visit4<TSpecification, TSubject, TResult, TItem>(
+			IItemsSatisfying<TSpecification, TSubject, TResult, TItem> target)
+			where TSpecification : class, ISpecification, IChainableSpecification
 		{
 			AppendFormat(" {0}", target.Description.Value);
-			Unwind();
 		}
 	}
 }

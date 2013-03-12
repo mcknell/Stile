@@ -5,7 +5,6 @@
 
 #region using...
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
@@ -16,7 +15,7 @@ using Stile.Types.Expressions;
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers
 {
-	public interface IItemsSatisfying<out TSpecification, TSubject, TResult, TItem> :
+	public interface IItemsSatisfying<TSpecification, TSubject, TResult, TItem> :
 		IExpectationTerm<IQuantifierState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, ISpecification, IChainableSpecification
 	{

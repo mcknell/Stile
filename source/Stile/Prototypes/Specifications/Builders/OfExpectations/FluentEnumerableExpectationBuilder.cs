@@ -28,9 +28,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem>
 		where TResult : class, IEnumerable<TItem>
 	{
+		private readonly IExpectationBuilderState<IChainableSpecification, TSubject, TResult> _state;
+
 		public FluentEnumerableExpectationBuilder(
-			[NotNull] IExpectationBuilderState<IChainableSpecification, TSubject, TResult> state)
-			: base(state) {}
+			[NotNull] IExpectationBuilderState<IChainableSpecification, TSubject, TResult> state,
+			[CanBeNull] ISpecification<TSubject, TResult, IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem>> prior)
+			: base(state, prior)
+		{
+			_state = state;
+		}
 
 		public override void Accept(ISpecificationVisitor visitor)
 		{
@@ -42,12 +48,22 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			return visitor.Visit4(this, data);
 		}
 
+		public override object CloneFor(object specification)
+		{
+			return new FluentEnumerableExpectationBuilder<TSubject, TResult, TItem>(_state,
+				specification as
+					ISpecification<TSubject, TResult, IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem>>);
+		}
+
 		protected override IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem> Builder
 		{
 			get { return this; }
 		}
 		protected override
-			Func<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>, ISpecification<TSubject, TResult, IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem>>> SpecFactory
+			Func
+				<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>,
+					ISpecification<TSubject, TResult, IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem>>>
+			SpecFactory
 		{
 			get { return MakeUnboundSpecification; }
 		}

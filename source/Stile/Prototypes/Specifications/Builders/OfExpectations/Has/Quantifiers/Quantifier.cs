@@ -26,14 +26,13 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 		TSpecification ItemsSatisfying(Expression<Func<TItem, bool>> expression);
 	}
 
-	public interface IQuantifier<out TSpecification, TSubject, TResult, TItem> :
-		IQuantifier<TSpecification, TItem>,
+	public interface IQuantifier<TSpecification, TSubject, TResult, TItem> : IQuantifier<TSpecification, TItem>,
 		IHides<IQuantifierState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, ISpecification, IChainableSpecification {}
 
 	public interface IQuantifierState : IAcceptExpectationVisitors {}
 
-	public interface IQuantifierState<out TSpecification, TSubject, TResult> : IQuantifierState
+	public interface IQuantifierState<TSpecification, TSubject, TResult> : IQuantifierState
 		where TSpecification : class, IChainableSpecification
 	{
 		IHasState<TSpecification, TSubject, TResult> Has { get; }
@@ -78,5 +77,4 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 		public abstract TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data);
 		protected abstract Predicate<TResult> MakePredicate(Expression<Func<TItem, bool>> expression);
 	}
-
 }

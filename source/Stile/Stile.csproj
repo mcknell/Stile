@@ -73,6 +73,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\ExpectationTerm.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Hashcode.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\ItemsSatisfying.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Empty.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIs.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\ExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\EnumerableHas.cs" />

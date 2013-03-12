@@ -35,7 +35,6 @@ namespace Stile.Prototypes.Specifications.Printable
 		void FillStackAndUnwind([NotNull] TTerm lastTerm);
 		TTerm Pop();
 		void Push([NotNull] TTerm term);
-		void Unwind();
 	}
 
 	public abstract class Describer : IDescriber
@@ -92,7 +91,10 @@ namespace Stile.Prototypes.Specifications.Printable
 				Push(parent);
 				parent = parent.Parent;
 			}
-			Unwind();
+			while (Unwind())
+			{
+				// keep going until stack is empty
+			}
 		}
 
 		public TTerm Pop()
@@ -103,15 +105,6 @@ namespace Stile.Prototypes.Specifications.Printable
 		public void Push(TTerm term)
 		{
 			_terms.Push(term.ValidateArgumentIsNotNull());
-		}
-
-		public void Unwind()
-		{
-			if (_terms.Count != 0)
-			{
-				TTerm next = _terms.Pop();
-				next.Accept(this as TVisitor);
-			}
 		}
 
 		public static void DescribeSourceAndInstrument<TSubject, TResult>(IDescriber describer,
@@ -133,6 +126,17 @@ namespace Stile.Prototypes.Specifications.Printable
 					continuation.Invoke(instrument);
 				}
 			}
+		}
+
+		private bool Unwind()
+		{
+			if (_terms.Count != 0)
+			{
+				TTerm next = _terms.Pop();
+				next.Accept(this as TVisitor);
+				return true;
+			}
+			return false;
 		}
 	}
 }

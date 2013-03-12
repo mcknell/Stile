@@ -37,14 +37,14 @@ namespace Stile.Prototypes.Specifications
 		{
 			var source = new Source<TSubject>(expression);
 			var instrument = new Instrument<TSubject, TSubject>(x => x, source);
-			return new FluentBoundExpectationBuilder<TSubject, TSubject>(instrument, For(expression).Xray);
+			return new FluentBoundExpectationBuilder<TSubject, TSubject>(instrument, null);
 		}
 
 		[System.Diagnostics.Contracts.Pure]
 		public static IFluentExpectationBuilder<TSubject, TSubject> ThatAny<TSubject>()
 		{
 			Instrument<TSubject, TSubject> instrument = Instrument.GetTrivialUnbound<TSubject>();
-			return new FluentExpectationBuilder<TSubject, TSubject>(instrument);
+			return new FluentExpectationBuilder<TSubject, TSubject>(instrument, null);
 		}
 
 		[System.Diagnostics.Contracts.Pure]

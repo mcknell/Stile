@@ -14,7 +14,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 {
-	public interface IEnumerableExpectationBuilder<out TSpecification, TSubject, TResult, TItem> :
+	public interface IEnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> :
 		IExpectationBuilder
 			<TSpecification, TSubject, TResult, IEnumerableHas<TSpecification, TSubject, TResult, TItem>,
 				INegatableEnumerableIs
@@ -34,8 +34,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		where TBuilder : class, IExpectationBuilder
 	{
 		protected EnumerableExpectationBuilder(
-			[NotNull] IExpectationBuilderState<IChainableSpecification, TSubject, TResult> state)
-			: base(state.Instrument) {}
+			[NotNull] IExpectationBuilderState<IChainableSpecification, TSubject, TResult> state,
+			[CanBeNull] TSpecification prior)
+			: base(state.Instrument, prior) {}
 
 		protected override IEnumerableHas<TSpecification, TSubject, TResult, TItem> MakeHas()
 		{

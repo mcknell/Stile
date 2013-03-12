@@ -13,7 +13,6 @@ using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
-using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 

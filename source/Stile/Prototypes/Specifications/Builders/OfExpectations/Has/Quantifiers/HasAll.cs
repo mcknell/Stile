@@ -15,7 +15,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers
 {
-	public interface IHasAll<out TSpecification, TSubject, TResult, TItem> :
+	public interface IHasAll<TSpecification, TSubject, TResult, TItem> :
 		IQuantifier<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification, IChainableSpecification {}
 

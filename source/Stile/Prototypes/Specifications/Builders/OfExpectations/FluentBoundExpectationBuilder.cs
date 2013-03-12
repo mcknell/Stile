@@ -5,7 +5,7 @@
 
 #region using...
 using System;
-using Stile.Prototypes.Specifications.Builders.OfInstruments;
+using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
@@ -26,8 +26,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		IFluentBoundExpectationBuilder<TSubject, TResult>
 	{
 		public FluentBoundExpectationBuilder(IInstrument<TSubject, TResult> instrument,
-			IProcedureBuilderState<TSubject> state)
-			: base(instrument) {}
+			[CanBeNull] IBoundSpecification<TSubject, TResult, IFluentBoundExpectationBuilder<TSubject, TResult>> prior)
+			: base(instrument, prior) {}
 
 		public override void Accept(ISpecificationVisitor visitor)
 		{
@@ -39,12 +39,20 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			return visitor.Visit3(this, data);
 		}
 
+		public override object CloneFor(
+			object specification)
+		{
+			return new FluentBoundExpectationBuilder<TSubject, TResult>(Instrument, specification as IBoundSpecification<TSubject, TResult, IFluentBoundExpectationBuilder<TSubject, TResult>>);
+		}
+
 		protected override IFluentBoundExpectationBuilder<TSubject, TResult> Builder
 		{
 			get { return this; }
 		}
 		protected override
-			Func<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>, IBoundSpecification<TSubject, TResult, IFluentBoundExpectationBuilder<TSubject, TResult>>> SpecFactory
+			Func
+				<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>,
+					IBoundSpecification<TSubject, TResult, IFluentBoundExpectationBuilder<TSubject, TResult>>> SpecFactory
 		{
 			get { return MakeBoundSpecification; }
 		}

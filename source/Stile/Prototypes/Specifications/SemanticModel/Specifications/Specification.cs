@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
@@ -34,21 +35,32 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public interface ISpecificationState
 	{
 		[System.Diagnostics.Contracts.Pure]
-		ISpecification Clone(IDeadline deadline);
+		ISpecification Clone([CanBeNull] IDeadline deadline);
 	}
 
 	public interface ISpecificationState<out TSubject> : ISpecificationState
 	{
 		[CanBeNull]
 		string Because { get; }
-
+		[CanBeNull]
+		IDeadline Deadline { get; }
 		[NotNull]
 		IAcceptSpecificationVisitors LastTerm { get; }
 	}
 
 	public interface ISpecificationState<TSubject, TResult> : ISpecificationState<TSubject>,
 		IHasExpectation<TSubject, TResult>,
-		IAcceptEvaluationVisitors {}
+		IAcceptEvaluationVisitors
+	{
+		[CanBeNull]
+		IExceptionFilter<TSubject, TResult> ExceptionFilter { get; }
+		[CanBeNull]
+		ISpecification<TSubject, TResult> Prior { get; }
+
+		TEvaluation Evaluate<TEvaluation>(ISource<TSubject> source,
+			Evaluation.Factory<TSubject, TResult, TEvaluation> evaluationFactory,
+			IDeadline deadline = null) where TEvaluation : class, IEvaluation<TSubject, TResult>;
+	}
 
 	public abstract class Specification : ISpecificationState
 	{
@@ -61,7 +73,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	{
 		protected Specification([NotNull] IAcceptSpecificationVisitors lastTerm,
 			[CanBeNull] TExceptionFilter exceptionFilter,
-			[Symbol] IDeadline deadline,
+			[CanBeNull] IDeadline deadline,
 			[CanBeNull] string because)
 		{
 			LastTerm = lastTerm.ValidateArgumentIsNotNull();
@@ -71,8 +83,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		}
 
 		public string Because { get; private set; }
-		public TExceptionFilter ExceptionFilter { get; private set; }
 		public IDeadline Deadline { get; private set; }
+		public TExceptionFilter ExceptionFilter { get; private set; }
 		public IAcceptSpecificationVisitors LastTerm { get; private set; }
 	}
 
@@ -84,11 +96,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	{
 		private readonly IDeadline _deadline;
 		private readonly TExpectationBuilder _expectationBuilder;
+		private readonly IExpectationBuilderState _expectationBuilderState;
 
 		[Rule]
 		public Specification([NotNull] IExpectation<TSubject, TResult> expectation,
 			[Symbol] [NotNull] TExpectationBuilder expectationBuilder,
 			[NotNull] IAcceptSpecificationVisitors lastTerm,
+			[CanBeNull] ISpecification<TSubject, TResult> prior,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null,
 			[Symbol] IDeadline deadline = null,
 			[Symbol] string because = null)
@@ -96,12 +110,20 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		{
 			Expectation = expectation.ValidateArgumentIsNotNull();
 			_expectationBuilder = expectationBuilder.ValidateArgumentIsNotNull();
+			_expectationBuilderState = expectationBuilder as IExpectationBuilderState;
+			Prior = prior;
+			if (_expectationBuilderState == null)
+			{
+				throw new ArgumentException(string.Format("Argument of type {0} must be convertible to {1}",
+					expectationBuilder.GetType().Name,
+					typeof(IExpectationBuilderState).Name));
+			}
 			_deadline = deadline;
 		}
 
 		public TExpectationBuilder AndThen
 		{
-			get { return _expectationBuilder; }
+			get { return (TExpectationBuilder) _expectationBuilderState.CloneFor(this); }
 		}
 
 		public IExpectation<TSubject, TResult> Expectation { get; private set; }
@@ -109,6 +131,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		{
 			get { return null; }
 		}
+		public ISpecification<TSubject, TResult> Prior { get; private set; }
 		public ISpecificationState<TSubject, TResult> Xray
 		{
 			get { return this; }
@@ -119,6 +142,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return new Specification<TSubject, TResult, TExpectationBuilder>(Expectation,
 				_expectationBuilder,
 				LastTerm,
+				Prior,
 				ExceptionFilter,
 				deadline,
 				Because);
@@ -149,6 +173,24 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			visitor.Visit3(this);
 		}
 
+		public TEvaluation Evaluate<TEvaluation>(ISource<TSubject> source,
+			Evaluation.Factory<TSubject, TResult, TEvaluation> evaluationFactory,
+			IDeadline deadline = null) where TEvaluation : class, IEvaluation<TSubject, TResult>
+		{
+			if (Prior != null)
+			{
+				return Prior.Xray.Evaluate(source, evaluationFactory, deadline);
+			}
+			IMeasurement<TSubject, TResult> measurement = Expectation.Xray.Instrument.Measure(source,
+				deadline ?? _deadline);
+			if (ExpectsException)
+			{
+				measurement = ExceptionFilter.Filter(measurement);
+			}
+			TEvaluation evaluation = Expectation.Evaluate(measurement, ExpectsException, evaluationFactory);
+			return evaluation;
+		}
+
 		IAcceptEvaluationVisitors IHasParent<IAcceptEvaluationVisitors>.Parent
 		{
 			get { return null; }
@@ -163,20 +205,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			Outcome outcome)
 		{
 			return new BoundEvaluation<TSubject, TResult>(this, measurement, outcome);
-		}
-
-		private TEvaluation Evaluate<TEvaluation>(ISource<TSubject> source,
-			Evaluation.Factory<TSubject, TResult, TEvaluation> evaluationFactory,
-			IDeadline deadline = null) where TEvaluation : class, IEvaluation<TSubject, TResult>
-		{
-			IMeasurement<TSubject, TResult> measurement = Expectation.Xray.Instrument.Measure(source,
-				deadline ?? _deadline);
-			if (ExpectsException)
-			{
-				measurement = ExceptionFilter.Filter(measurement);
-			}
-			TEvaluation evaluation = Expectation.Evaluate(measurement, ExpectsException, evaluationFactory);
-			return evaluation;
 		}
 
 		private IEvaluation<TSubject, TResult> UnboundFactory(IMeasurement<TSubject, TResult> measurement,

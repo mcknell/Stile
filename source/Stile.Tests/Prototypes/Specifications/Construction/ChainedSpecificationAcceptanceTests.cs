@@ -26,8 +26,8 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			var foo = new Foo<int>();
 			IBoundSpecification<Foo<int>, int, IFluentBoundExpectationBuilder<Foo<int>, int>> specification = //
 				Specify.For(() => foo).That(x => x.Count) //
-					.Is.Not.EqualTo(12) //
-					.AndThen.Is.Not.EqualTo(12);
+					.Is.Not.EqualTo(1) //
+					.AndThen.Is.EqualTo(1);
 			Assert.That(specification, Is.Not.Null);
 			IBoundEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));

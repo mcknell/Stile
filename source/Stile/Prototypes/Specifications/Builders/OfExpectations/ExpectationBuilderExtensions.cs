@@ -21,7 +21,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 				ISpecification<TSubject, TResult, IExpectationBuilder<TSpecification, TSubject, TResult>>
 			where TResult : class, IEnumerable<TItem>
 		{
-			return new FluentEnumerableExpectationBuilder<TSubject, TResult, TItem>(builder.Xray);
+			return new FluentEnumerableExpectationBuilder<TSubject, TResult, TItem>(builder.Xray, null);
 		}
 
 		[Pure]
@@ -32,7 +32,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 				IBoundSpecification<TSubject, TResult, IBoundExpectationBuilder<TSpecification, TSubject, TResult>>
 			where TResult : class, IEnumerable<TItem>
 		{
-			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(builder.Xray);
+			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(builder.Xray, null);
 		}
 	}
 }

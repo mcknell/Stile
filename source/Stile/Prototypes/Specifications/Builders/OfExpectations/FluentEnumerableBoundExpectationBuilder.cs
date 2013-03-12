@@ -28,9 +28,16 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>
 		where TResult : class, IEnumerable<TItem>
 	{
+		private readonly IExpectationBuilderState<IBoundSpecification<TSubject, TResult>, TSubject, TResult> _state;
+
 		public FluentEnumerableBoundExpectationBuilder(
-			[NotNull] IExpectationBuilderState<IBoundSpecification<TSubject, TResult>, TSubject, TResult> state)
-			: base(state) {}
+			[NotNull] IExpectationBuilderState<IBoundSpecification<TSubject, TResult>, TSubject, TResult> state,
+			IBoundSpecification<TSubject, TResult, IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>>
+				prior)
+			: base(state, prior)
+		{
+			_state = state;
+		}
 
 		public override void Accept(ISpecificationVisitor visitor)
 		{
@@ -40,6 +47,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		public override TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit4(this, data);
+		}
+
+		public override object CloneFor(object specification)
+		{
+			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(_state,
+				specification as
+					IBoundSpecification
+						<TSubject, TResult, IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>>);
 		}
 
 		protected override IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem> Builder

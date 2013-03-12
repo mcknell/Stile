@@ -11,9 +11,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
 	public interface IChainableSpecification : ISpecification {}
 
-	public interface IChainableSpecification<out TPredicateBuilder> : IChainableSpecification
-		where TPredicateBuilder : class, IExpectationBuilder
+	public interface IChainableSpecification<out TExpectationBuilder> : IChainableSpecification
+		where TExpectationBuilder : class, IExpectationBuilder
 	{
-		TPredicateBuilder AndThen { get; }
+		TExpectationBuilder AndThen { get; }
 	}
 }

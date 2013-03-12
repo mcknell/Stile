@@ -40,22 +40,18 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		where TResult : class, IEnumerable<TItem>
 	{
 		private static readonly Expression<Predicate<TResult>> _all = x => x.None();
-		private readonly Lazy<TSpecification> _lazyEmpty;
 
 		public EnumerableIs([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState,
 			Negated negated)
-			: base(builderState, negated)
-		{
-			_lazyEmpty =
-				new Lazy<TSpecification>(
-					() => builderState.Make(Expectation<TSubject>.From(_all, negated, builderState.Instrument, this)));
-		}
+			: base(builderState, negated) {}
 
 		public TSpecification Empty
 		{
 			get
 			{
-				TSpecification specification = _lazyEmpty.Value;
+				var lastTerm = new Empty<TSpecification, TSubject, TResult>(this);
+				TSpecification specification =
+					BuilderState.Make(Expectation<TSubject>.From(_all, Negated, BuilderState.Instrument, lastTerm));
 				return specification;
 			}
 		}
@@ -64,4 +60,5 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			get { return new EnumerableIs<TSpecification, TSubject, TResult, TItem>(BuilderState, Negated.True); }
 		}
 	}
+
 }

@@ -49,11 +49,21 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		IHides<IExpectationBuilderState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, IChainableSpecification {}
 
-	public interface IExpectationBuilderState<out TSpecification, TSubject, TResult> :
+	public interface IExpectationBuilderState
+	{
+		[NotNull]
+		object CloneFor(object specification);
+	}
+
+	public interface IExpectationBuilderState<out TSpecification, TSubject, TResult> : IExpectationBuilderState,
 		IHasInstrument<TSubject, TResult>,
 		IAcceptSpecificationVisitors
 		where TSpecification : class, IChainableSpecification
 	{
+		[CanBeNull]
+		TSpecification Prior { get; }
+
+		[NotNull]
 		TSpecification Make([NotNull] IExpectation<TSubject, TResult> expectation,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null);
 	}
@@ -73,9 +83,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		private readonly Lazy<THas> _lazyHas;
 		private readonly Lazy<TIs> _lazyIs;
 
-		protected ExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument)
+		protected ExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
+			[CanBeNull] TSpecification prior)
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
+			Prior = prior;
 			_lazyHas = new Lazy<THas>(MakeHas);
 			_lazyIs = new Lazy<TIs>(MakeIs);
 		}
@@ -101,6 +113,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		{
 			get { return Instrument; }
 		}
+		public TSpecification Prior { get; private set; }
 
 		public IExpectationBuilderState<TSpecification, TSubject, TResult> Xray
 		{
@@ -118,6 +131,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 
 		public abstract void Accept(ISpecificationVisitor visitor);
 		public abstract TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data);
+		public abstract object CloneFor(object specification);
 
 		public TSpecification Make(IExpectation<TSubject, TResult> expectation,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
@@ -135,6 +149,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			return new Specification<TSubject, TResult, TBuilder>(expectation,
 				Builder,
 				expectation.Xray,
+				Prior,
 				exceptionFilter);
 		}
 
@@ -147,6 +162,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			return new Specification<TSubject, TResult, TBuilder>(expectation,
 				Builder,
 				expectation.Xray,
+				Prior,
 				exceptionFilter);
 		}
 	}
@@ -159,8 +175,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification<TBuilder>
 		where TBuilder : class, IExpectationBuilder
 	{
-		protected ExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument)
-			: base(instrument) {}
+		protected ExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
+			[CanBeNull] TSpecification prior)
+			: base(instrument, prior) {}
 
 		protected override IHas<TSpecification, TSubject, TResult> MakeHas()
 		{

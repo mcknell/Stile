@@ -30,6 +30,15 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.Specifications.Should
 		}
 
 		[Test]
+		public void Chained()
+		{
+			ISpecification<Foo<int>, Foo<int>, IFluentEnumerableExpectationBuilder<Foo<int>, Foo<int>, int>>
+				specification = Specify.ThatAny<Foo<int>, int>().Has.All.ItemsSatisfying(x => x >= 0).AndThen.Is.Not.Empty;
+			Assert.That(specification.ToShould(), Is.EqualTo(@"Any Foo<int> should have all items >= 0 initially,
+then should not be empty when sampled again"));
+		}
+
+		[Test]
 		public void Unbound()
 		{
 			ISpecification<Foo<int>, Foo<int>, IFluentEnumerableExpectationBuilder<Foo<int>, Foo<int>, int>>

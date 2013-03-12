@@ -15,7 +15,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 {
 	public interface IEnumerableHas : IHas {}
 
-	public interface IEnumerableHas<out TSpecification, TSubject, TResult, TItem> : IEnumerableHas,
+	public interface IEnumerableHas<TSpecification, TSubject, TResult, TItem> : IEnumerableHas,
 		IHas<TSpecification, TSubject, TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>

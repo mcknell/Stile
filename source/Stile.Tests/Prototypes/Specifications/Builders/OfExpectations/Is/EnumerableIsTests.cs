@@ -24,7 +24,7 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Is
 			IEvaluation<Foo<int>, Foo<int>> evaluationOfNew = Specify.ThatAny<Foo<int>>().OfItemsLike(0).Is.Empty //
 				.AndThen.Is.Not.Empty.Evaluate(() => subject);
 
-			Assert.That(evaluationOfNew.Outcome, NUnit.Framework.Is.EqualTo(Outcome.Failed));
+			Assert.That(evaluationOfNew.Outcome, NUnit.Framework.Is.EqualTo(Outcome.Succeeded));
 
 			subject.Add(1);
 			IEvaluation<Foo<int>, Foo<int>> evaluationOfOne =
