@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
@@ -15,6 +16,7 @@ using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using System.Linq;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
@@ -57,9 +59,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		[CanBeNull]
 		ISpecification<TSubject, TResult> Prior { get; }
 
-		TEvaluation Evaluate<TEvaluation>(ISource<TSubject> source,
-			Evaluation.Factory<TSubject, TResult, TEvaluation> evaluationFactory,
-			IDeadline deadline = null) where TEvaluation : class, IEvaluation<TSubject, TResult>;
+		[NotNull]
+		IEvaluation<TSubject, TResult> Evaluate([NotNull] ISource<TSubject> source,
+			[CanBeNull] IEvaluation<TSubject, TResult> priorEvaluation,
+			[NotNull] ISpecificationState<TSubject, TResult> tailSpecification,
+			IDeadline deadline = null);
+
+		[NotNull]
+		IEnumerable<ISpecification<TSubject, TResult>> GetPredecessors(bool includeSelf = false);
 	}
 
 	public abstract class Specification : ISpecificationState
@@ -150,12 +157,15 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public IEvaluation<TSubject, TResult> Evaluate(ISource<TSubject> source, IDeadline deadline = null)
 		{
-			return Evaluate(source, UnboundFactory, deadline);
+			ISpecification<TSubject, TResult> specification = GetPredecessors().LastOrDefault() ?? this;
+			return specification.Xray.Evaluate(source, null, this, deadline);
 		}
 
-		public IBoundEvaluation<TSubject, TResult> Evaluate(IDeadline deadline = null)
+		public IEvaluation<TSubject, TResult> Evaluate(IDeadline deadline = null)
 		{
-			return Evaluate(Expectation.Xray.Instrument.Xray.Source, BoundFactory, deadline);
+			ISpecification<TSubject, TResult> specification = GetPredecessors().LastOrDefault() ?? this;
+			ISource<TSubject> source = Expectation.Xray.Instrument.Xray.Source;
+			return specification.Xray.Evaluate(source, null, this, deadline);
 		}
 
 		public void Accept(ISpecificationVisitor visitor)
@@ -173,22 +183,34 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			visitor.Visit3(this);
 		}
 
-		public TEvaluation Evaluate<TEvaluation>(ISource<TSubject> source,
-			Evaluation.Factory<TSubject, TResult, TEvaluation> evaluationFactory,
-			IDeadline deadline = null) where TEvaluation : class, IEvaluation<TSubject, TResult>
+		public IEvaluation<TSubject, TResult> Evaluate(ISource<TSubject> source,
+			IEvaluation<TSubject, TResult> priorEvaluation,
+			ISpecificationState<TSubject, TResult> tailSpecification,
+			IDeadline deadline = null)
 		{
-			if (Prior != null)
-			{
-				return Prior.Xray.Evaluate(source, evaluationFactory, deadline);
-			}
 			IMeasurement<TSubject, TResult> measurement = Expectation.Xray.Instrument.Measure(source,
 				deadline ?? _deadline);
 			if (ExpectsException)
 			{
 				measurement = ExceptionFilter.Filter(measurement);
 			}
-			TEvaluation evaluation = Expectation.Evaluate(measurement, ExpectsException, evaluationFactory);
+			Outcome outcome = Expectation.Evaluate(measurement, ExpectsException);
+			var evaluation = new Evaluation<TSubject, TResult>(this, measurement, outcome, priorEvaluation, tailSpecification);
 			return evaluation;
+		}
+
+		public IEnumerable<ISpecification<TSubject, TResult>> GetPredecessors(bool includeSelf = false)
+		{
+			ISpecification<TSubject, TResult> prior = this;
+			if (includeSelf)
+			{
+				yield return prior;
+			}
+			while (prior.Xray.Prior != null)
+			{
+				prior = prior.Xray.Prior;
+				yield return prior;
+			}
 		}
 
 		IAcceptEvaluationVisitors IHasParent<IAcceptEvaluationVisitors>.Parent
@@ -199,18 +221,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		private bool ExpectsException
 		{
 			get { return ExceptionFilter != null; }
-		}
-
-		private IBoundEvaluation<TSubject, TResult> BoundFactory(IMeasurement<TSubject, TResult> measurement,
-			Outcome outcome)
-		{
-			return new BoundEvaluation<TSubject, TResult>(this, measurement, outcome);
-		}
-
-		private IEvaluation<TSubject, TResult> UnboundFactory(IMeasurement<TSubject, TResult> measurement,
-			Outcome outcome)
-		{
-			return new Evaluation<TSubject, TResult>(this, measurement, outcome);
 		}
 	}
 }

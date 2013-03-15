@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System;
 using System.Diagnostics.Contracts;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -17,7 +18,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			this IIs<TSpecification, TSubject, TResult> builder, TResult result)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		{
-			return Is.EqualTo.Make(x => x.Equals(result), result, builder.Xray);
+			Func<TResult, bool> accepterForDebugging = x =>
+			{
+				return x.Equals(result);
+			};
+			return Is.EqualTo.Make(x => accepterForDebugging.Invoke(x) , result, builder.Xray);
 		}
 
 		[Pure]

@@ -27,10 +27,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 	public interface IExpectation<TSubject, TResult> : IExpectation,
 		IHides<IExpectationState<TSubject, TResult>>
 	{
-		TEvaluation Evaluate<TEvaluation>(IMeasurement<TSubject, TResult> measurement,
-			bool expectedAnException,
-			Evaluation.Factory<TSubject, TResult, TEvaluation> factory)
-			where TEvaluation : class, IEvaluation<TSubject, TResult>;
+		Outcome Evaluate(IMeasurement<TSubject, TResult> measurement,
+			bool expectedAnException);
 	}
 
 	public interface IExpectationState<TSubject, out TResult> : IHasInstrument<TSubject, TResult>,
@@ -140,10 +138,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			return visitor.Visit2(this, data);
 		}
 
-		public TEvaluation Evaluate<TEvaluation>(IMeasurement<TSubject, TResult> measurement,
-			bool expectedAnException,
-			Evaluation.Factory<TSubject, TResult, TEvaluation> factory)
-			where TEvaluation : class, IEvaluation<TSubject, TResult>
+		public Outcome Evaluate(IMeasurement<TSubject, TResult> measurement,
+			bool expectedAnException)
 		{
 			int handledErrors = measurement.Errors.Count(x => x.Handled);
 			int allErrorsIfAny = measurement.Errors.Length;
@@ -169,7 +165,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			{
 				outcome = Outcome.Failed;
 			}
-			return factory.Invoke(measurement, outcome);
+			return  outcome;
 		}
 
 		public bool TryGetBuilder<TExpectationBuilder>(out TExpectationBuilder builder)

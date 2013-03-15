@@ -64,7 +64,6 @@
     <Compile Include="Prototypes\Specifications\Construction\SpecifyAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\SampleObjects\SabotageTarget.cs" />
     <Compile Include="Prototypes\Specifications\SampleObjects\Saboteur.cs" />
-    <Compile Include="Prototypes\Specifications\SemanticModel\AccepterFixture.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\InstrumentFixture.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\OutcomeFixture.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\SourceFixture.cs" />

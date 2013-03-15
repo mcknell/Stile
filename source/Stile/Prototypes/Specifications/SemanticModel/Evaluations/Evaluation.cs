@@ -4,6 +4,9 @@
 #endregion
 
 #region using...
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
@@ -30,20 +33,39 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	}
 
 	public interface IEvaluation<TSubject, TResult> : IEvaluation<TSubject>,
-		IEvaluable<TSubject, TResult>,
 		IHides<IEvaluationState<TSubject, TResult>>
 	{
 		TResult Value { get; }
+
+		[NotNull]
+		[System.Diagnostics.Contracts.Pure]
+		IEvaluation<TSubject, TResult> EvaluateNext(IDeadline deadline = null);
+
+		[NotNull]
+		[System.Diagnostics.Contracts.Pure]
+		IEvaluation<TSubject, TResult> EvaluateNextWith([NotNull] ISource<TSubject> source,
+			IDeadline deadline = null);
+
+		[NotNull]
+		[System.Diagnostics.Contracts.Pure]
+		IEvaluation<TSubject, TResult> ReEvaluate(IDeadline deadline = null);
 	}
 
 	public interface IEvaluationState<TSubject, TResult> : IHasSpecification<TSubject, TResult>,
-		IAcceptEvaluationVisitors {}
+		IAcceptEvaluationVisitors
+	{
+		[CanBeNull]
+		IEvaluation<TSubject, TResult> Prior { get; }
+		ISpecificationState<TSubject, TResult> TailSpecification { get; }
+		IEnumerable<IEvaluation<TSubject, TResult>> GetPredecessors();
+	}
 
 	public abstract class Evaluation : IEvaluation
 	{
-		public delegate TEvaluation Factory<in TSubject, in TResult, out TEvaluation>(
-			IMeasurement<TSubject, TResult> sample, Outcome outcome)
-			where TEvaluation : class, IEvaluation<TSubject, TResult>;
+		protected static readonly string NoSpecificationVisitorsPlease =
+			String.Format(
+				"This implementation is required by the {0} interface, but it is not semantically valid here.",
+				typeof(IAcceptSpecificationVisitors).Name);
 
 		protected Evaluation(IObservation observation, Outcome outcome)
 		{
@@ -79,24 +101,56 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	{
 		public Evaluation([NotNull] ISpecification<TSubject, TResult> specification,
 			[NotNull] IMeasurement<TSubject, TResult> measurement,
-			Outcome outcome)
+			Outcome outcome,
+			[CanBeNull] IEvaluation<TSubject, TResult> prior,
+			[NotNull] ISpecificationState<TSubject, TResult> tailSpecification)
 			: base(measurement, outcome)
 		{
 			Specification = specification.ValidateArgumentIsNotNull();
-			IMeasurement<TSubject, TResult> validMeasurement = measurement.ValidateArgumentIsNotNull();
-			Value = validMeasurement.Value;
+			Measurement = measurement.ValidateArgumentIsNotNull();
+			Value = Measurement.Value;
+			Prior = prior;
+			TailSpecification = tailSpecification.ValidateArgumentIsNotNull();
 		}
 
+		public IMeasurement<TSubject, TResult> Measurement { get; private set; }
+		public IAcceptEvaluationVisitors Parent
+		{
+			get { return Specification.Xray; }
+		}
+
+		public IEvaluation<TSubject, TResult> Prior { get; private set; }
 		public ISpecification<TSubject, TResult> Specification { get; private set; }
+		public ISpecificationState<TSubject, TResult> TailSpecification { get; private set; }
+
 		public TResult Value { get; private set; }
 		public IEvaluationState<TSubject, TResult> Xray
 		{
 			get { return this; }
 		}
 
-		public IEvaluation<TSubject, TResult> Evaluate(ISource<TSubject> source, IDeadline deadline = null)
+		public IEvaluation<TSubject, TResult> EvaluateNext(IDeadline deadline = null)
 		{
-			return Specification.Evaluate(source, deadline);
+			return EvaluateNextWith(Measurement.Sample.Source, deadline);
+		}
+
+		public IEvaluation<TSubject, TResult> EvaluateNextWith(ISource<TSubject> source, IDeadline deadline = null)
+		{
+			ISpecification<TSubject, TResult> specification = GetNextSpecification();
+			if (specification == null)
+			{
+				return null;
+			}
+			IEvaluation<TSubject, TResult> evaluation = specification.Xray.Evaluate(source,
+				this,
+				TailSpecification,
+				deadline);
+			return evaluation;
+		}
+
+		public IEvaluation<TSubject, TResult> ReEvaluate(IDeadline deadline = null)
+		{
+			return Specification.Xray.Evaluate(Measurement.Sample.Source, Prior, TailSpecification, deadline);
 		}
 
 		public void Accept(IEvaluationVisitor visitor)
@@ -104,20 +158,39 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			visitor.Visit2(this);
 		}
 
-		public IAcceptEvaluationVisitors Parent { get { return Specification.Xray; } }
 		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException(NoSpecificationVisitorsPlease);
 		}
 
 		public void Accept(ISpecificationVisitor visitor)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException(NoSpecificationVisitorsPlease);
+		}
+
+		public IEnumerable<IEvaluation<TSubject, TResult>> GetPredecessors()
+		{
+			IEvaluation<TSubject, TResult> prior = this;
+			while (prior.Xray.Prior != null)
+			{
+				prior = prior.Xray.Prior;
+				yield return prior;
+			}
 		}
 
 		IAcceptSpecificationVisitors IHasParent<IAcceptSpecificationVisitors>.Parent
 		{
 			get { return Parent; }
+		}
+
+		[CanBeNull]
+		private ISpecification<TSubject, TResult> GetNextSpecification()
+		{
+			List<IEvaluation<TSubject, TResult>> list = GetPredecessors().Reverse().ToList();
+			int distanceOfNextFromRootSpec = list.Count + 1;
+			ISpecification<TSubject, TResult> specification =
+				TailSpecification.GetPredecessors(true).Reverse().Skip(distanceOfNextFromRootSpec).FirstOrDefault();
+			return specification;
 		}
 	}
 }

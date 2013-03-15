@@ -23,12 +23,12 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Is
 		{
 			var subject = new Foo<int>();
 
-			IBoundEvaluation<Foo<int>, Foo<int>> evaluation =
+			IEvaluation<Foo<int>, Foo<int>> evaluation =
 				Specify.For(() => subject).That(x => x).Is.Not.Null().Evaluate();
 			Assert.That(evaluation.Outcome, NUnit.Framework.Is.EqualTo(Outcome.Succeeded));
 
 			subject = null;
-			IBoundEvaluation<Foo<int>, Foo<int>> secondEvaluation = evaluation.Evaluate();
+			IEvaluation<Foo<int>, Foo<int>> secondEvaluation = evaluation.ReEvaluate();
 
 			Assert.That(secondEvaluation.Outcome, NUnit.Framework.Is.EqualTo(Outcome.Failed));
 			Assert.AreEqual(@"Expected that subject would be not null

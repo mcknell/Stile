@@ -28,7 +28,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			IBoundSpecification<Foo<int>, int> specification =
 				Specify.For(() => new Foo<int>()).That(x => x.Count).Is.Not.EqualTo(12).Before(TimeSpan.FromSeconds(1));
-			IBoundEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
+			IEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.TimedOut, Is.False);
 			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
@@ -61,7 +61,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			IBoundSpecification<Foo<int>, int> specification =
 				Specify.For(() => new Foo<int>()).That(x => x.Count).Is.ComparablyEquivalentTo(7);
-			IBoundEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
+			IEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(evaluation.Value, Is.EqualTo(0));
 		}
@@ -71,7 +71,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			IBoundSpecification<Foo<int>, int> specification =
 				Specify.For(() => new Foo<int>()).That(x => x.Count).Is.Not.EqualTo(12);
-			IBoundEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
+			IEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.Value, Is.EqualTo(0));
 		}
@@ -90,7 +90,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			IBoundSpecification<Foo<int>, int, IFluentBoundExpectationBuilder<Foo<int>, int>> specification =
 				Specify.For(() => new Foo<int>()).That(x => x.Count).Throws<ArgumentException>().Build();
-			IBoundEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
+			IEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 		}
 
