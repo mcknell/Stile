@@ -38,7 +38,8 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			FillStackAndUnwind(lastTerm);
 		}
 
-		public void Visit3<TSpecification, TSubject, TResult>(IEmpty<TSpecification, TSubject, TResult> target) where TSpecification : class, IChainableSpecification
+		public void Visit3<TSpecification, TSubject, TResult>(IEmpty<TSpecification, TSubject, TResult> target)
+			where TSpecification : class, IChainableSpecification
 		{
 			throw new NotImplementedException();
 		}
@@ -67,6 +68,23 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			where TSpecification : class, IChainableSpecification
 		{
 			AppendFormat(" {0}", PastTenseEvaluations.WouldBe);
+			if (target.Xray.Negated)
+			{
+				AppendFormat(" {0}", PastTenseEvaluations.Not);
+			}
+		}
+
+		public void Visit3<TSpecification, TSubject, TResult>(INullState<TSpecification, TSubject, TResult> target)
+			where TSpecification : class, IChainableSpecification where TResult : class
+		{
+			AppendFormat(" {0}", PastTenseEvaluations.Null);
+		}
+
+		public void Visit3<TSpecification, TSubject, TResult>(
+			INullableState<TSpecification, TSubject, TResult> target)
+			where TSpecification : class, IChainableSpecification where TResult : struct
+		{
+			throw new NotImplementedException();
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
@@ -76,7 +94,9 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			throw new NotImplementedException();
 		}
 
-		public void Visit4<TSpecification, TSubject, TResult, TItem>(IItemsSatisfying<TSpecification, TSubject, TResult, TItem> target) where TSpecification : class, ISpecification, IChainableSpecification
+		public void Visit4<TSpecification, TSubject, TResult, TItem>(
+			IItemsSatisfying<TSpecification, TSubject, TResult, TItem> target)
+			where TSpecification : class, ISpecification, IChainableSpecification
 		{
 			throw new NotImplementedException();
 		}

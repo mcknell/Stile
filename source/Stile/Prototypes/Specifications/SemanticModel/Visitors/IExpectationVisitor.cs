@@ -37,6 +37,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 		void Visit3<TSpecification, TSubject, TResult>([NotNull] IIs<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification;
 
+		void Visit3<TSpecification, TSubject, TResult>(
+			[NotNull] INullState<TSpecification, TSubject, TResult> target)
+			where TSpecification : class, IChainableSpecification where TResult : class;
+
+		void Visit3<TSpecification, TSubject, TResult>(
+			[NotNull] INullableState<TSpecification, TSubject, TResult> target)
+			where TSpecification : class, IChainableSpecification where TResult : struct;
+
 		void Visit4<TSpecification, TSubject, TResult, TItem>(
 			IHasAll<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification;
@@ -68,6 +76,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 
 		TData Visit3<TSpecification, TSubject, TResult>([NotNull] IIs<TSpecification, TSubject, TResult> target,
 			TData data) where TSpecification : class, IChainableSpecification;
+
+		TData Visit3<TSpecification, TSubject, TResult>(
+			[NotNull] INullState<TSpecification, TSubject, TResult> target, TData data)
+			where TSpecification : class, IChainableSpecification where TResult : class;
+
+		TData Visit3<TSpecification, TSubject, TResult>(
+			[NotNull] INullableState<TSpecification, TSubject, TResult> target, TData data)
+			where TSpecification : class, IChainableSpecification where TResult : struct;
 
 		TData Visit4<TSpecification, TSubject, TResult, TItem>(
 			IHasAll<TSpecification, TSubject, TResult, TItem> target, TData data)

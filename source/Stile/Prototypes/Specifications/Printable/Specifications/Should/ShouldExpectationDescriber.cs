@@ -70,6 +70,16 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			AppendFormat(" {0}", target.Xray.Negated ? ShouldSpecifications.ShouldNotBe : ShouldSpecifications.ShouldBe);
 		}
 
+		public void Visit3<TSpecification, TSubject, TResult>(INullState<TSpecification, TSubject, TResult> target) where TSpecification : class, IChainableSpecification where TResult : class
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Visit3<TSpecification, TSubject, TResult>(INullableState<TSpecification, TSubject, TResult> target) where TSpecification : class, IChainableSpecification where TResult : struct
+		{
+			throw new NotImplementedException();
+		}
+
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
 			IHasAll<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification

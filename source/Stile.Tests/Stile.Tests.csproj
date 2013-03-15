@@ -53,6 +53,7 @@
     <Compile Include="Prototypes\Collections\HashBucketFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIsTests.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\IsComparableExtensionsTests.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\NullFixture.cs" />
     <Compile Include="Prototypes\Specifications\Construction\ChainedSpecificationAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Construction\EnumerableSpecifyAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Deadlines\Deadline.cs" />

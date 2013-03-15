@@ -13,13 +13,29 @@ namespace Stile.Tests.Prototypes.Specifications.SampleObjects
 {
 	public class Saboteur
 	{
+		public Saboteur(int? dudsBeforeThrow = null)
+		{
+			MisfiresRemaining = dudsBeforeThrow;
+		}
+
 		public TimeSpan? Fuse { get; set; }
 		public Lazy<Exception> LazyThrower { get; private set; }
+		/// <summary>
+		/// Count of times that <see cref="SuicidalSideEffect"/> can be invoked before throwing.
+		/// </summary>
+		public int? MisfiresRemaining { get; private set; }
 		public Saboteur SuicidalSideEffect
 		{
 			get
 			{
-				Throw();
+				if (MisfiresRemaining.HasValue && MisfiresRemaining.Value > 0)
+				{
+					MisfiresRemaining--;
+				}
+				else
+				{
+					Throw();
+				}
 				return this;
 			}
 		}
@@ -35,10 +51,13 @@ namespace Stile.Tests.Prototypes.Specifications.SampleObjects
 			var stopwatch = new Stopwatch();
 			if (Fuse.HasValue)
 			{
-				Console.WriteLine("Saboteur sleeping at {0:HH:mm:ss.fff} for {1}ms", DateTime.Now, Fuse.Value.TotalMilliseconds);
+				Console.WriteLine("Saboteur sleeping at {0:HH:mm:ss.fff} for {1}ms",
+					DateTime.Now,
+					Fuse.Value.TotalMilliseconds);
 				stopwatch.Start();
 				Thread.Sleep(Fuse.Value);
-			} else
+			}
+			else
 			{
 				stopwatch.Start();
 			}

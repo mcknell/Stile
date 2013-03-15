@@ -129,6 +129,12 @@
   <data name="InstrumentedBy" xml:space="preserve">
     <value>instrumented by</value>
   </data>
+  <data name="Not" xml:space="preserve">
+    <value>not</value>
+  </data>
+  <data name="Null" xml:space="preserve">
+    <value>null</value>
+  </data>
   <data name="That" xml:space="preserve">
     <value>that</value>
   </data>

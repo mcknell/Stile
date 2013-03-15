@@ -97,6 +97,24 @@ namespace Stile.Prototypes.Specifications.Printable.Past {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to not.
+        /// </summary>
+        public static string Not {
+            get {
+                return ResourceManager.GetString("Not", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to null.
+        /// </summary>
+        public static string Null {
+            get {
+                return ResourceManager.GetString("Null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to that.
         /// </summary>
         public static string That {

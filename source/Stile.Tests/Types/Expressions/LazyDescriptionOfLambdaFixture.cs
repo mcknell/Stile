@@ -22,6 +22,11 @@ namespace Stile.Tests.Types.Expressions
 			var descriptionOfLambda = new LazyDescriptionOfLambda(e);
 			string body = descriptionOfLambda.AliasParametersIntoBody("i");
 			Assert.That(body, Is.EqualTo("i.ToString(\"d\")"));
+
+			// handle trivial identity expression
+			Expression<Func<string, string>> f = x => x;
+			string s = new LazyDescriptionOfLambda(f).AliasParametersIntoBody("s");
+			Assert.That(s, Is.EqualTo("s"));
 		}
 
 		[Test]

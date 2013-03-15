@@ -82,6 +82,8 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentBoundExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EqualTo.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Null.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Nullable.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfSpecifications\FaultSpecificationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Describer.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldExpectationDescriber.cs" />

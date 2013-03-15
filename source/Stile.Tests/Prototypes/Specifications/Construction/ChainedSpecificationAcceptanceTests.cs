@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System;
 using NUnit.Framework;
 using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
@@ -21,21 +22,29 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 	public class ChainedSpecificationAcceptanceTests
 	{
 		[Test]
+		[Explicit("WIP")]
 		public void BoundToExpression()
 		{
-			var foo = new Foo<int>();
-			IBoundSpecification<Foo<int>, int, IFluentBoundExpectationBuilder<Foo<int>, int>> specification = //
-				Specify.For(() => foo).That(x => x.Count) //
-					.Is.Not.EqualTo(1) //
-					.AndThen.Is.EqualTo(1);
-			Assert.That(specification, Is.Not.Null);
-			IBoundEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
-			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
-			Assert.That(evaluation.Value, Is.EqualTo(0));
+			var foo = new Saboteur(2);
+			foo.Load(() => new ArgumentException());
 
-			IBoundEvaluation<Foo<int>, int> secondEvaluation = evaluation.Evaluate();
+			IBoundEvaluation<Saboteur, int?> evaluation =
+				Specify.For(() => foo).That(x => x.SuicidalSideEffect.MisfiresRemaining) //
+					.Is.EqualTo(2) //
+					.AndThen.Is.EqualTo(1) //
+					.AndThen.Throws<ArgumentException>().Build() //
+					.Evaluate();
+			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
+			Assert.That(evaluation.Value, Is.EqualTo(2));
+
+			IBoundEvaluation<Saboteur, int?> secondEvaluation = evaluation.Evaluate();
 			Assert.That(secondEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
-			Assert.That(secondEvaluation.Value, Is.Not.EqualTo(12));
+			Assert.That(secondEvaluation.Value, Is.EqualTo(0));
+
+			/* this should only pass if indeed the third specification is being evaluated;
+		    * the first two would fail to throw */
+			IBoundEvaluation<Saboteur, int?> thirdEvaluation = secondEvaluation.Evaluate();
+			Assert.That(thirdEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 		}
 
 		[Test]
@@ -45,7 +54,6 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 				Specify.For(() => new Foo<int>()).That(x => x.Count) //
 					.Is.Not.EqualTo(12) //
 					.AndThen.Is.Not.EqualTo(12);
-			Assert.That(specification, Is.Not.Null);
 			IBoundEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.Value, Is.EqualTo(0));
@@ -61,7 +69,6 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			ISpecification<Foo<int>, string, IFluentExpectationBuilder<Foo<int>, string>> specification = //
 				Specify.ForAny<Foo<int>>().That(x => x.ToString()).Has.HashCode(45) //
 					.AndThen.Has.HashCode(45);
-			Assert.That(specification, Is.Not.Null);
 			IEvaluation<Foo<int>, string> evaluation = specification.Evaluate(() => new Foo<int>());
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(evaluation.Value, Is.Not.EqualTo(45));

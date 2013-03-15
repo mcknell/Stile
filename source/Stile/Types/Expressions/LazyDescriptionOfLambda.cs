@@ -45,7 +45,12 @@ namespace Stile.Types.Expressions
 
 		public string AliasParametersIntoBody(params string[] aliases)
 		{
-			var expression = (MethodCallExpression) _lambda.Body;
+			Expression expression = _lambda.Body as MethodCallExpression;
+			if (expression == null)
+			{
+				expression = _lambda.Body as ParameterExpression;
+			}
+
 			int i = 0;
 			Dictionary<string, string> dictionary = aliases.ToDictionary(alias => SubjectTokens[i++]);
 			Lazy<string> lazyDebugString = expression.ToLazyDebugString(dictionary);

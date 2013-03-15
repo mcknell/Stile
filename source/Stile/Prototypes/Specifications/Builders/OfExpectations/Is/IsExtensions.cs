@@ -19,5 +19,25 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		{
 			return Is.EqualTo.Make(x => x.Equals(result), result, builder.Xray);
 		}
+
+		[Pure]
+		public static TSpecification Null<TSpecification, TSubject, TResult>(
+			this IIs<TSpecification, TSubject, TResult?> builder)
+			where TSpecification : class, ISpecification<TSubject, TResult?>, IChainableSpecification
+			where TResult : struct
+		{
+			var result = new Nullable<TSpecification, TSubject, TResult>(builder.Xray);
+			return result.Build();
+		}
+
+		[Pure]
+		public static TSpecification Null<TSpecification, TSubject, TResult>(
+			this IIs<TSpecification, TSubject, TResult> builder)
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+			where TResult : class
+		{
+			var result = new Null<TSpecification, TSubject, TResult>(builder.Xray);
+			return result.Build();
+		}
 	}
 }

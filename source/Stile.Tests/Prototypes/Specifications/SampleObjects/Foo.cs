@@ -13,9 +13,16 @@ namespace Stile.Tests.Prototypes.Specifications.SampleObjects
 {
 	public class Foo<TItem> : List<TItem>
 	{
-		public int Jump()
+		public Foo()
 		{
-			return GetHashCode();
+			Bumps = 0;
+		}
+
+		public int Bumps { get; private set; }
+
+		public int Bump()
+		{
+			return ++Bumps;
 		}
 
 		public bool Sleep(TimeSpan timeSpan)
