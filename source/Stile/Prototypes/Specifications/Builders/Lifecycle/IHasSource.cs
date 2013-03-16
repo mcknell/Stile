@@ -12,7 +12,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 
 namespace Stile.Prototypes.Specifications.Builders.Lifecycle
 {
-	public interface IHasSource<out TSubject>
+	public interface IHasSource<TSubject>
 	{
 		[CanBeNull]
 		ISource<TSubject> Source { get; }

@@ -13,6 +13,7 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
 using Stile.Prototypes.Specifications.Builders.OfSpecifications;
+using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Tests.Prototypes.Specifications.SampleObjects;
@@ -44,12 +45,11 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 				Specify.For(() => saboteur)
 					.That(x => x.Throw())
 					.Throws<ArgumentException>()
-					.Build()
 					.Before(TimeSpan.FromMilliseconds(40));
-			IEvaluation boundEvaluation = boundSpecification.Evaluate();
-			Assert.That(boundEvaluation.Outcome, Is.EqualTo(Outcome.Incomplete));
-			Assert.That(boundEvaluation.TimedOut, Is.True);
-			Assert.That(boundEvaluation.Errors.Length, Is.EqualTo(0));
+			IEvaluation evaluation = boundSpecification.Evaluate();
+			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Incomplete));
+			Assert.That(evaluation.TimedOut, Is.True);
+			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
 
 			IEvaluation synchronousEvaluation = boundSpecification.Evaluate(Deadline.Synchronous);
 			Assert.That(synchronousEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
@@ -64,6 +64,9 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			IEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(evaluation.Value, Is.EqualTo(0));
+			Assert.That(evaluation.ToPastTense(),
+				Is.EqualTo(@"Expected that new Foo<int>().Count would be neither greater nor less than 7
+but was 0"));
 		}
 
 		[Test]
@@ -139,8 +142,8 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
-			IFaultSpecificationBuilder<IFaultSpecification<Saboteur>, Saboteur, ArgumentException> specificationBuilder =
-				Specify.ForAny<Saboteur>().That(x => x.Throw()).Throws<ArgumentException>();
+			IFaultSpecificationBuilder<IFaultSpecification<Saboteur>, Saboteur, ArgumentException> specificationBuilder
+				= Specify.ForAny<Saboteur>().That(x => x.Throw()).Throws<ArgumentException>();
 			IFaultSpecification<Saboteur> specification = specificationBuilder.Build();
 			IEvaluation evaluation = specification.Evaluate(saboteur);
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));

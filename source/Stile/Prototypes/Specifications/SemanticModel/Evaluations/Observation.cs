@@ -17,7 +17,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		bool TimedOut { get; }
 	}
 
-	public interface IObservation<out TSubject> : IObservation
+	public interface IObservation<TSubject> : IObservation
 	{
 		[CanBeNull]
 		ISample<TSubject> Sample { get; }

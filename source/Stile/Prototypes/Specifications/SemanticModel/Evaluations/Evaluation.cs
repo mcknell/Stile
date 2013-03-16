@@ -27,7 +27,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		bool TimedOut { get; }
 	}
 
-	public interface IEvaluation<out TSubject> : IEvaluation
+	public interface IEvaluation<TSubject> : IEvaluation
 	{
 		ISample<TSubject> Sample { get; }
 	}

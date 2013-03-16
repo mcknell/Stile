@@ -38,6 +38,11 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			FillStackAndUnwind(lastTerm);
 		}
 
+		public void Visit3<TSpecification, TSubject, TResult>(IComparablyEquivalentTo<TSpecification, TSubject, TResult> target) where TSpecification : class, IChainableSpecification
+		{
+			throw new NotImplementedException();
+		}
+
 		public void Visit3<TSpecification, TSubject, TResult>(IEmpty<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification
 		{

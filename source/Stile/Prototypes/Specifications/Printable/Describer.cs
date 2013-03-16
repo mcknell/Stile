@@ -6,6 +6,7 @@
 #region using...
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
@@ -25,6 +26,7 @@ namespace Stile.Prototypes.Specifications.Printable
 		[StringFormatMethod("format")]
 		void AppendFormat(string format, params object[] parameters);
 
+		bool CanBeInlined(Expression expression);
 		bool IsSingleToken(string sourceName);
 	}
 
@@ -57,6 +59,11 @@ namespace Stile.Prototypes.Specifications.Printable
 		public void AppendFormat(string format, params object[] parameters)
 		{
 			_stringBuilder.AppendFormat(format, parameters);
+		}
+
+		public bool CanBeInlined(Expression expression)
+		{
+			return expression is MethodCallExpression || expression is NewExpression;
 		}
 
 		public bool IsSingleToken(string sourceName)
@@ -112,11 +119,17 @@ namespace Stile.Prototypes.Specifications.Printable
 			string instrumentedBy,
 			Action<IInstrument<TSubject, TResult>> continuation = null)
 		{
-			string sourceDescription = instrument.Xray.Source.Xray.Description.Value;
+			ISourceState<TSubject> sourceState = instrument.Xray.Source.Xray;
+			string sourceDescription = sourceState.Description.Value;
 			if (describer.IsSingleToken(sourceDescription))
 			{
 				ILazyDescriptionOfLambda lambda = instrument.Xray.Lambda;
 				describer.AppendFormat("{0}", lambda.AliasParametersIntoBody(sourceDescription));
+			}
+			else if (describer.CanBeInlined(sourceState.Expression.Body))
+			{
+				ILazyDescriptionOfLambda lambda = instrument.Xray.Lambda;
+				describer.AppendFormat("{0}", lambda.AliasParametersIntoBody(sourceState.Expression.Body.ToDebugString()));
 			}
 			else
 			{

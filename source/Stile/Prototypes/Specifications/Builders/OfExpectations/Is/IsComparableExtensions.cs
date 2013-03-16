@@ -5,7 +5,6 @@
 
 #region using...
 using System;
-using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
@@ -15,22 +14,35 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 {
 	public static class IsComparableExtensions
 	{
-		[Pure]
+		[System.Diagnostics.Contracts.Pure]
 		public static TSpecification ComparablyEquivalentTo<TSpecification, TSubject, TResult>(
-			this IIs<TSpecification, TSubject, TResult> builder, TResult result)
+			this IIs<TSpecification, TSubject, TResult> builder, TResult expected)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
-			return Make(x => x.CompareTo(result) == 0, builder.Xray);
+			var term = new ComparablyEquivalentTo<TSpecification, TSubject, TResult>(builder.Xray, expected);
+			return Make(builder.Xray, expected, term);
 		}
 
-		[Pure]
+		[System.Diagnostics.Contracts.Pure]
 		public static TSpecification GreaterThan<TSpecification, TSubject, TResult>(
 			this IIs<TSpecification, TSubject, TResult> builder, TResult result)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
 			return Make(x => x.CompareTo(result) > 0, builder.Xray);
+		}
+
+		private static TSpecification Make<TSpecification, TSubject, TResult>(
+			IIsState<TSpecification, TSubject, TResult> state, TResult expected, ComparablyEquivalentTo<TSpecification, TSubject, TResult> term)
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+			where TResult : IComparable<TResult>
+		{
+			Expectation<TSubject, TResult> expectation = Expectation<TSubject>.From(x => x.CompareTo(expected) == 0,
+				state.Negated,
+				state.BuilderState.Instrument,
+				term);
+			return state.BuilderState.Make(expectation);
 		}
 
 		private static TSpecification Make<TSpecification, TSubject, TResult>(Expression<Predicate<TResult>> lambda,
@@ -45,4 +57,5 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			return state.BuilderState.Make(expectation);
 		}
 	}
+
 }

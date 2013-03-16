@@ -20,9 +20,13 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		IExpectationTerm<IIsState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, IChainableSpecification
 	{
+		[NotNull]
 		Lazy<string> Description { get; }
 		TResult Expected { get; }
+		[NotNull]
 		Expression<Predicate<TResult>> Expression { get; set; }
+
+		[NotNull]
 		TSpecification Build();
 	}
 

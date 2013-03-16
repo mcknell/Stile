@@ -7,7 +7,6 @@
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
@@ -18,10 +17,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfInstruments
 	/// </summary>
 	public interface IProcedureBuilder {}
 
-	public interface IProcedureBuilder<out TSubject> : IProcedureBuilder,
+	public interface IProcedureBuilder<TSubject> : IProcedureBuilder,
 		IHides<IProcedureBuilderState<TSubject>> {}
 
-	public interface IProcedureBuilderState<out TSubject> : IHasSource<TSubject>,
+	public interface IProcedureBuilderState<TSubject> : IHasSource<TSubject>,
 		IAcceptSpecificationVisitors {}
 
 	public class ProcedureBuilder<TSubject> : IProcedureBuilder<TSubject>,

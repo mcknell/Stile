@@ -11,7 +11,6 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
-using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Tests.Prototypes.Specifications.SampleObjects;
@@ -65,7 +64,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.Value, Is.EqualTo(0));
 
-			IEvaluation<Foo<int>, int> secondEvaluation = evaluation.ReEvaluate();
+			IEvaluation<Foo<int>, int> secondEvaluation = evaluation.EvaluateNext();
 			Assert.That(secondEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(secondEvaluation.Value, Is.Not.EqualTo(12));
 		}

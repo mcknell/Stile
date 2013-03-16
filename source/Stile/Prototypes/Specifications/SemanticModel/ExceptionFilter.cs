@@ -22,6 +22,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 	public interface IExceptionFilter<TSubject> : IExceptionFilter
 	{
 		ISource<TSubject> Source { get; }
+		Predicate<Exception> Predicate { get; }
 		IObservation<TSubject> Filter(IObservation<TSubject> observation);
 	}
 
@@ -85,7 +86,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			get { return null; }
 		}
 
-		protected Predicate<Exception> Predicate { get; private set; }
+		public Predicate<Exception> Predicate { get; private set; }
 
 		protected List<IError> ExtractHandledErrors(IObservation<TSubject> observation)
 		{

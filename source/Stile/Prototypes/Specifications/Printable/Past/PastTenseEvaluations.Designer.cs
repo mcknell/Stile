@@ -79,6 +79,24 @@ namespace Stile.Prototypes.Specifications.Printable.Past {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to neither greater nor less than.
+        /// </summary>
+        public static string ComparablyEquivalentTo {
+            get {
+                return ResourceManager.GetString("ComparablyEquivalentTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to either greater or less than.
+        /// </summary>
+        public static string ComparablyEquivalentToNegated {
+            get {
+                return ResourceManager.GetString("ComparablyEquivalentToNegated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Expected.
         /// </summary>
         public static string Expected {

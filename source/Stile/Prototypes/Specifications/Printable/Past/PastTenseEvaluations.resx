@@ -123,6 +123,12 @@
   <data name="ButWas" xml:space="preserve">
     <value>but was</value>
   </data>
+  <data name="ComparablyEquivalentTo" xml:space="preserve">
+    <value>neither greater nor less than</value>
+  </data>
+  <data name="ComparablyEquivalentToNegated" xml:space="preserve">
+    <value>either greater or less than</value>
+  </data>
   <data name="Expected" xml:space="preserve">
     <value>Expected</value>
   </data>

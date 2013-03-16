@@ -35,7 +35,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		ILazyDescriptionOfLambda Lambda { get; }
 	}
 
-	public interface IProcedureState<out TSubject> : IProcedureState,
+	public interface IProcedureState<TSubject> : IProcedureState,
 		IHasSource<TSubject> {}
 
 	public abstract class Procedure : IProcedure,

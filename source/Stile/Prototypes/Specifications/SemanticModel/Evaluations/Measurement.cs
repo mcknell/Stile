@@ -12,7 +12,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 {
 	public interface IMeasurement : IObservation {}
 
-	public interface IMeasurement<out TSubject, out TResult> : IMeasurement,
+	public interface IMeasurement<TSubject, out TResult> : IMeasurement,
 		IObservation<TSubject>
 	{
 		[CanBeNull]

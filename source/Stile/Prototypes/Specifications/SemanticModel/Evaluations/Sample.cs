@@ -14,7 +14,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 {
 	public interface ISample {}
 
-	public interface ISample<out TSubject> : ISample
+	public interface ISample<TSubject> : ISample
 	{
 		[NotNull]
 		Lazy<string> RuntimeDescription { get; }

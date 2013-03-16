@@ -13,6 +13,7 @@ using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Readability;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Past
@@ -36,6 +37,16 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 		{
 			IAcceptExpectationVisitors lastTerm = target.ValidateArgumentIsNotNull().Xray.LastTerm;
 			FillStackAndUnwind(lastTerm);
+		}
+
+		public void Visit3<TSpecification, TSubject, TResult>(
+			IComparablyEquivalentTo<TSpecification, TSubject, TResult> target)
+			where TSpecification : class, IChainableSpecification
+		{
+			string s = target.Prior.Negated
+				? PastTenseEvaluations.ComparablyEquivalentToNegated
+				: PastTenseEvaluations.ComparablyEquivalentTo;
+			AppendFormat(" {0} {1}", s, target.Expected.ToDebugString());
 		}
 
 		public void Visit3<TSpecification, TSubject, TResult>(IEmpty<TSpecification, TSubject, TResult> target)
