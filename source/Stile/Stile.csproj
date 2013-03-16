@@ -211,6 +211,7 @@
     <Compile Include="Types\LazyExtensions.cs" />
     <Compile Include="Types\Primitives\BoolExtensions.cs" />
     <Compile Include="Types\Primitives\StringExtensions.cs" />
+    <Compile Include="Types\Primitives\TimeSpanExtensions.cs" />
     <Compile Include="Types\Reflection\MethodInfoExtensions.cs" />
     <Compile Include="Types\Reflection\TypeExtensions.cs" />
     <Compile Include="Types\Reflection\TypeStringBuilder.cs" />

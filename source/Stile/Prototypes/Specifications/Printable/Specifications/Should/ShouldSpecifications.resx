@@ -120,6 +120,9 @@
   <data name="All" xml:space="preserve">
     <value>all items</value>
   </data>
+  <data name="And" xml:space="preserve">
+    <value>and</value>
+  </data>
   <data name="AnyType" xml:space="preserve">
     <value>Any {0}</value>
   </data>
@@ -129,8 +132,14 @@
   <data name="Hashcode" xml:space="preserve">
     <value>hashcode</value>
   </data>
+  <data name="InitallyThen" xml:space="preserve">
+    <value>initially,{0}then</value>
+  </data>
   <data name="InstrumentedBy" xml:space="preserve">
     <value>instrumented by</value>
+  </data>
+  <data name="MeasurableInLessThan" xml:space="preserve">
+    <value>measurable in less than</value>
   </data>
   <data name="ShouldBe" xml:space="preserve">
     <value>should be</value>
@@ -140,5 +149,8 @@
   </data>
   <data name="ShouldNotBe" xml:space="preserve">
     <value>should not be</value>
+  </data>
+  <data name="WhenSampledAgain" xml:space="preserve">
+    <value>when sampled again</value>
   </data>
 </root>

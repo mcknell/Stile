@@ -6,12 +6,16 @@
 #region using...
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 {
 	public interface IObservation
 	{
+		[NotNull]
+		IDeadline Deadline { get; }
+		[NotNull]
 		IError[] Errors { get; }
 		TaskStatus TaskStatus { get; }
 		bool TimedOut { get; }
@@ -25,12 +29,18 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 
 	public class Observation : IObservation
 	{
-		public Observation(TaskStatus taskStatus, bool timedOut, params IError[] errors)
+		public Observation(TaskStatus taskStatus,
+			bool timedOut,
+			[NotNull] IDeadline deadline,
+			params IError[] errors)
 		{
 			Errors = errors;
 			TaskStatus = taskStatus;
 			TimedOut = timedOut;
+			Deadline = deadline;
 		}
+
+		public IDeadline Deadline { get; private set; }
 
 		public IError[] Errors { get; private set; }
 		public TaskStatus TaskStatus { get; private set; }
@@ -43,8 +53,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public Observation(TaskStatus taskStatus,
 			bool timedOut,
 			[CanBeNull] ISample<TSubject> sample,
+			IDeadline deadline,
 			params IError[] errors)
-			: base(taskStatus, timedOut, errors)
+			: base(taskStatus, timedOut, deadline, errors)
 		{
 			Sample = sample;
 		}

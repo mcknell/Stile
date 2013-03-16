@@ -145,7 +145,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 					}
 				}
 			}
-			var observation = new Observation<TSubject>(task.Status, timedOut, sample, errors.ToArray());
+			var observation = new Observation<TSubject>(task.Status, timedOut, sample, deadline, errors.ToArray());
 			return observation;
 		}
 	}

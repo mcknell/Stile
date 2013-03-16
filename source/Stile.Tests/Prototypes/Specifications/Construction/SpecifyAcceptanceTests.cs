@@ -25,7 +25,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 	public class SpecifyAcceptanceTests
 	{
 		[Test]
-		public void BeforeBoundToInstance()
+		public void Before_WhenBoundToInstance()
 		{
 			IBoundSpecification<Foo<int>, int> specification =
 				Specify.For(() => new Foo<int>()).That(x => x.Count).Is.Not.EqualTo(12).Before(TimeSpan.FromSeconds(1));
@@ -33,10 +33,11 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.TimedOut, Is.False);
 			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
+			Assert.That(specification.ToShould(), Is.EqualTo(@"new Foo<int>().Count should not be 12 and should be measurable in less than 1 second"));
 		}
 
 		[Test]
-		public void BeforeBoundToInstanceOnlyTimesOutOnAsync()
+		public void Before_WhenBoundToInstance_OnlyTimesOutOnAsync()
 		{
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());

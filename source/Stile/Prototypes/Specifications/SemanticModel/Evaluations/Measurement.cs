@@ -6,6 +6,7 @@
 #region using...
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
@@ -26,8 +27,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			TResult value,
 			TaskStatus taskStatus,
 			bool timedOut,
+			IDeadline deadline,
 			params IError[] errors)
-			: base(taskStatus, timedOut, sample, errors)
+			: base(taskStatus, timedOut, sample, deadline, errors)
 		{
 			Value = value;
 		}

@@ -10,7 +10,6 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.Hierarchy;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
-using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
@@ -21,8 +20,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 	public interface IExceptionFilter<TSubject> : IExceptionFilter
 	{
-		ISource<TSubject> Source { get; }
 		Predicate<Exception> Predicate { get; }
+		ISource<TSubject> Source { get; }
 		IObservation<TSubject> Filter(IObservation<TSubject> observation);
 	}
 
@@ -48,6 +47,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		}
 
 		public IAcceptSpecificationVisitors Parent { get; private set; }
+		public Predicate<Exception> Predicate { get; private set; }
 		public ISource<TSubject> Source { get; private set; }
 
 		public virtual TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
@@ -77,6 +77,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			var filtered = new Observation<TSubject>(observation.TaskStatus,
 				observation.TimedOut,
 				observation.Sample,
+				observation.Deadline,
 				errors.ToArray());
 			return filtered;
 		}
@@ -85,8 +86,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		{
 			get { return null; }
 		}
-
-		public Predicate<Exception> Predicate { get; private set; }
 
 		protected List<IError> ExtractHandledErrors(IObservation<TSubject> observation)
 		{
@@ -114,18 +113,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
 
-		public IMeasurement<TSubject, TResult> Filter(IMeasurement<TSubject, TResult> measurement)
-		{
-			List<IError> errors = ExtractHandledErrors(measurement);
-
-			var filtered = new Measurement<TSubject, TResult>(measurement.Sample,
-				measurement.Value,
-				measurement.TaskStatus,
-				measurement.TimedOut,
-				errors.ToArray());
-			return filtered;
-		}
-
 		public override TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit2(this, data);
@@ -144,6 +131,19 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		public override void Accept(IExpectationVisitor visitor)
 		{
 			visitor.Visit2(this);
+		}
+
+		public IMeasurement<TSubject, TResult> Filter(IMeasurement<TSubject, TResult> measurement)
+		{
+			List<IError> errors = ExtractHandledErrors(measurement);
+
+			var filtered = new Measurement<TSubject, TResult>(measurement.Sample,
+				measurement.Value,
+				measurement.TaskStatus,
+				measurement.TimedOut,
+				measurement.Deadline,
+				errors.ToArray());
+			return filtered;
 		}
 	}
 }

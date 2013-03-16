@@ -71,6 +71,15 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to and.
+        /// </summary>
+        internal static string And {
+            get {
+                return ResourceManager.GetString("And", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Any {0}.
         /// </summary>
         internal static string AnyType {
@@ -98,11 +107,29 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to initially,{0}then.
+        /// </summary>
+        internal static string InitallyThen {
+            get {
+                return ResourceManager.GetString("InitallyThen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to instrumented by.
         /// </summary>
         internal static string InstrumentedBy {
             get {
                 return ResourceManager.GetString("InstrumentedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to measurable in less than.
+        /// </summary>
+        internal static string MeasurableInLessThan {
+            get {
+                return ResourceManager.GetString("MeasurableInLessThan", resourceCulture);
             }
         }
         
@@ -130,6 +157,15 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         internal static string ShouldNotBe {
             get {
                 return ResourceManager.GetString("ShouldNotBe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to when sampled again.
+        /// </summary>
+        internal static string WhenSampledAgain {
+            get {
+                return ResourceManager.GetString("WhenSampledAgain", resourceCulture);
             }
         }
     }

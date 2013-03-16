@@ -134,6 +134,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 				result,
 				task.Status,
 				timedOut,
+				deadline,
 				errors.ToArray());
 			return measurement;
 		}

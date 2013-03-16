@@ -79,6 +79,7 @@
     <Compile Include="Types\Expressions\LazyDescriptionOfLambdaFixture.cs" />
     <Compile Include="Types\Expressions\Printing\ExpressionParsers\MethodCallExpressionParserFixture.cs" />
     <Compile Include="Types\Expressions\ExpressionPrinterFixture.cs" />
+    <Compile Include="Types\Primitives\TimeSpanExtensionsFixture.cs" />
     <Compile Include="Types\Reflection\CSharp4TypesFixture.cs" />
     <Compile Include="Types\Reflection\TypeExtensionsFixture.cs" />
     <Compile Include="Types\Reflection\TypeExtensionsIsOrDerivesFromFixture.cs" />

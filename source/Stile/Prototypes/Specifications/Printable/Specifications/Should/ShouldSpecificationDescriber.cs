@@ -15,6 +15,7 @@ using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Types.Primitives;
 using Stile.Types.Reflection;
 #endregion
 
@@ -74,6 +75,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 		{
 			IAcceptSpecificationVisitors lastTerm = target.ValidateArgumentIsNotNull().Xray.LastTerm;
 			FillStackAndUnwind(lastTerm);
+			Append(PrintDeadlineIfAny(target));
 		}
 
 		public void Visit3<TSpecification, TSubject, TResult>(IHas<TSpecification, TSubject, TResult> has)
@@ -124,15 +126,34 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			describer.Visit2(first);
 			if (stack.Count > 0)
 			{
-				describer.AppendFormat(" initially,\r\nthen");
+				describer.Append(" ");
+				describer.AppendFormat(ShouldSpecifications.InitallyThen, Environment.NewLine);
 			}
 			while (stack.Count > 0)
 			{
 				ISpecification<TSubject, TResult> popped = stack.Pop();
 				describer.Visit2(popped.Xray.Expectation);
-				describer.AppendFormat(" when sampled again");
+				describer.Append(PrintDeadlineIfAny(popped));
+				describer.AppendFormat(" {0}", ShouldSpecifications.WhenSampledAgain);
 			}
 			return describer.ToString();
+		}
+
+		private static string PrintDeadlineIfAny<TSubject, TResult>(ISpecification<TSubject, TResult> target)
+		{
+			IDeadline deadline = target.Xray.Deadline;
+			if (deadline != null)
+			{
+				if (deadline.Timeout > TimeSpan.Zero)
+				{
+					return string.Format(" {0} {1} {2} {3}",
+						ShouldSpecifications.And,
+						ShouldSpecifications.ShouldBe,
+						ShouldSpecifications.MeasurableInLessThan,
+						deadline.Timeout.ToReadableUnits());
+				}
+			}
+			return null;
 		}
 	}
 }
