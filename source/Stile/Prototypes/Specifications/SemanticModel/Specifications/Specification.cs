@@ -6,6 +6,7 @@
 #region using...
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
@@ -16,13 +17,16 @@ using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
-using System.Linq;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
 	public interface ISpecification {}
 
+	/// <summary>
+	/// Might look useless, but is a base interface for <see cref="IFaultSpecification{TSubject}"/>
+	/// </summary>
+	/// <typeparam name="TSubject"></typeparam>
 	public interface ISpecification<in TSubject> : ISpecification {}
 
 	public interface ISpecification<TSubject, TResult> : ISpecification<TSubject>,
@@ -195,7 +199,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 				measurement = ExceptionFilter.Filter(measurement);
 			}
 			Outcome outcome = Expectation.Evaluate(measurement, ExpectsException);
-			var evaluation = new Evaluation<TSubject, TResult>(this, measurement, outcome, priorEvaluation, tailSpecification);
+			var evaluation = new Evaluation<TSubject, TResult>(this,
+				measurement,
+				outcome,
+				priorEvaluation,
+				tailSpecification);
 			return evaluation;
 		}
 

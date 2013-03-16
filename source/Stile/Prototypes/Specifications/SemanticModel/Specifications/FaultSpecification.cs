@@ -41,7 +41,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public delegate TSpecification Factory<out TSpecification, TSubject, TResult>(
 			[NotNull] IExpectation<TSubject, TResult> expectation,
 			[NotNull] IExceptionFilter<TSubject, TResult> exceptionFilter)
-			where TSpecification : class, ISpecification<TSubject>;
+			where TSpecification : class, ISpecification<TSubject, TResult>;
 	}
 
 	public class FaultSpecification<TSubject> : Specification<TSubject, IExceptionFilter<TSubject>>,

@@ -71,6 +71,11 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			Append(state.Lambda.Body);
 		}
 
+		public void Visit2<TSubject, TResult>(ISpecification<TSubject, TResult> target)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void Visit2<TSubject, TResult>(IEvaluation<TSubject, TResult> evaluation)
 		{
 			IEvaluationState<TSubject, TResult> state = evaluation.ValidateArgumentIsNotNull().Xray;

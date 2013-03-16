@@ -70,6 +70,12 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			}
 		}
 
+		public void Visit2<TSubject, TResult>(ISpecification<TSubject, TResult> target)
+		{
+			IAcceptSpecificationVisitors lastTerm = target.ValidateArgumentIsNotNull().Xray.LastTerm;
+			FillStackAndUnwind(lastTerm);
+		}
+
 		public void Visit3<TSpecification, TSubject, TResult>(IHas<TSpecification, TSubject, TResult> has)
 			where TSpecification : class, IChainableSpecification
 		{
@@ -93,8 +99,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			ISpecification<TSubject, TResult, TExpectationBuilder> specification)
 			where TExpectationBuilder : class, IExpectationBuilder
 		{
-			IAcceptSpecificationVisitors lastTerm = specification.ValidateArgumentIsNotNull().Xray.LastTerm;
-			FillStackAndUnwind(lastTerm);
+			Visit2(specification);
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
@@ -105,9 +110,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			throw new NotImplementedException();
 		}
 
-		public static string Describe<TSubject, TResult, TExpectationBuilder>(
-			ISpecification<TSubject, TResult, TExpectationBuilder> specification)
-			where TExpectationBuilder : class, IExpectationBuilder
+		public static string Describe<TSubject, TResult>(ISpecification<TSubject, TResult> specification)
 		{
 			var describer = new ShouldSpecificationDescriber();
 			var stack = new Stack<ISpecification<TSubject, TResult>>();
@@ -117,15 +120,15 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 				stack.Push(prior);
 				prior = prior.Xray.Prior;
 			}
-			var first = (ISpecification<TSubject, TResult, TExpectationBuilder>) stack.Pop();
-			describer.Visit3(first);
+			ISpecification<TSubject, TResult> first = stack.Pop();
+			describer.Visit2(first);
 			if (stack.Count > 0)
 			{
 				describer.AppendFormat(" initially,\r\nthen");
 			}
 			while (stack.Count > 0)
 			{
-				var popped = (ISpecification<TSubject, TResult, TExpectationBuilder>) stack.Pop();
+				ISpecification<TSubject, TResult> popped = stack.Pop();
 				describer.Visit2(popped.Xray.Expectation);
 				describer.AppendFormat(" when sampled again");
 			}

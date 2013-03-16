@@ -53,7 +53,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			IEqualToState<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification
 		{
-			throw new NotImplementedException();
+			AppendFormat(" {0}", target.Description.Value);
 		}
 
 		public void Visit3<TSpecification, TSubject, TResult>(IHas<TSpecification, TSubject, TResult> target)

@@ -77,6 +77,8 @@ but was 0"));
 			IEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.Value, Is.EqualTo(0));
+			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<int>().Count was 0"));
+			Assert.That(specification.ToShould(), Is.EqualTo(@"new Foo<int>().Count should not be 12"));
 		}
 
 		[Test]

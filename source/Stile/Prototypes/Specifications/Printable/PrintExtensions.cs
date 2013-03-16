@@ -21,9 +21,8 @@ namespace Stile.Prototypes.Specifications.Printable
 			return PastEvaluationDescriber.Describe(evaluation);
 		}
 
-		public static string ToShould<TSubject, TResult, TExpectationBuilder>(
-			[NotNull] this ISpecification<TSubject, TResult, TExpectationBuilder> specification)
-			where TExpectationBuilder : class, IExpectationBuilder
+		public static string ToShould<TSubject, TResult>(
+			[NotNull] this ISpecification<TSubject, TResult> specification)
 		{
 			return ShouldSpecificationDescriber.Describe(specification);
 		}

@@ -25,8 +25,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 
 		void Visit2<TSubject, TResult>([NotNull] IExceptionFilter<TSubject, TResult> target);
 		void Visit2<TSubject, TResult>([NotNull] IExpectation<TSubject, TResult> target);
-
 		void Visit2<TSubject, TResult>([NotNull] IInstrument<TSubject, TResult> target);
+		void Visit2<TSubject, TResult>([NotNull] ISpecification<TSubject, TResult> target);
 
 		void Visit3<TSpecification, TSubject, TResult>([NotNull] IHas<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification;
@@ -57,8 +57,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 
 		TData Visit2<TSubject, TResult>([NotNull] IExceptionFilter<TSubject, TResult> target, TData data);
 		TData Visit2<TSubject, TResult>([NotNull] IExpectation<TSubject, TResult> target, TData data);
-
 		TData Visit2<TSubject, TResult>([NotNull] IInstrument<TSubject, TResult> target, TData data);
+		TData Visit2<TSubject, TResult>([NotNull] ISpecification<TSubject, TResult> target, TData data);
 
 		TData Visit3<TSpecification, TSubject, TResult>([NotNull] IHas<TSpecification, TSubject, TResult> target,
 			TData data) where TSpecification : class, IChainableSpecification;
