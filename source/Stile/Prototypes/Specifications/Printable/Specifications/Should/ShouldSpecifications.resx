@@ -139,7 +139,7 @@
     <value>instrumented by</value>
   </data>
   <data name="MeasurableInLessThan" xml:space="preserve">
-    <value>measurable in less than</value>
+    <value>in runtime &lt;</value>
   </data>
   <data name="ShouldBe" xml:space="preserve">
     <value>should be</value>

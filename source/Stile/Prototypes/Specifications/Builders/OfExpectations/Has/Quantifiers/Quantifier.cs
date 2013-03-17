@@ -49,7 +49,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 		protected Quantifier([NotNull] IHasState<TSpecification, TSubject, TResult> hasState)
 		{
 			_hasState = hasState.ValidateArgumentIsNotNull();
-			Parent = _hasState;
 		}
 
 		public IHasState<TSpecification, TSubject, TResult> Has
@@ -57,7 +56,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 			get { return _hasState; }
 		}
 
-		public IAcceptExpectationVisitors Parent { get; private set; }
+		public IAcceptExpectationVisitors Parent
+		{
+			get { return _hasState; }
+		}
 		public IQuantifierState<TSpecification, TSubject, TResult> Xray
 		{
 			get { return this; }

@@ -146,9 +146,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			{
 				if (deadline.Timeout > TimeSpan.Zero)
 				{
-					return string.Format(" {0} {1} {2} {3}",
-						ShouldSpecifications.And,
-						ShouldSpecifications.ShouldBe,
+					return string.Format(", {0} {1}",
 						ShouldSpecifications.MeasurableInLessThan,
 						deadline.Timeout.ToReadableUnits());
 				}

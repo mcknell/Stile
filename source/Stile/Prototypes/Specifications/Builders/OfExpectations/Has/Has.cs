@@ -31,17 +31,18 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		public Has([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState)
 		{
 			ExpectationBuilder = builderState;
-			Parent = null;
 		}
 
 		public IExpectationBuilderState<TSpecification, TSubject, TResult> ExpectationBuilder { get; private set; }
 
+		public IAcceptExpectationVisitors Parent
+		{
+			get { return null; }
+		}
 		public IHasState<TSpecification, TSubject, TResult> Xray
 		{
 			get { return this; }
 		}
-
-		public IAcceptExpectationVisitors Parent { get; private set; }
 
 		public void Accept(IExpectationVisitor visitor)
 		{

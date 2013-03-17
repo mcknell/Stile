@@ -33,7 +33,8 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.TimedOut, Is.False);
 			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
-			Assert.That(specification.ToShould(), Is.EqualTo(@"new Foo<int>().Count should not be 12 and should be measurable in less than 1 second"));
+			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<int>().Count was not 12, in runtime < 1 second"));
+			Assert.That(specification.ToShould(), Is.EqualTo(@"new Foo<int>().Count should not be 12, in runtime < 1 second"));
 		}
 
 		[Test]
@@ -78,7 +79,7 @@ but was 0"));
 			IEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.Value, Is.EqualTo(0));
-			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<int>().Count was 0"));
+			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<int>().Count was not 12"));
 			Assert.That(specification.ToShould(), Is.EqualTo(@"new Foo<int>().Count should not be 12"));
 		}
 

@@ -125,7 +125,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to measurable in less than.
+        ///   Looks up a localized string similar to in runtime &lt;.
         /// </summary>
         internal static string MeasurableInLessThan {
             get {

@@ -61,6 +61,15 @@ namespace Stile.Prototypes.Specifications.Printable.Past {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Any {0}.
+        /// </summary>
+        public static string AnyType {
+            get {
+                return ResourceManager.GetString("AnyType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to but.
         /// </summary>
         public static string But {
@@ -111,6 +120,15 @@ namespace Stile.Prototypes.Specifications.Printable.Past {
         public static string InstrumentedBy {
             get {
                 return ResourceManager.GetString("InstrumentedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to in runtime &lt;.
+        /// </summary>
+        public static string InTimeLessThan {
+            get {
+                return ResourceManager.GetString("InTimeLessThan", resourceCulture);
             }
         }
         

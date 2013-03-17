@@ -10,6 +10,7 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
@@ -23,6 +24,13 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 	public class PastExpectationDescriber : Describer<IPastExpectationDescriber, IAcceptExpectationVisitors>,
 		IPastExpectationDescriber
 	{
+		private readonly Outcome _outcome;
+
+		public PastExpectationDescriber(Outcome outcome)
+		{
+			_outcome = outcome;
+		}
+
 		public void Visit1<TSubject>(IExceptionFilter<TSubject> target)
 		{
 			throw new NotImplementedException();
@@ -78,7 +86,8 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 		public void Visit3<TSpecification, TSubject, TResult>(IIs<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification
 		{
-			AppendFormat(" {0}", PastTenseEvaluations.WouldBe);
+			string verb = _outcome ? PastTenseEvaluations.Was : PastTenseEvaluations.WouldBe;
+			AppendFormat(" {0}", verb);
 			if (target.Xray.Negated)
 			{
 				AppendFormat(" {0}", PastTenseEvaluations.Not);

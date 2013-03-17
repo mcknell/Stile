@@ -45,7 +45,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		{
 			BuilderState = builderState.ValidateArgumentIsNotNull();
 			Negated = negated;
-			Parent = null;
 		}
 
 		public IExpectationBuilderState<TSpecification, TSubject, TResult> BuilderState { get; private set; }
@@ -56,7 +55,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			get { return new Is<TSpecification, TSubject, TResult>(BuilderState, Negated.True); }
 		}
 
-		public IAcceptExpectationVisitors Parent { get; private set; }
+		public IAcceptExpectationVisitors Parent
+		{
+			get { return null; }
+		}
 		public IIsState<TSpecification, TSubject, TResult> Xray
 		{
 			get { return this; }

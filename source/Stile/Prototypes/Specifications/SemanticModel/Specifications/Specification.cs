@@ -140,7 +140,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public IExpectation<TSubject, TResult> Expectation { get; private set; }
 		public IAcceptSpecificationVisitors Parent
 		{
-			get { return null; }
+			get { return LastTerm; }
 		}
 		public ISpecification<TSubject, TResult> Prior { get; private set; }
 		public ISpecificationState<TSubject, TResult> Xray
