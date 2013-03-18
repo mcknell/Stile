@@ -41,7 +41,25 @@ namespace Stile.Prototypes.Specifications.Printable
 
 	public abstract class Describer : IDescriber
 	{
-		private static readonly Regex SingleToken = new Regex(@"^@?[A-Z]\w*$",
+		/*
+		 * 
+      string pattern = "^[^<>]*" +
+                       "(" + 
+                       "((?'Open'<)[^<>]*)+" +
+                       "((?'Close-Open'>)[^<>]*)+" +
+                       ")*" +
+                       "(?(Open)(?!))$";
+		 */
+		/// <summary>
+		/// Docs at <seealso cref="http://msdn.microsoft.com/en-us/library/bs2twtah.aspx#balancing_group_definition"/>
+		/// </summary>
+		private static readonly Regex SingleToken = new Regex(@"^@?[A-Z]\w*" //
+			+ "(" // balancing construct; see 
+			+ @"((?'Open'<)[A-Z]\w*(\,\s*[A-Z]\w*)*)*" // [A-Z]\w*(\,\s*[A-Z]\w*)*
+			+ @"((?'Close-Open'>)([A-Z]\w*)?(\,\s*[A-Z]\w*)*)+" //
+			+ ")*" //
+			+ "(?(Open)(?!))" // fails on imbalance
+			+ "$",
 			RegexOptions.IgnoreCase | RegexOptions.Compiled,
 			TimeSpan.FromSeconds(1));
 		private readonly StringBuilder _stringBuilder;
@@ -82,10 +100,12 @@ namespace Stile.Prototypes.Specifications.Printable
 		where TVisitor : class
 		where TTerm : class, IAcceptVisitors<TVisitor>, IHasParent<TTerm>
 	{
+		protected readonly ISource _source;
 		private readonly Stack<TTerm> _terms;
 
-		protected Describer()
+		protected Describer([CanBeNull] ISource source)
 		{
+			_source = source;
 			_terms = new Stack<TTerm>();
 		}
 
@@ -114,27 +134,13 @@ namespace Stile.Prototypes.Specifications.Printable
 			_terms.Push(term.ValidateArgumentIsNotNull());
 		}
 
-		public static void DescribeSourceAndInstrument<TSubject, TResult>(IDescriber describer,
-			IInstrument<TSubject, TResult> instrument,
-			string instrumentedBy,
-			Action<IInstrument<TSubject, TResult>> continuation = null)
-		{
-			Action action = () =>
-			{
-				if (continuation != null)
-				{
-					continuation.Invoke(instrument);
-				}
-			};
-			DescribeSourceAndProcedure(describer, instrument, instrumentedBy, action);
-		}
-
 		public static void DescribeSourceAndProcedure<TSubject>(IDescriber describer,
 			IProcedure<TSubject> procedure,
+			[NotNull] ISource<TSubject> source,
 			string instrumentedBy,
 			Action continuation = null)
 		{
-			ISourceState<TSubject> sourceState = procedure.Xray.Source.Xray;
+			ISourceState<TSubject> sourceState = source.Xray;
 			string sourceDescription = sourceState.Description.Value;
 			if (describer.IsSingleToken(sourceDescription))
 			{

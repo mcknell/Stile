@@ -27,13 +27,16 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.Past
 			AssertSingleToken("x.Y", false);
 			AssertSingleToken("x[i]", false);
 			AssertSingleToken("i++", false);
+			AssertSingleToken("Func<int>", true);
+			AssertSingleToken("Func<int, string>", true);
+			AssertSingleToken("Func<int, Foo<string>>", true);
 		}
 
 		private static void AssertSingleToken(string sourceName, bool expected)
 		{
-			Assert.That(new PastEvaluationDescriber().IsSingleToken(sourceName),
+			Assert.That(new PastEvaluationDescriber(null).IsSingleToken(sourceName),
 				Is.EqualTo(expected),
-				string.Format(">{0}< was expected to be {1}", sourceName, expected));
+				string.Format("]{0}[ was expected to be {1}", sourceName, expected));
 		}
 	}
 }

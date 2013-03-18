@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers;
@@ -23,6 +24,9 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 	public class ShouldExpectationDescriber : Describer<IShouldExpectationDescriber, IAcceptExpectationVisitors>,
 		IShouldExpectationDescriber
 	{
+		public ShouldExpectationDescriber([CanBeNull] ISource source)
+			: base(source) {}
+
 		public void Visit1<TSubject>(IExceptionFilter<TSubject> target)
 		{
 			throw new NotImplementedException();
@@ -30,7 +34,8 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 
 		public void Visit2<TSubject, TResult>(IExceptionFilter<TSubject, TResult> target)
 		{
-			throw new NotImplementedException();
+			Append(" ");
+			AppendFormat(ShouldSpecifications.ShouldThrow, target.Description.Value);
 		}
 
 		public void Visit2<TSubject, TResult>(IExpectation<TSubject, TResult> target)
@@ -39,7 +44,9 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			FillStackAndUnwind(lastTerm);
 		}
 
-		public void Visit3<TSpecification, TSubject, TResult>(IComparablyEquivalentTo<TSpecification, TSubject, TResult> target) where TSpecification : class, IChainableSpecification
+		public void Visit3<TSpecification, TSubject, TResult>(
+			IComparablyEquivalentTo<TSpecification, TSubject, TResult> target)
+			where TSpecification : class, IChainableSpecification
 		{
 			string s = target.Prior.Negated
 				? ShouldSpecifications.ComparablyEquivalentToNegated
@@ -79,12 +86,15 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			AppendFormat(" {0}", target.Xray.Negated ? ShouldSpecifications.ShouldNotBe : ShouldSpecifications.ShouldBe);
 		}
 
-		public void Visit3<TSpecification, TSubject, TResult>(INullState<TSpecification, TSubject, TResult> target) where TSpecification : class, IChainableSpecification where TResult : class
+		public void Visit3<TSpecification, TSubject, TResult>(INullState<TSpecification, TSubject, TResult> target)
+			where TSpecification : class, IChainableSpecification where TResult : class
 		{
 			AppendFormat(" {0}", ShouldSpecifications.Null);
 		}
 
-		public void Visit3<TSpecification, TSubject, TResult>(INullableState<TSpecification, TSubject, TResult> target) where TSpecification : class, IChainableSpecification where TResult : struct
+		public void Visit3<TSpecification, TSubject, TResult>(
+			INullableState<TSpecification, TSubject, TResult> target)
+			where TSpecification : class, IChainableSpecification where TResult : struct
 		{
 			throw new NotImplementedException();
 		}

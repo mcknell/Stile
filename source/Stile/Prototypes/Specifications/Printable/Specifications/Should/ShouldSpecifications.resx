@@ -123,6 +123,9 @@
   <data name="And" xml:space="preserve">
     <value>and</value>
   </data>
+  <data name="AnyCaps" xml:space="preserve">
+    <value>Any</value>
+  </data>
   <data name="AnyType" xml:space="preserve">
     <value>Any {0}</value>
   </data>

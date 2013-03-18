@@ -86,6 +86,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Null.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Nullable.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfSpecifications\FaultSpecificationBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfSpecifications\ISpecificationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Describer.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldExpectationDescriber.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldSpecificationDescriber.cs" />

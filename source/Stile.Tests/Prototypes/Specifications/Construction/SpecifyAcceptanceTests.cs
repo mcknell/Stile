@@ -33,8 +33,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.TimedOut, Is.False);
 			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
-			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<int>().Count should not be 12, in runtime < 1 second"));
-			Assert.That(specification.ToShould(),
+			Assert.That(evaluation.ToPastTense(),
 				Is.EqualTo(@"new Foo<int>().Count should not be 12, in runtime < 1 second"));
 		}
 
@@ -85,8 +84,9 @@ but was 0"));
 			IEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.Value, Is.EqualTo(0));
-			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<int>().Count should not be 12"));
-			Assert.That(specification.ToShould(), Is.EqualTo(@"new Foo<int>().Count should not be 12"));
+			string pastTense = evaluation.ToPastTense();
+			Assert.That(pastTense, Is.EqualTo(@"new Foo<int>().Count should not be 12"));
+			Assert.That(specification.ToShould(), Is.EqualTo(pastTense));
 		}
 
 		[Test]
@@ -94,8 +94,10 @@ but was 0"));
 		{
 			IBoundFaultSpecification<Foo<string>> specification =
 				Specify.For(() => new Foo<string>()).That(x => x.Clear()).Throws<ArgumentException>().Build();
-			IEvaluation evaluation = specification.Evaluate();
+			IFaultEvaluation<Foo<string>> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
+			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<string>().Clear() should throw ArgumentException
+but no exception was thrown"));
 		}
 
 		[Test]
@@ -105,6 +107,8 @@ but was 0"));
 				Specify.For(() => new Foo<int>()).That(x => x.Count).Throws<ArgumentException>().Build();
 			IEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
+			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<int>().Count should throw ArgumentException
+but was 0 and no exception was thrown"));
 		}
 
 		[Test]
@@ -112,8 +116,12 @@ but was 0"));
 		{
 			IFaultSpecification<Foo<string>> specification =
 				Specify.ForAny<Foo<string>>().That(x => x.Clear()).Throws<ArgumentException>().Build();
-			IEvaluation evaluation = specification.Evaluate(() => new Foo<string>());
+			IFaultEvaluation<Foo<string>> evaluation = specification.Evaluate(() => new Foo<string>());
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
+			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<string>().Clear() should throw ArgumentException
+but no exception was thrown"));
+			Assert.That(specification.ToShould(),
+				Is.EqualTo(@"Any Foo<string>.Clear() should throw ArgumentException"));
 		}
 
 		[Test]

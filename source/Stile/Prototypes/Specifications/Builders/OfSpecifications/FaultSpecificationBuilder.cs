@@ -16,18 +16,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 
 namespace Stile.Prototypes.Specifications.Builders.OfSpecifications
 {
-	public interface ISpecificationBuilder {}
-
-	public interface ISpecificationBuilder<out TSpecification> : ISpecificationBuilder
-		where TSpecification : class, IChainableSpecification
-	{
-		TSpecification Build();
-	}
-
-	public interface IFaultSpecificationBuilder : ISpecificationBuilder {}
-
-	public interface IFaultSpecificationBuilder<TExceptionFilter> : IFaultSpecificationBuilder
-		where TExceptionFilter : class, IExceptionFilter {}
+	public interface IFaultSpecificationBuilder {}
 
 	public interface IFaultSpecificationBuilder<out TSpecification, TSubject, TException> :
 		IFaultSpecificationBuilder,

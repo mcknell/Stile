@@ -61,6 +61,15 @@ namespace Stile.Prototypes.Specifications.Printable.Past {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to and.
+        /// </summary>
+        public static string And {
+            get {
+                return ResourceManager.GetString("And", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Any {0}.
         /// </summary>
         public static string AnyType {
@@ -129,6 +138,15 @@ namespace Stile.Prototypes.Specifications.Printable.Past {
         public static string InTimeLessThan {
             get {
                 return ResourceManager.GetString("InTimeLessThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to no exception was thrown.
+        /// </summary>
+        public static string NoExceptionThrown {
+            get {
+                return ResourceManager.GetString("NoExceptionThrown", resourceCulture);
             }
         }
         

@@ -6,6 +6,7 @@
 #region using...
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
@@ -15,6 +16,7 @@ using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Types.Expressions;
 using Stile.Types.Primitives;
 using Stile.Types.Reflection;
 #endregion
@@ -27,6 +29,9 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 		Describer<IShouldSpecificationDescriber, IAcceptSpecificationVisitors>,
 		IShouldSpecificationDescriber
 	{
+		public ShouldSpecificationDescriber([CanBeNull] ISource source)
+			: base(source) {}
+
 		public void Visit1<TSubject>(IExceptionFilter<TSubject> target)
 		{
 			Append(" ");
@@ -42,13 +47,24 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 
 		public void Visit1<TSubject>(IProcedure<TSubject> procedure)
 		{
-			if (procedure.Xray.Source != null)
+			ISource<TSubject> source = procedure.Xray.Source ?? _source as ISource<TSubject>;
+			if (source != null)
 			{
-				DescribeSourceAndProcedure(this, procedure, ShouldSpecifications.InstrumentedBy);
+				DescribeSourceAndProcedure(this, procedure, source, ShouldSpecifications.InstrumentedBy);
 			}
 			else
 			{
-				AppendFormat(ShouldSpecifications.AnyType, typeof(TSubject).ToDebugString());
+				string type = typeof(TSubject).ToDebugString();
+				if (IsSingleToken(type))
+				{
+					ILazyDescriptionOfLambda lambda = procedure.Xray.Lambda;
+					AppendFormat("{0} {1}", ShouldSpecifications.AnyCaps, lambda.AliasParametersIntoBody(type));
+				}
+				else
+				{
+					AppendFormat(ShouldSpecifications.AnyType, type);
+					AppendFormat(" {0}", ShouldSpecifications.InstrumentedBy);
+				}
 			}
 		}
 
@@ -69,21 +85,14 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 
 		public void Visit2<TSubject, TResult>(IExpectation<TSubject, TResult> expectation)
 		{
-			var expectationDescriber = new ShouldExpectationDescriber();
+			var expectationDescriber = new ShouldExpectationDescriber(_source);
 			expectationDescriber.Visit2(expectation.ValidateArgumentIsNotNull());
 			Append(expectationDescriber.ToString());
 		}
 
 		public void Visit2<TSubject, TResult>(IInstrument<TSubject, TResult> instrument)
 		{
-			if (instrument.Xray.Source != null)
-			{
-				DescribeSourceAndProcedure(this, instrument, ShouldSpecifications.InstrumentedBy);
-			}
-			else
-			{
-				AppendFormat(ShouldSpecifications.AnyType, typeof(TSubject).ToDebugString());
-			}
+			Visit1(instrument);
 		}
 
 		public void Visit2<TSubject, TResult>(ISpecification<TSubject, TResult> target)
@@ -129,7 +138,8 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 
 		public static string Describe<TSubject, TResult>(ISpecification<TSubject, TResult> specification)
 		{
-			var describer = new ShouldSpecificationDescriber();
+			ISource<TSubject> source = specification.Xray.Expectation.Xray.Instrument.Xray.Source;
+			var describer = new ShouldSpecificationDescriber(source);
 			var stack = new Stack<ISpecification<TSubject, TResult>>();
 			ISpecification<TSubject, TResult> prior = specification;
 			while (prior != null)

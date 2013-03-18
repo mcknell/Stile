@@ -80,6 +80,15 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Any.
+        /// </summary>
+        internal static string AnyCaps {
+            get {
+                return ResourceManager.GetString("AnyCaps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Any {0}.
         /// </summary>
         internal static string AnyType {

@@ -5,7 +5,6 @@
 
 #region using...
 using JetBrains.Annotations;
-using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Printable.Past;
 using Stile.Prototypes.Specifications.Printable.Specifications.Should;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
@@ -20,9 +19,17 @@ namespace Stile.Prototypes.Specifications.Printable
 		{
 			return PastEvaluationDescriber.Describe(evaluation);
 		}
+
 		public static string ToPastTense<TSubject, TResult>([NotNull] this IEvaluation<TSubject, TResult> evaluation)
 		{
 			return PastEvaluationDescriber.Describe(evaluation);
+		}
+
+		public static string ToShould<TSubject>([NotNull] this IFaultSpecification<TSubject> specification)
+		{
+			var describer = new ShouldSpecificationDescriber(specification.Xray.Procedure.Xray.Source);
+			describer.Visit1(specification);
+			return describer.ToString();
 		}
 
 		public static string ToShould<TSubject, TResult>(
