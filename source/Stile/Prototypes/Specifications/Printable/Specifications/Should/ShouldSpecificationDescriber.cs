@@ -12,6 +12,7 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
 using Stile.Prototypes.Specifications.SemanticModel;
+using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
@@ -28,6 +29,16 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 		IShouldSpecificationDescriber
 	{
 		public void Visit1<TSubject>(IExceptionFilter<TSubject> target)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Visit1<TSubject>(IFaultEvaluation<TSubject> target)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Visit1<TSubject>(IFaultSpecification<TSubject> target)
 		{
 			throw new NotImplementedException();
 		}
@@ -63,7 +74,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 		{
 			if (instrument.Xray.Source != null)
 			{
-				DescribeSourceAndInstrument(this, instrument, ShouldSpecifications.InstrumentedBy);
+				DescribeSourceAndProcedure(this, instrument, ShouldSpecifications.InstrumentedBy);
 			}
 			else
 			{

@@ -52,7 +52,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	}
 
 	public interface IEvaluationState<TSubject, TResult> : IHasSpecification<TSubject, TResult>,
-		IAcceptEvaluationVisitors
+		IAcceptSpecificationVisitors
 	{
 		[CanBeNull]
 		IEvaluation<TSubject, TResult> Prior { get; }
@@ -83,10 +83,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public bool TimedOut { get; private set; }
 	}
 
-	public class Evaluation<TSubject> : Evaluation,
+	public abstract class Evaluation<TSubject> : Evaluation,
 		IEvaluation<TSubject>
 	{
-		public Evaluation(IObservation<TSubject> observation, Outcome outcome)
+		protected Evaluation(IObservation<TSubject> observation, Outcome outcome)
 			: base(observation, outcome)
 		{
 			Sample = observation.Sample;
@@ -114,10 +114,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		}
 
 		public IMeasurement<TSubject, TResult> Measurement { get; private set; }
-		public IAcceptEvaluationVisitors Parent
-		{
-			get { return Specification.Xray; }
-		}
 
 		public IEvaluation<TSubject, TResult> Prior { get; private set; }
 		public ISpecification<TSubject, TResult> Specification { get; private set; }
@@ -180,7 +176,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 
 		IAcceptSpecificationVisitors IHasParent<IAcceptSpecificationVisitors>.Parent
 		{
-			get { return Parent; }
+			get { return Specification.Xray; }
 		}
 
 		[CanBeNull]

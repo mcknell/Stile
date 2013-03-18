@@ -18,6 +18,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		IBoundSpecification<TSubject>
 	{
 		[NotNull]
-		IEvaluation Evaluate(IDeadline deadline = null);
+		IFaultEvaluation<TSubject> Evaluate(IDeadline deadline = null);
 	}
 }

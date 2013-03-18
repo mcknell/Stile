@@ -16,6 +16,7 @@ using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Readability;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations
@@ -123,7 +124,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		public IFaultSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
 			where TException : Exception
 		{
-			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(x => x is TException, Instrument);
+			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(x => x is TException,
+				Instrument,
+				typeof(TException).ToLazyDebugString());
 			var builder = new FaultSpecificationBuilder<TSpecification, TSubject, TResult, TException>(
 				exceptionFilter, Make);
 			return builder;

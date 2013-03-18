@@ -27,10 +27,11 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 	public class PastEvaluationDescriber : Describer<IEvaluationVisitor, IAcceptSpecificationVisitors>,
 		IPastEvaluationDescriber
 	{
-		private readonly Outcome _outcome;
 		private readonly Func<Outcome, IPastExpectationDescriber> _expectationFormaterFactory;
+		private readonly Outcome _outcome;
 
-		public PastEvaluationDescriber(Outcome outcome,Func<Outcome,IPastExpectationDescriber> expectationFormatterFactory = null)
+		public PastEvaluationDescriber(Outcome outcome,
+			Func<Outcome, IPastExpectationDescriber> expectationFormatterFactory = null)
 		{
 			_outcome = outcome;
 			_expectationFormaterFactory = expectationFormatterFactory ?? (x => new PastExpectationDescriber(x));
@@ -38,12 +39,25 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 
 		public void Visit1<TSubject>(IExceptionFilter<TSubject> target)
 		{
-			throw new NotImplementedException();
+			Append(" ");
+			AppendFormat(PastTenseEvaluations.WouldThrow, target.Description.Value);
+		}
+
+		public void Visit1<TSubject>(IFaultSpecification<TSubject> target)
+		{
+			Append(PrintDeadlineIfAny(target.Xray.Deadline));
 		}
 
 		public void Visit1<TSubject>(IProcedure<TSubject> procedure)
 		{
-			throw new NotImplementedException();
+			if (procedure.Xray.Source != null)
+			{
+				DescribeSourceAndProcedure(this, procedure, PastTenseEvaluations.InstrumentedBy);
+			}
+			else
+			{
+				AppendFormat(PastTenseEvaluations.AnyType, typeof(TSubject).ToDebugString());
+			}
 		}
 
 		public void Visit1<TSubject>(IProcedureBuilder<TSubject> builder)
@@ -54,6 +68,25 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 		public void Visit1<TSubject>(ISource<TSubject> source)
 		{
 			source.ValidateArgumentIsNotNull();
+		}
+
+		public void Visit1<TSubject>(IFaultEvaluation<TSubject> evaluation)
+		{
+			if (evaluation.Outcome == false)
+			{
+				AppendFormat("{0} {1} ", PastTenseEvaluations.Expected, PastTenseEvaluations.That);
+			}
+			FillStackAndUnwind(evaluation.Xray.Specification.Xray);
+
+			if (evaluation.Outcome == Outcome.Incomplete)
+			{
+				Append(Environment.NewLine);
+				Append(PastTenseEvaluations.But);
+				if (evaluation.TimedOut)
+				{
+					AppendFormat(" {0}", PastTenseEvaluations.TimedOut);
+				}
+			}
 		}
 
 		public void Visit2<TSubject, TResult>(IExceptionFilter<TSubject, TResult> target)
@@ -72,7 +105,7 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 		{
 			if (instrument.Xray.Source != null)
 			{
-				DescribeSourceAndInstrument(this, instrument, PastTenseEvaluations.InstrumentedBy);
+				DescribeSourceAndInstrument(this, instrument, PastTenseEvaluations.InstrumentedBy, Visit2);
 			}
 			else
 			{
@@ -82,7 +115,7 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 
 		public void Visit2<TSubject, TResult>(ISpecification<TSubject, TResult> target)
 		{
-			Append(PrintDeadlineIfAny(target));
+			Append(PrintDeadlineIfAny(target.Xray.Deadline));
 		}
 
 		public void Visit2<TSubject, TResult>(IEvaluation<TSubject, TResult> evaluation)
@@ -92,7 +125,7 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 				AppendFormat("{0} {1} ", PastTenseEvaluations.Expected, PastTenseEvaluations.That);
 			}
 			FillStackAndUnwind(evaluation.Xray.Specification.Xray);
-			
+
 			if (evaluation.Outcome == false)
 			{
 				Append(Environment.NewLine);
@@ -135,6 +168,13 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			throw new NotImplementedException();
 		}
 
+		public static string Describe<TSubject>(IFaultEvaluation<TSubject> evaluation)
+		{
+			var describer = new PastEvaluationDescriber(evaluation.Outcome);
+			describer.Visit1(evaluation);
+			return describer.ToString();
+		}
+
 		public static string Describe<TSubject, TResult>(IEvaluation<TSubject, TResult> evaluation)
 		{
 			var describer = new PastEvaluationDescriber(evaluation.Outcome);
@@ -142,15 +182,8 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			return describer.ToString();
 		}
 
-		private static void DescribeSourceAndInstrument<TSubject, TResult>(PastEvaluationDescriber describer,
-			IInstrument<TSubject, TResult> instrument)
+		private static string PrintDeadlineIfAny(IDeadline deadline)
 		{
-			DescribeSourceAndInstrument(describer, instrument, PastTenseEvaluations.InstrumentedBy, describer.Visit2);
-		}
-
-		private static string PrintDeadlineIfAny<TSubject, TResult>(ISpecification<TSubject, TResult> target)
-		{
-			IDeadline deadline = target.Xray.Deadline;
 			if (deadline != null)
 			{
 				if (deadline.Timeout > TimeSpan.Zero)

@@ -10,7 +10,6 @@ using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
-using Stile.Patterns.Structural.Hierarchy;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
@@ -44,7 +43,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		ISpecification Clone([CanBeNull] IDeadline deadline);
 	}
 
-	public interface ISpecificationState<out TSubject> : ISpecificationState
+	public interface ISpecificationState<out TSubject> : ISpecificationState,
+		IAcceptSpecificationVisitors
 	{
 		[CanBeNull]
 		string Because { get; }
@@ -55,8 +55,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	}
 
 	public interface ISpecificationState<TSubject, TResult> : ISpecificationState<TSubject>,
-		IHasExpectation<TSubject, TResult>,
-		IAcceptEvaluationVisitors
+		IHasExpectation<TSubject, TResult>
 	{
 		[CanBeNull]
 		IExceptionFilter<TSubject, TResult> ExceptionFilter { get; }
@@ -182,11 +181,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return visitor.Visit3(this, data);
 		}
 
-		public void Accept(IEvaluationVisitor visitor)
-		{
-			visitor.Visit3(this);
-		}
-
 		public IEvaluation<TSubject, TResult> Evaluate(ISource<TSubject> source,
 			IEvaluation<TSubject, TResult> priorEvaluation,
 			ISpecificationState<TSubject, TResult> tailSpecification,
@@ -219,11 +213,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 				prior = prior.Xray.Prior;
 				yield return prior;
 			}
-		}
-
-		IAcceptEvaluationVisitors IHasParent<IAcceptEvaluationVisitors>.Parent
-		{
-			get { return null; }
 		}
 
 		private bool ExpectsException

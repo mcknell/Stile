@@ -7,8 +7,10 @@
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
+using Stile.Patterns.Structural.Hierarchy;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
@@ -18,8 +20,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public interface IFaultSpecification<TSubject> : IFaultSpecification,
 		ISpecification<TSubject>,
 		IHides<IFaultSpecificationState<TSubject>>,
-		IChainableSpecification,
-		IEvaluable<TSubject> {}
+		IChainableSpecification
+	{
+		[NotNull]
+		[System.Diagnostics.Contracts.Pure]
+		IFaultEvaluation<TSubject> Evaluate([NotNull] ISource<TSubject> source, IDeadline deadline = null);
+	}
 
 	public interface IFaultSpecificationState {}
 
@@ -69,16 +75,32 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return new FaultSpecification<TSubject>(Procedure, ExceptionFilter, deadline, Because);
 		}
 
-		public IEvaluation Evaluate(IDeadline deadline = null)
+		public IFaultEvaluation<TSubject> Evaluate(IDeadline deadline = null)
 		{
 			return Evaluate(Procedure.Xray.Source, deadline);
 		}
 
-		public IEvaluation<TSubject> Evaluate(ISource<TSubject> source, IDeadline deadline = null)
+		public IFaultEvaluation<TSubject> Evaluate(ISource<TSubject> source, IDeadline deadline = null)
 		{
 			IObservation<TSubject> observation = Procedure.Observe(source, deadline ?? Deadline);
 			observation = ExceptionFilter.Filter(observation);
-			return Expectation<TSubject>.Evaluate(observation, true);
+			Outcome outcome = observation.Evaluate(true, this, null);
+			return new FaultEvaluation<TSubject>(observation, outcome, this, null, this);
+		}
+
+		public void Accept(ISpecificationVisitor visitor)
+		{
+			visitor.Visit1(this);
+		}
+
+		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit1(this, data);
+		}
+
+		IAcceptSpecificationVisitors IHasParent<IAcceptSpecificationVisitors>.Parent
+		{
+			get { return ExceptionFilter; }
 		}
 
 		public static FaultSpecification<TSubject> Make([NotNull] IProcedure<TSubject> procedure,

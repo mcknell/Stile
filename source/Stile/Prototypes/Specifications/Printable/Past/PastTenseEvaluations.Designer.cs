@@ -160,6 +160,15 @@ namespace Stile.Prototypes.Specifications.Printable.Past {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to timed out.
+        /// </summary>
+        public static string TimedOut {
+            get {
+                return ResourceManager.GetString("TimedOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to was.
         /// </summary>
         public static string Was {
@@ -174,6 +183,15 @@ namespace Stile.Prototypes.Specifications.Printable.Past {
         public static string WouldBe {
             get {
                 return ResourceManager.GetString("WouldBe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to would throw {0}.
+        /// </summary>
+        public static string WouldThrow {
+            get {
+                return ResourceManager.GetString("WouldThrow", resourceCulture);
             }
         }
     }

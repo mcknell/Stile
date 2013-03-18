@@ -48,10 +48,12 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 					.That(x => x.Throw())
 					.Throws<ArgumentException>()
 					.Before(TimeSpan.FromMilliseconds(40));
-			IEvaluation evaluation = boundSpecification.Evaluate();
+			IFaultEvaluation<Saboteur> evaluation = boundSpecification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Incomplete));
 			Assert.That(evaluation.TimedOut, Is.True);
 			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
+			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"Expected that saboteur.Throw() would throw ArgumentException, in runtime < 40ms
+but timed out"));
 
 			IEvaluation synchronousEvaluation = boundSpecification.Evaluate(Deadline.Synchronous);
 			Assert.That(synchronousEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));

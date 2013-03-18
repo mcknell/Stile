@@ -20,8 +20,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 	public interface IExceptionFilter<TSubject> : IExceptionFilter
 	{
+		[NotNull]
+		Lazy<string> Description { get; }
+		[NotNull]
 		Predicate<Exception> Predicate { get; }
+		[CanBeNull]
 		ISource<TSubject> Source { get; }
+
+		[NotNull]
 		IObservation<TSubject> Filter(IObservation<TSubject> observation);
 	}
 
@@ -29,23 +35,30 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 	{
 		[NotNull]
 		IInstrument<TSubject, TResult> Instrument { get; }
+
+		[NotNull]
 		IMeasurement<TSubject, TResult> Filter(IMeasurement<TSubject, TResult> measurement);
 	}
 
 	public class ExceptionFilter<TSubject> : IExceptionFilter<TSubject>
 	{
-		public ExceptionFilter([NotNull] Predicate<Exception> predicate, [NotNull] IProcedure<TSubject> procedure)
-			: this(predicate, procedure, procedure.Xray.Source) {}
+		public ExceptionFilter([NotNull] Predicate<Exception> predicate,
+			[NotNull] IProcedure<TSubject> procedure,
+			Lazy<string> description)
+			: this(predicate, procedure, procedure.Xray.Source, description) {}
 
 		protected ExceptionFilter([NotNull] Predicate<Exception> predicate,
 			[NotNull] IAcceptSpecificationVisitors parent,
-			[CanBeNull] ISource<TSubject> source)
+			[CanBeNull] ISource<TSubject> source,
+			[NotNull] Lazy<string> description)
 		{
+			Description = description;
 			Predicate = predicate.ValidateArgumentIsNotNull();
 			Parent = parent.ValidateArgumentIsNotNull();
 			Source = source;
 		}
 
+		public Lazy<string> Description { get; private set; }
 		public IAcceptSpecificationVisitors Parent { get; private set; }
 		public Predicate<Exception> Predicate { get; private set; }
 		public ISource<TSubject> Source { get; private set; }
@@ -105,8 +118,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		IExceptionFilter<TSubject, TResult>
 	{
 		public ExceptionFilter([NotNull] Predicate<Exception> predicate,
-			[NotNull] IInstrument<TSubject, TResult> instrument)
-			: base(predicate, instrument, instrument.Xray.Source)
+			[NotNull] IInstrument<TSubject, TResult> instrument,
+			[NotNull] Lazy<string> description)
+			: base(predicate, instrument, instrument.Xray.Source, description)
 		{
 			Instrument = instrument;
 		}

@@ -10,6 +10,7 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
+using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -19,6 +20,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 	public interface ISpecificationVisitor
 	{
 		void Visit1<TSubject>([NotNull] IExceptionFilter<TSubject> target);
+		void Visit1<TSubject>([NotNull] IFaultSpecification<TSubject> target);
 		void Visit1<TSubject>([NotNull] IProcedure<TSubject> target);
 		void Visit1<TSubject>([NotNull] IProcedureBuilder<TSubject> target);
 		void Visit1<TSubject>([NotNull] ISource<TSubject> target);
@@ -51,6 +53,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 	public interface ISpecificationVisitor<TData> : ISpecificationVisitor
 	{
 		TData Visit1<TSubject>([NotNull] IExceptionFilter<TSubject> target, TData data);
+		TData Visit1<TSubject>([NotNull] IFaultSpecification<TSubject> target, TData data);
 		TData Visit1<TSubject>([NotNull] IProcedure<TSubject> target, TData data);
 		TData Visit1<TSubject>([NotNull] IProcedureBuilder<TSubject> target, TData data);
 		TData Visit1<TSubject>([NotNull] ISource<TSubject> target, TData data);

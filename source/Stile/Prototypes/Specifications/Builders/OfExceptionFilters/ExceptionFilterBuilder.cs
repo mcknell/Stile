@@ -11,6 +11,7 @@ using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Readability;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
@@ -21,7 +22,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 		IHides<IExceptionFilterBuilderState<TSubject>>
 		where TSpecification : class, IFaultSpecification<TSubject>
 	{
-		IFaultSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>() where TException : Exception;
+		IFaultSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
+			where TException : Exception;
 	}
 
 	public interface IExceptionFilterBuilderState {}
@@ -60,7 +62,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 		public IFaultSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
 			where TException : Exception
 		{
-			var exceptionFilter = new ExceptionFilter<TSubject>(x => x is TException, Procedure);
+			var exceptionFilter = new ExceptionFilter<TSubject>(x => x is TException,
+				Procedure,
+				typeof(TException).ToLazyDebugString());
 			var builder = new FaultSpecificationBuilder<TSpecification, TSubject, TException>(Procedure,
 				exceptionFilter,
 				_specificationFactory);

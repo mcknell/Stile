@@ -43,31 +43,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 
 	public abstract class Expectation<TSubject>
 	{
-		public static IEvaluation<TSubject> Evaluate(IObservation<TSubject> observation, bool expectedAnException)
-		{
-			int handledErrors = observation.Errors.Count(x => x.Handled);
-			int allErrorsIfAny = observation.Errors.Length;
-
-			Outcome outcome;
-			if (handledErrors < allErrorsIfAny)
-			{
-				outcome = Outcome.Failed;
-			}
-			else if (expectedAnException && handledErrors == 0)
-			{
-				outcome = Outcome.Failed;
-			}
-			else if (handledErrors == allErrorsIfAny && handledErrors > 0)
-			{
-				outcome = Outcome.Succeeded;
-			}
-			else
-			{
-				outcome = Outcome.Failed;
-			}
-			return new Evaluation<TSubject>(observation, outcome);
-		}
-
 		public static Expectation<TSubject, TResult> From<TResult>(Expression<Predicate<TResult>> expression,
 			Negated negated,
 			[NotNull] IInstrument<TSubject, TResult> instrument,

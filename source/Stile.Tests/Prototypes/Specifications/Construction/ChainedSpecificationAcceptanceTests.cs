@@ -33,6 +33,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 					.AndThen.Is.EqualTo(0) //
 					.AndThen.Throws<ArgumentException>().Build() //
 					.Evaluate();
+			Assert.That(evaluation.Sample.Value, Is.EqualTo(saboteur));
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.Value, Is.EqualTo(1));
 			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));

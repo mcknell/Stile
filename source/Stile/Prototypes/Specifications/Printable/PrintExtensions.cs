@@ -16,6 +16,10 @@ namespace Stile.Prototypes.Specifications.Printable
 {
 	public static class PrintExtensions
 	{
+		public static string ToPastTense<TSubject>([NotNull] this IFaultEvaluation<TSubject> evaluation)
+		{
+			return PastEvaluationDescriber.Describe(evaluation);
+		}
 		public static string ToPastTense<TSubject, TResult>([NotNull] this IEvaluation<TSubject, TResult> evaluation)
 		{
 			return PastEvaluationDescriber.Describe(evaluation);

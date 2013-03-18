@@ -119,16 +119,31 @@ namespace Stile.Prototypes.Specifications.Printable
 			string instrumentedBy,
 			Action<IInstrument<TSubject, TResult>> continuation = null)
 		{
-			ISourceState<TSubject> sourceState = instrument.Xray.Source.Xray;
+			Action action = () =>
+			{
+				if (continuation != null)
+				{
+					continuation.Invoke(instrument);
+				}
+			};
+			DescribeSourceAndProcedure(describer, instrument, instrumentedBy, action);
+		}
+
+		public static void DescribeSourceAndProcedure<TSubject>(IDescriber describer,
+			IProcedure<TSubject> procedure,
+			string instrumentedBy,
+			Action continuation = null)
+		{
+			ISourceState<TSubject> sourceState = procedure.Xray.Source.Xray;
 			string sourceDescription = sourceState.Description.Value;
 			if (describer.IsSingleToken(sourceDescription))
 			{
-				ILazyDescriptionOfLambda lambda = instrument.Xray.Lambda;
+				ILazyDescriptionOfLambda lambda = procedure.Xray.Lambda;
 				describer.AppendFormat("{0}", lambda.AliasParametersIntoBody(sourceDescription));
 			}
 			else if (describer.CanBeInlined(sourceState.Expression.Body))
 			{
-				ILazyDescriptionOfLambda lambda = instrument.Xray.Lambda;
+				ILazyDescriptionOfLambda lambda = procedure.Xray.Lambda;
 				describer.AppendFormat("{0}", lambda.AliasParametersIntoBody(sourceState.Expression.Body.ToDebugString()));
 			}
 			else
@@ -136,7 +151,7 @@ namespace Stile.Prototypes.Specifications.Printable
 				describer.AppendFormat("{0} {1} ", sourceDescription, instrumentedBy);
 				if (continuation != null)
 				{
-					continuation.Invoke(instrument);
+					continuation.Invoke();
 				}
 			}
 		}

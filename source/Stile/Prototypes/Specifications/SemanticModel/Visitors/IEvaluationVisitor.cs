@@ -6,13 +6,13 @@
 #region using...
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
-using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 {
 	public interface IEvaluationVisitor : ISpecificationVisitor
 	{
+		void Visit1<TSubject>([NotNull] IFaultEvaluation<TSubject> evaluation);
 		void Visit2<TSubject, TResult>([NotNull] IEvaluation<TSubject, TResult> evaluation);
 	}
 }

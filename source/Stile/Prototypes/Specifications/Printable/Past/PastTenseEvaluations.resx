@@ -150,10 +150,16 @@
   <data name="That" xml:space="preserve">
     <value>that</value>
   </data>
+  <data name="TimedOut" xml:space="preserve">
+    <value>timed out</value>
+  </data>
   <data name="Was" xml:space="preserve">
     <value>was</value>
   </data>
   <data name="WouldBe" xml:space="preserve">
     <value>would be</value>
+  </data>
+  <data name="WouldThrow" xml:space="preserve">
+    <value>would throw {0}</value>
   </data>
 </root>

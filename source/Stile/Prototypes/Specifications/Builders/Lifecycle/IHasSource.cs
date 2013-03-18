@@ -36,6 +36,12 @@ namespace Stile.Prototypes.Specifications.Builders.Lifecycle
 		IExpectation<TSubject, TResult> Expectation { get; }
 	}
 
+	public interface IHasFaultSpecification<TSubject>
+	{
+		[NotNull]
+		IFaultSpecification<TSubject> Specification { get; }
+	}
+
 	public interface IHasSpecification<TSubject, TResult>
 	{
 		[NotNull]
