@@ -12,7 +12,6 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfInstruments;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
@@ -30,22 +29,27 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 	{
 		public void Visit1<TSubject>(IExceptionFilter<TSubject> target)
 		{
-			throw new NotImplementedException();
-		}
-
-		public void Visit1<TSubject>(IFaultEvaluation<TSubject> target)
-		{
-			throw new NotImplementedException();
+			Append(" ");
+			AppendFormat(ShouldSpecifications.ShouldThrow, target.Description.Value);
 		}
 
 		public void Visit1<TSubject>(IFaultSpecification<TSubject> target)
 		{
-			throw new NotImplementedException();
+			IAcceptSpecificationVisitors lastTerm = target.ValidateArgumentIsNotNull().Xray.LastTerm;
+			FillStackAndUnwind(lastTerm);
+			Append(PrintDeadlineIfAny(target.Xray.Deadline));
 		}
 
 		public void Visit1<TSubject>(IProcedure<TSubject> procedure)
 		{
-			throw new NotImplementedException();
+			if (procedure.Xray.Source != null)
+			{
+				DescribeSourceAndProcedure(this, procedure, ShouldSpecifications.InstrumentedBy);
+			}
+			else
+			{
+				AppendFormat(ShouldSpecifications.AnyType, typeof(TSubject).ToDebugString());
+			}
 		}
 
 		public void Visit1<TSubject>(IProcedureBuilder<TSubject> builder)
@@ -86,7 +90,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 		{
 			IAcceptSpecificationVisitors lastTerm = target.ValidateArgumentIsNotNull().Xray.LastTerm;
 			FillStackAndUnwind(lastTerm);
-			Append(PrintDeadlineIfAny(target));
+			Append(PrintDeadlineIfAny(target.Xray.Deadline));
 		}
 
 		public void Visit3<TSpecification, TSubject, TResult>(IHas<TSpecification, TSubject, TResult> has)
@@ -144,15 +148,14 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			{
 				ISpecification<TSubject, TResult> popped = stack.Pop();
 				describer.Visit2(popped.Xray.Expectation);
-				describer.Append(PrintDeadlineIfAny(popped));
+				describer.Append(PrintDeadlineIfAny(popped.Xray.Deadline));
 				describer.AppendFormat(" {0}", ShouldSpecifications.WhenSampledAgain);
 			}
 			return describer.ToString();
 		}
 
-		private static string PrintDeadlineIfAny<TSubject, TResult>(ISpecification<TSubject, TResult> target)
+		private static string PrintDeadlineIfAny(IDeadline deadline)
 		{
-			IDeadline deadline = target.Xray.Deadline;
 			if (deadline != null)
 			{
 				if (deadline.Timeout > TimeSpan.Zero)

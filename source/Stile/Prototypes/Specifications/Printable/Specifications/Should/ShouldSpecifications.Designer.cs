@@ -89,6 +89,24 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to neither greater nor less than.
+        /// </summary>
+        internal static string ComparablyEquivalentTo {
+            get {
+                return ResourceManager.GetString("ComparablyEquivalentTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to either greater or less than.
+        /// </summary>
+        internal static string ComparablyEquivalentToNegated {
+            get {
+                return ResourceManager.GetString("ComparablyEquivalentToNegated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to empty.
         /// </summary>
         internal static string Empty {
@@ -134,6 +152,15 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to null.
+        /// </summary>
+        internal static string Null {
+            get {
+                return ResourceManager.GetString("Null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to should be.
         /// </summary>
         internal static string ShouldBe {
@@ -157,6 +184,15 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         internal static string ShouldNotBe {
             get {
                 return ResourceManager.GetString("ShouldNotBe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to should throw {0}.
+        /// </summary>
+        internal static string ShouldThrow {
+            get {
+                return ResourceManager.GetString("ShouldThrow", resourceCulture);
             }
         }
         

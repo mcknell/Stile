@@ -25,11 +25,10 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.Past
 			int i = 4;
 			IFluentBoundExpectationBuilder<int, TypeCode> builder = Specify.For(() => i).That(x => x.GetTypeCode());
 			IEvaluation<int, TypeCode> boundEvaluation = builder.Is.EqualTo(TypeCode.DBNull).Evaluate();
-			string pastTense = boundEvaluation.ToPastTense();
-			Assert.That(pastTense, Is.EqualTo(@"Expected that i.GetTypeCode() would be DBNull
+			Assert.That(boundEvaluation.ToPastTense(), Is.EqualTo(@"i.GetTypeCode() should be DBNull
 but was Int32"));
 			Assert.That(builder.Is.EqualTo(TypeCode.Int32).Evaluate().ToPastTense(),
-				Is.EqualTo(@"i.GetTypeCode() was Int32"));
+				Is.EqualTo(@"i.GetTypeCode() should be Int32"));
 		}
 	}
 }

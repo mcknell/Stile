@@ -10,6 +10,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
+using Stile.Patterns.Structural.Hierarchy;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
@@ -44,7 +45,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	}
 
 	public interface ISpecificationState<out TSubject> : ISpecificationState,
-		IAcceptSpecificationVisitors
+		IAcceptSpecificationVisitors,
+		IAcceptEvaluationVisitors
 	{
 		[CanBeNull]
 		string Because { get; }
@@ -141,6 +143,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		{
 			get { return LastTerm; }
 		}
+
 		public ISpecification<TSubject, TResult> Prior { get; private set; }
 		public ISpecificationState<TSubject, TResult> Xray
 		{
@@ -171,6 +174,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			return specification.Xray.Evaluate(source, null, this, deadline);
 		}
 
+		public TData Accept<TData>(IEvaluationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit3(this, data);
+		}
+
 		public void Accept(ISpecificationVisitor visitor)
 		{
 			visitor.Visit3(this);
@@ -179,6 +187,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit3(this, data);
+		}
+
+		public void Accept(IEvaluationVisitor visitor)
+		{
+			visitor.Visit3(this);
 		}
 
 		public IEvaluation<TSubject, TResult> Evaluate(ISource<TSubject> source,
@@ -215,6 +228,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			}
 		}
 
+		IAcceptEvaluationVisitors IHasParent<IAcceptEvaluationVisitors>.Parent
+		{
+			get { return null; }
+		}
 		private bool ExpectsException
 		{
 			get { return ExceptionFilter != null; }

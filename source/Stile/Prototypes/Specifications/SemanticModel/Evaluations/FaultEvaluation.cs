@@ -10,7 +10,6 @@ using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
-using Stile.Patterns.Structural.Hierarchy;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
@@ -22,7 +21,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		IHides<IFaultEvaluationState<TSubject>> {}
 
 	public interface IFaultEvaluationState<TSubject> : IHasFaultSpecification<TSubject>,
-		IAcceptSpecificationVisitors
+		IAcceptEvaluationVisitors
 	{
 		[CanBeNull]
 		IFaultEvaluation<TSubject> Prior { get; }
@@ -93,6 +92,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			Prior = prior;
 		}
 
+		public IAcceptEvaluationVisitors Parent
+		{
+			get { return Specification.Xray; }
+		}
+
 		public IFaultEvaluation<TSubject> Prior { get; private set; }
 		public IFaultSpecification<TSubject> Specification { get; private set; }
 		public IFaultSpecificationState<TSubject> TailSpecification { get; private set; }
@@ -101,24 +105,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			get { return this; }
 		}
 
-		public void Accept(ISpecificationVisitor visitor)
-		{
-			throw new NotImplementedException(NoSpecificationVisitorsPlease);
-		}
-
-		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
-		{
-			throw new NotImplementedException(NoSpecificationVisitorsPlease);
-		}
-
-		IAcceptSpecificationVisitors IHasParent<IAcceptSpecificationVisitors>.Parent
-		{
-			get { return Specification.Xray; }
-		}
-
 		public void Accept(IEvaluationVisitor visitor)
 		{
 			visitor.Visit1(this);
+		}
+
+		public TData Accept<TData>(IEvaluationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit1(this, data);
 		}
 	}
 }

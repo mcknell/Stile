@@ -63,6 +63,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			Procedure = procedure.ValidateArgumentIsNotNull();
 		}
 
+		public IAcceptEvaluationVisitors Parent
+		{
+			get { return null; }
+		}
+
 		public IProcedure<TSubject> Procedure { get; private set; }
 
 		public IFaultSpecificationState<TSubject> Xray
@@ -96,6 +101,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit1(this, data);
+		}
+
+		public TData Accept<TData>(IEvaluationVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit1(this, data);
+		}
+
+		public void Accept(IEvaluationVisitor visitor)
+		{
+			visitor.Visit1(this);
 		}
 
 		IAcceptSpecificationVisitors IHasParent<IAcceptSpecificationVisitors>.Parent

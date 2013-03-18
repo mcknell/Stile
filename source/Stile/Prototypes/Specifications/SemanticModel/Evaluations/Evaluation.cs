@@ -4,13 +4,11 @@
 #endregion
 
 #region using...
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
-using Stile.Patterns.Structural.Hierarchy;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
@@ -37,11 +35,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	{
 		TResult Value { get; }
 
-		[NotNull]
+		[CanBeNull]
 		[System.Diagnostics.Contracts.Pure]
 		IEvaluation<TSubject, TResult> EvaluateNext(IDeadline deadline = null);
 
-		[NotNull]
+		[CanBeNull]
 		[System.Diagnostics.Contracts.Pure]
 		IEvaluation<TSubject, TResult> EvaluateNextWith([NotNull] ISource<TSubject> source,
 			IDeadline deadline = null);
@@ -52,7 +50,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	}
 
 	public interface IEvaluationState<TSubject, TResult> : IHasSpecification<TSubject, TResult>,
-		IAcceptSpecificationVisitors
+		IAcceptEvaluationVisitors
 	{
 		[CanBeNull]
 		IEvaluation<TSubject, TResult> Prior { get; }
@@ -62,11 +60,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 
 	public abstract class Evaluation : IEvaluation
 	{
-		protected static readonly string NoSpecificationVisitorsPlease =
-			String.Format(
-				"This implementation is required by the {0} interface, but it is not semantically valid here.",
-				typeof(IAcceptSpecificationVisitors).Name);
-
 		protected Evaluation(IObservation observation, Outcome outcome)
 		{
 			Errors = observation.ValidateArgumentIsNotNull().Errors;
@@ -114,6 +107,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		}
 
 		public IMeasurement<TSubject, TResult> Measurement { get; private set; }
+		public IAcceptEvaluationVisitors Parent
+		{
+			get { return Specification.Xray; }
+		}
 
 		public IEvaluation<TSubject, TResult> Prior { get; private set; }
 		public ISpecification<TSubject, TResult> Specification { get; private set; }
@@ -154,14 +151,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			visitor.Visit2(this);
 		}
 
-		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		public TData Accept<TData>(IEvaluationVisitor<TData> visitor, TData data)
 		{
-			throw new NotImplementedException(NoSpecificationVisitorsPlease);
-		}
-
-		public void Accept(ISpecificationVisitor visitor)
-		{
-			throw new NotImplementedException(NoSpecificationVisitorsPlease);
+			return visitor.Visit2(this, data);
 		}
 
 		public IEnumerable<IEvaluation<TSubject, TResult>> GetPredecessors()
@@ -172,11 +164,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 				prior = prior.Xray.Prior;
 				yield return prior;
 			}
-		}
-
-		IAcceptSpecificationVisitors IHasParent<IAcceptSpecificationVisitors>.Parent
-		{
-			get { return Specification.Xray; }
 		}
 
 		[CanBeNull]

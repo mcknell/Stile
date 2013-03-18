@@ -96,12 +96,12 @@
     </Compile>
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\EvaluableExtensions.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\FaultEvaluation.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\IAcceptEvaluationVisitors.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\IAcceptExpectationVisitors.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\IAcceptSpecificationVisitors.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\IExpectationVisitor.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\IEvaluationVisitor.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\ISpecificationVisitor.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Past\PastExpectationDescriber.cs" />
     <Compile Include="Prototypes\Specifications\Printable\PrintExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Past\PastEvaluationDescriber.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\Sample.cs" />

@@ -13,6 +13,7 @@ using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Readability;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
@@ -40,7 +41,10 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 
 		public void Visit3<TSpecification, TSubject, TResult>(IComparablyEquivalentTo<TSpecification, TSubject, TResult> target) where TSpecification : class, IChainableSpecification
 		{
-			throw new NotImplementedException();
+			string s = target.Prior.Negated
+				? ShouldSpecifications.ComparablyEquivalentToNegated
+				: ShouldSpecifications.ComparablyEquivalentTo;
+			AppendFormat(" {0} {1}", s, target.Expected.ToDebugString());
 		}
 
 		public void Visit3<TSpecification, TSubject, TResult>(IEmpty<TSpecification, TSubject, TResult> target)
@@ -77,7 +81,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 
 		public void Visit3<TSpecification, TSubject, TResult>(INullState<TSpecification, TSubject, TResult> target) where TSpecification : class, IChainableSpecification where TResult : class
 		{
-			throw new NotImplementedException();
+			AppendFormat(" {0}", ShouldSpecifications.Null);
 		}
 
 		public void Visit3<TSpecification, TSubject, TResult>(INullableState<TSpecification, TSubject, TResult> target) where TSpecification : class, IChainableSpecification where TResult : struct

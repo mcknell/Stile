@@ -31,7 +31,7 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Is
 			IEvaluation<Foo<int>, Foo<int>> secondEvaluation = evaluation.ReEvaluate();
 
 			Assert.That(secondEvaluation.Outcome, NUnit.Framework.Is.EqualTo(Outcome.Failed));
-			Assert.AreEqual(@"Expected that subject would be not null
+			Assert.AreEqual(@"subject should not be null
 but was <null>", secondEvaluation.ToPastTense());
 		}
 	}

@@ -33,8 +33,9 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.TimedOut, Is.False);
 			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
-			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<int>().Count was not 12, in runtime < 1 second"));
-			Assert.That(specification.ToShould(), Is.EqualTo(@"new Foo<int>().Count should not be 12, in runtime < 1 second"));
+			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<int>().Count should not be 12, in runtime < 1 second"));
+			Assert.That(specification.ToShould(),
+				Is.EqualTo(@"new Foo<int>().Count should not be 12, in runtime < 1 second"));
 		}
 
 		[Test]
@@ -52,12 +53,15 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Incomplete));
 			Assert.That(evaluation.TimedOut, Is.True);
 			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
-			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"Expected that saboteur.Throw() would throw ArgumentException, in runtime < 40ms
+			Assert.That(evaluation.ToPastTense(),
+				Is.EqualTo(@"saboteur.Throw() should throw ArgumentException, in runtime < 40ms
 but timed out"));
 
-			IEvaluation synchronousEvaluation = boundSpecification.Evaluate(Deadline.Synchronous);
+			IFaultEvaluation<Saboteur> synchronousEvaluation = boundSpecification.Evaluate(Deadline.Synchronous);
 			Assert.That(synchronousEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(synchronousEvaluation.TimedOut, Is.False);
+			Assert.That(synchronousEvaluation.ToPastTense(),
+				Is.EqualTo(@"saboteur.Throw() should throw ArgumentException, in runtime < 40ms"));
 		}
 
 		[Test]
@@ -69,7 +73,7 @@ but timed out"));
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(evaluation.Value, Is.EqualTo(0));
 			Assert.That(evaluation.ToPastTense(),
-				Is.EqualTo(@"Expected that new Foo<int>().Count would be neither greater nor less than 7
+				Is.EqualTo(@"new Foo<int>().Count should be neither greater nor less than 7
 but was 0"));
 		}
 
@@ -81,7 +85,7 @@ but was 0"));
 			IEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.Value, Is.EqualTo(0));
-			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<int>().Count was not 12"));
+			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<int>().Count should not be 12"));
 			Assert.That(specification.ToShould(), Is.EqualTo(@"new Foo<int>().Count should not be 12"));
 		}
 

@@ -126,6 +126,12 @@
   <data name="AnyType" xml:space="preserve">
     <value>Any {0}</value>
   </data>
+  <data name="ComparablyEquivalentTo" xml:space="preserve">
+    <value>neither greater nor less than</value>
+  </data>
+  <data name="ComparablyEquivalentToNegated" xml:space="preserve">
+    <value>either greater or less than</value>
+  </data>
   <data name="Empty" xml:space="preserve">
     <value>empty</value>
   </data>
@@ -141,6 +147,9 @@
   <data name="MeasurableInLessThan" xml:space="preserve">
     <value>in runtime &lt;</value>
   </data>
+  <data name="Null" xml:space="preserve">
+    <value>null</value>
+  </data>
   <data name="ShouldBe" xml:space="preserve">
     <value>should be</value>
   </data>
@@ -149,6 +158,9 @@
   </data>
   <data name="ShouldNotBe" xml:space="preserve">
     <value>should not be</value>
+  </data>
+  <data name="ShouldThrow" xml:space="preserve">
+    <value>should throw {0}</value>
   </data>
   <data name="WhenSampledAgain" xml:space="preserve">
     <value>when sampled again</value>

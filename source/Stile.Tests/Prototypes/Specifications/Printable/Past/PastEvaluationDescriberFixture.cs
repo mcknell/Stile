@@ -6,7 +6,6 @@
 #region using...
 using NUnit.Framework;
 using Stile.Prototypes.Specifications.Printable.Past;
-using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 #endregion
 
 namespace Stile.Tests.Prototypes.Specifications.Printable.Past
@@ -32,7 +31,7 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.Past
 
 		private static void AssertSingleToken(string sourceName, bool expected)
 		{
-			Assert.That(new PastEvaluationDescriber(Outcome.Succeeded).IsSingleToken(sourceName),
+			Assert.That(new PastEvaluationDescriber().IsSingleToken(sourceName),
 				Is.EqualTo(expected),
 				string.Format(">{0}< was expected to be {1}", sourceName, expected));
 		}
