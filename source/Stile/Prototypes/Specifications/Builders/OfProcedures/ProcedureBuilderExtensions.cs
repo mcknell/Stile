@@ -14,9 +14,9 @@ using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfInstruments
+namespace Stile.Prototypes.Specifications.Builders.OfProcedures
 {
-	public static class InstrumentBuilderExtensions
+	public static class ProcedureBuilderExtensions
 	{
 		[System.Diagnostics.Contracts.Pure]
 		public static IFluentExpectationBuilder<TSubject, TResult> That<TSubject, TResult>(

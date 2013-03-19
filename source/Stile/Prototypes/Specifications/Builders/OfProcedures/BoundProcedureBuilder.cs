@@ -9,7 +9,7 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.SemanticModel;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfInstruments
+namespace Stile.Prototypes.Specifications.Builders.OfProcedures
 {
 	/// <summary>
 	/// This non-generic interface exists for typewashing, such as in collections.

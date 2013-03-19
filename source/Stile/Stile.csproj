@@ -116,13 +116,13 @@
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\Deadline.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\SpecificationExtensions.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\FaultSpecification.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfInstruments\InstrumentBuilderExtensions.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfProcedures\ProcedureBuilderExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\ExceptionFilterBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\HasExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\IsExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\ExpectationBuilderExtensions.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfInstruments\BoundProcedureBuilder.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfInstruments\ProcedureBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfProcedures\BoundProcedureBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfProcedures\ProcedureBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\EnumerableExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\IsComparableExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Has.cs" />

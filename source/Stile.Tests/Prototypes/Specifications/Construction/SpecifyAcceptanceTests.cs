@@ -11,7 +11,7 @@ using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
-using Stile.Prototypes.Specifications.Builders.OfInstruments;
+using Stile.Prototypes.Specifications.Builders.OfProcedures;
 using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;

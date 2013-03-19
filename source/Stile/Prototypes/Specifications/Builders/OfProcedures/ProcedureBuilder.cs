@@ -10,7 +10,7 @@ using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfInstruments
+namespace Stile.Prototypes.Specifications.Builders.OfProcedures
 {
 	/// <summary>
 	/// This non-generic interface exists for typewashing, such as in collections.

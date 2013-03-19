@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
-using Stile.Prototypes.Specifications.Builders.OfInstruments;
+using Stile.Prototypes.Specifications.Builders.OfProcedures;
 using Stile.Prototypes.Specifications.SemanticModel;
 #endregion
 
@@ -36,7 +36,7 @@ namespace Stile.Prototypes.Specifications
 			[NotNull] Expression<Func<TSubject>> expression)
 		{
 			var source = new Source<TSubject>(expression);
-			var instrument = new Instrument<TSubject, TSubject>(x => x, source);
+			var instrument = Instrument.GetTrivialBound(source);
 			return new FluentBoundExpectationBuilder<TSubject, TSubject>(instrument, null);
 		}
 

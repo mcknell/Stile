@@ -8,7 +8,7 @@ using System.Globalization;
 using NUnit.Framework;
 using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
-using Stile.Prototypes.Specifications.Builders.OfInstruments;
+using Stile.Prototypes.Specifications.Builders.OfProcedures;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion

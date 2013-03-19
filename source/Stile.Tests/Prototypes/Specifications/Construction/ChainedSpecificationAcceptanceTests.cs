@@ -10,7 +10,7 @@ using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
-using Stile.Prototypes.Specifications.Builders.OfInstruments;
+using Stile.Prototypes.Specifications.Builders.OfProcedures;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Tests.Prototypes.Specifications.SampleObjects;
@@ -76,7 +76,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			//var saboteur = new Saboteur();
 			//Specify.For(() => saboteur).That(x => x.Throw()).Throws<ArgumentException>().Build() //
-			//	.AndLater.;
+			//	.AndLater;
 			Assert.Fail("wip");
 		}
 

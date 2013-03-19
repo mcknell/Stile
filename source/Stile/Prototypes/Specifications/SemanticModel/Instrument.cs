@@ -30,6 +30,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 	public static class Instrument
 	{
+		public static Instrument<TSubject, TSubject> GetTrivialBound<TSubject>(ISource<TSubject> source)
+		{
+			return new Instrument<TSubject, TSubject>(x => x, source);
+		}
+
 		public static Instrument<TSubject, TSubject> GetTrivialUnbound<TSubject>()
 		{
 			return new Instrument<TSubject, TSubject>(x => x, null);
