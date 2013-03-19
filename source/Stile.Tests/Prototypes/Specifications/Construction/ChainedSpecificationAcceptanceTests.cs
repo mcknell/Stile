@@ -71,6 +71,16 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		}
 
 		[Test]
+		[Explicit]
+		public void ChainedFaultSpecifications()
+		{
+			//var saboteur = new Saboteur();
+			//Specify.For(() => saboteur).That(x => x.Throw()).Throws<ArgumentException>().Build() //
+			//	.AndLater.;
+			Assert.Fail("wip");
+		}
+
+		[Test]
 		public void FirstEvaluationRefersToFirstSpecification()
 		{
 			var foo = new Foo<int>();

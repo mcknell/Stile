@@ -42,25 +42,27 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		{
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
-			saboteur.Fuse = TimeSpan.FromMilliseconds(1000);
+			saboteur.Fuse = TimeSpan.FromMilliseconds(15);
+			const int deadlineInMs = 5;
 			IBoundFaultSpecification<Saboteur> boundSpecification =
 				Specify.For(() => saboteur)
 					.That(x => x.Throw())
 					.Throws<ArgumentException>()
-					.Before(TimeSpan.FromMilliseconds(40));
+					.Before(TimeSpan.FromMilliseconds(deadlineInMs));
 			IFaultEvaluation<Saboteur> evaluation = boundSpecification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Incomplete));
 			Assert.That(evaluation.TimedOut, Is.True);
 			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
 			Assert.That(evaluation.ToPastTense(),
-				Is.EqualTo(@"saboteur.Throw() should throw ArgumentException, in runtime < 40ms
-but timed out"));
+				Is.EqualTo(string.Format(@"saboteur.Throw() should throw ArgumentException, in runtime < {0}ms
+but timed out", deadlineInMs)));
 
 			IFaultEvaluation<Saboteur> synchronousEvaluation = boundSpecification.Evaluate(Deadline.Synchronous);
 			Assert.That(synchronousEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(synchronousEvaluation.TimedOut, Is.False);
 			Assert.That(synchronousEvaluation.ToPastTense(),
-				Is.EqualTo(@"saboteur.Throw() should throw ArgumentException, in runtime < 40ms"));
+				Is.EqualTo(string.Format(@"saboteur.Throw() should throw ArgumentException, in runtime < {0}ms",
+					deadlineInMs)));
 		}
 
 		[Test]
@@ -120,8 +122,7 @@ but was 0 and no exception was thrown"));
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<string>().Clear() should throw ArgumentException
 but no exception was thrown"));
-			Assert.That(specification.ToShould(),
-				Is.EqualTo(@"Any Foo<string>.Clear() should throw ArgumentException"));
+			Assert.That(specification.ToShould(), Is.EqualTo(@"Any Foo<string>.Clear() should throw ArgumentException"));
 		}
 
 		[Test]
@@ -132,9 +133,13 @@ but no exception was thrown"));
 			IFaultSpecificationBuilder<IBoundFaultSpecification<Saboteur>, Saboteur, ArgumentException>
 				specificationBuilder = Specify.For(() => saboteur).That(x => x.Throw()).Throws<ArgumentException>();
 			IBoundFaultSpecification<Saboteur> specification = specificationBuilder.Build();
-			IEvaluation evaluation = specification.Evaluate();
+			IFaultEvaluation<Saboteur> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
+			Assert.That(evaluation.Errors, Is.Not.Empty);
 			Assert.That(saboteur.ThrowCalled);
+			string pastTense = evaluation.ToPastTense();
+			Assert.That(pastTense, Is.EqualTo(@"saboteur.Throw() should throw ArgumentException"));
+			Assert.That(specification.ToShould(), Is.EqualTo(pastTense));
 		}
 
 		[Test]
