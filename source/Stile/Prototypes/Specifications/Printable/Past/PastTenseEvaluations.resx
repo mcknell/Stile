@@ -168,4 +168,10 @@
   <data name="WouldThrow" xml:space="preserve">
     <value>would throw {0}</value>
   </data>
+  <data name="Then" xml:space="preserve">
+    <value>then</value>
+  </data>
+  <data name="Threw" xml:space="preserve">
+    <value>threw</value>
+  </data>
 </root>

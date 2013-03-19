@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
@@ -51,6 +52,12 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 				if (evaluation.Errors.None())
 				{
 					AppendFormat(" {0}", PastTenseEvaluations.NoExceptionThrown);
+				}
+				else
+				{
+					string separator = string.Format(", {0} ", PastTenseEvaluations.Then);
+					string errorTypes = string.Join(separator, evaluation.Errors.Select(x => x.Exception.GetType().Name));
+					AppendFormat(" {0} {1}", PastTenseEvaluations.Threw, errorTypes);
 				}
 			}
 		}

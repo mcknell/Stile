@@ -98,7 +98,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 		public IObservation<TSubject> Filter(IObservation<TSubject> observation)
 		{
-			List<IError> errors = ExtractHandledErrors(observation);
+			List<IError> errors = MarkHandledErrors(observation);
 
 			var filtered = new Observation<TSubject>(observation.TaskStatus,
 				observation.TimedOut,
@@ -113,7 +113,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			get { return null; }
 		}
 
-		protected List<IError> ExtractHandledErrors(IObservation<TSubject> observation)
+		protected List<IError> MarkHandledErrors(IObservation<TSubject> observation)
 		{
 			var errors = new List<IError>();
 			foreach (IError error in observation.Errors)
@@ -121,6 +121,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 				if (Predicate.Invoke(error.Exception))
 				{
 					errors.Add(new Error(error.Exception, true));
+				}
+				else
+				{
+					errors.Add(error);
 				}
 			}
 			return errors;
@@ -162,7 +166,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 		public IMeasurement<TSubject, TResult> Filter(IMeasurement<TSubject, TResult> measurement)
 		{
-			List<IError> errors = ExtractHandledErrors(measurement);
+			List<IError> errors = MarkHandledErrors(measurement);
 
 			var filtered = new Measurement<TSubject, TResult>(measurement.Sample,
 				measurement.Value,

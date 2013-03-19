@@ -178,6 +178,24 @@ namespace Stile.Prototypes.Specifications.Printable.Past {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to then.
+        /// </summary>
+        public static string Then {
+            get {
+                return ResourceManager.GetString("Then", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to threw.
+        /// </summary>
+        public static string Threw {
+            get {
+                return ResourceManager.GetString("Threw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to timed out.
         /// </summary>
         public static string TimedOut {

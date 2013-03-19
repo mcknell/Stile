@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
@@ -18,15 +19,29 @@ using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 {
 	public interface IFaultEvaluation<TSubject> : IEvaluation<TSubject>,
-		IHides<IFaultEvaluationState<TSubject>> {}
+		IHides<IFaultEvaluationState<TSubject>>
+	{
+		[CanBeNull]
+		[System.Diagnostics.Contracts.Pure]
+		IFaultEvaluation<TSubject> EvaluateNext(IDeadline deadline = null);
+
+		[CanBeNull]
+		[System.Diagnostics.Contracts.Pure]
+		IFaultEvaluation<TSubject> EvaluateNextWith([NotNull] ISource<TSubject> source, IDeadline deadline = null);
+	}
 
 	public interface IFaultEvaluationState<TSubject> : IHasFaultSpecification<TSubject>,
 		IAcceptEvaluationVisitors
 	{
+		[NotNull]
+		IObservation<TSubject> Observation { get; }
 		[CanBeNull]
 		IFaultEvaluation<TSubject> Prior { get; }
 		[NotNull]
 		IFaultSpecificationState<TSubject> TailSpecification { get; }
+
+		[NotNull]
+		IEnumerable<IFaultEvaluation<TSubject>> GetPredecessors();
 	}
 
 	public static class FaultEvaluation
@@ -86,22 +101,43 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			[NotNull] IFaultSpecification<TSubject> specification)
 			: base(observation, outcome)
 		{
+			Observation = observation.ValidateArgumentIsNotNull();
 			Specification = specification.ValidateArgumentIsNotNull();
 			TailSpecification = tailSpecification.ValidateArgumentIsNotNull();
 			Prior = prior;
 		}
 
+		public IObservation<TSubject> Observation { get; private set; }
 		public IAcceptEvaluationVisitors Parent
 		{
 			get { return Specification.Xray; }
 		}
-
 		public IFaultEvaluation<TSubject> Prior { get; private set; }
 		public IFaultSpecification<TSubject> Specification { get; private set; }
 		public IFaultSpecificationState<TSubject> TailSpecification { get; private set; }
+
 		public IFaultEvaluationState<TSubject> Xray
 		{
 			get { return this; }
+		}
+
+		public IFaultEvaluation<TSubject> EvaluateNext(IDeadline deadline = null)
+		{
+			return EvaluateNextWith(Observation.Sample.Source, deadline);
+		}
+
+		public IFaultEvaluation<TSubject> EvaluateNextWith(ISource<TSubject> source, IDeadline deadline = null)
+		{
+			IFaultSpecification<TSubject> specification = GetNextSpecification();
+			if (specification == null)
+			{
+				return null;
+			}
+			IFaultEvaluation<TSubject> evaluation = specification.Xray.Evaluate(source,
+				this,
+				TailSpecification,
+				deadline);
+			return evaluation;
 		}
 
 		public void Accept(IEvaluationVisitor visitor)
@@ -112,6 +148,26 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public TData Accept<TData>(IEvaluationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit1(this, data);
+		}
+
+		public IEnumerable<IFaultEvaluation<TSubject>> GetPredecessors()
+		{
+			IFaultEvaluation<TSubject> prior = this;
+			while (prior.Xray.Prior != null)
+			{
+				prior = prior.Xray.Prior;
+				yield return prior;
+			}
+		}
+
+		[CanBeNull]
+		private IFaultSpecification<TSubject> GetNextSpecification()
+		{
+			List<IFaultEvaluation<TSubject>> list = GetPredecessors().Reverse().ToList();
+			int distanceOfNextFromRootSpec = list.Count + 1;
+			IFaultSpecification<TSubject> specification =
+				TailSpecification.GetPredecessors(true).Reverse().Skip(distanceOfNextFromRootSpec).FirstOrDefault();
+			return specification;
 		}
 	}
 }
