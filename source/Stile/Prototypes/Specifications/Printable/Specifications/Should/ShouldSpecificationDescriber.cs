@@ -9,9 +9,6 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
-using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
-using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
-using Stile.Prototypes.Specifications.Builders.OfProcedures;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
@@ -68,11 +65,6 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			}
 		}
 
-		public void Visit1<TSubject>(IProcedureBuilder<TSubject> builder)
-		{
-			throw new NotImplementedException();
-		}
-
 		public void Visit1<TSubject>(ISource<TSubject> source)
 		{
 			// do nothin'
@@ -80,7 +72,8 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 
 		public void Visit2<TSubject, TResult>(IExceptionFilter<TSubject, TResult> target)
 		{
-			throw new NotImplementedException();
+			Append(" ");
+			AppendFormat(ShouldSpecifications.ShouldThrow, target.Description.Value);
 		}
 
 		public void Visit2<TSubject, TResult>(IExpectation<TSubject, TResult> expectation)
@@ -102,38 +95,11 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			Append(PrintDeadlineIfAny(target.Xray.Deadline));
 		}
 
-		public void Visit3<TSpecification, TSubject, TResult>(IHas<TSpecification, TSubject, TResult> has)
-			where TSpecification : class, IChainableSpecification
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Visit3<TSpecification, TSubject, TResult>(IIs<TSpecification, TSubject, TResult> @is)
-			where TSpecification : class, IChainableSpecification
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Visit3<TSpecification, TSubject, TResult>(
-			IExpectationBuilder<TSpecification, TSubject, TResult> builder)
-			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
-		{
-			throw new NotImplementedException();
-		}
-
 		public void Visit3<TSubject, TResult, TExpectationBuilder>(
 			ISpecification<TSubject, TResult, TExpectationBuilder> specification)
 			where TExpectationBuilder : class, IExpectationBuilder
 		{
 			Visit2(specification);
-		}
-
-		public void Visit4<TSpecification, TSubject, TResult, TItem>(
-			IEnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> builder)
-			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
-			where TResult : class, IEnumerable<TItem>
-		{
-			throw new NotImplementedException();
 		}
 
 		public static string Describe<TSubject>(IFaultSpecification<TSubject> specification)

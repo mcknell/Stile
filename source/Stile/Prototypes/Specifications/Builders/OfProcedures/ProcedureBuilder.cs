@@ -7,7 +7,6 @@
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfProcedures
@@ -20,8 +19,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfProcedures
 	public interface IProcedureBuilder<TSubject> : IProcedureBuilder,
 		IHides<IProcedureBuilderState<TSubject>> {}
 
-	public interface IProcedureBuilderState<TSubject> : IHasSource<TSubject>,
-		IAcceptSpecificationVisitors {}
+	public interface IProcedureBuilderState<TSubject> : IHasSource<TSubject> {}
 
 	public class ProcedureBuilder<TSubject> : IProcedureBuilder<TSubject>,
 		IProcedureBuilderState<TSubject>
@@ -31,25 +29,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfProcedures
 			Source = source;
 		}
 
-		public IAcceptSpecificationVisitors Parent
-		{
-			get { return Source; }
-		}
-
 		public ISource<TSubject> Source { get; private set; }
 		public IProcedureBuilderState<TSubject> Xray
 		{
 			get { return this; }
-		}
-
-		public void Accept(ISpecificationVisitor visitor)
-		{
-			visitor.Visit1(this);
-		}
-
-		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
-		{
-			return visitor.Visit1(this, data);
 		}
 	}
 }

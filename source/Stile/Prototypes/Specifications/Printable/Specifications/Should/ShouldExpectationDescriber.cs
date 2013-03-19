@@ -91,7 +91,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			INullableState<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification where TResult : struct
 		{
-			throw new NotImplementedException();
+			AppendFormat(" {0}", ShouldSpecifications.Null);
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(

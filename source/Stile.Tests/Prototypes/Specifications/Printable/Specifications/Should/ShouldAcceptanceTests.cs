@@ -11,6 +11,7 @@ using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfExceptionFilters;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
+using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfProcedures;
 using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
@@ -58,6 +59,15 @@ but was ""8"" and no exception was thrown"));
 				Specify.ForAny<Foo<int>>().That(x => x.Clear()).Throws<ArgumentOutOfRangeException>();
 			Assert.That(specification.ToShould(),
 				Is.EqualTo(@"Any Foo<int>.Clear() should throw ArgumentOutOfRangeException"));
+		}
+
+		[Test]
+		public void Nullable()
+		{
+			var saboteur = new Saboteur();
+			IEvaluation<Saboteur, TimeSpan?> evaluation =
+				Specify.For(() => saboteur).That(x => x.Fuse).Is.Null().Evaluate();
+			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"saboteur.Fuse should be null"));
 		}
 
 		[Test]

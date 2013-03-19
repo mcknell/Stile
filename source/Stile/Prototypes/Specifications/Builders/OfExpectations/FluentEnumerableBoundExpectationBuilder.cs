@@ -10,7 +10,6 @@ using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
-using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations
@@ -37,16 +36,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			: base(state, prior)
 		{
 			_state = state;
-		}
-
-		public override void Accept(ISpecificationVisitor visitor)
-		{
-			visitor.Visit4(this);
-		}
-
-		public override TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
-		{
-			return visitor.Visit4(this, data);
 		}
 
 		public override object CloneFor(object specification)

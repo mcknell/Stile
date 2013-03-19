@@ -15,7 +15,6 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
-using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 using Stile.Readability;
 #endregion
 
@@ -58,7 +57,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 
 	public interface IExpectationBuilderState<out TSpecification, TSubject, TResult> : IExpectationBuilderState,
 		IHasInstrument<TSubject, TResult>,
-		IAcceptSpecificationVisitors,
 		IChainingConjuctionState<TSpecification>
 		where TSpecification : class, IChainableSpecification
 	{
@@ -108,10 +106,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 				return value;
 			}
 		}
-		public IAcceptSpecificationVisitors Parent
-		{
-			get { return Instrument; }
-		}
 		public TSpecification Prior { get; private set; }
 
 		public IExpectationBuilderState<TSpecification, TSubject, TResult> Xray
@@ -131,8 +125,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			return Make(expectation, exceptionFilter);
 		}
 
-		public abstract void Accept(ISpecificationVisitor visitor);
-		public abstract TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data);
 		public abstract object CloneFor(object specification);
 
 		public TSpecification Make(IExpectation<TSubject, TResult> expectation,

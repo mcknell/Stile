@@ -9,7 +9,6 @@ using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
-using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations
@@ -28,16 +27,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		public FluentBoundExpectationBuilder(IInstrument<TSubject, TResult> instrument,
 			[CanBeNull] IBoundSpecification<TSubject, TResult, IFluentBoundExpectationBuilder<TSubject, TResult>> prior)
 			: base(instrument, prior) {}
-
-		public override void Accept(ISpecificationVisitor visitor)
-		{
-			visitor.Visit3(this);
-		}
-
-		public override TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
-		{
-			return visitor.Visit3(this, data);
-		}
 
 		public override object CloneFor(
 			object specification)

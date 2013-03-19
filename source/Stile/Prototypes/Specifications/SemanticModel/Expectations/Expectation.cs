@@ -11,7 +11,6 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
-using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
@@ -27,8 +26,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 	public interface IExpectation<TSubject, TResult> : IExpectation,
 		IHides<IExpectationState<TSubject, TResult>>
 	{
-		Outcome Evaluate(IMeasurement<TSubject, TResult> measurement,
-			bool expectedAnException);
+		Outcome Evaluate(IMeasurement<TSubject, TResult> measurement, bool expectedAnException);
 	}
 
 	public interface IExpectationState<TSubject, out TResult> : IHasInstrument<TSubject, TResult>,
@@ -36,9 +34,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 	{
 		[NotNull]
 		IAcceptExpectationVisitors LastTerm { get; }
-
-		bool TryGetBuilder<TExpectationBuilder>(out TExpectationBuilder builder)
-			where TExpectationBuilder : class, IExpectationBuilder;
 	}
 
 	public abstract class Expectation<TSubject>
@@ -113,8 +108,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			return visitor.Visit2(this, data);
 		}
 
-		public Outcome Evaluate(IMeasurement<TSubject, TResult> measurement,
-			bool expectedAnException)
+		public Outcome Evaluate(IMeasurement<TSubject, TResult> measurement, bool expectedAnException)
 		{
 			int handledErrors = measurement.Errors.Count(x => x.Handled);
 			int allErrorsIfAny = measurement.Errors.Length;
@@ -140,13 +134,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			{
 				outcome = Outcome.Failed;
 			}
-			return  outcome;
-		}
-
-		public bool TryGetBuilder<TExpectationBuilder>(out TExpectationBuilder builder)
-			where TExpectationBuilder : class, IExpectationBuilder
-		{
-			throw new NotImplementedException();
+			return outcome;
 		}
 
 		public static Func<Predicate<TResult>> MakeCompiler(Expression<Predicate<TResult>> expression)
