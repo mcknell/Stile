@@ -5,13 +5,13 @@
 
 #region using...
 using System;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
-using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
@@ -21,14 +21,14 @@ using Stile.Readability;
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 {
-	public interface IExpectationBuilder {}
+	public interface IExpectationBuilder : IChainingConjuction {}
 
 	public interface IExpectationBuilder<out TSpecification, TSubject> : IExpectationBuilder
 		where TSpecification : class, IChainableSpecification
 	{
+		[NotNull]
 		[System.Diagnostics.Contracts.Pure]
-		IFaultSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
-			where TException : Exception;
+		TSpecification Throws<TException>() where TException : Exception;
 	}
 
 	public interface IExpectationBuilder<out TSpecification, TSubject, TResult, out THas, out TIs> :
@@ -58,12 +58,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 
 	public interface IExpectationBuilderState<out TSpecification, TSubject, TResult> : IExpectationBuilderState,
 		IHasInstrument<TSubject, TResult>,
-		IAcceptSpecificationVisitors
+		IAcceptSpecificationVisitors,
+		IChainingConjuctionState<TSpecification>
 		where TSpecification : class, IChainableSpecification
 	{
-		[CanBeNull]
-		TSpecification Prior { get; }
-
 		[NotNull]
 		TSpecification Make([NotNull] IExpectation<TSubject, TResult> expectation,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null);
@@ -121,15 +119,16 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			get { return this; }
 		}
 
-		public IFaultSpecificationBuilder<TSpecification, TSubject, TException> Throws<TException>()
-			where TException : Exception
+		public TSpecification Throws<TException>() where TException : Exception
 		{
 			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(x => x is TException,
 				Instrument,
 				typeof(TException).ToLazyDebugString());
-			var builder = new FaultSpecificationBuilder<TSpecification, TSubject, TResult, TException>(
-				exceptionFilter, Make);
-			return builder;
+			Expression<Predicate<TResult>> expression = result => true;
+			var expectation = new Expectation<TSubject, TResult>(expression.Compile,
+				exceptionFilter,
+				exceptionFilter.Instrument);
+			return Make(expectation, exceptionFilter);
 		}
 
 		public abstract void Accept(ISpecificationVisitor visitor);

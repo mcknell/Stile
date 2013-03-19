@@ -11,6 +11,7 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfProcedures;
+using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Tests.Prototypes.Specifications.SampleObjects;
@@ -31,14 +32,16 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 				Specify.For(() => saboteur).That(x => x.SuicidalSideEffect.MisfiresRemaining) //
 					.Is.EqualTo(1) //
 					.AndThen.Is.EqualTo(0) //
-					.AndThen.Throws<ArgumentException>().Build() //
+					.AndThen.Throws<ArgumentException>() //
 					.Evaluate();
+			Assert.NotNull(evaluation.Sample);
 			Assert.That(evaluation.Sample.Value, Is.EqualTo(saboteur));
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.Value, Is.EqualTo(1));
 			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
 
 			IEvaluation<Saboteur, int?> secondEvaluation = evaluation.EvaluateNext();
+			Assert.NotNull(secondEvaluation);
 			Assert.That(secondEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(secondEvaluation.Value, Is.EqualTo(0));
 			Assert.That(secondEvaluation.Xray.TailSpecification, Is.EqualTo(evaluation.Xray.TailSpecification));
@@ -47,6 +50,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			/* this should only pass if indeed the third specification is being evaluated;
 		    * the first two would fail to throw */
 			IEvaluation<Saboteur, int?> thirdEvaluation = secondEvaluation.EvaluateNext();
+			Assert.NotNull(thirdEvaluation);
 			Assert.That(thirdEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(thirdEvaluation.Errors.Length, Is.EqualTo(1));
 			Assert.That(thirdEvaluation.Xray.TailSpecification, Is.EqualTo(secondEvaluation.Xray.TailSpecification));
@@ -66,18 +70,22 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			Assert.That(evaluation.Value, Is.EqualTo(0));
 
 			IEvaluation<Foo<int>, int> secondEvaluation = evaluation.EvaluateNext();
+			Assert.NotNull(secondEvaluation);
 			Assert.That(secondEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(secondEvaluation.Value, Is.Not.EqualTo(12));
 		}
 
 		[Test]
-		[Explicit]
 		public void ChainedFaultSpecifications()
 		{
-			//var saboteur = new Saboteur();
-			//Specify.For(() => saboteur).That(x => x.Throw()).Throws<ArgumentException>().Build() //
-			//	.AndLater;
-			Assert.Fail("wip");
+			var saboteur = new Saboteur();
+			IFaultSpecification<Saboteur> specification =
+				Specify.For(() => saboteur).That(x => x.Throw()).Throws<ArgumentException>() //
+					.AndThen.Throws<ArgumentNullException>() //
+					.AndThen.Throws<ArgumentOutOfRangeException>();
+			Assert.That(specification.ToShould(), Is.EqualTo(@"saboteur.Throw() should throw ArgumentException initially,
+then should throw ArgumentNullException when measured again
+then should throw ArgumentOutOfRangeException when measured again"));
 		}
 
 		[Test]
@@ -108,6 +116,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			Assert.That(evaluation.Value, Is.Not.EqualTo(45));
 
 			IEvaluation<Foo<int>, string> secondEvaluation = evaluation.EvaluateNext();
+			Assert.NotNull(secondEvaluation);
 			Assert.That(secondEvaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(secondEvaluation.Value, Is.Not.EqualTo(45));
 		}

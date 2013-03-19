@@ -11,6 +11,7 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.Hierarchy;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Readability;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel
@@ -40,7 +41,19 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		IMeasurement<TSubject, TResult> Filter(IMeasurement<TSubject, TResult> measurement);
 	}
 
-	public class ExceptionFilter<TSubject> : IExceptionFilter<TSubject>
+	public static class FilterFor<TException>
+	{
+		public static ExceptionFilter<TSubject> GetSimplest<TSubject>(IProcedure<TSubject> procedure)
+		{
+			var exceptionFilter = new ExceptionFilter<TSubject>(x => x is TException,
+				procedure,
+				typeof(TException).ToLazyDebugString());
+			return exceptionFilter;
+		}
+	}
+
+	public class ExceptionFilter<TSubject> : 
+		IExceptionFilter<TSubject>
 	{
 		public ExceptionFilter([NotNull] Predicate<Exception> predicate,
 			[NotNull] IProcedure<TSubject> procedure,

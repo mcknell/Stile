@@ -60,5 +60,4 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			get { return new EnumerableIs<TSpecification, TSubject, TResult, TItem>(BuilderState, Negated.True); }
 		}
 	}
-
 }

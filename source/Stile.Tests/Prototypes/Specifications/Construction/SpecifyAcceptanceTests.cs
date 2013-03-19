@@ -12,7 +12,6 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfProcedures;
-using Stile.Prototypes.Specifications.Builders.OfSpecifications;
 using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
@@ -40,10 +39,10 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		[Test]
 		public void Before_WhenBoundToInstance_OnlyTimesOutOnAsync()
 		{
+			const int deadlineInMs = 5;
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
 			saboteur.Fuse = TimeSpan.FromMilliseconds(15);
-			const int deadlineInMs = 5;
 			IBoundFaultSpecification<Saboteur> boundSpecification =
 				Specify.For(() => saboteur)
 					.That(x => x.Throw())
@@ -95,7 +94,7 @@ but was 0"));
 		public void FailsToThrowBound()
 		{
 			IBoundFaultSpecification<Foo<string>> specification =
-				Specify.For(() => new Foo<string>()).That(x => x.Clear()).Throws<ArgumentException>().Build();
+				Specify.For(() => new Foo<string>()).That(x => x.Clear()).Throws<ArgumentException>();
 			IFaultEvaluation<Foo<string>> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<string>().Clear() should throw ArgumentException
@@ -106,7 +105,7 @@ but no exception was thrown"));
 		public void FailsToThrowBoundInstrument()
 		{
 			IBoundSpecification<Foo<int>, int, IFluentBoundExpectationBuilder<Foo<int>, int>> specification =
-				Specify.For(() => new Foo<int>()).That(x => x.Count).Throws<ArgumentException>().Build();
+				Specify.For(() => new Foo<int>()).That(x => x.Count).Throws<ArgumentException>();
 			IEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<int>().Count should throw ArgumentException
@@ -117,7 +116,7 @@ but was 0 and no exception was thrown"));
 		public void FailsToThrowUnbound()
 		{
 			IFaultSpecification<Foo<string>> specification =
-				Specify.ForAny<Foo<string>>().That(x => x.Clear()).Throws<ArgumentException>().Build();
+				Specify.ForAny<Foo<string>>().That(x => x.Clear()).Throws<ArgumentException>();
 			IFaultEvaluation<Foo<string>> evaluation = specification.Evaluate(() => new Foo<string>());
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(evaluation.ToPastTense(), Is.EqualTo(@"new Foo<string>().Clear() should throw ArgumentException
@@ -130,9 +129,8 @@ but no exception was thrown"));
 		{
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
-			IFaultSpecificationBuilder<IBoundFaultSpecification<Saboteur>, Saboteur, ArgumentException>
-				specificationBuilder = Specify.For(() => saboteur).That(x => x.Throw()).Throws<ArgumentException>();
-			IBoundFaultSpecification<Saboteur> specification = specificationBuilder.Build();
+			IBoundFaultSpecification<Saboteur> specification =
+				Specify.For(() => saboteur).That(x => x.Throw()).Throws<ArgumentException>();
 			IFaultEvaluation<Saboteur> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.Errors, Is.Not.Empty);
@@ -148,11 +146,8 @@ but no exception was thrown"));
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
 			var target = new SabotageTarget(saboteur);
-			IFaultSpecificationBuilder
-				<IBoundSpecification<SabotageTarget, Saboteur, IFluentBoundExpectationBuilder<SabotageTarget, Saboteur>>,
-					SabotageTarget, ArgumentException> specificationBuilder =
-						Specify.For(() => target).That(x => x.Saboteur.SuicidalSideEffect).Throws<ArgumentException>();
-			IBoundSpecification<SabotageTarget, Saboteur> specification = specificationBuilder.Build();
+			IBoundSpecification<SabotageTarget, Saboteur> specification =
+				Specify.For(() => target).That(x => x.Saboteur.SuicidalSideEffect).Throws<ArgumentException>();
 			IEvaluation<SabotageTarget, Saboteur> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Errors.Any(), Is.True);
 			Assert.That(evaluation.Errors.First().Exception, Is.InstanceOf<ArgumentException>());
@@ -165,9 +160,8 @@ but no exception was thrown"));
 		{
 			var saboteur = new Saboteur();
 			saboteur.Load(() => new ArgumentException());
-			IFaultSpecificationBuilder<IFaultSpecification<Saboteur>, Saboteur, ArgumentException> specificationBuilder
-				= Specify.ForAny<Saboteur>().That(x => x.Throw()).Throws<ArgumentException>();
-			IFaultSpecification<Saboteur> specification = specificationBuilder.Build();
+			IFaultSpecification<Saboteur> specification =
+				Specify.ForAny<Saboteur>().That(x => x.Throw()).Throws<ArgumentException>();
 			IEvaluation evaluation = specification.Evaluate(saboteur);
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(saboteur.ThrowCalled);

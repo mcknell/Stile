@@ -6,6 +6,7 @@
 #region using...
 using System;
 using JetBrains.Annotations;
+using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Printable.Specifications.Should;
 using Stile.Prototypes.Specifications.SemanticModel;
@@ -79,16 +80,33 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 
 		public static string Describe<TSubject>(IFaultEvaluation<TSubject> evaluation)
 		{
-			var describer = new PastEvaluationDescriber(evaluation.Sample.Source);
+			ISource<TSubject> source = GetSource(evaluation.ValidateArgumentIsNotNull());
+			var describer = new PastEvaluationDescriber(source);
 			describer.Visit1(evaluation);
 			return describer.ToString();
 		}
 
 		public static string Describe<TSubject, TResult>(IEvaluation<TSubject, TResult> evaluation)
 		{
-			var describer = new PastEvaluationDescriber(evaluation.Sample.Source);
+			ISource<TSubject> source = GetSource(evaluation.ValidateArgumentIsNotNull());
+			var describer = new PastEvaluationDescriber(source);
 			describer.Visit2(evaluation);
 			return describer.ToString();
+		}
+
+		private static ISource<TSubject> GetSource<TSubject>(IEvaluation<TSubject> evaluation)
+		{
+			ISample<TSubject> sample = evaluation.Sample;
+			ISource<TSubject> source;
+			if (sample == null && evaluation.TimedOut)
+			{
+				source = null;
+			}
+			else
+			{
+				source = sample.Source;
+			}
+			return source;
 		}
 
 		private void Visit<TSubject, TResult>(ISpecification<TSubject, TResult> target)

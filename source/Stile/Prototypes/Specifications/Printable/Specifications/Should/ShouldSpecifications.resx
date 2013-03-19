@@ -141,8 +141,8 @@
   <data name="Hashcode" xml:space="preserve">
     <value>hashcode</value>
   </data>
-  <data name="InitallyThen" xml:space="preserve">
-    <value>initially,{0}then</value>
+  <data name="Initially" xml:space="preserve">
+    <value>initially,</value>
   </data>
   <data name="InstrumentedBy" xml:space="preserve">
     <value>instrumented by</value>
@@ -165,7 +165,10 @@
   <data name="ShouldThrow" xml:space="preserve">
     <value>should throw {0}</value>
   </data>
-  <data name="WhenSampledAgain" xml:space="preserve">
-    <value>when sampled again</value>
+  <data name="Then" xml:space="preserve">
+    <value>then</value>
+  </data>
+  <data name="WhenMeasuredAgain" xml:space="preserve">
+    <value>when measured again</value>
   </data>
 </root>

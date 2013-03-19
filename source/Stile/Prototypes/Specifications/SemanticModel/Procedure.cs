@@ -27,6 +27,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 	public interface IProcedure<TSubject> : IProcedure,
 		IHides<IProcedureState<TSubject>>
 	{
+		[NotNull]
+		[System.Diagnostics.Contracts.Pure]
 		IObservation<TSubject> Observe([NotNull] ISource<TSubject> source, IDeadline deadline = null);
 	}
 

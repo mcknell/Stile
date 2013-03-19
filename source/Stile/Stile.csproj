@@ -67,6 +67,8 @@
     <Compile Include="Patterns\Lifetimes\Lazy\Lazier.cs" />
     <Compile Include="Patterns\Structural\Hierarchy\IHasParent.cs" />
     <Compile Include="Prototypes\Specifications\Builders\Lifecycle\IHasSource.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\FluentBoundExceptionFilterBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\FluentExceptionFilterBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\BoundExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentEnumerableBoundExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentEnumerableExpectationBuilder.cs" />
@@ -85,8 +87,6 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EqualTo.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Null.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Nullable.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfSpecifications\FaultSpecificationBuilder.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfSpecifications\ISpecificationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Describer.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldExpectationDescriber.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldSpecificationDescriber.cs" />
@@ -97,6 +97,7 @@
     </Compile>
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\EvaluableExtensions.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\FaultEvaluation.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\IChainingConjuction.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\IAcceptEvaluationVisitors.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\IAcceptExpectationVisitors.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\IAcceptSpecificationVisitors.cs" />
@@ -231,6 +232,7 @@
     <EmbeddedResource Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldSpecifications.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ShouldSpecifications.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

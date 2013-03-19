@@ -36,7 +36,7 @@ namespace Stile.Prototypes.Specifications
 			[NotNull] Expression<Func<TSubject>> expression)
 		{
 			var source = new Source<TSubject>(expression);
-			var instrument = Instrument.GetTrivialBound(source);
+			Instrument<TSubject, TSubject> instrument = Instrument.GetTrivialBound(source);
 			return new FluentBoundExpectationBuilder<TSubject, TSubject>(instrument, null);
 		}
 

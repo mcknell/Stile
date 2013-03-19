@@ -134,11 +134,11 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to initially,{0}then.
+        ///   Looks up a localized string similar to initially,.
         /// </summary>
-        internal static string InitallyThen {
+        internal static string Initially {
             get {
-                return ResourceManager.GetString("InitallyThen", resourceCulture);
+                return ResourceManager.GetString("Initially", resourceCulture);
             }
         }
         
@@ -206,11 +206,20 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to when sampled again.
+        ///   Looks up a localized string similar to then.
         /// </summary>
-        internal static string WhenSampledAgain {
+        internal static string Then {
             get {
-                return ResourceManager.GetString("WhenSampledAgain", resourceCulture);
+                return ResourceManager.GetString("Then", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to when measured again.
+        /// </summary>
+        internal static string WhenMeasuredAgain {
+            get {
+                return ResourceManager.GetString("WhenMeasuredAgain", resourceCulture);
             }
         }
     }

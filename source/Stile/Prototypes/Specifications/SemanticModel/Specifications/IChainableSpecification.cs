@@ -3,16 +3,12 @@
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
-#region using...
-using Stile.Prototypes.Specifications.Builders.OfExpectations;
-#endregion
-
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
 	public interface IChainableSpecification : ISpecification {}
 
 	public interface IChainableSpecification<out TExpectationBuilder> : IChainableSpecification
-		where TExpectationBuilder : class, IExpectationBuilder
+		where TExpectationBuilder : class, IChainingConjuction
 	{
 		TExpectationBuilder AndThen { get; }
 	}

@@ -5,6 +5,7 @@
 
 #region using...
 using JetBrains.Annotations;
+using Stile.Prototypes.Specifications.Builders.OfExceptionFilters;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 #endregion
 
@@ -20,4 +21,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		[NotNull]
 		IFaultEvaluation<TSubject> Evaluate(IDeadline deadline = null);
 	}
+
+	public interface IBoundFaultSpecification<TSubject, out TExceptionFilterBuilder> :
+		IBoundFaultSpecification<TSubject>,
+		IFaultSpecification<TSubject, TExceptionFilterBuilder>
+		where TExceptionFilterBuilder : class, IExceptionFilterBuilder {}
 }

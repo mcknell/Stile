@@ -27,6 +27,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 
 	public interface IEvaluation<TSubject> : IEvaluation
 	{
+		[CanBeNull]
 		ISample<TSubject> Sample { get; }
 	}
 

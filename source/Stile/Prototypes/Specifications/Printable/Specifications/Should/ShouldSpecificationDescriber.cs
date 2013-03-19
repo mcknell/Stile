@@ -136,6 +136,34 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			throw new NotImplementedException();
 		}
 
+		public static string Describe<TSubject>(IFaultSpecification<TSubject> specification)
+		{
+			ISource<TSubject> source = specification.Xray.Procedure.Xray.Source;
+			var describer = new ShouldSpecificationDescriber(source);
+			var stack = new Stack<IFaultSpecification<TSubject>>();
+			IFaultSpecification<TSubject> prior = specification;
+			while (prior != null)
+			{
+				stack.Push(prior);
+				prior = prior.Xray.Prior;
+			}
+			IFaultSpecification<TSubject> first = stack.Pop();
+			describer.Visit1(first);
+			if (stack.Count > 0)
+			{
+				describer.AppendFormat(" {0}",ShouldSpecifications.Initially);
+			}
+			while (stack.Count > 0)
+			{
+				IFaultSpecification<TSubject> popped = stack.Pop();
+				describer.Append(string.Format("{0}{1}", Environment.NewLine, ShouldSpecifications.Then));
+				describer.Visit1(popped.Xray.ExceptionFilter);
+				describer.Append(PrintDeadlineIfAny(popped.Xray.Deadline));
+				describer.AppendFormat(" {0}", ShouldSpecifications.WhenMeasuredAgain);
+			}
+			return describer.ToString();
+		}
+
 		public static string Describe<TSubject, TResult>(ISpecification<TSubject, TResult> specification)
 		{
 			ISource<TSubject> source = specification.Xray.Expectation.Xray.Instrument.Xray.Source;
@@ -151,15 +179,15 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			describer.Visit2(first);
 			if (stack.Count > 0)
 			{
-				describer.Append(" ");
-				describer.AppendFormat(ShouldSpecifications.InitallyThen, Environment.NewLine);
+				describer.AppendFormat(" {0}", ShouldSpecifications.Initially);
 			}
 			while (stack.Count > 0)
 			{
 				ISpecification<TSubject, TResult> popped = stack.Pop();
+				describer.Append(string.Format("{0}{1}", Environment.NewLine, ShouldSpecifications.Then));
 				describer.Visit2(popped.Xray.Expectation);
 				describer.Append(PrintDeadlineIfAny(popped.Xray.Deadline));
-				describer.AppendFormat(" {0}", ShouldSpecifications.WhenSampledAgain);
+				describer.AppendFormat(" {0}", ShouldSpecifications.WhenMeasuredAgain);
 			}
 			return describer.ToString();
 		}

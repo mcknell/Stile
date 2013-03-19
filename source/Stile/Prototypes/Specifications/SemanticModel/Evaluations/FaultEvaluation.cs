@@ -36,21 +36,20 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			[CanBeNull] TSubject subject,
 			IDeadline deadline = null)
 		{
-			return specification.Evaluate(() => subject, deadline);
+			return specification.Evaluate(() => subject, null, deadline);
 		}
 
 		public static IFaultEvaluation<TSubject> Evaluate<TSubject>(
 			[NotNull] this IFaultSpecification<TSubject> specification,
 			[NotNull] Expression<Func<TSubject>> source,
+			IFaultEvaluation<TSubject> prior = null,
 			IDeadline deadline = null)
 		{
-			return specification.Evaluate(new Source<TSubject>(source), deadline);
+			return specification.Xray.Evaluate(new Source<TSubject>(source), prior, specification.Xray, deadline);
 		}
 
 		public static Outcome Evaluate<TSubject>([NotNull] this IObservation<TSubject> observation,
-			bool expectedAnException,
-			[NotNull] IFaultSpecificationState<TSubject> tailSpecification,
-			[CanBeNull] IFaultEvaluation<TSubject> prior)
+			bool expectedAnException)
 		{
 			int handledErrors = observation.Errors.Count(x => x.Handled);
 			int allErrorsIfAny = observation.Errors.Length;

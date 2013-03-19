@@ -11,7 +11,6 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Builders.OfExceptionFilters;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfProcedures
@@ -30,19 +29,18 @@ namespace Stile.Prototypes.Specifications.Builders.OfProcedures
 		}
 
 		[System.Diagnostics.Contracts.Pure]
-		public static IExceptionFilterBuilder<IFaultSpecification<TSubject>, TSubject> That<TSubject>(
+		public static IFluentExceptionFilterBuilder<TSubject> That<TSubject>(
 			[NotNull] this IProcedureBuilder<TSubject> builder, Expression<Action<TSubject>> expression)
 		{
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
 			builder.ValidateArgumentIsNotNull();
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			var procedure = new Procedure<TSubject>(expression, null);
-			return ExceptionFilterBuilder<IFaultSpecification<TSubject>, TSubject>.Make(procedure,
-				FaultSpecification<TSubject>.Make);
+			return new FluentExceptionFilterBuilder<TSubject>(procedure, null);
 		}
 
 		[System.Diagnostics.Contracts.Pure]
-		public static IExceptionFilterBuilder<IBoundFaultSpecification<TSubject>, TSubject> That<TSubject>(
+		public static IFluentBoundExceptionFilterBuilder<TSubject> That<TSubject>(
 			[NotNull] this IBoundProcedureBuilder<TSubject> builder, Expression<Action<TSubject>> expression)
 		{
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
@@ -50,9 +48,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfProcedures
 // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 			ISource<TSubject> source = builder.Xray.Source.ValidateArgumentIsNotNull();
 			IProcedure<TSubject> procedure = new Procedure<TSubject>(expression, source);
-			return ExceptionFilterBuilder<IBoundFaultSpecification<TSubject>, TSubject>.MakeBound(source,
-				procedure,
-				FaultSpecification<TSubject>.MakeBound);
+			return new FluentBoundExceptionFilterBuilder<TSubject>(procedure, null, source);
 		}
 
 		[System.Diagnostics.Contracts.Pure]

@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
@@ -14,7 +15,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 {
 	public static class IsComparableExtensions
 	{
-		[System.Diagnostics.Contracts.Pure]
+		[Pure]
 		public static TSpecification ComparablyEquivalentTo<TSpecification, TSubject, TResult>(
 			this IIs<TSpecification, TSubject, TResult> builder, TResult expected)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
@@ -24,7 +25,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			return Make(builder.Xray, expected, term);
 		}
 
-		[System.Diagnostics.Contracts.Pure]
+		[Pure]
 		public static TSpecification GreaterThan<TSpecification, TSubject, TResult>(
 			this IIs<TSpecification, TSubject, TResult> builder, TResult result)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
@@ -34,7 +35,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		}
 
 		private static TSpecification Make<TSpecification, TSubject, TResult>(
-			IIsState<TSpecification, TSubject, TResult> state, TResult expected, ComparablyEquivalentTo<TSpecification, TSubject, TResult> term)
+			IIsState<TSpecification, TSubject, TResult> state,
+			TResult expected,
+			ComparablyEquivalentTo<TSpecification, TSubject, TResult> term)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
@@ -57,5 +60,4 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			return state.BuilderState.Make(expectation);
 		}
 	}
-
 }
