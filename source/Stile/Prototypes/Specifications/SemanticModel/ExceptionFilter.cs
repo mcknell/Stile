@@ -11,13 +11,11 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.Hierarchy;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
-using Stile.Readability;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel
 {
-	public interface IExceptionFilter : IAcceptSpecificationVisitors,
-		IAcceptExpectationVisitors {}
+	public interface IExceptionFilter : IAcceptSpecificationVisitors {}
 
 	public interface IExceptionFilter<TSubject> : IExceptionFilter
 	{
@@ -32,7 +30,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		IObservation<TSubject> Filter(IObservation<TSubject> observation);
 	}
 
-	public interface IExceptionFilter<TSubject, TResult> : IExceptionFilter<TSubject>
+	public interface IExceptionFilter<TSubject, TResult> : IExceptionFilter<TSubject>,
+		IAcceptExpectationVisitors
 	{
 		[NotNull]
 		IInstrument<TSubject, TResult> Instrument { get; }
@@ -41,19 +40,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		IMeasurement<TSubject, TResult> Filter(IMeasurement<TSubject, TResult> measurement);
 	}
 
-	public static class FilterFor<TException>
-	{
-		public static ExceptionFilter<TSubject> GetSimplest<TSubject>(IProcedure<TSubject> procedure)
-		{
-			var exceptionFilter = new ExceptionFilter<TSubject>(x => x is TException,
-				procedure,
-				typeof(TException).ToLazyDebugString());
-			return exceptionFilter;
-		}
-	}
-
-	public class ExceptionFilter<TSubject> : 
-		IExceptionFilter<TSubject>
+	public class ExceptionFilter<TSubject> : IExceptionFilter<TSubject>
 	{
 		public ExceptionFilter([NotNull] Predicate<Exception> predicate,
 			[NotNull] IProcedure<TSubject> procedure,
@@ -76,11 +63,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		public Predicate<Exception> Predicate { get; private set; }
 		public ISource<TSubject> Source { get; private set; }
 
-		public virtual TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
-		{
-			return visitor.Visit1(this, data);
-		}
-
 		public virtual void Accept(ISpecificationVisitor visitor)
 		{
 			visitor.Visit1(this);
@@ -89,11 +71,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		public virtual TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit1(this, data);
-		}
-
-		public virtual void Accept(IExpectationVisitor visitor)
-		{
-			visitor.Visit1(this);
 		}
 
 		public IObservation<TSubject> Filter(IObservation<TSubject> observation)
@@ -108,24 +85,17 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			return filtered;
 		}
 
-		IAcceptExpectationVisitors IHasParent<IAcceptExpectationVisitors>.Parent
-		{
-			get { return null; }
-		}
-
 		protected List<IError> MarkHandledErrors(IObservation<TSubject> observation)
 		{
 			var errors = new List<IError>();
 			foreach (IError error in observation.Errors)
 			{
+				IError copy = error;
 				if (Predicate.Invoke(error.Exception))
 				{
-					errors.Add(new Error(error.Exception, true));
+					copy = new Error(error.Exception, true);
 				}
-				else
-				{
-					errors.Add(error);
-				}
+				errors.Add(copy);
 			}
 			return errors;
 		}
@@ -144,7 +114,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
 
-		public override TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
+		public virtual TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit2(this, data);
 		}
@@ -159,7 +129,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			return visitor.Visit2(this, data);
 		}
 
-		public override void Accept(IExpectationVisitor visitor)
+		public virtual void Accept(IExpectationVisitor visitor)
 		{
 			visitor.Visit2(this);
 		}
@@ -175,6 +145,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 				measurement.Deadline,
 				errors.ToArray());
 			return filtered;
+		}
+
+		IAcceptExpectationVisitors IHasParent<IAcceptExpectationVisitors>.Parent
+		{
+			get { return null; }
 		}
 	}
 }

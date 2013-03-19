@@ -27,11 +27,6 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 		public ShouldExpectationDescriber([CanBeNull] ISource source)
 			: base(source) {}
 
-		public void Visit1<TSubject>(IExceptionFilter<TSubject> target)
-		{
-			throw new NotImplementedException();
-		}
-
 		public void Visit2<TSubject, TResult>(IExceptionFilter<TSubject, TResult> target)
 		{
 			Append(" ");

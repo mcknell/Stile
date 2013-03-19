@@ -56,7 +56,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\NullFixture.cs" />
     <Compile Include="Prototypes\Specifications\Construction\ChainedSpecificationAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Construction\EnumerableSpecifyAcceptanceTests.cs" />
-    <Compile Include="Prototypes\Specifications\Deadlines\Deadline.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\DeadlineFixture.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Past\PastEvaluationDescriberFixture.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Past\PrintablePastAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldAcceptanceTests.cs" />
@@ -67,7 +67,6 @@
     <Compile Include="Prototypes\Specifications\SemanticModel\InstrumentFixture.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\OutcomeFixture.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\SourceFixture.cs" />
-    <Compile Include="Prototypes\Specifications\SubjunctiveSpecificationVisitorFixture.cs" />
     <Compile Include="Readability\NullFixture.cs" />
     <Compile Include="Readability\PrintExtensionsFixture.cs" />
     <Compile Include="Types\Enumerables\UnshiftFixture.cs" />

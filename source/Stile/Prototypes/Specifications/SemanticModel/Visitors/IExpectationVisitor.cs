@@ -17,7 +17,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 {
 	public interface IExpectationVisitor
 	{
-		void Visit1<TSubject>([NotNull] IExceptionFilter<TSubject> target);
 		void Visit2<TSubject, TResult>([NotNull] IExceptionFilter<TSubject, TResult> target);
 		void Visit2<TSubject, TResult>([NotNull] IExpectation<TSubject, TResult> target);
 
@@ -61,7 +60,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 
 	public interface IExpectationVisitor<TData> : IExpectationVisitor
 	{
-		TData Visit1<TSubject>([NotNull] IExceptionFilter<TSubject> target, TData data);
 		TData Visit1<TSubject>([NotNull] IFaultEvaluation<TSubject> target, TData data);
 		TData Visit2<TSubject, TResult>([NotNull] IExceptionFilter<TSubject, TResult> target, TData data);
 		TData Visit2<TSubject, TResult>([NotNull] IExpectation<TSubject, TResult> target, TData data);

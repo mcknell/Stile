@@ -19,14 +19,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 	public class Deadline : IDeadline
 	{
-		public static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
+		public static TimeSpan DefaultTimeout = TimeSpan. /*TODO: make this a config setting*/FromSeconds(5);
 		public static readonly Deadline Async = new Deadline(false);
 		public static readonly Deadline Synchronous = new Deadline(true);
 
 		protected Deadline(bool onThisThread)
 			: this(DefaultTimeout, onThisThread) {}
 
-		public Deadline(TimeSpan timeout, bool onThisThread )
+		public Deadline(TimeSpan timeout, bool onThisThread)
 			: this(timeout.Duration(), CancellationToken.None, onThisThread) {}
 
 		private Deadline(TimeSpan timeout, CancellationToken cancellationToken, bool onThisThread)

@@ -5,12 +5,15 @@
 
 #region using...
 using System;
+using System.Globalization;
 using NUnit.Framework;
 using Stile.Prototypes.Specifications;
+using Stile.Prototypes.Specifications.Builders.OfExceptionFilters;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfProcedures;
 using Stile.Prototypes.Specifications.Printable;
+using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Tests.Prototypes.Specifications.SampleObjects;
 #endregion
@@ -36,6 +39,25 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.Specifications.Should
 				specification = Specify.ThatAny<Foo<int>, int>().Has.All.ItemsSatisfying(x => x >= 0).AndThen.Is.Not.Empty;
 			Assert.That(specification.ToShould(), Is.EqualTo(@"Any Foo<int> should have all items >= 0 initially,
 then should not be empty when measured again"));
+		}
+
+		[Test]
+		public void ExpectationFilter()
+		{
+			int i = 8;
+			IEvaluation<int, string> evaluation =
+				Specify.For(() => i)
+					.That(x => x.ToString(CultureInfo.InvariantCulture))
+					.Throws<ArgumentOutOfRangeException>() //
+					.Evaluate();
+			Assert.That(evaluation.ToPastTense(),
+				Is.EqualTo(@"i.ToString(CultureInfo.InvariantCulture) should throw ArgumentOutOfRangeException
+but was ""8"" and no exception was thrown"));
+
+			IFaultSpecification<Foo<int>, IFluentExceptionFilterBuilder<Foo<int>>> specification =
+				Specify.ForAny<Foo<int>>().That(x => x.Clear()).Throws<ArgumentOutOfRangeException>();
+			Assert.That(specification.ToShould(),
+				Is.EqualTo(@"Any Foo<int>.Clear() should throw ArgumentOutOfRangeException"));
 		}
 
 		[Test]
