@@ -39,7 +39,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 		{
 			IAcceptSpecificationVisitors lastTerm = target.ValidateArgumentIsNotNull().Xray.LastTerm;
 			FillStackAndUnwind(lastTerm);
-			Append(PrintDeadlineIfAny(target.Xray.Deadline));
+			AppendSpecificationAfterthoughts(target.Xray.Deadline, target.Xray.Reason);
 		}
 
 		public void Visit1<TSubject>(IProcedure<TSubject> procedure)
@@ -92,7 +92,8 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 		{
 			IAcceptSpecificationVisitors lastTerm = target.ValidateArgumentIsNotNull().Xray.LastTerm;
 			FillStackAndUnwind(lastTerm);
-			Append(PrintDeadlineIfAny(target.Xray.Deadline));
+			ISpecificationState<TSubject, TResult> state = target.Xray;
+			AppendSpecificationAfterthoughts(state.Deadline, state.Reason);
 		}
 
 		public void Visit3<TSubject, TResult, TExpectationBuilder>(
@@ -117,15 +118,17 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			describer.Visit1(first);
 			if (stack.Count > 0)
 			{
-				describer.AppendFormat(" {0}",ShouldSpecifications.Initially);
+				describer.AppendFormat(" {0}", ShouldSpecifications.Initially);
 			}
 			while (stack.Count > 0)
 			{
 				IFaultSpecification<TSubject> popped = stack.Pop();
-				describer.Append(string.Format("{0}{1}", Environment.NewLine, ShouldSpecifications.Then));
+				describer.Append(string.Format("{0}{1} {2},",
+					Environment.NewLine,
+					ShouldSpecifications.Then,
+					ShouldSpecifications.WhenMeasuredAgain));
 				describer.Visit1(popped.Xray.ExceptionFilter);
-				describer.Append(PrintDeadlineIfAny(popped.Xray.Deadline));
-				describer.AppendFormat(" {0}", ShouldSpecifications.WhenMeasuredAgain);
+				describer.AppendSpecificationAfterthoughts(popped.Xray.Deadline, popped.Xray.Reason);
 			}
 			return describer.ToString();
 		}
@@ -150,15 +153,23 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			while (stack.Count > 0)
 			{
 				ISpecification<TSubject, TResult> popped = stack.Pop();
-				describer.Append(string.Format("{0}{1}", Environment.NewLine, ShouldSpecifications.Then));
+				describer.Append(string.Format("{0}{1} {2},",
+					Environment.NewLine,
+					ShouldSpecifications.Then,
+					ShouldSpecifications.WhenMeasuredAgain));
 				describer.Visit2(popped.Xray.Expectation);
-				describer.Append(PrintDeadlineIfAny(popped.Xray.Deadline));
-				describer.AppendFormat(" {0}", ShouldSpecifications.WhenMeasuredAgain);
+				describer.AppendSpecificationAfterthoughts(popped.Xray.Deadline, popped.Xray.Reason);
 			}
 			return describer.ToString();
 		}
 
-		private static string PrintDeadlineIfAny(IDeadline deadline)
+		private void AppendSpecificationAfterthoughts(IDeadline deadline, string because)
+		{
+			Append(DeadlineIfAny(deadline));
+			Append(ReasonIfAny(because));
+		}
+
+		private static string DeadlineIfAny(IDeadline deadline)
 		{
 			if (deadline != null)
 			{
@@ -167,6 +178,19 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 					return string.Format(", {0} {1}",
 						ShouldSpecifications.MeasurableInLessThan,
 						deadline.Timeout.ToReadableUnits());
+				}
+			}
+			return null;
+		}
+
+		private static string ReasonIfAny(string because)
+		{
+			if (because != null)
+			{
+				string trim = because.Trim();
+				if (trim.Length > 0)
+				{
+					return string.Format(", {0} {1}", ShouldSpecifications.Because, trim);
 				}
 			}
 			return null;

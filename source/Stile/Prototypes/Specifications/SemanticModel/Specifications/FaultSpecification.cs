@@ -26,7 +26,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 	public interface IFaultSpecification<TSubject, out TExceptionFilterBuilder> : IFaultSpecification<TSubject>,
 		IChainableSpecification<TExceptionFilterBuilder>
-		where TExceptionFilterBuilder : class, IExceptionFilterBuilder {}
+		where TExceptionFilterBuilder : class, IExceptionFilterBuilder
+	{
+		
+	}
 
 	public interface IFaultSpecificationState {}
 
@@ -65,8 +68,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			[NotNull] TExceptionFilterBuilder filterBuilder,
 			[CanBeNull] IFaultSpecification<TSubject> prior,
 			IDeadline deadline = null,
-			string because = null)
-			: base(exceptionFilter, exceptionFilter, deadline, because)
+			string reason = null)
+			: base(exceptionFilter, exceptionFilter, deadline, reason)
 		{
 			Procedure = procedure.ValidateArgumentIsNotNull();
 			_filterBuilder = filterBuilder.ValidateArgumentIsNotNull();
@@ -100,12 +103,24 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public override ISpecification Clone(IDeadline deadline)
 		{
+			IDeadline validated = deadline.ValidateArgumentIsNotNull();
 			return new FaultSpecification<TSubject, TExceptionFilterBuilder>(Procedure,
 				ExceptionFilter,
 				_filterBuilder,
 				Prior,
-				deadline,
-				Because);
+				validated,
+				Reason);
+		}
+
+		public override ISpecification Clone(string reason)
+		{
+			string because = reason.ValidateArgumentIsNotNull();
+			return new FaultSpecification<TSubject, TExceptionFilterBuilder>(Procedure,
+				ExceptionFilter,
+				_filterBuilder,
+				Prior,
+				Deadline,
+				because);
 		}
 
 		public IFaultEvaluation<TSubject> Evaluate(IDeadline deadline = null)

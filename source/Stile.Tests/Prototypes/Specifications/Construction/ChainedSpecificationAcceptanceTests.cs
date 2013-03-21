@@ -93,8 +93,8 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			IBoundFaultSpecification<Saboteur, IFluentBoundExceptionFilterBuilder<Saboteur>> spec3 = spec2 //
 				.AndThen.Throws<ArgumentOutOfRangeException>();
 			Assert.That(spec3.ToShould(), Is.EqualTo(@"saboteur.Throw() should throw ArgumentException initially,
-then should throw ArgumentNullException when measured again
-then should throw ArgumentOutOfRangeException when measured again"));
+then when measured again, should throw ArgumentNullException
+then when measured again, should throw ArgumentOutOfRangeException"));
 
 			IFaultEvaluation<Saboteur> evaluation = spec3.Evaluate();
 			AssertChainedFaultSpecification<ArgumentException>(evaluation, Outcome.Succeeded, spec1);

@@ -11,8 +11,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 {
-	public interface IBoundSpecification : ISpecification,
-		ISpecificationState {}
+	public interface IBoundSpecification : ISpecification {}
 
 	public interface IBoundSpecification<in TSubject> : IBoundSpecification,
 		ISpecification<TSubject> {}
@@ -28,5 +27,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public interface IBoundSpecification<TSubject, TResult, out TExpectationBuilder> :
 		IBoundSpecification<TSubject, TResult>,
 		ISpecification<TSubject, TResult, TExpectationBuilder>
-		where TExpectationBuilder : class, IExpectationBuilder {}
+		where TExpectationBuilder : class, IExpectationBuilder
+	{
+		new IBoundSpecification<TSubject, TResult, TExpectationBuilder> Because(string reason);
+	}
 }

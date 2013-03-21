@@ -98,6 +98,15 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to because.
+        /// </summary>
+        internal static string Because {
+            get {
+                return ResourceManager.GetString("Because", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to neither greater nor less than.
         /// </summary>
         internal static string ComparablyEquivalentTo {

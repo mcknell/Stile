@@ -15,16 +15,17 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	{
 		[System.Diagnostics.Contracts.Pure]
 		public static TSpecification Before<TSpecification>([NotNull] this TSpecification specification,
-			TimeSpan timeout) where TSpecification : class, ISpecification, ISpecificationState
+			TimeSpan timeout) where TSpecification : class, ISpecification
 		{
 			return specification.Before(new Deadline(timeout, false));
 		}
 
 		[System.Diagnostics.Contracts.Pure]
 		public static TSpecification Before<TSpecification>([NotNull] this TSpecification specification,
-			IDeadline deadline) where TSpecification : class, ISpecification, ISpecificationState
+			IDeadline deadline) where TSpecification : class, ISpecification
 		{
-			object clone = specification.Clone(deadline);
+			var specificationState = specification as ISpecificationState;
+			object clone = specificationState.Clone(deadline);
 			return (TSpecification) clone; // hackish dodge around strong chain-of-custody of type
 		}
 

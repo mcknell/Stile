@@ -36,12 +36,18 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public interface ISpecification<TSubject, TResult, out TExpectationBuilder> :
 		ISpecification<TSubject, TResult>,
 		IChainableSpecification<TExpectationBuilder>
-		where TExpectationBuilder : class, IExpectationBuilder {}
+		where TExpectationBuilder : class, IExpectationBuilder
+	{
+		ISpecification<TSubject, TResult, TExpectationBuilder> Because(string reason);
+	}
 
 	public interface ISpecificationState
 	{
 		[System.Diagnostics.Contracts.Pure]
-		ISpecification Clone([CanBeNull] IDeadline deadline);
+		ISpecification Clone([NotNull] IDeadline deadline);
+
+		[System.Diagnostics.Contracts.Pure]
+		ISpecification Clone([NotNull] string reason);
 	}
 
 	public interface ISpecificationState<out TSubject> : ISpecificationState,
@@ -49,11 +55,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		IAcceptEvaluationVisitors
 	{
 		[CanBeNull]
-		string Because { get; }
-		[CanBeNull]
 		IDeadline Deadline { get; }
 		[NotNull]
 		IAcceptSpecificationVisitors LastTerm { get; }
+		[CanBeNull]
+		string Reason { get; }
 	}
 
 	public interface ISpecificationState<TSubject, TResult> : ISpecificationState<TSubject>,
@@ -77,6 +83,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public abstract class Specification : ISpecificationState
 	{
 		public abstract ISpecification Clone(IDeadline deadline);
+		public abstract ISpecification Clone(string reason);
 	}
 
 	public abstract class Specification<TSubject, TExceptionFilter> : Specification,
@@ -86,18 +93,18 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		protected Specification([NotNull] IAcceptSpecificationVisitors lastTerm,
 			[CanBeNull] TExceptionFilter exceptionFilter,
 			[CanBeNull] IDeadline deadline,
-			[CanBeNull] string because)
+			[CanBeNull] string reason)
 		{
 			LastTerm = lastTerm.ValidateArgumentIsNotNull();
 			ExceptionFilter = exceptionFilter;
 			Deadline = deadline;
-			Because = because;
+			Reason = reason;
 		}
 
-		public string Because { get; private set; }
 		public IDeadline Deadline { get; private set; }
 		public TExceptionFilter ExceptionFilter { get; private set; }
 		public IAcceptSpecificationVisitors LastTerm { get; private set; }
+		public string Reason { get; private set; }
 	}
 
 	public class Specification<TSubject, TResult, TExpectationBuilder> :
@@ -117,8 +124,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			[CanBeNull] ISpecification<TSubject, TResult> prior,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null,
 			[Symbol] IDeadline deadline = null,
-			[Symbol] string because = null)
-			: base(lastTerm, exceptionFilter, deadline, because)
+			[Symbol] string reason = null)
+			: base(lastTerm, exceptionFilter, deadline, reason)
 		{
 			Expectation = expectation.ValidateArgumentIsNotNull();
 			_expectationBuilder = expectationBuilder.ValidateArgumentIsNotNull();
@@ -150,15 +157,15 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			get { return this; }
 		}
 
-		public override ISpecification Clone(IDeadline deadline)
+		public ISpecification<TSubject, TResult, TExpectationBuilder> Because(string reason)
 		{
-			return new Specification<TSubject, TResult, TExpectationBuilder>(Expectation,
-				_expectationBuilder,
-				LastTerm,
-				Prior,
-				ExceptionFilter,
-				deadline,
-				Because);
+			return (ISpecification<TSubject, TResult, TExpectationBuilder>) Clone(reason);
+		}
+
+		IBoundSpecification<TSubject, TResult, TExpectationBuilder>
+			IBoundSpecification<TSubject, TResult, TExpectationBuilder>.Because(string reason)
+		{
+			return (IBoundSpecification<TSubject, TResult, TExpectationBuilder>) Clone(reason);
 		}
 
 		public IEvaluation<TSubject, TResult> Evaluate(ISource<TSubject> source, IDeadline deadline = null)
@@ -192,6 +199,29 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public void Accept(IEvaluationVisitor visitor)
 		{
 			visitor.Visit3(this);
+		}
+
+		public override ISpecification Clone(IDeadline deadline)
+		{
+			IDeadline validated = deadline.ValidateArgumentIsNotNull();
+			return new Specification<TSubject, TResult, TExpectationBuilder>(Expectation,
+				_expectationBuilder,
+				LastTerm,
+				Prior,
+				ExceptionFilter,
+				validated,
+				Reason);
+		}
+
+		public override ISpecification Clone(string reason)
+		{
+			return new Specification<TSubject, TResult, TExpectationBuilder>(Expectation,
+				_expectationBuilder,
+				LastTerm,
+				Prior,
+				ExceptionFilter,
+				_deadline,
+				reason);
 		}
 
 		public IEvaluation<TSubject, TResult> Evaluate(ISource<TSubject> source,

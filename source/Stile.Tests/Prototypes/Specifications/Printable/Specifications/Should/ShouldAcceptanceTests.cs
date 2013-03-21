@@ -29,17 +29,18 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.Specifications.Should
 		{
 			int i = 9;
 			IBoundSpecification<int, TypeCode, IFluentBoundExpectationBuilder<int, TypeCode>> specification =
-				Specify.For(() => i).That(x => x.GetTypeCode()).Has.HashCode(0);
-			Assert.That(specification.ToShould(), Is.EqualTo(@"i.GetTypeCode() should have hashcode 0"));
+				Specify.For(() => i).That(x => x.GetTypeCode()).Has.HashCode(0).Because("I said so");
+			Assert.That(specification.ToShould(),
+				Is.EqualTo(@"i.GetTypeCode() should have hashcode 0, because I said so"));
 		}
 
 		[Test]
 		public void Chained()
 		{
 			ISpecification<Foo<int>, Foo<int>, IFluentEnumerableExpectationBuilder<Foo<int>, Foo<int>, int>>
-				specification = Specify.ThatAny<Foo<int>, int>().Has.All.ItemsSatisfying(x => x >= 0).AndThen.Is.Not.Empty;
+				specification = Specify.ThatAny<Foo<int>, int>().Has.All.ItemsSatisfying(x => x >= 0).AndThen.Is.Not.Empty.Because("otherwise it ain't right");
 			Assert.That(specification.ToShould(), Is.EqualTo(@"Any Foo<int> should have all items >= 0 initially,
-then should not be empty when measured again"));
+then when measured again, should not be empty, because otherwise it ain't right"));
 		}
 
 		[Test]

@@ -129,6 +129,9 @@
   <data name="AnyType" xml:space="preserve">
     <value>Any {0}</value>
   </data>
+  <data name="Because" xml:space="preserve">
+    <value>because</value>
+  </data>
   <data name="ComparablyEquivalentTo" xml:space="preserve">
     <value>neither greater nor less than</value>
   </data>
