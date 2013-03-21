@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
@@ -39,7 +40,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 		{
 			IAcceptSpecificationVisitors lastTerm = target.ValidateArgumentIsNotNull().Xray.LastTerm;
 			FillStackAndUnwind(lastTerm);
-			AppendSpecificationAfterthoughts(target.Xray.Deadline, target.Xray.Reason);
+			AppendSpecificationAfterthoughts(target.Xray);
 		}
 
 		public void Visit1<TSubject>(IProcedure<TSubject> procedure)
@@ -93,7 +94,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 			IAcceptSpecificationVisitors lastTerm = target.ValidateArgumentIsNotNull().Xray.LastTerm;
 			FillStackAndUnwind(lastTerm);
 			ISpecificationState<TSubject, TResult> state = target.Xray;
-			AppendSpecificationAfterthoughts(state.Deadline, state.Reason);
+			AppendSpecificationAfterthoughts(state);
 		}
 
 		public void Visit3<TSubject, TResult, TExpectationBuilder>(
@@ -107,66 +108,30 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 		{
 			ISource<TSubject> source = specification.Xray.Procedure.Xray.Source;
 			var describer = new ShouldSpecificationDescriber(source);
-			var stack = new Stack<IFaultSpecification<TSubject>>();
-			IFaultSpecification<TSubject> prior = specification;
-			while (prior != null)
-			{
-				stack.Push(prior);
-				prior = prior.Xray.Prior;
-			}
-			IFaultSpecification<TSubject> first = stack.Pop();
-			describer.Visit1(first);
-			if (stack.Count > 0)
-			{
-				describer.AppendFormat(" {0}", ShouldSpecifications.Initially);
-			}
-			while (stack.Count > 0)
-			{
-				IFaultSpecification<TSubject> popped = stack.Pop();
-				describer.Append(string.Format("{0}{1} {2},",
-					Environment.NewLine,
-					ShouldSpecifications.Then,
-					ShouldSpecifications.WhenMeasuredAgain));
-				describer.Visit1(popped.Xray.ExceptionFilter);
-				describer.AppendSpecificationAfterthoughts(popped.Xray.Deadline, popped.Xray.Reason);
-			}
-			return describer.ToString();
+
+			return DescribeCommon<IFaultSpecification<TSubject>, TSubject>(specification,
+				describer,
+				x => x.Xray.Prior,
+				describer.Visit1,
+				x => describer.Visit1(x.Xray.ExceptionFilter));
 		}
 
 		public static string Describe<TSubject, TResult>(ISpecification<TSubject, TResult> specification)
 		{
 			ISource<TSubject> source = specification.Xray.Expectation.Xray.Instrument.Xray.Source;
 			var describer = new ShouldSpecificationDescriber(source);
-			var stack = new Stack<ISpecification<TSubject, TResult>>();
-			ISpecification<TSubject, TResult> prior = specification;
-			while (prior != null)
-			{
-				stack.Push(prior);
-				prior = prior.Xray.Prior;
-			}
-			ISpecification<TSubject, TResult> first = stack.Pop();
-			describer.Visit2(first);
-			if (stack.Count > 0)
-			{
-				describer.AppendFormat(" {0}", ShouldSpecifications.Initially);
-			}
-			while (stack.Count > 0)
-			{
-				ISpecification<TSubject, TResult> popped = stack.Pop();
-				describer.Append(string.Format("{0}{1} {2},",
-					Environment.NewLine,
-					ShouldSpecifications.Then,
-					ShouldSpecifications.WhenMeasuredAgain));
-				describer.Visit2(popped.Xray.Expectation);
-				describer.AppendSpecificationAfterthoughts(popped.Xray.Deadline, popped.Xray.Reason);
-			}
-			return describer.ToString();
+
+			return DescribeCommon<ISpecification<TSubject, TResult>, TSubject>(specification,
+				describer,
+				x => x.Xray.Prior,
+				describer.Visit2,
+				x => describer.Visit2(x.Xray.Expectation));
 		}
 
-		private void AppendSpecificationAfterthoughts(IDeadline deadline, string because)
+		private void AppendSpecificationAfterthoughts<TSubject>(ISpecificationState<TSubject> state)
 		{
-			Append(DeadlineIfAny(deadline));
-			Append(ReasonIfAny(because));
+			Append(DeadlineIfAny(state.Deadline));
+			Append(ReasonIfAny(state.Reason));
 		}
 
 		private static string DeadlineIfAny(IDeadline deadline)
@@ -181,6 +146,39 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
 				}
 			}
 			return null;
+		}
+
+		private static string DescribeCommon<TSpecification, TSubject>(TSpecification specification,
+			ShouldSpecificationDescriber describer,
+			Func<TSpecification, TSpecification> priorExtractor,
+			Action<TSpecification> visitor,
+			Action<TSpecification> repeatVisitor)
+			where TSpecification : class, ISpecification<TSubject>, IHides<ISpecificationState<TSubject>>
+		{
+			var stack = new Stack<TSpecification>();
+			TSpecification prior = specification;
+			while (prior != null)
+			{
+				stack.Push(prior);
+				prior = priorExtractor.Invoke(prior);
+			}
+			TSpecification first = stack.Pop();
+			visitor.Invoke(first);
+			if (stack.Count > 0)
+			{
+				describer.AppendFormat(" {0}", ShouldSpecifications.Initially);
+			}
+			while (stack.Count > 0)
+			{
+				TSpecification popped = stack.Pop();
+				describer.Append(string.Format("{0}{1} {2},",
+					Environment.NewLine,
+					ShouldSpecifications.Then,
+					ShouldSpecifications.WhenMeasuredAgain));
+				repeatVisitor(popped);
+				describer.AppendSpecificationAfterthoughts(popped.Xray);
+			}
+			return describer.ToString();
 		}
 
 		private static string ReasonIfAny(string because)

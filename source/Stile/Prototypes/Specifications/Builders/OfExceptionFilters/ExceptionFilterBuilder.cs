@@ -45,7 +45,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 		IExceptionFilterBuilder<TSpecification, TSubject>,
 		IExceptionFilterBuilderState<TSpecification, TSubject>
 		where TSpecification : class, IFaultSpecification<TSubject>
-		where TBuilder : class, IExceptionFilterBuilder
+		where TBuilder : class, IExceptionFilterBuilder, IHides<IExceptionFilterBuilderState>
 	{
 		protected ExceptionFilterBuilder([NotNull] IProcedure<TSubject> procedure,
 			[CanBeNull] TSpecification prior,

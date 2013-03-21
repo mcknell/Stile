@@ -26,10 +26,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 	public interface IFaultSpecification<TSubject, out TExceptionFilterBuilder> : IFaultSpecification<TSubject>,
 		IChainableSpecification<TExceptionFilterBuilder>
-		where TExceptionFilterBuilder : class, IExceptionFilterBuilder
-	{
-		
-	}
+		where TExceptionFilterBuilder : class, IExceptionFilterBuilder {}
 
 	public interface IFaultSpecificationState {}
 
@@ -58,7 +55,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		Specification<TSubject, IExceptionFilter<TSubject>>,
 		IBoundFaultSpecification<TSubject, TExceptionFilterBuilder>,
 		IFaultSpecificationState<TSubject>
-		where TExceptionFilterBuilder : class, IExceptionFilterBuilder
+		where TExceptionFilterBuilder : class, IExceptionFilterBuilder, IHides<IExceptionFilterBuilderState>
 	{
 		private readonly TExceptionFilterBuilder _filterBuilder;
 		private readonly IExceptionFilterBuilderState _filterBuilderState;
@@ -73,10 +70,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		{
 			Procedure = procedure.ValidateArgumentIsNotNull();
 			_filterBuilder = filterBuilder.ValidateArgumentIsNotNull();
-			_filterBuilderState = _filterBuilder as IExceptionFilterBuilderState;
+			_filterBuilderState = _filterBuilder.Xray;
 			if (_filterBuilderState == null)
 			{
-				throw new ArgumentException(string.Format("Argument of type {0} must be convertible to {1}",
+				throw new ArgumentException(string.Format("Argument of type {0} must have a {1}",
 					filterBuilder.GetType().Name,
 					typeof(IExceptionFilterBuilderState).Name));
 			}
@@ -99,28 +96,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public IFaultSpecificationState<TSubject> Xray
 		{
 			get { return this; }
-		}
-
-		public override ISpecification Clone(IDeadline deadline)
-		{
-			IDeadline validated = deadline.ValidateArgumentIsNotNull();
-			return new FaultSpecification<TSubject, TExceptionFilterBuilder>(Procedure,
-				ExceptionFilter,
-				_filterBuilder,
-				Prior,
-				validated,
-				Reason);
-		}
-
-		public override ISpecification Clone(string reason)
-		{
-			string because = reason.ValidateArgumentIsNotNull();
-			return new FaultSpecification<TSubject, TExceptionFilterBuilder>(Procedure,
-				ExceptionFilter,
-				_filterBuilder,
-				Prior,
-				Deadline,
-				because);
 		}
 
 		public IFaultEvaluation<TSubject> Evaluate(IDeadline deadline = null)
@@ -147,6 +122,28 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public void Accept(IEvaluationVisitor visitor)
 		{
 			visitor.Visit1(this);
+		}
+
+		public override ISpecification Clone(IDeadline deadline)
+		{
+			IDeadline validated = deadline.ValidateArgumentIsNotNull();
+			return new FaultSpecification<TSubject, TExceptionFilterBuilder>(Procedure,
+				ExceptionFilter,
+				_filterBuilder,
+				Prior,
+				validated,
+				Reason);
+		}
+
+		public override ISpecification Clone(string reason)
+		{
+			string because = reason.ValidateArgumentIsNotNull();
+			return new FaultSpecification<TSubject, TExceptionFilterBuilder>(Procedure,
+				ExceptionFilter,
+				_filterBuilder,
+				Prior,
+				Deadline,
+				because);
 		}
 
 		public IFaultEvaluation<TSubject> Evaluate(ISource<TSubject> source,
