@@ -1,6 +1,6 @@
 ﻿#region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Propter project on GitHub
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -12,18 +12,17 @@ using System.Reflection;
 
 namespace Stile.DocumentationGeneration
 {
-    public static class Program
-    {
-        public static int Main(string[] args)
-        {
-            Console.WriteLine("Beginning "+ typeof(Program).Assembly.GetName().Name);
-            Assembly stile = typeof(VersionedLanguage).Assembly;
-            Assembly[] others = args.Select(Assembly.ReflectionOnlyLoadFrom).ToArray();
-            var generator = new Generator(stile, ProductionRuleExtensions.Lexicon, others);
-            string generated = generator.Generate();
-            Debugger.Break();
-            Console.WriteLine(generated);
-            return 0;
-        }
-    }
+	public static class Program
+	{
+		public static int Main(string[] args)
+		{
+			//Console.WriteLine("Beginning " + typeof(Program).Assembly.GetName().Name);
+			Assembly[] others = args.Select(Assembly.ReflectionOnlyLoadFrom).ToArray();
+			var generator = new Generator(others);
+			string generated = generator.Generate();
+			Debugger.Break();
+			Console.WriteLine(generated);
+			return 0;
+		}
+	}
 }

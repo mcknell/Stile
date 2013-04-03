@@ -3,7 +3,7 @@
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
-namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
+namespace Stile.DocumentationGeneration
 {
     public enum Terminal
     {

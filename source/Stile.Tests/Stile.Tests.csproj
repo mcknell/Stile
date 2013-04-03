@@ -51,6 +51,7 @@
     <Compile Include="Patterns\Behavioral\Traversal\NonrepeatingTraverserFixture.cs" />
     <Compile Include="Patterns\Behavioral\Traversal\TraverserFixture.cs" />
     <Compile Include="Prototypes\Collections\HashBucketFixture.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\SymbolNodeFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIsTests.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\IsComparableExtensionsTests.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\NullFixture.cs" />

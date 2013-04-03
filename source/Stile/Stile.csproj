@@ -66,6 +66,8 @@
     <Compile Include="Patterns\Structural\FluentInterface\INegatable.cs" />
     <Compile Include="Patterns\Lifetimes\Lazy\Lazier.cs" />
     <Compile Include="Patterns\Structural\Hierarchy\IHasParent.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\SymbolLink.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\SymbolNode.cs" />
     <Compile Include="Prototypes\Specifications\Builders\Lifecycle\IHasSource.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\FluentBoundExceptionFilterBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\FluentExceptionFilterBuilder.cs" />
@@ -87,6 +89,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EqualTo.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Null.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Nullable.cs" />
+    <Compile Include="Prototypes\Specifications\Grammar\Nonterminal.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Describer.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldExpectationDescriber.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldSpecificationDescriber.cs" />
@@ -140,12 +143,9 @@
     <Compile Include="Prototypes\Specifications\Printable\Output\ActualClause.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ExpectationVerb.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ExpectedClause.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\Terminal.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\ExplainerClause.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\PrefixAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\RuleAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\SymbolAttribute.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\Variable.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Construction\GrammarMetadata\SpecificationRuleAttribute.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\Evaluation.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\IBoundSpecification.cs" />

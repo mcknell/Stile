@@ -19,9 +19,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		{
 			var hashcode = new Hashcode<TSpecification, TSubject, TResult>(has.Xray, hashCode);
-			var expectation = new Expectation<TSubject, TResult>(x => x.GetHashCode() == hashCode,
-				hashcode,
-				has.Xray.ExpectationBuilder.Instrument);
+			var expectation = new Expectation<TSubject, TResult>(has.Xray.ExpectationBuilder.Instrument, x => x.GetHashCode() == hashCode, hashcode);
 			TSpecification specification = has.Xray.ExpectationBuilder.Make(expectation);
 			return specification;
 		}

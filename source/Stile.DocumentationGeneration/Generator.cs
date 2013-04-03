@@ -20,8 +20,13 @@ namespace Stile.DocumentationGeneration
 {
 	public class Generator
 	{
+		private const BindingFlags Everything =
+			BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 		private readonly List<Assembly> _assemblies;
 		private readonly Dictionary<string, string> _literalLexicon;
+
+		public Generator(params Assembly[] others)
+			: this(typeof(VersionedLanguage).Assembly, ProductionRuleExtensions.Lexicon, others) {}
 
 		public Generator([NotNull] Assembly stile,
 			Dictionary<string, string> literalLexicon,
@@ -31,6 +36,7 @@ namespace Stile.DocumentationGeneration
 			_assemblies = others.Unshift(stile).ToList();
 		}
 
+		[NotNull]
 		public string Generate()
 		{
 			HashBucket<string, ProductionRule> rules = GetRuleCandidates();
@@ -136,9 +142,19 @@ namespace Stile.DocumentationGeneration
 			return initialRules;
 		}
 
+		private ProductionRule GetProperty([NotNull] PropertyInfo propertyInfo, [NotNull] RuleAttribute attribute)
+		{
+			var productionRule = new ProductionRule(attribute.SymbolToken, propertyInfo.Name);
+			if (attribute.StartsGrammar)
+			{
+				productionRule.SortOrder = -1;
+			}
+			return productionRule;
+		}
+
 		private ProductionRule GetRule([NotNull] MethodBase methodInfo, [NotNull] RuleAttribute attribute)
 		{
-			string symbol = attribute.SymbolToken ?? methodInfo.Name;
+			string symbol = GetSymbol(methodInfo, attribute);
 			var symbols = new List<string>();
 			foreach (ParameterInfo parameterInfo in methodInfo.GetParameters())
 			{
@@ -146,11 +162,11 @@ namespace Stile.DocumentationGeneration
 				var parameterAttribute = parameterInfo.GetCustomAttribute<SymbolAttribute>();
 				if (parameterAttribute != null)
 				{
-					parameterName = parameterAttribute.SymbolToken ?? parameterName;
-					IEnumerable<string> strings = new[]
-					{parameterAttribute.PrefixToken, parameterName, parameterAttribute.SuffixToken} //
-						.Where(x => string.IsNullOrWhiteSpace(x) == false);
-					parameterName = string.Join(" ", strings);
+					//parameterName = parameterAttribute.SymbolToken ?? parameterName;
+					//IEnumerable<string> strings = new[]
+					//{parameterAttribute.PrefixToken, parameterName, parameterAttribute.SuffixToken} //
+					//	.Where(x => string.IsNullOrWhiteSpace(x) == false);
+					//parameterName = string.Join(" ", strings);
 
 					if (parameterInfo.IsOptional)
 					{
@@ -160,19 +176,19 @@ namespace Stile.DocumentationGeneration
 				}
 			}
 			ProductionRule productionRule;
-			if (attribute.Items.Any())
-			{
-				string format = string.Join(" ", attribute.Items);
-				string substituted = string.Format(format, symbols.Cast<object>().ToArray());
-				productionRule = new ProductionRule(symbol, substituted);
-			}
-			else
-			{
-				productionRule = new ProductionRule(symbol, symbols);
-			}
-			productionRule.CanBeInlined = attribute.Inline;
+			//if (attribute.Items.Any())
+			//{
+			//	string format = string.Join(" ", attribute.Items);
+			//	string substituted = string.Format(format, symbols.Cast<object>().ToArray());
+			//	productionRule = new ProductionRule(symbol, substituted);
+			//}
+			//else
+			//{
+			productionRule = new ProductionRule(symbol, symbols);
+			//}
+			//productionRule.CanBeInlined = attribute.Inline;
 			// hack to put start symbol at top; would be nice to attempt a topological sort
-			if (attribute.Symbol == Variable.StartSymbol)
+			if (attribute.StartsGrammar)
 			{
 				productionRule.SortOrder = -1;
 			}
@@ -187,19 +203,22 @@ namespace Stile.DocumentationGeneration
 				ProductionRule rule = GetRule(tuple.Item1, tuple.Item2);
 				rules.Add(rule.Left, rule);
 			}
+			foreach (Tuple<PropertyInfo, RuleAttribute> tuple in GetRuleProperties(_assemblies))
+			{
+				ProductionRule rule = GetProperty(tuple.Item1, tuple.Item2);
+				rules.Add(rule.Left, rule);
+			}
 			return rules;
 		}
 
 		private static IEnumerable<Tuple<MethodBase, RuleAttribute>> GetRuleMethods(IEnumerable<Assembly> assemblies)
 		{
-			const BindingFlags bindingFlags =
-				BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 			foreach (Assembly assembly in assemblies)
 			{
 				foreach (Type type in assembly.GetTypes())
 				{
-					IEnumerable<MethodBase> methodBases = type.GetMethods(bindingFlags).Cast<MethodBase>() //
-						.Concat(type.GetConstructors(bindingFlags)) //
+					IEnumerable<MethodBase> methodBases = type.GetMethods(Everything).Cast<MethodBase>() //
+						.Concat(type.GetConstructors(Everything)) //
 						.Where(x => x.ReflectedType == x.DeclaringType);
 					foreach (MethodBase methodInfo in methodBases)
 					{
@@ -211,6 +230,51 @@ namespace Stile.DocumentationGeneration
 					}
 				}
 			}
+		}
+
+		private static IEnumerable<Tuple<PropertyInfo, RuleAttribute>> GetRuleProperties(
+			IEnumerable<Assembly> assemblies)
+		{
+			foreach (Assembly assembly in assemblies)
+			{
+				foreach (Type type in assembly.GetTypes())
+				{
+					IEnumerable<PropertyInfo> methodBases = type.GetProperties(Everything) //
+						.Where(x => x.ReflectedType == x.DeclaringType);
+					foreach (PropertyInfo propertyInfo in methodBases)
+					{
+						var attribute = propertyInfo.GetCustomAttribute<RuleAttribute>(false);
+						if (attribute != null)
+						{
+							yield return Tuple.Create(propertyInfo, attribute);
+						}
+					}
+				}
+			}
+		}
+
+		private static string GetSymbol(MethodBase methodInfo, RuleAttribute attribute)
+		{
+			var constructorInfo = methodInfo as ConstructorInfo;
+			string symbol;
+			if (attribute.SymbolToken != null)
+			{
+				symbol = attribute.SymbolToken;
+			}
+			else if (constructorInfo != null)
+			{
+				symbol = constructorInfo.DeclaringType.Name;
+				int firstBackTick = symbol.IndexOf("`");
+				if (firstBackTick > 0)
+				{
+					symbol = symbol.Substring(0, firstBackTick);
+				}
+			}
+			else
+			{
+				symbol = methodInfo.Name;
+			}
+			return symbol;
 		}
 
 		private IEnumerable<ProductionRule> Inline(List<ProductionRule> rules)

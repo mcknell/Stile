@@ -1,0 +1,24 @@
+
+Specification ::= Source? Elaboration
+
+Elaboration ::= ((Instrument (Expectation | Exception)) | Procedure Exception) Before? Reason?
+
+Expectation ::= Instrument Predicate /* inline; from ctor */
+
+Instrument ::= Source Extraction /* inline; from ctor */
+
+Predicate ::= (Is (Equatable | Comparable | MemberOf)
+	| (Has | EnumerableHas )
+	| Throws)
+
+Is ::= "is" Not?
+	
+Equatable ::= EqualTo /* inline; from markup */
+
+Comparable ::= (AtLeast | GreaterThan | ComparablyEquivalentTo) /* inline; from markup */
+
+Has ::= "has" HashCode
+
+EnumerableHas ::= "has" (AtLeast | All) ItemsSatisfying
+
+ChainedSpecification ::= Specification AndThen Elaboration

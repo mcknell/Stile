@@ -13,8 +13,11 @@ namespace Stile.Tests.Prototypes.Specifications.SampleObjects
 {
 	public class Saboteur
 	{
-		public Saboteur(int? dudsBeforeThrow = null)
+		private readonly bool _writeToConsole;
+
+		public Saboteur(int? dudsBeforeThrow = null, bool writeToConsole = false)
 		{
+			_writeToConsole = writeToConsole;
 			MisfiresRemaining = dudsBeforeThrow;
 		}
 
@@ -51,9 +54,12 @@ namespace Stile.Tests.Prototypes.Specifications.SampleObjects
 			var stopwatch = new Stopwatch();
 			if (Fuse.HasValue)
 			{
-				Console.WriteLine("Saboteur sleeping at {0:HH:mm:ss.fff} for {1}ms",
-					DateTime.Now,
-					Fuse.Value.TotalMilliseconds);
+				if (_writeToConsole)
+				{
+					Console.WriteLine("Saboteur sleeping at {0:HH:mm:ss.fff} for {1}ms",
+						DateTime.Now,
+						Fuse.Value.TotalMilliseconds);
+				}
 				stopwatch.Start();
 				Thread.Sleep(Fuse.Value);
 			}
@@ -62,8 +68,11 @@ namespace Stile.Tests.Prototypes.Specifications.SampleObjects
 				stopwatch.Start();
 			}
 			ThrowCalled = true;
-			Console.WriteLine("Saboteur about to throw at: {0:HH:mm:ss.fff}", DateTime.Now);
-			Console.WriteLine("Elapsed Saboteur time: {0}ms", stopwatch.ElapsedMilliseconds);
+			if (_writeToConsole)
+			{
+				Console.WriteLine("Saboteur about to throw at: {0:HH:mm:ss.fff}", DateTime.Now);
+				Console.WriteLine("Elapsed Saboteur time: {0}ms", stopwatch.ElapsedMilliseconds);
+			}
 			throw LazyThrower.Value;
 		}
 	}

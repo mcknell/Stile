@@ -12,6 +12,8 @@ using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
+using Stile.Prototypes.Specifications.Grammar;
+using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
@@ -37,8 +39,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		where TIs : class, IIs<TSpecification, TSubject, TResult>
 	{
 		[System.Diagnostics.Contracts.Pure]
+		[Rule(Nonterminal.Expectation)]
 		THas Has { get; }
 		[System.Diagnostics.Contracts.Pure]
+		[Rule(Nonterminal.Expectation)]
 		TIs Is { get; }
 	}
 
@@ -119,9 +123,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 				Instrument,
 				typeof(TException).ToLazyDebugString());
 			Expression<Predicate<TResult>> expression = result => true;
-			var expectation = new Expectation<TSubject, TResult>(expression.Compile,
-				exceptionFilter,
-				exceptionFilter.Instrument);
+			var expectation = new Expectation<TSubject, TResult>(exceptionFilter.Instrument,
+				expression,
+				exceptionFilter);
 			return Make(expectation, exceptionFilter);
 		}
 

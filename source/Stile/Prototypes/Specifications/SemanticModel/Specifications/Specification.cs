@@ -117,9 +117,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		private readonly TExpectationBuilder _expectationBuilder;
 		private readonly IExpectationBuilderState _expectationBuilderState;
 
-		[Rule]
-		public Specification([NotNull] IExpectation<TSubject, TResult> expectation,
-			[Symbol] [NotNull] TExpectationBuilder expectationBuilder,
+		[Rule(StartsGrammar = true)]
+		public Specification([Symbol] [NotNull] IExpectation<TSubject, TResult> expectation,
+			[NotNull] TExpectationBuilder expectationBuilder,
 			[NotNull] IAcceptSpecificationVisitors lastTerm,
 			[CanBeNull] ISpecification<TSubject, TResult> prior,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null,
