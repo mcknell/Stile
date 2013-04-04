@@ -7,15 +7,20 @@
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.Grammar;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.CodeMetadata
 {
 	public class Symbol : IEquatable<Symbol>
 	{
+		public static readonly Symbol Deadline = new Symbol(Nonterminal.Deadline.ToString());
+		public static readonly Symbol Expectation = new Symbol(Nonterminal.Expectation.ToString());
+		public static readonly Symbol Specification = new Symbol(Nonterminal.Specification.ToString());
+
 		public Symbol([NotNull] string token)
 		{
-			Token = token.Validate().EnumerableOf<char>().IsNotNullOrEmpty();
+			Token = token.Trim().Validate().EnumerableOf<char>().IsNotNullOrEmpty();
 		}
 
 		[NotNull]
@@ -55,6 +60,11 @@ namespace Stile.Prototypes.Compilation.Grammars.CodeMetadata
 		public override int GetHashCode()
 		{
 			return Token.GetHashCode();
+		}
+
+		public static Symbol Make([NotNull] string token)
+		{
+			return new Symbol(token);
 		}
 
 		public override string ToString()

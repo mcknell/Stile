@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using JetBrains.Annotations;
+using Stile.Patterns.Behavioral.Validation;
 using Stile.Readability;
 #endregion
 
@@ -18,6 +20,57 @@ namespace Stile.Types.Enumerables
 	{
 		private static readonly MethodInfo ToDebugStringGenericMethodDefinition =
 			((EnumerableLazyPrintMethod<int>) ToDebugString).Method.GetGenericMethodDefinition();
+
+		public static bool None<TItem>(this IEnumerable<TItem> items)
+		{
+			return items.Any() == false;
+		}
+
+		[NotNull]
+		[System.Diagnostics.Contracts.Pure]
+		public static IEnumerable<TItem> SkipWith<TItem>([NotNull] this IEnumerable<TItem> items,
+			[NotNull] Action<TItem> action,
+			int count = 1)
+		{
+			IEnumerator<TItem> enumerator = items.ValidateArgumentIsNotNull().GetEnumerator();
+			Action<TItem> validAction = action.ValidateArgumentIsNotNull();
+			for (int i = 0; i < count; i++)
+			{
+				if (enumerator.MoveNext())
+				{
+					validAction.Invoke(enumerator.Current);
+				}
+				else
+				{
+					break;
+				}
+			}
+			while (enumerator.MoveNext())
+			{
+				yield return enumerator.Current;
+			}
+		}
+
+		[NotNull]
+		[System.Diagnostics.Contracts.Pure]
+		public static IEnumerable<Tuple<TItem, TItem>> ToAdjacentPairs<TItem>(
+			[NotNull] this IEnumerable<TItem> items, Action<TItem> actionOnFirstItem = null)
+		{
+			TItem prior = default(TItem);
+			Action<TItem> wrapper = item =>
+			{
+				prior = item;
+				if (actionOnFirstItem != null)
+				{
+					actionOnFirstItem.Invoke(item);
+				}
+			};
+			foreach (TItem item in items.SkipWith(wrapper))
+			{
+				yield return Tuple.Create(prior, item);
+				prior = item;
+			}
+		}
 
 		public static string ToDebugString<TItem>(this IEnumerable<TItem> enumerable,
 			int lengthLimit = Default.LengthLimit)
@@ -41,7 +94,8 @@ namespace Stile.Types.Enumerables
 				{
 					sb.AppendFormat(", {0}", enumerator.Current.ToDebugString());
 				}
-			} else
+			}
+			else
 			{
 				sb.Append(PrintExtensions.ReadableEmpty);
 			}
@@ -64,11 +118,6 @@ namespace Stile.Types.Enumerables
 		public static Lazy<string> ToLazyDebugString(object enumerable, Type itemType)
 		{
 			return new Lazy<string>(() => ToDebugString(enumerable, itemType));
-		}
-
-		public static bool None<TItem>(this IEnumerable<TItem> items)
-		{
-			return items.Any() == false;
 		}
 
 		/// <summary>

@@ -4,20 +4,70 @@
 #endregion
 
 #region using...
+using System;
 using JetBrains.Annotations;
+using Stile.Patterns.Behavioral.Validation;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.CodeMetadata
 {
-	public class SymbolLink
+	public class SymbolLink : IEquatable<SymbolLink>
 	{
-		public SymbolLink([NotNull] SymbolNode prior, [NotNull] SymbolNode next)
+		public SymbolLink([NotNull] Symbol prior, [NotNull] Symbol next)
 		{
-			Prior = prior;
-			Next = next;
+			Prior = prior.ValidateArgumentIsNotNull();
+			Next = next.ValidateArgumentIsNotNull();
 		}
 
-		public SymbolNode Next { get; set; }
-		public SymbolNode Prior { get; set; }
+		[NotNull]
+		public Symbol Next { get; private set; }
+		[NotNull]
+		public Symbol Prior { get; private set; }
+
+		public bool Equals(SymbolLink other)
+		{
+			if (ReferenceEquals(other, null))
+			{
+				return false;
+			}
+			return Next.Equals(other.Next) && Prior.Equals(other.Prior);
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (ReferenceEquals(null, obj))
+			{
+				return false;
+			}
+			if (ReferenceEquals(this, obj))
+			{
+				return true;
+			}
+			var other = obj as SymbolLink;
+			return other != null && Equals(other);
+		}
+
+		public override int GetHashCode()
+		{
+			checked
+			{
+				return Next.GetHashCode() ^ Prior.GetHashCode();
+			}
+		}
+
+		public static SymbolLink Make([NotNull] Symbol prior, [NotNull] Symbol next)
+		{
+			return new SymbolLink(prior, next);
+		}
+
+		public static bool operator ==(SymbolLink left, SymbolLink right)
+		{
+			return Equals(left, right);
+		}
+
+		public static bool operator !=(SymbolLink left, SymbolLink right)
+		{
+			return !Equals(left, right);
+		}
 	}
 }

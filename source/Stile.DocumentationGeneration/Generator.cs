@@ -35,7 +35,9 @@ namespace Stile.DocumentationGeneration
 		[NotNull]
 		public string Generate()
 		{
-			HashBucket<string, ProductionRule> rules = _reflector.GetRuleCandidates().Concat(GetInitialRules());
+			HashBucket<string, ProductionRule> initialRules = GetInitialRules();
+			HashBucket<string, ProductionRule> ruleCandidates = _reflector.GetRuleCandidates();
+			HashBucket<string, ProductionRule> rules = ruleCandidates.Concat(initialRules);
 
 			IEnumerable<ProductionRule> consolidated = Consolidate(rules);
 

@@ -70,6 +70,8 @@
     <Compile Include="Prototypes\Specifications\SemanticModel\SourceFixture.cs" />
     <Compile Include="Readability\NullFixture.cs" />
     <Compile Include="Readability\PrintExtensionsFixture.cs" />
+    <Compile Include="Types\Enumerables\ToAdjacentPairsFixture.cs" />
+    <Compile Include="Types\Enumerables\SkipWithFixture.cs" />
     <Compile Include="Types\Enumerables\UnshiftFixture.cs" />
     <Compile Include="Types\Equality\EqualityExtensionsFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
