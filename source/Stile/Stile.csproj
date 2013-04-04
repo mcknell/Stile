@@ -66,6 +66,7 @@
     <Compile Include="Patterns\Structural\FluentInterface\INegatable.cs" />
     <Compile Include="Patterns\Lifetimes\Lazy\Lazier.cs" />
     <Compile Include="Patterns\Structural\Hierarchy\IHasParent.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\Symbol.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\SymbolLink.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\SymbolNode.cs" />
     <Compile Include="Prototypes\Specifications\Builders\Lifecycle\IHasSource.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Nullable.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Nonterminal.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Describer.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\RuleExpansionAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldExpectationDescriber.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldSpecificationDescriber.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldSpecifications.Designer.cs">

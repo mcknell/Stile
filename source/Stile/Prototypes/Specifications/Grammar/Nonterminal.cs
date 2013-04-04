@@ -8,6 +8,8 @@ namespace Stile.Prototypes.Specifications.Grammar
 	public enum Nonterminal
 	{
 		Specification,
-		Expectation
+		Expectation,
+		Has,
+		Is
 	}
 }

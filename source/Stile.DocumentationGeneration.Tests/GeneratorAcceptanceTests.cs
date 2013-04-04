@@ -15,7 +15,8 @@ namespace Stile.DocumentationGeneration.Tests
 		[Test]
 		public void Prints()
 		{
-			string generated = new Generator().Generate();
+			var generator = new Generator();
+			string generated = generator.Generate();
 			Assert.That(generated, Is.Not.Null);
 			//StringAssert.Contains("Expectation ::= Is", generated);
 			//StringAssert.Contains("Expectation ::= Has", generated);
