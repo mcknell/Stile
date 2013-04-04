@@ -1,6 +1,6 @@
 ﻿#region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Propter project on GitHub
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -9,20 +9,37 @@ using System.Collections.Generic;
 
 namespace Stile.Prototypes.Collections
 {
-    public class HashBucket<TKey, TItem> : Dictionary<TKey, IList<TItem>>
-    {
-        public void Add(TKey key, TItem item)
-        {
-            IList<TItem> list;
-            if (TryGetValue(key, out list) == false)
-            {
-                list = new List<TItem> {item};
-                Add(key, list);
-            }
-            else
-            {
-                list.Add(item);
-            }
-        }
-    }
+	public class HashBucket<TKey, TItem> : Dictionary<TKey, ISet<TItem>>
+	{
+		private readonly IEqualityComparer<TItem> _itemComparer;
+
+		public HashBucket(IEqualityComparer<TKey> keyComparer = null, IEqualityComparer<TItem> itemComparer = null)
+			: base(keyComparer)
+		{
+			_itemComparer = itemComparer;
+		}
+
+		public void Add(TKey key, TItem item)
+		{
+			ISet<TItem> set;
+			if (TryGetValue(key, out set) == false)
+			{
+				set = new HashSet<TItem>(_itemComparer) {item};
+				Add(key, set);
+			}
+			else
+			{
+				set.Add(item);
+			}
+		}
+
+		public HashBucket<TKey, TItem> Concat(HashBucket<TKey, TItem> hashBucket)
+		{
+			foreach (KeyValuePair<TKey, ISet<TItem>> pair in hashBucket)
+			{
+				Add(pair.Key, pair.Value);
+			}
+			return this;
+		}
+	}
 }

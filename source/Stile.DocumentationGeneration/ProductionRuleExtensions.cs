@@ -32,7 +32,7 @@ namespace Stile.DocumentationGeneration
             {Variable.Subject.ToString(), "subject-value"},
             {Variable.SubjectClause.ToString(), "subject-clause"},
             {Variable.ExpectationClause.ToString(), "expectation-clause"},
-            {Variable.Specification.ToString(), "specification"},
+            {Variable.Specification.ToString(), "Specification"},
             {Variable.StartSymbol.ToString(), "grammar"},
             {Variable.ActualValue.ToString(), "actual-value"},
             {Variable.ExpectedValue.ToString(), "expected-value"},

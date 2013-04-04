@@ -11,19 +11,15 @@ using System.Reflection;
 using JetBrains.Annotations;
 using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars;
-using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 using Stile.Types.Comparison;
-using Stile.Types.Enumerables;
 #endregion
 
 namespace Stile.DocumentationGeneration
 {
 	public class Generator
 	{
-		private const BindingFlags Everything =
-			BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-		private readonly List<Assembly> _assemblies;
 		private readonly Dictionary<string, string> _literalLexicon;
+		private readonly Reflector _reflector;
 
 		public Generator(params Assembly[] others)
 			: this(typeof(VersionedLanguage).Assembly, ProductionRuleExtensions.Lexicon, others) {}
@@ -33,13 +29,13 @@ namespace Stile.DocumentationGeneration
 			params Assembly[] others)
 		{
 			_literalLexicon = literalLexicon;
-			_assemblies = others.Unshift(stile).ToList();
+			_reflector = new Reflector(stile, others);
 		}
 
 		[NotNull]
 		public string Generate()
 		{
-			HashBucket<string, ProductionRule> rules = GetRuleCandidates();
+			HashBucket<string, ProductionRule> rules = _reflector.GetRuleCandidates().Concat(GetInitialRules());
 
 			IEnumerable<ProductionRule> consolidated = Consolidate(rules);
 
@@ -54,34 +50,34 @@ namespace Stile.DocumentationGeneration
 			var list = new List<ProductionRule>();
 			foreach (string key in rules.Keys)
 			{
-				IList<ProductionRule> bucket = rules[key];
-				if (bucket.Count == 1)
+				ISet<ProductionRule> set = rules[key];
+				if (set.Count == 1)
 				{
-					list.Add(bucket.First());
+					list.Add(set.First());
 					continue;
 				}
-				int smallestBucket = bucket.Min(x => x.Right.Count);
+				int smallestBucket = set.Min(x => x.Right.Count);
 
-				int firstDifference = FindFirstDifference(bucket, smallestBucket);
-				int lastDifference = FindLastDifference(bucket, smallestBucket);
+				int firstDifference = FindFirstDifference(set, smallestBucket);
+				int lastDifference = FindLastDifference(set, smallestBucket);
 				if (firstDifference + lastDifference > smallestBucket)
 				{
 					throw new Exception("Too much overlap");
 				}
 
-				IList<string> firstSymbolList = bucket.First().Right;
+				IList<string> firstSymbolList = set.First().Right;
 				string beginning = Print(firstSymbolList, take : firstDifference);
 
 				string end = Print(firstSymbolList, firstSymbolList.Count - lastDifference);
 
 				IEnumerable<string> varyingInteriors =
-					bucket.Select(x => Print(x.Right, firstDifference, x.Right.Count - lastDifference));
+					set.Select(x => Print(x.Right, firstDifference, x.Right.Count - lastDifference));
 				string middle = string.Join("\r\n\t| ", varyingInteriors);
 				if (middle.Length > 0)
 				{
 					middle = string.Format(" ({0}\r\n\t) ", middle);
 				}
-				int earliestSortOrder = bucket.Min(x => x.SortOrder);
+				int earliestSortOrder = set.Min(x => x.SortOrder);
 				var rule = new ProductionRule(key, beginning, middle, end) {SortOrder = earliestSortOrder};
 				list.Add(rule);
 			}
@@ -95,7 +91,7 @@ namespace Stile.DocumentationGeneration
 			return inlined;
 		}
 
-		private int FindFirstDifference(IList<ProductionRule> rules, int smallestBucket)
+		private int FindFirstDifference(ISet<ProductionRule> rules, int smallestBucket)
 		{
 			int firstDifference = 0;
 			for (; firstDifference < smallestBucket; firstDifference++)
@@ -109,7 +105,7 @@ namespace Stile.DocumentationGeneration
 			return firstDifference;
 		}
 
-		private int FindLastDifference(IList<ProductionRule> rules, int smallestBucket)
+		private int FindLastDifference(ISet<ProductionRule> rules, int smallestBucket)
 		{
 			int lastDifference = 0;
 			for (; lastDifference < smallestBucket; lastDifference++)
@@ -140,141 +136,6 @@ namespace Stile.DocumentationGeneration
 				{eol, factory.Invoke(eol, "'CRLF' | '<br/>' | ''", false)},
 			};
 			return initialRules;
-		}
-
-		private ProductionRule GetProperty([NotNull] PropertyInfo propertyInfo, [NotNull] RuleAttribute attribute)
-		{
-			var productionRule = new ProductionRule(attribute.SymbolToken, propertyInfo.Name);
-			if (attribute.StartsGrammar)
-			{
-				productionRule.SortOrder = -1;
-			}
-			return productionRule;
-		}
-
-		private ProductionRule GetRule([NotNull] MethodBase methodInfo, [NotNull] RuleAttribute attribute)
-		{
-			string symbol = GetSymbol(methodInfo, attribute);
-			var symbols = new List<string>();
-			foreach (ParameterInfo parameterInfo in methodInfo.GetParameters())
-			{
-				string parameterName = parameterInfo.Name;
-				var parameterAttribute = parameterInfo.GetCustomAttribute<SymbolAttribute>();
-				if (parameterAttribute != null)
-				{
-					//parameterName = parameterAttribute.SymbolToken ?? parameterName;
-					//IEnumerable<string> strings = new[]
-					//{parameterAttribute.PrefixToken, parameterName, parameterAttribute.SuffixToken} //
-					//	.Where(x => string.IsNullOrWhiteSpace(x) == false);
-					//parameterName = string.Join(" ", strings);
-
-					if (parameterInfo.IsOptional)
-					{
-						parameterName = string.Format("( {0} )?", parameterName);
-					}
-					symbols.Add(parameterName);
-				}
-			}
-			ProductionRule productionRule;
-			//if (attribute.Items.Any())
-			//{
-			//	string format = string.Join(" ", attribute.Items);
-			//	string substituted = string.Format(format, symbols.Cast<object>().ToArray());
-			//	productionRule = new ProductionRule(symbol, substituted);
-			//}
-			//else
-			//{
-			productionRule = new ProductionRule(symbol, symbols);
-			//}
-			//productionRule.CanBeInlined = attribute.Inline;
-			// hack to put start symbol at top; would be nice to attempt a topological sort
-			if (attribute.StartsGrammar)
-			{
-				productionRule.SortOrder = -1;
-			}
-			return productionRule;
-		}
-
-		private HashBucket<string, ProductionRule> GetRuleCandidates()
-		{
-			HashBucket<string, ProductionRule> rules = GetInitialRules();
-			foreach (Tuple<MethodBase, RuleAttribute> tuple in GetRuleMethods(_assemblies))
-			{
-				ProductionRule rule = GetRule(tuple.Item1, tuple.Item2);
-				rules.Add(rule.Left, rule);
-			}
-			foreach (Tuple<PropertyInfo, RuleAttribute> tuple in GetRuleProperties(_assemblies))
-			{
-				ProductionRule rule = GetProperty(tuple.Item1, tuple.Item2);
-				rules.Add(rule.Left, rule);
-			}
-			return rules;
-		}
-
-		private static IEnumerable<Tuple<MethodBase, RuleAttribute>> GetRuleMethods(IEnumerable<Assembly> assemblies)
-		{
-			foreach (Assembly assembly in assemblies)
-			{
-				foreach (Type type in assembly.GetTypes())
-				{
-					IEnumerable<MethodBase> methodBases = type.GetMethods(Everything).Cast<MethodBase>() //
-						.Concat(type.GetConstructors(Everything)) //
-						.Where(x => x.ReflectedType == x.DeclaringType);
-					foreach (MethodBase methodInfo in methodBases)
-					{
-						var attribute = methodInfo.GetCustomAttribute<RuleAttribute>(false);
-						if (attribute != null)
-						{
-							yield return Tuple.Create(methodInfo, attribute);
-						}
-					}
-				}
-			}
-		}
-
-		private static IEnumerable<Tuple<PropertyInfo, RuleAttribute>> GetRuleProperties(
-			IEnumerable<Assembly> assemblies)
-		{
-			foreach (Assembly assembly in assemblies)
-			{
-				foreach (Type type in assembly.GetTypes())
-				{
-					IEnumerable<PropertyInfo> methodBases = type.GetProperties(Everything) //
-						.Where(x => x.ReflectedType == x.DeclaringType);
-					foreach (PropertyInfo propertyInfo in methodBases)
-					{
-						var attribute = propertyInfo.GetCustomAttribute<RuleAttribute>(false);
-						if (attribute != null)
-						{
-							yield return Tuple.Create(propertyInfo, attribute);
-						}
-					}
-				}
-			}
-		}
-
-		private static string GetSymbol(MethodBase methodInfo, RuleAttribute attribute)
-		{
-			var constructorInfo = methodInfo as ConstructorInfo;
-			string symbol;
-			if (attribute.SymbolToken != null)
-			{
-				symbol = attribute.SymbolToken;
-			}
-			else if (constructorInfo != null)
-			{
-				symbol = constructorInfo.DeclaringType.Name;
-				int firstBackTick = symbol.IndexOf("`");
-				if (firstBackTick > 0)
-				{
-					symbol = symbol.Substring(0, firstBackTick);
-				}
-			}
-			else
-			{
-				symbol = methodInfo.Name;
-			}
-			return symbol;
 		}
 
 		private IEnumerable<ProductionRule> Inline(List<ProductionRule> rules)

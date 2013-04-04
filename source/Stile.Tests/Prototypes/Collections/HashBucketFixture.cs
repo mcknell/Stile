@@ -16,24 +16,31 @@ namespace Stile.Tests.Prototypes.Collections
 		[Test]
 		public void Add()
 		{
+			const int firstBucket = 1;
 			var hashBucket = new HashBucket<int, int>();
 
-			hashBucket.Add(1, 2);
-			Assert.That(hashBucket[1], Contains.Item(2));
-			Assert.That(hashBucket[1].Count, Is.EqualTo(1));
+			hashBucket.Add(firstBucket, 2);
+			Assert.That(hashBucket[firstBucket], Contains.Item(2));
+			Assert.That(hashBucket[firstBucket].Count, Is.EqualTo(1));
 
-			hashBucket.Add(1, 3);
-			Assert.That(hashBucket[1], Contains.Item(3));
-			Assert.That(hashBucket[1].Count, Is.EqualTo(2));
+			hashBucket.Add(firstBucket, 3);
+			Assert.That(hashBucket[firstBucket], Contains.Item(3));
+			Assert.That(hashBucket[firstBucket].Count, Is.EqualTo(2));
 
-			hashBucket.Add(1, 2);
-			Assert.That(hashBucket[1].Count, Is.EqualTo(3));
+			Assert.That(hashBucket.ContainsKey(firstBucket), "precondition");
+			hashBucket.Add(firstBucket, 2);
+			Assert.That(hashBucket[firstBucket].Count,
+				Is.EqualTo(2),
+				"Shouldn't add an item to the bucket more than once");
 
-			hashBucket.Add(5, 7);
-			Assert.That(hashBucket[5], Contains.Item(7));
-			Assert.That(hashBucket[5].Count, Is.EqualTo(1));
+			const int secondBucket = 5;
+			hashBucket.Add(secondBucket, 7);
+			Assert.That(hashBucket[secondBucket], Contains.Item(7));
+			Assert.That(hashBucket[secondBucket].Count, Is.EqualTo(1));
 
-			Assert.That(hashBucket[1].Count, Is.EqualTo(3));
+			Assert.That(hashBucket[firstBucket].Count,
+				Is.EqualTo(2),
+				string.Format("Adding to bucket {0} shouldn't affect bucket {1}", secondBucket, firstBucket));
 		}
 	}
 }
