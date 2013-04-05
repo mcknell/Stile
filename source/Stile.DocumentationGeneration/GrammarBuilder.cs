@@ -4,9 +4,11 @@
 #endregion
 
 #region using...
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.CodeMetadata;
@@ -24,15 +26,12 @@ namespace Stile.DocumentationGeneration
 		{
 			_symbols = new ConcurrentDictionary<string, Symbol>();
 			_links = new HashSet<SymbolLink>();
-			foreach (KeyValuePair<string, ISet<ProductionRule>> pair in rules)
+			foreach (ProductionRule rule in rules.SelectMany(pair => pair.Value))
 			{
-				foreach (ProductionRule rule in pair.Value)
+				GetOrAdd(rule.Left);
+				foreach (Tuple<Symbol, Symbol> tuple in rule.Right.Select(GetOrAdd).ToAdjacentPairs())
 				{
-					GetOrAdd(rule.Left);
-					foreach (var tuple in rule.Right.Select(GetOrAdd).ToAdjacentPairs())
-					{
-						_links.Add(new SymbolLink(tuple.Item1, tuple.Item2));
-					}
+					_links.Add(new SymbolLink(tuple.Item1, tuple.Item2));
 				}
 			}
 		}
@@ -46,7 +45,19 @@ namespace Stile.DocumentationGeneration
 			get { return _symbols.Values.ToArray(); }
 		}
 
-		internal Symbol GetOrAdd(string token)
+		public void AddLink(string prior, string symbol)
+		{
+			Symbol priorSymbol = GetOrAdd(prior);
+			Symbol currentSymbol = GetOrAdd(symbol);
+			_links.Add(new SymbolLink(priorSymbol, currentSymbol));
+		}
+
+		public void AddLink([NotNull] SymbolLink symbolLink)
+		{
+			AddLink(symbolLink.Prior.Token, symbolLink.Current.Token);
+		}
+
+		private Symbol GetOrAdd(string token)
 		{
 			return _symbols.GetOrAdd(token, Symbol.Make);
 		}

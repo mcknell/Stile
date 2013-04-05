@@ -4,12 +4,12 @@
 #endregion
 
 #region using...
+using System.Linq;
 using NUnit.Framework;
 using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.CodeMetadata;
 using Stile.Prototypes.Specifications.Grammar;
-using System.Linq;
 #endregion
 
 namespace Stile.DocumentationGeneration.Tests
@@ -18,24 +18,49 @@ namespace Stile.DocumentationGeneration.Tests
 	public class GrammarBuilderFixture
 	{
 		[Test]
-		public void Constructs()
+		public void AddsLink()
 		{
 			var rules = new HashBucket<string, ProductionRule>();
+			var testSubject = new GrammarBuilder(rules);
+			Assert.That(testSubject.Links, Is.Empty, "precondition");
+			Assert.That(testSubject.Symbols, Is.Empty, "precondition");
+			string has = Nonterminal.Has.ToString();
+			string hashcode = Nonterminal.HashCode.ToString();
+
+			// act
+			testSubject.AddLink(has, hashcode);
+
+			Assert.That(testSubject.Symbols.Any(x => x.Token == has));
+			Assert.That(testSubject.Symbols.Any(x => x.Token == hashcode));
+			Assert.That(testSubject.Symbols.Count, Is.EqualTo(2));
+
+			Assert.That(testSubject.Links.Count, Is.EqualTo(1));
+			SymbolLink link = testSubject.Links.FirstOrDefault();
+			Assert.NotNull(link);
+			Assert.That(link.Prior.Token, Is.EqualTo(has));
+			Assert.That(link.Current.Token, Is.EqualTo(hashcode));
+		}
+
+		[Test]
+		public void ConstructsFromRules()
+		{
 			string specification = Nonterminal.Specification.ToString();
 			string expectation = Nonterminal.Expectation.ToString();
 			string deadline = Nonterminal.Deadline.ToString();
-			rules.Add(specification, new ProductionRule(specification, expectation, deadline));
-			var grammarBuilder = new GrammarBuilder(rules);
-			Assert.That(grammarBuilder.Symbols, Has.Member(Symbol.Specification));
-			Assert.That(grammarBuilder.Symbols, Has.Member(Symbol.Expectation));
-			Assert.That(grammarBuilder.Symbols, Has.Member(Symbol.Deadline));
-			Assert.That(grammarBuilder.Links.Count, Is.EqualTo(1));
-			SymbolLink link = grammarBuilder.Links.FirstOrDefault();
+			var productionRule = new ProductionRule(specification, expectation, deadline);
+			var rules = new HashBucket<string, ProductionRule> {{specification, productionRule}};
+
+			// act
+			var testSubject = new GrammarBuilder(rules);
+
+			Assert.That(testSubject.Symbols, Has.Member(Symbol.Specification));
+			Assert.That(testSubject.Symbols, Has.Member(Symbol.Expectation));
+			Assert.That(testSubject.Symbols, Has.Member(Symbol.Deadline));
+			Assert.That(testSubject.Links.Count, Is.EqualTo(1));
+			SymbolLink link = testSubject.Links.FirstOrDefault();
 			Assert.NotNull(link);
 			Assert.That(link.Prior, Is.EqualTo(Symbol.Expectation));
-			Assert.That(link.Next, Is.EqualTo(Symbol.Deadline));
-
-			Assert.Fail("wip");
+			Assert.That(link.Current, Is.EqualTo(Symbol.Deadline));
 		}
 	}
 }

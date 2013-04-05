@@ -11,6 +11,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars;
+using Stile.Prototypes.Compilation.Grammars.CodeMetadata;
 using Stile.Types.Comparison;
 #endregion
 
@@ -36,8 +37,15 @@ namespace Stile.DocumentationGeneration
 		public string Generate()
 		{
 			HashBucket<string, ProductionRule> initialRules = GetInitialRules();
-			HashBucket<string, ProductionRule> ruleCandidates = _reflector.GetRuleCandidates();
+			HashBucket<string, ProductionRule> ruleCandidates = _reflector.FindRules();
 			HashBucket<string, ProductionRule> rules = ruleCandidates.Concat(initialRules);
+
+			var grammarBuilder = new GrammarBuilder(rules);
+
+			foreach (SymbolLink symbolLink in _reflector.FindRuleExpansions())
+			{
+				grammarBuilder.AddLink(symbolLink);	
+			}
 
 			IEnumerable<ProductionRule> consolidated = Consolidate(rules);
 

@@ -13,6 +13,7 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars;
+using Stile.Prototypes.Compilation.Grammars.CodeMetadata;
 using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 using Stile.Types.Enumerables;
 #endregion
@@ -31,7 +32,22 @@ namespace Stile.DocumentationGeneration
 				.Validate().EnumerableOf<Assembly>().IsNotNullOrEmpty();
 		}
 
-		public HashBucket<string, ProductionRule> GetRuleCandidates()
+		public IEnumerable<SymbolLink> FindRuleExpansions()
+		{
+			foreach (Tuple<MethodBase, RuleExpansionAttribute> tuple in GetMethods<RuleExpansionAttribute>())
+			{
+				MethodBase methodInfo = tuple.Item1;
+				RuleExpansionAttribute ruleExpansion = tuple.Item2;
+				string symbol = GetSymbol(methodInfo, ruleExpansion.SymbolToken);
+				yield return new SymbolLink(new Symbol(ruleExpansion.Prior), new Symbol(symbol));
+			}
+			foreach (Tuple<PropertyInfo, RuleExpansionAttribute> tuple in GetProperties<RuleExpansionAttribute>())
+			{
+				yield return new SymbolLink(new Symbol(tuple.Item2.Prior), new Symbol(tuple.Item1.Name));
+			}
+		}
+
+		public HashBucket<string, ProductionRule> FindRules()
 		{
 			var rules = new HashBucket<string, ProductionRule>();
 			foreach (Tuple<MethodBase, RuleAttribute> tuple in GetRuleMethods())
@@ -41,56 +57,58 @@ namespace Stile.DocumentationGeneration
 			}
 			foreach (Tuple<PropertyInfo, RuleAttribute> tuple in GetRuleProperties())
 			{
-				ProductionRule rule = GetProperty(tuple.Item1, tuple.Item2);
+				ProductionRule rule = GetRule(tuple.Item1, tuple.Item2);
 				rules.Add(rule.Left, rule);
 			}
 			return rules;
 		}
 
-		public IEnumerable<Tuple<MethodBase, RuleAttribute>> GetRuleMethods()
+		public IEnumerable<Tuple<PropertyInfo, TAttribute>> GetProperties<TAttribute>() where TAttribute : Attribute
 		{
-			foreach (Assembly assembly in (IEnumerable<Assembly>) _assemblies)
+			foreach (Type type in Types)
 			{
-				foreach (Type type in assembly.GetTypes())
+				IEnumerable<PropertyInfo> methodBases = type.GetProperties(Everything) //
+					.Where(x => x.ReflectedType == x.DeclaringType);
+				foreach (PropertyInfo propertyInfo in methodBases)
 				{
-					IEnumerable<MethodBase> methodBases = type.GetMethods(Everything).Cast<MethodBase>() //
-						.Concat(type.GetConstructors(Everything)) //
-						.Where(x => x.ReflectedType == x.DeclaringType);
-					foreach (MethodBase methodInfo in methodBases)
+					var attribute = propertyInfo.GetCustomAttribute<TAttribute>(false);
+					if (attribute != null)
 					{
-						var attribute = methodInfo.GetCustomAttribute<RuleAttribute>(false);
-						if (attribute != null)
-						{
-							yield return Tuple.Create(methodInfo, attribute);
-						}
+						yield return Tuple.Create(propertyInfo, attribute);
 					}
 				}
 			}
 		}
 
-		public IEnumerable<Tuple<PropertyInfo, RuleAttribute>> GetRuleProperties()
+		private IEnumerable<Type> Types
 		{
-			foreach (Assembly assembly in (IEnumerable<Assembly>) _assemblies)
+			get { return _assemblies.SelectMany(x => x.GetTypes()); }
+		}
+
+		private IEnumerable<Tuple<MethodBase, TAttribute>> GetMethods<TAttribute>() where TAttribute : Attribute
+		{
+			foreach (Type type in Types)
 			{
-				foreach (Type type in assembly.GetTypes())
+				IEnumerable<MethodBase> methodBases = type.GetMethods(Everything).Cast<MethodBase>() //
+					.Concat(type.GetConstructors(Everything)) //
+					.Where(x => x.ReflectedType == x.DeclaringType);
+				foreach (MethodBase methodInfo in methodBases)
 				{
-					IEnumerable<PropertyInfo> methodBases = type.GetProperties(Everything) //
-						.Where(x => x.ReflectedType == x.DeclaringType);
-					foreach (PropertyInfo propertyInfo in methodBases)
+					var attribute = methodInfo.GetCustomAttribute<TAttribute>(false);
+					if (attribute != null)
 					{
-						var attribute = propertyInfo.GetCustomAttribute<RuleAttribute>(false);
-						if (attribute != null)
-						{
-							yield return Tuple.Create(propertyInfo, attribute);
-						}
+						yield return Tuple.Create(methodInfo, attribute);
 					}
 				}
 			}
 		}
 
-		private ProductionRule GetProperty([NotNull] PropertyInfo propertyInfo, [NotNull] RuleAttribute attribute)
+		private ProductionRule GetRule([NotNull] PropertyInfo propertyInfo, [NotNull] RuleAttribute attribute)
 		{
-			var productionRule = new ProductionRule(attribute.SymbolToken, propertyInfo.Name);
+			var productionRule = new ProductionRule(attribute.SymbolToken, propertyInfo.Name)
+			{
+				CanBeInlined = attribute.CanBeInlined
+			};
 			if (attribute.StartsGrammar)
 			{
 				productionRule.SortOrder = -1;
@@ -100,7 +118,7 @@ namespace Stile.DocumentationGeneration
 
 		private ProductionRule GetRule([NotNull] MethodBase methodInfo, [NotNull] RuleAttribute attribute)
 		{
-			string symbol = GetSymbol(methodInfo, attribute);
+			string symbol = GetSymbol(methodInfo, attribute.SymbolToken);
 			var symbols = new List<string>();
 			foreach (ParameterInfo parameterInfo in methodInfo.GetParameters())
 			{
@@ -123,18 +141,23 @@ namespace Stile.DocumentationGeneration
 			return productionRule;
 		}
 
-		private static string ToTitleCase(string parameterName)
+		private IEnumerable<Tuple<MethodBase, RuleAttribute>> GetRuleMethods()
 		{
-			return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(parameterName);
+			return GetMethods<RuleAttribute>();
 		}
 
-		private static string GetSymbol(MethodBase methodInfo, RuleAttribute attribute)
+		private IEnumerable<Tuple<PropertyInfo, RuleAttribute>> GetRuleProperties()
+		{
+			return GetProperties<RuleAttribute>();
+		}
+
+		private static string GetSymbol(MethodBase methodInfo, [CanBeNull] string symbolToken)
 		{
 			var constructorInfo = methodInfo as ConstructorInfo;
 			string symbol;
-			if (attribute.SymbolToken != null)
+			if (symbolToken != null)
 			{
-				symbol = attribute.SymbolToken;
+				symbol = symbolToken;
 			}
 			else if (constructorInfo != null)
 			{
@@ -159,6 +182,11 @@ namespace Stile.DocumentationGeneration
 			}
 			string titleCase = ToTitleCase(symbol);
 			return titleCase;
+		}
+
+		private static string ToTitleCase(string parameterName)
+		{
+			return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(parameterName);
 		}
 	}
 }

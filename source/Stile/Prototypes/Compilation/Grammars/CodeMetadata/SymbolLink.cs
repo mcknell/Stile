@@ -13,14 +13,14 @@ namespace Stile.Prototypes.Compilation.Grammars.CodeMetadata
 {
 	public class SymbolLink : IEquatable<SymbolLink>
 	{
-		public SymbolLink([NotNull] Symbol prior, [NotNull] Symbol next)
+		public SymbolLink([NotNull] Symbol prior, [NotNull] Symbol current)
 		{
 			Prior = prior.ValidateArgumentIsNotNull();
-			Next = next.ValidateArgumentIsNotNull();
+			Current = current.ValidateArgumentIsNotNull();
 		}
 
 		[NotNull]
-		public Symbol Next { get; private set; }
+		public Symbol Current { get; private set; }
 		[NotNull]
 		public Symbol Prior { get; private set; }
 
@@ -30,7 +30,7 @@ namespace Stile.Prototypes.Compilation.Grammars.CodeMetadata
 			{
 				return false;
 			}
-			return Next.Equals(other.Next) && Prior.Equals(other.Prior);
+			return Current.Equals(other.Current) && Prior.Equals(other.Prior);
 		}
 
 		public override bool Equals(object obj)
@@ -49,10 +49,8 @@ namespace Stile.Prototypes.Compilation.Grammars.CodeMetadata
 
 		public override int GetHashCode()
 		{
-			checked
-			{
-				return Next.GetHashCode() ^ Prior.GetHashCode();
-			}
+			// shift in case Current === Prior, so XOR doesn't yield zero (except in rare edge cases)
+			return Current.GetHashCode() ^ (Prior.GetHashCode() >> 1);
 		}
 
 		public static SymbolLink Make([NotNull] Symbol prior, [NotNull] Symbol next)

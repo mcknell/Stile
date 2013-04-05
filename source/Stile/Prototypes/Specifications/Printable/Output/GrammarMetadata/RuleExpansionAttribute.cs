@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using JetBrains.Annotations;
 using Stile.Prototypes.Compilation.Grammars;
 #endregion
 
@@ -18,11 +19,15 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
 			| AttributeTargets.Constructor, AllowMultiple = false, Inherited = false)]
 	public class RuleExpansionAttribute : Attribute
 	{
-		public RuleExpansionAttribute(object name = null)
+		public RuleExpansionAttribute([NotNull] object prior, object name = null)
 		{
-			Name = name;
+			SymbolToken = (name == null) ? null : name.ToString();
+			Prior = prior.ToString();
 		}
 
-		public object Name { get; set; }
+		[CanBeNull]
+		public string SymbolToken { get; private set; }
+		[NotNull]
+		public string Prior { get; private set; }
 	}
 }

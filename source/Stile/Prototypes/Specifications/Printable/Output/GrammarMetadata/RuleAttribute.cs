@@ -20,8 +20,10 @@ namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
 		public RuleAttribute(object symbol = null)
 		{
 			Symbol = symbol;
+			CanBeInlined = true;
 		}
 
+		public bool CanBeInlined { get; set; }
 		public bool StartsGrammar { get; set; }
 		public object Symbol { get; private set; }
 		public string SymbolToken

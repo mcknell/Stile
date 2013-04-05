@@ -11,6 +11,7 @@ namespace Stile.Prototypes.Specifications.Grammar
 		Deadline,
 		Expectation,
 		Has,
-		Is
+		Is,
+		HashCode
 	}
 }
