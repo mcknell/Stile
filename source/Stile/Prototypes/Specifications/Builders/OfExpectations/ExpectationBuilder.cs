@@ -39,10 +39,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		where TIs : class, IIs<TSpecification, TSubject, TResult>
 	{
 		[System.Diagnostics.Contracts.Pure]
-		[Rule(Nonterminal.Expectation)]
+		[Rule(Nonterminal.Enum.Expectation)]
 		THas Has { get; }
 		[System.Diagnostics.Contracts.Pure]
-		[Rule(Nonterminal.Expectation)]
+		[Rule(Nonterminal.Enum.Expectation)]
 		TIs Is { get; }
 	}
 

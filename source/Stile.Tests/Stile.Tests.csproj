@@ -55,7 +55,6 @@
     <Compile Include="Prototypes\Collections\Sorting\ToposortFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\GrammarBuilderFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\SymbolLinkFixture.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\SymbolNodeFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIsTests.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\IsComparableExtensionsTests.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\NullFixture.cs" />

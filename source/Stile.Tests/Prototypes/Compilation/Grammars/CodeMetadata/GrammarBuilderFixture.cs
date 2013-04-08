@@ -10,6 +10,7 @@ using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.CodeMetadata;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Specifications.Grammar;
+using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 #endregion
 
 namespace Stile.Tests.Prototypes.Compilation.Grammars.CodeMetadata
@@ -24,8 +25,8 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.CodeMetadata
 			var testSubject = new ContextFreeGrammarBuilder(rules);
 			Assert.That(testSubject.Links, Is.Empty, "precondition");
 			Assert.That(testSubject.Symbols, Is.Empty, "precondition");
-			string has = Nonterminal.Has.ToString();
-			string hashcode = Nonterminal.HashCode.ToString();
+			Symbol has = Nonterminal.Has;
+			Symbol hashcode = Nonterminal.HashCode;
 
 			// act
 			testSubject.AddLink(has, hashcode);
@@ -37,8 +38,8 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.CodeMetadata
 			Assert.That(testSubject.Links.Count, Is.EqualTo(1));
 			SymbolLink link = testSubject.Links.FirstOrDefault();
 			Assert.NotNull(link);
-			Assert.That(link.Prior.Token, Is.EqualTo(has));
-			Assert.That(link.Current.Token, Is.EqualTo(hashcode));
+			Assert.That(link.Prior, Is.EqualTo(has));
+			Assert.That(link.Current, Is.EqualTo(hashcode));
 		}
 
 		[Test]
@@ -77,13 +78,13 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.CodeMetadata
 			// act
 			var testSubject = new ContextFreeGrammarBuilder(expectation);
 
-			Assert.That(testSubject.Symbols, Has.Member(NonterminalSymbol.Expectation));
-			Assert.That(testSubject.Symbols, Has.Member(NonterminalSymbol.Before));
+			Assert.That(testSubject.Symbols, Has.Member(Nonterminal.Expectation));
+			Assert.That(testSubject.Symbols, Has.Member(Nonterminal.Before));
 			Assert.That(testSubject.Links.Count, Is.EqualTo(1));
 			SymbolLink link = testSubject.Links.FirstOrDefault();
 			Assert.NotNull(link);
-			Assert.That(link.Prior, Is.EqualTo(NonterminalSymbol.Expectation));
-			Assert.That(link.Current, Is.EqualTo(NonterminalSymbol.Before));
+			Assert.That(link.Prior, Is.EqualTo(Nonterminal.Expectation));
+			Assert.That(link.Current, Is.EqualTo(Nonterminal.Before));
 		}
 
 		[Test]

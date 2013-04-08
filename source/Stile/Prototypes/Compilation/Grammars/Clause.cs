@@ -7,7 +7,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Compilation.Grammars.CodeMetadata;
 using Stile.Types.Enumerables;
 #endregion
 
@@ -16,15 +15,15 @@ namespace Stile.Prototypes.Compilation.Grammars
 	public class Clause
 	{
 		public Clause(Term term, params Term[] terms)
-			: this(term, SymbolCardinality.One, terms) {}
+			: this(term, Grammars.Cardinality.One, terms) {}
 
-		public Clause(Term term, SymbolCardinality cardinality, params Term[] terms)
+		public Clause(Term term, Cardinality cardinality, params Term[] terms)
 		{
 			Cardinality = cardinality;
 			Terms = terms.Unshift(term.ValidateArgumentIsNotNull()).ToArray();
 		}
 
-		public SymbolCardinality Cardinality { get; private set; }
+		public Cardinality Cardinality { get; private set; }
 
 		public IReadOnlyCollection<Term> Terms { get; set; }
 	}

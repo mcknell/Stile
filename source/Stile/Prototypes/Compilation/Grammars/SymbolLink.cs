@@ -9,18 +9,18 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 #endregion
 
-namespace Stile.Prototypes.Compilation.Grammars.CodeMetadata
+namespace Stile.Prototypes.Compilation.Grammars
 {
 	public class SymbolLink : IEquatable<SymbolLink>
 	{
-		public SymbolLink([NotNull] Symbol prior, [NotNull] Symbol current, SymbolCardinality? cardinality = null)
+		public SymbolLink([NotNull] Symbol prior, [NotNull] Symbol current, Cardinality? cardinality = null)
 		{
 			Prior = prior.ValidateArgumentIsNotNull();
 			Current = current.ValidateArgumentIsNotNull();
-			Cardinality = cardinality ?? SymbolCardinality.One;
+			Cardinality = cardinality ?? Grammars.Cardinality.One;
 		}
 
-		public SymbolCardinality Cardinality { get; private set; }
+		public Cardinality Cardinality { get; private set; }
 
 		[NotNull]
 		public Symbol Current { get; private set; }
@@ -57,7 +57,7 @@ namespace Stile.Prototypes.Compilation.Grammars.CodeMetadata
 
 		public static SymbolLink Make([NotNull] Symbol prior,
 			[NotNull] Symbol next,
-			SymbolCardinality? cardinality = null)
+			Cardinality? cardinality = null)
 		{
 			return new SymbolLink(prior, next, cardinality);
 		}

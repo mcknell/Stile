@@ -3,9 +3,9 @@
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
-namespace Stile.Prototypes.Compilation.Grammars.CodeMetadata
+namespace Stile.Prototypes.Compilation.Grammars
 {
-	public enum SymbolCardinality
+	public enum Cardinality
 	{
 		One,
 		OneOrMore,

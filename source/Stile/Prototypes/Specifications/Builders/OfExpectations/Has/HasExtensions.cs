@@ -16,7 +16,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 	public static class HasExtensions
 	{
 		[Pure]
-		[RuleExpansion(Nonterminal.Has)]
+		[RuleExpansion(Nonterminal.Enum.Has)]
 		public static TSpecification HashCode<TSpecification, TSubject, TResult>(
 			this IHas<TSpecification, TSubject, TResult> has, int hashCode)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification

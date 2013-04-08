@@ -13,13 +13,20 @@ namespace Stile.Prototypes.Compilation.Grammars
 {
 	public partial class Symbol : IEquatable<Symbol>
 	{
-		public Symbol([NotNull] string token)
+		public static readonly Symbol EBNFAssignment = new Symbol("::=");
+
+		protected Symbol([NotNull] string token)
 		{
 			Token = token.Trim().Validate().EnumerableOf<char>().IsNotNullOrEmpty();
 		}
 
 		[NotNull]
 		public string Token { get; private set; }
+
+		public static implicit operator string(Symbol symbol)
+		{
+			return symbol.Token;
+		}
 	}
 
 	public partial class Symbol

@@ -16,11 +16,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
 	public class ContextFreeGrammar
 	{
-		private readonly HashSet<Symbol> _nonterminals;
-		private readonly HashSet<Symbol> _terminals;
+		private readonly HashSet<NonterminalSymbol> _nonterminals;
+		private readonly HashSet<TerminalSymbol> _terminals;
 
-		public ContextFreeGrammar([NotNull] HashSet<Symbol> nonterminals,
-			[NotNull] HashSet<Symbol> terminals,
+		public ContextFreeGrammar([NotNull] HashSet<NonterminalSymbol> nonterminals,
+			[NotNull] HashSet<TerminalSymbol> terminals,
 			[NotNull] List<ProductionRule> productionRules,
 			[NotNull] Symbol initialToken)
 		{
@@ -29,7 +29,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			ProductionRules = productionRules.ValidateArgumentIsNotNull();
 			InitialToken = initialToken.ValidateArgumentIsNotNull();
 
-			List<Symbol> overlap = nonterminals.Intersect(terminals).ToList();
+			List<Symbol> overlap = nonterminals.Cast<Symbol>().Intersect(terminals).ToList();
 			if (overlap.Any())
 			{
 				int count = overlap.Count;

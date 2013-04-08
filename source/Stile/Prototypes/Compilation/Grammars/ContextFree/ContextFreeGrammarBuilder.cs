@@ -4,13 +4,12 @@
 #endregion
 
 #region using...
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Collections;
-using Stile.Prototypes.Compilation.Grammars.CodeMetadata;
+using Stile.Prototypes.Specifications.Grammar;
 using Stile.Types.Enumerables;
 #endregion
 
@@ -21,26 +20,26 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		private readonly HashSet<Symbol> _leftSymbols;
 		private readonly HashSet<SymbolLink> _links;
 		private readonly HashBucket<Symbol, Symbol> _ruleStartingSymbols;
-		private readonly HashSet<Symbol> _symbols;
+		private readonly HashSet<NonterminalSymbol> _symbols;
 
 		public ContextFreeGrammarBuilder([NotNull] ProductionRule rule, params ProductionRule[] rules)
 			: this(rules.Unshift(rule.ValidateArgumentIsNotNull())) {}
 
 		public ContextFreeGrammarBuilder(IEnumerable<ProductionRule> rules)
 		{
-			_symbols = new HashSet<Symbol>();
+			_symbols = new HashSet<NonterminalSymbol>();
 			_links = new HashSet<SymbolLink>();
 			_leftSymbols = new HashSet<Symbol>();
 			_ruleStartingSymbols = new HashBucket<Symbol, Symbol>();
 			foreach (ProductionRule rule in rules)
 			{
 				Symbol left = GetOrAdd(rule.Left, false);
-				List<Symbol> rightSymbols = rule.Right.Select(GetOrAdd).ToList();
+				List<Symbol> rightSymbols = rule.Right.Select(symbol => GetOrAdd(symbol.Token)).ToList();
 				if (rightSymbols.Any())
 				{
 					_ruleStartingSymbols.Add(rightSymbols.First(), left);
 				}
-				foreach (Tuple<Symbol, Symbol> tuple in rightSymbols.ToAdjacentPairs())
+				foreach (var tuple in rightSymbols.ToAdjacentPairs())
 				{
 					_links.Add(new SymbolLink(tuple.Item1, tuple.Item2));
 				}
@@ -80,22 +79,22 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				{
 					var stack = new Stack<Symbol>();
 					stack.Push(ruleStartingSymbol);
-					foreach (IList<string> list in EnumerateRules(stack))
+					foreach (var list in EnumerateRules(stack))
 					{
-						rules.Add(new ProductionRule(leftSymbol.Token, list));
+						rules.Add(new ProductionRule(leftSymbol, list));
 					}
 				}
 			}
-			return new ContextFreeGrammar(_symbols, new HashSet<Symbol>(), rules, NonterminalSymbol.Specification);
+			return new ContextFreeGrammar(_symbols, new HashSet<TerminalSymbol>(), rules, Nonterminal.Specification);
 		}
 
-		private IEnumerable<IList<string>> EnumerateRules(Stack<Symbol> symbols)
+		private IEnumerable<IList<Symbol>> EnumerateRules(Stack<Symbol> symbols)
 		{
 			List<SymbolLink> following = _links.Where(x => x.Prior == symbols.Peek()).ToList();
 			foreach (SymbolLink link in following)
 			{
 				symbols.Push(link.Current);
-				foreach (IList<string> list in EnumerateRules(symbols))
+				foreach (var list in EnumerateRules(symbols))
 				{
 					yield return list;
 				}
@@ -103,7 +102,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			}
 			if (following.None())
 			{
-				yield return symbols.Select(x => x.Token).Reverse().ToList();
+				yield return symbols.Reverse().ToList();
 			}
 		}
 
@@ -114,12 +113,12 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		private Symbol GetOrAdd(string token, bool canBeInlined)
 		{
-			Symbol symbol = _symbols.FirstOrDefault(x => x.Token == token);
+			NonterminalSymbol symbol = _symbols.FirstOrDefault(x => x.Token == token);
 			if (symbol != null)
 			{
 				return symbol;
 			}
-			symbol = new Symbol(token);
+			symbol = new Nonterminal(token);
 			if (canBeInlined == false)
 			{
 				_leftSymbols.Add(symbol);

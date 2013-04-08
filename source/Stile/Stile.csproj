@@ -78,11 +78,9 @@
     <Compile Include="Prototypes\Compilation\Grammars\Term.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\TerminalSymbol.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\Symbol.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\SymbolCardinality.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\Grammar.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\Cardinality.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ContextFreeGrammarBuilder.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\SymbolLink.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\SymbolNode.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\SymbolLink.cs" />
     <Compile Include="Prototypes\Specifications\Builders\Lifecycle\IHasSource.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\FluentBoundExceptionFilterBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\FluentExceptionFilterBuilder.cs" />
@@ -104,8 +102,8 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EqualTo.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Null.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Nullable.cs" />
-    <Compile Include="Prototypes\Specifications\Grammar\Nonterminal.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Describer.cs" />
+    <Compile Include="Prototypes\Specifications\Grammar\Nonterminal.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\RuleExpansionAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldExpectationDescriber.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldSpecificationDescriber.cs" />
@@ -162,7 +160,6 @@
     <Compile Include="Prototypes\Specifications\Printable\Output\ExplainerClause.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\RuleAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\SymbolAttribute.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Construction\GrammarMetadata\SpecificationRuleAttribute.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\Evaluation.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\IBoundSpecification.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\IEvaluable.cs" />

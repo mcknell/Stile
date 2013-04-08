@@ -7,10 +7,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Specifications.Grammar;
 using Stile.Types.Enumerables;
 #endregion
 
@@ -18,17 +16,14 @@ namespace Stile.Prototypes.Compilation.Grammars
 {
 	public partial class ProductionRule
 	{
-		public ProductionRule(Nonterminal left, Nonterminal right, params Nonterminal[] rights)
-			: this(left.ToString(), rights.Select(x => x.ToString()).Unshift(right.ToString()).ToList()) {}
-
-		public ProductionRule([NotNull] string left, [NotNull] string right, params string[] rights)
+		public ProductionRule([NotNull] Symbol left, [NotNull] Symbol right, params Symbol[] rights)
 			: this(left, rights.Unshift(right).ToList()) {}
 
-		public ProductionRule([NotNull] string left, [NotNull] IList<string> right)
+		public ProductionRule([NotNull] Symbol left, [NotNull] IList<Symbol> right)
 		{
 			Left = left.ValidateArgumentIsNotNull();
-			Right = right.Validate().EnumerableOf<string>().IsNotNullOrEmpty();
-			string[] badElements = Right.Where(string.IsNullOrWhiteSpace).ToArray();
+			Right = right.Validate().EnumerableOf<Symbol>().IsNotNullOrEmpty();
+			string[] badElements = Right.Select(x => x.Token).Where(string.IsNullOrWhiteSpace).ToArray();
 			if (badElements.Length == Right.Count)
 			{
 				throw new ArgumentException(
@@ -40,22 +35,21 @@ namespace Stile.Prototypes.Compilation.Grammars
 
 		public bool CanBeInlined { get; set; }
 		[NotNull]
-		public string Left { get; private set; }
+		public Symbol Left { get; private set; }
 		[NotNull]
-		public IList<string> Right { get; private set; }
+		public IList<Symbol> Right { get; private set; }
 		public int SortOrder { get; set; }
 
-		public ProductionRule RewriteRightSideWith(string pattern, string replacement)
+		public ProductionRule Inline(Symbol target, IList<Symbol> replacement)
 		{
-			string wrappedReplacement = string.Format("( {0} )", replacement);
-			List<string> newRight = Right.Select(x => Regex.Replace(x, pattern, wrappedReplacement)).ToList();
+			List<Symbol> newRight = Right.SelectMany(x => x == target ? replacement : new[] {x}).ToList();
 			var rule = new ProductionRule(Left, newRight) {CanBeInlined = CanBeInlined, SortOrder = SortOrder};
 			return rule;
 		}
 
 		public override string ToString()
 		{
-			return string.Join(" ", new[] {Left, "::="}.Concat(Right));
+			return string.Join(" ", new[] {Left, Symbol.EBNFAssignment}.Concat(Right));
 		}
 	}
 

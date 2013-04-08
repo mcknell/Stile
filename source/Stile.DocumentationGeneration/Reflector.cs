@@ -14,6 +14,7 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.CodeMetadata;
+using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 using Stile.Types.Enumerables;
 #endregion
@@ -39,17 +40,18 @@ namespace Stile.DocumentationGeneration
 				MethodBase methodInfo = tuple.Item1;
 				RuleExpansionAttribute ruleExpansion = tuple.Item2;
 				string symbol = GetSymbol(methodInfo, ruleExpansion.SymbolToken);
-				yield return new SymbolLink(new Symbol(ruleExpansion.Prior), new Symbol(symbol));
+				yield return new SymbolLink(new Nonterminal(ruleExpansion.Prior), new Nonterminal(symbol));
 			}
 			foreach (Tuple<PropertyInfo, RuleExpansionAttribute> tuple in GetProperties<RuleExpansionAttribute>())
 			{
-				yield return new SymbolLink(new Symbol(tuple.Item2.Prior), new Symbol(tuple.Item1.Name));
+				yield return
+					new SymbolLink(new Nonterminal(tuple.Item2.Prior), new Nonterminal(tuple.Item1.Name));
 			}
 		}
 
-		public HashBucket<string, ProductionRule> FindRules()
+		public HashBucket<Symbol, ProductionRule> FindRules()
 		{
-			var rules = new HashBucket<string, ProductionRule>();
+			var rules = new HashBucket<Symbol, ProductionRule>();
 			foreach (Tuple<MethodBase, RuleAttribute> tuple in GetRuleMethods())
 			{
 				ProductionRule rule = GetRule(tuple.Item1, tuple.Item2);
@@ -105,10 +107,9 @@ namespace Stile.DocumentationGeneration
 
 		private ProductionRule GetRule([NotNull] PropertyInfo propertyInfo, [NotNull] RuleAttribute attribute)
 		{
-			var productionRule = new ProductionRule(attribute.SymbolToken, propertyInfo.Name)
-			{
-				CanBeInlined = attribute.CanBeInlined
-			};
+			var left = new Nonterminal(attribute.SymbolToken);
+			var right = new Nonterminal(propertyInfo.Name);
+			var productionRule = new ProductionRule(left, right) {CanBeInlined = attribute.CanBeInlined};
 			if (attribute.StartsGrammar)
 			{
 				productionRule.SortOrder = -1;
@@ -133,7 +134,7 @@ namespace Stile.DocumentationGeneration
 					symbols.Add(ToTitleCase(parameterName));
 				}
 			}
-			var productionRule = new ProductionRule(symbol, symbols);
+			var productionRule = new ProductionRule(new Nonterminal(symbol), symbols.Select(Symbol.Make).ToList());
 			if (attribute.StartsGrammar)
 			{
 				productionRule.SortOrder = -1;

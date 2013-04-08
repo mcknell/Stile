@@ -37,9 +37,7 @@ namespace Stile.DocumentationGeneration
 		[NotNull]
 		public string Generate()
 		{
-			HashBucket<string, ProductionRule> initialRules = GetInitialRules();
-			HashBucket<string, ProductionRule> ruleCandidates = _reflector.FindRules();
-			HashBucket<string, ProductionRule> rules = ruleCandidates.Concat(initialRules);
+			HashBucket<Symbol, ProductionRule> rules = _reflector.FindRules();
 
 			var grammarBuilder = new ContextFreeGrammarBuilder(rules.SelectMany(x => x.Value));
 
@@ -52,14 +50,14 @@ namespace Stile.DocumentationGeneration
 
 			IOrderedEnumerable<ProductionRule> sorted = consolidated.OrderBy(x => x.SortOrder);
 
-			string generated = string.Join(Environment.NewLine, sorted.Select(x => x.ToEBNF(_literalLexicon)));
+			string generated = string.Join(Environment.NewLine, sorted.Select(x => x.ToEBNF()));
 			return generated;
 		}
 
-		private List<ProductionRule> CollapseSameLeftHandSides(HashBucket<string, ProductionRule> rules)
+		private List<ProductionRule> CollapseSameLeftHandSides(HashBucket<Symbol, ProductionRule> rules)
 		{
 			var list = new List<ProductionRule>();
-			foreach (string key in rules.Keys)
+			foreach (Symbol key in rules.Keys)
 			{
 				ISet<ProductionRule> set = rules[key];
 				if (set.Count == 1)
@@ -76,26 +74,26 @@ namespace Stile.DocumentationGeneration
 					throw new Exception("Too much overlap");
 				}
 
-				IList<string> firstSymbolList = set.First().Right;
-				string beginning = Print(firstSymbolList, take : firstDifference);
+				IList<Symbol> firstSymbolList = set.First().Right;
+				IEnumerable<Symbol> beginning = Slice(firstSymbolList, take : firstDifference);
 
 				string end = Print(firstSymbolList, firstSymbolList.Count - lastDifference);
 
-				IEnumerable<string> varyingInteriors =
-					set.Select(x => Print(x.Right, firstDifference, x.Right.Count - lastDifference));
-				string middle = string.Join("\r\n\t| ", varyingInteriors);
-				if (middle.Length > 0)
-				{
-					middle = string.Format(" ({0}\r\n\t) ", middle);
-				}
-				int earliestSortOrder = set.Min(x => x.SortOrder);
-				var rule = new ProductionRule(key, beginning, middle, end) {SortOrder = earliestSortOrder};
-				list.Add(rule);
+				//IEnumerable<IEnumerable<Symbol>> varyingInteriors =
+				//	set.Select(x => Slice(x.Right, firstDifference, x.Right.Count - lastDifference));
+				//string middle = string.Join("\r\n\t| ", varyingInteriors);
+				//if (middle.Length > 0)
+				//{
+				//	middle = string.Format(" ({0}\r\n\t) ", middle);
+				//}
+				//int earliestSortOrder = set.Min(x => x.SortOrder);
+				//var rule = new ProductionRule(key, beginning, middle, end) {SortOrder = earliestSortOrder};
+				//list.Add(rule);
 			}
 			return list;
 		}
 
-		private IEnumerable<ProductionRule> Consolidate(HashBucket<string, ProductionRule> rules)
+		private IEnumerable<ProductionRule> Consolidate(HashBucket<Symbol, ProductionRule> rules)
 		{
 			List<ProductionRule> list = CollapseSameLeftHandSides(rules);
 			IEnumerable<ProductionRule> inlined = Inline(list);
@@ -116,37 +114,21 @@ namespace Stile.DocumentationGeneration
 			return firstDifference;
 		}
 
-		private int FindLastDifference(ISet<ProductionRule> rules, int smallestBucket)
+		private int FindLastDifference(ISet<ProductionRule> rules, int limit)
 		{
 			int lastDifference = 0;
-			for (; lastDifference < smallestBucket; lastDifference++)
+			for (; lastDifference < limit; lastDifference++)
 			{
-				IList<string> symbols = rules.First().Right;
+				IList<Symbol> symbols = rules.First().Right;
 				int copy = lastDifference;
-				Func<IList<string>, string> getSymbol = list => list[list.Count - 1 - copy];
-				string symbolFromFirstRule = getSymbol(symbols);
+				Func<IList<Symbol>, Symbol> getSymbol = list => list[list.Count - 1 - copy];
+				Symbol symbolFromFirstRule = getSymbol(symbols);
 				if (rules.Skip(1).Any(x => symbolFromFirstRule != getSymbol(x.Right)))
 				{
 					break;
 				}
 			}
 			return lastDifference;
-		}
-
-		private static HashBucket<string, ProductionRule> GetInitialRules()
-		{
-			string negated = Variable.Negated.ToString();
-			string conjunction = Variable.Conjunction.ToString();
-			string eol = Terminal.EOL.ToString();
-			Func<string, string, bool, ProductionRule> factory =
-				(left, right, inline) => new ProductionRule(left, right) {CanBeInlined = inline, SortOrder = 99};
-			var initialRules = new HashBucket<string, ProductionRule>
-			{
-				{negated, factory.Invoke(negated, "'not'?", true)},
-				{conjunction, factory.Invoke(conjunction, eol + "? ( 'and' | 'but' )", false)},
-				{eol, factory.Invoke(eol, "'CRLF' | '<br/>' | ''", false)},
-			};
-			return initialRules;
 		}
 
 		private IEnumerable<ProductionRule> Inline(List<ProductionRule> rules)
@@ -178,19 +160,13 @@ namespace Stile.DocumentationGeneration
 
 				foreach (ProductionRule ruleToInline in canBeInlined.ToArray())
 				{
-					string left = ruleToInline.Left;
-					ProductionRule[] toRewrite =
-						list.Where(x => x.Left != left && x.Right.Any(y => y.Contains(left))).ToArray();
+					Symbol left = ruleToInline.Left;
+					ProductionRule[] toRewrite = list.Where(x => x != ruleToInline && x.Right.Any(y => y == left)).ToArray();
 					foreach (ProductionRule rewrite in toRewrite)
 					{
 						list.Remove(rewrite);
 						rewrites++;
-
-						const string followAWordBoundary = @"(?<=\b)";
-						const string precedeAWordBoundary = @"(?=\b)";
-						string pattern = string.Format("{0}{1}{2}", followAWordBoundary, left, precedeAWordBoundary);
-						string replacement = string.Join(" ", ruleToInline.Right);
-						list.Add(rewrite.RewriteRightSideWith(pattern, replacement));
+						list.Add(rewrite.Inline(left, ruleToInline.Right));
 					}
 					list.Remove(ruleToInline);
 				}
@@ -199,11 +175,17 @@ namespace Stile.DocumentationGeneration
 			return list;
 		}
 
-		private string Print(IList<string> symbols, int? skip = null, int? take = null)
+		private string Print(IList<Symbol> symbols, int? skip = null, int? take = null)
 		{
-			IEnumerable<string> slice = symbols.Skip(skip ?? 0).Take(take ?? symbols.Count());
+			IEnumerable<Symbol> slice = symbols.Skip(skip ?? 0).Take(take ?? symbols.Count());
 			string substituted = slice.Substitute(_literalLexicon);
 			return substituted;
+		}
+
+		private IEnumerable<Symbol> Slice(IList<Symbol> symbols, int? skip = null, int? take = null)
+		{
+			IEnumerable<Symbol> slice = symbols.Skip(skip ?? 0).Take(take ?? symbols.Count());
+			return slice;
 		}
 	}
 }

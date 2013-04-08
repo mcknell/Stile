@@ -3,21 +3,17 @@
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
-#region using...
-using Stile.Prototypes.Compilation.Grammars.CodeMetadata;
-#endregion
-
 namespace Stile.Prototypes.Compilation.Grammars
 {
 	public class Term
 	{
-		public Term(string token, SymbolCardinality? cardinality = null)
+		public Term(Symbol symbol, Cardinality? cardinality = null)
 		{
-			Token = token;
-			Cardinality = cardinality ?? SymbolCardinality.One;
+			Symbol = symbol;
+			Cardinality = cardinality ?? Grammars.Cardinality.One;
 		}
 
-		public SymbolCardinality Cardinality { get; private set; }
-		public string Token { get; private set; }
+		public Cardinality Cardinality { get; private set; }
+		public Symbol Symbol { get; private set; }
 	}
 }
