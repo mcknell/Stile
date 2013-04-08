@@ -6,7 +6,7 @@
 #region using...
 using System.Diagnostics.Contracts;
 using Stile.Prototypes.Specifications.Grammar;
-using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion

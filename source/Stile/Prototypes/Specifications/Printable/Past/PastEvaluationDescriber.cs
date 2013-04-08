@@ -9,7 +9,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
-using Stile.Prototypes.Specifications.Printable.Specifications.Should;
+using Stile.Prototypes.Specifications.Printable.Should;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;

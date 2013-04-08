@@ -15,7 +15,7 @@ namespace Stile.Prototypes.Compilation.Grammars
 	public class Clause
 	{
 		public Clause(Term term, params Term[] terms)
-			: this(term, Grammars.Cardinality.One, terms) {}
+			: this(term, Cardinality.One, terms) {}
 
 		public Clause(Term term, Cardinality cardinality, params Term[] terms)
 		{

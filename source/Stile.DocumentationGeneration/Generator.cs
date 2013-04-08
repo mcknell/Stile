@@ -11,7 +11,6 @@ using System.Reflection;
 using JetBrains.Annotations;
 using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars;
-using Stile.Prototypes.Compilation.Grammars.CodeMetadata;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Types.Comparison;
 #endregion

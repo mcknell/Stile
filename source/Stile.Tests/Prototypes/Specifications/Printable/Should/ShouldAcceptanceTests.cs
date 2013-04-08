@@ -19,7 +19,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Tests.Prototypes.Specifications.SampleObjects;
 #endregion
 
-namespace Stile.Tests.Prototypes.Specifications.Printable.Specifications.Should
+namespace Stile.Tests.Prototypes.Specifications.Printable.Should
 {
 	[TestFixture]
 	public class ShouldAcceptanceTests

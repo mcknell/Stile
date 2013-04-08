@@ -72,7 +72,6 @@
     <Compile Include="Prototypes\Collections\Graphs\Vertex.cs" />
     <Compile Include="Prototypes\Collections\Sorting\Toposort.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\Clause.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\ExpansionSymbol.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\NonterminalSymbol.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\Rule.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\Term.cs" />
@@ -104,10 +103,10 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Nullable.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Describer.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Nonterminal.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\RuleExpansionAttribute.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldExpectationDescriber.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldSpecificationDescriber.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldSpecifications.Designer.cs">
+    <Compile Include="Prototypes\Specifications\Grammar\Metadata\RuleExpansionAttribute.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Should\ShouldExpectationDescriber.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Should\ShouldSpecificationDescriber.cs" />
+    <Compile Include="Prototypes\Specifications\Printable\Should\ShouldSpecifications.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ShouldSpecifications.resx</DependentUpon>
@@ -154,17 +153,12 @@
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ContextFreeGrammar.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ProductionRule.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\Error.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\ActualClause.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\ExpectationVerb.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\ExpectedClause.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\ExplainerClause.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\RuleAttribute.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\GrammarMetadata\SymbolAttribute.cs" />
+    <Compile Include="Prototypes\Specifications\Grammar\Metadata\RuleAttribute.cs" />
+    <Compile Include="Prototypes\Specifications\Grammar\Metadata\SymbolAttribute.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\Evaluation.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\IBoundSpecification.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\IEvaluable.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\Outcome.cs" />
-    <Compile Include="Prototypes\Specifications\Printable\Output\LazyReadableText.cs" />
     <Compile Include="Patterns\Behavioral\Traversal\NonrepeatingTraverser.cs" />
     <Compile Include="Patterns\Behavioral\Traversal\Traverser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -242,7 +236,7 @@
       <LastGenOutput>PastTenseEvaluations.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Prototypes\Specifications\Printable\Specifications\Should\ShouldSpecifications.resx">
+    <EmbeddedResource Include="Prototypes\Specifications\Printable\Should\ShouldSpecifications.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ShouldSpecifications.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>

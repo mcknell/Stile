@@ -19,7 +19,7 @@ using Stile.Types.Primitives;
 using Stile.Types.Reflection;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
+namespace Stile.Prototypes.Specifications.Printable.Should
 {
 	public interface IShouldSpecificationDescriber : ISpecificationVisitor {}
 

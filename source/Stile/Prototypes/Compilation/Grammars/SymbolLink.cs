@@ -17,7 +17,7 @@ namespace Stile.Prototypes.Compilation.Grammars
 		{
 			Prior = prior.ValidateArgumentIsNotNull();
 			Current = current.ValidateArgumentIsNotNull();
-			Cardinality = cardinality ?? Grammars.Cardinality.One;
+			Cardinality = cardinality ?? Cardinality.One;
 		}
 
 		public Cardinality Cardinality { get; private set; }

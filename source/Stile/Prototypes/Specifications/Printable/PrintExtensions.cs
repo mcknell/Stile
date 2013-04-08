@@ -7,7 +7,7 @@
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Printable.Past;
-using Stile.Prototypes.Specifications.Printable.Specifications.Should;
+using Stile.Prototypes.Specifications.Printable.Should;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion

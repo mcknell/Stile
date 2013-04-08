@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
+namespace Stile.Prototypes.Specifications.Printable.Should {
     using System;
     
     
@@ -39,8 +39,7 @@ namespace Stile.Prototypes.Specifications.Printable.Specifications.Should {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Stile.Prototypes.Specifications.Printable.Specifications.Should.ShouldSpecificati" +
-                            "ons", typeof(ShouldSpecifications).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Stile.Prototypes.Specifications.Printable.Should.ShouldSpecifications", typeof(ShouldSpecifications).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

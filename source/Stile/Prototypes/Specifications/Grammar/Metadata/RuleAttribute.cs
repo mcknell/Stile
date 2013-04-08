@@ -8,7 +8,7 @@ using System;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata
+namespace Stile.Prototypes.Specifications.Grammar.Metadata
 {
 	/// <summary>
 	/// A symbol on the left of a production rule in the grammar for describing <see cref="ISpecification"/> objects.

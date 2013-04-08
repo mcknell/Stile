@@ -13,7 +13,7 @@ using Stile.Patterns.Structural.FluentInterface;
 using Stile.Patterns.Structural.Hierarchy;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
-using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;

@@ -6,12 +6,10 @@
 #region using...
 using NUnit.Framework;
 using Stile.Prototypes.Compilation.Grammars;
-using Stile.Prototypes.Compilation.Grammars.CodeMetadata;
 using Stile.Prototypes.Specifications.Grammar;
-using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 #endregion
 
-namespace Stile.Tests.Prototypes.Compilation.Grammars.CodeMetadata
+namespace Stile.Tests.Prototypes.Compilation.Grammars
 {
 	[TestFixture]
 	public class SymbolLinkFixture

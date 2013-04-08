@@ -7,16 +7,14 @@
 using System.Linq;
 using NUnit.Framework;
 using Stile.Prototypes.Compilation.Grammars;
-using Stile.Prototypes.Compilation.Grammars.CodeMetadata;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Specifications.Grammar;
-using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
 #endregion
 
-namespace Stile.Tests.Prototypes.Compilation.Grammars.CodeMetadata
+namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 {
 	[TestFixture]
-	public class GrammarBuilderFixture
+	public class ContextFreeGrammarBuilderFixture
 	{
 		[Test]
 		public void AddsLink()
@@ -45,9 +43,9 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.CodeMetadata
 		[Test]
 		public void BuildsGrammar()
 		{
-			ProductionRule inspection = Inspection();
-			ProductionRule specification = Specification();
-			ProductionRule andLater = AndLater();
+			ProductionRule inspection = ProductionRuleLibrary.Inspection;
+			ProductionRule specification = ProductionRuleLibrary.Specification;
+			ProductionRule andLater = ProductionRuleLibrary.AndLater;
 			var testSubject = new ContextFreeGrammarBuilder(inspection, specification, andLater);
 
 			// act
@@ -60,20 +58,10 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.CodeMetadata
 			Assert.That(grammar.ProductionRules, Has.Count.EqualTo(3));
 		}
 
-		private static void AssertRuleIsInGrammar(ContextFreeGrammar grammar, ProductionRule rule)
-		{
-			Assert.That(grammar.Nonterminals.Any(x => x.Token == rule.Left));
-			foreach (string right in rule.Right)
-			{
-				Assert.That(grammar.Nonterminals.Any(x => x.Token == right), right);
-			}
-			Assert.That(grammar.ProductionRules, Has.Member(rule));
-		}
-
 		[Test]
 		public void ConstructsFromRules()
 		{
-			ProductionRule expectation = Expectation();
+			ProductionRule expectation = ProductionRuleLibrary.Expectation;
 
 			// act
 			var testSubject = new ContextFreeGrammarBuilder(expectation);
@@ -108,28 +96,14 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.CodeMetadata
 			Assert.Fail("wip");
 		}
 
-		private static ProductionRule AndLater()
+		private static void AssertRuleIsInGrammar(ContextFreeGrammar grammar, ProductionRule rule)
 		{
-			return new ProductionRule(Nonterminal.Specification, Nonterminal.Specification, Nonterminal.AndLater);
-		}
-
-		private static ProductionRule Expectation()
-		{
-			return new ProductionRule(Nonterminal.Expectation, Nonterminal.Expectation, Nonterminal.Before);
-		}
-
-		private static ProductionRule Inspection()
-		{
-			return new ProductionRule(Nonterminal.Inspection, Nonterminal.Instrument, Nonterminal.Action);
-		}
-
-		private static ProductionRule Specification()
-		{
-			return new ProductionRule(Nonterminal.Specification,
-				Nonterminal.Source,
-				Nonterminal.Inspection,
-				Nonterminal.Expectation,
-				Nonterminal.Deadline);
+			Assert.That(grammar.Nonterminals.Any(x => x.Token == rule.Left));
+			foreach (string right in rule.Right)
+			{
+				Assert.That(grammar.Nonterminals.Any(x => x.Token == right), right);
+			}
+			Assert.That(grammar.ProductionRules, Has.Member(rule));
 		}
 	}
 }

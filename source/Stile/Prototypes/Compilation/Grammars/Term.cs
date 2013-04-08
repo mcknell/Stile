@@ -10,7 +10,7 @@ namespace Stile.Prototypes.Compilation.Grammars
 		public Term(Symbol symbol, Cardinality? cardinality = null)
 		{
 			Symbol = symbol;
-			Cardinality = cardinality ?? Grammars.Cardinality.One;
+			Cardinality = cardinality ?? Cardinality.One;
 		}
 
 		public Cardinality Cardinality { get; private set; }

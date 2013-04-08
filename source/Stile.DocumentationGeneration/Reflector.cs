@@ -13,9 +13,8 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars;
-using Stile.Prototypes.Compilation.Grammars.CodeMetadata;
 using Stile.Prototypes.Specifications.Grammar;
-using Stile.Prototypes.Specifications.Printable.Output.GrammarMetadata;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Types.Enumerables;
 #endregion
 

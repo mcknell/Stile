@@ -4,7 +4,6 @@
 #endregion
 
 #region using...
-using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
@@ -17,7 +16,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 using Stile.Readability;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Printable.Specifications.Should
+namespace Stile.Prototypes.Specifications.Printable.Should
 {
 	public interface IShouldExpectationDescriber : IExpectationVisitor {}
 
