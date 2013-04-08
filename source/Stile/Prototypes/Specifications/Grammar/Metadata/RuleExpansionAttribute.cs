@@ -12,7 +12,7 @@ using Stile.Prototypes.Compilation.Grammars;
 namespace Stile.Prototypes.Specifications.Grammar.Metadata
 {
 	/// <summary>
-	/// Indicates a fragment that expands the right side of a <see cref="ProductionRule"/>.
+	/// Indicates a fragment that expands the right side of a <see cref="IProductionRule"/>.
 	/// </summary>
 	[AttributeUsage(
 		AttributeTargets.Parameter | AttributeTargets.Method | AttributeTargets.Property

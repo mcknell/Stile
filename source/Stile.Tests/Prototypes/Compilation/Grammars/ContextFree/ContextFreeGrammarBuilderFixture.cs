@@ -19,7 +19,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		[Test]
 		public void AddsLink()
 		{
-			var rules = new ProductionRule[0];
+			var rules = new IProductionRule[0];
 			var testSubject = new ContextFreeGrammarBuilder(rules);
 			Assert.That(testSubject.Links, Is.Empty, "precondition");
 			Assert.That(testSubject.Symbols, Is.Empty, "precondition");
@@ -43,9 +43,9 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		[Test]
 		public void BuildsGrammar()
 		{
-			ProductionRule inspection = ProductionRuleLibrary.Inspection;
-			ProductionRule specification = ProductionRuleLibrary.Specification;
-			ProductionRule andLater = ProductionRuleLibrary.AndLater;
+			IProductionRule inspection = ProductionRuleLibrary.Inspection;
+			IProductionRule specification = ProductionRuleLibrary.Specification;
+			IProductionRule andLater = ProductionRuleLibrary.AndLater;
 			var testSubject = new ContextFreeGrammarBuilder(inspection, specification, andLater);
 
 			// act
@@ -61,7 +61,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		[Test]
 		public void ConstructsFromRules()
 		{
-			ProductionRule expectation = ProductionRuleLibrary.Expectation;
+			IProductionRule expectation = ProductionRuleLibrary.Expectation;
 
 			// act
 			var testSubject = new ContextFreeGrammarBuilder(expectation);
@@ -96,12 +96,12 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			Assert.Fail("wip");
 		}
 
-		private static void AssertRuleIsInGrammar(ContextFreeGrammar grammar, ProductionRule rule)
+		private static void AssertRuleIsInGrammar(ContextFreeGrammar grammar, IProductionRule rule)
 		{
 			Assert.That(grammar.Nonterminals.Any(x => x.Token == rule.Left));
-			foreach (string right in rule.Right)
+			foreach (Symbol right in rule.Right.Symbols)
 			{
-				Assert.That(grammar.Nonterminals.Any(x => x.Token == right), right);
+				Assert.That(grammar.Nonterminals, Has.Member(right), right);
 			}
 			Assert.That(grammar.ProductionRules, Has.Member(rule));
 		}

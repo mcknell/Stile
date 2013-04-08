@@ -63,7 +63,7 @@ namespace Stile.DocumentationGeneration
 			return token;
 		}
 
-		public static string ToEBNF(this ProductionRule rule)
+		public static string ToEBNF(this IProductionRule rule)
 		{
 			return string.Format("{0} ::= {1}", rule.Left, string.Join(" ", rule.Right));
 		}

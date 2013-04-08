@@ -21,7 +21,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public ContextFreeGrammar([NotNull] HashSet<NonterminalSymbol> nonterminals,
 			[NotNull] HashSet<TerminalSymbol> terminals,
-			[NotNull] List<ProductionRule> productionRules,
+			[NotNull] List<IProductionRule> productionRules,
 			[NotNull] Symbol initialToken)
 		{
 			_nonterminals = nonterminals.ValidateArgumentIsNotNull();
@@ -48,12 +48,12 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		}
 
 		public Symbol InitialToken { get; private set; }
-		public IReadOnlyCollection<Symbol> Nonterminals
+		public IReadOnlyList<Symbol> Nonterminals
 		{
 			get { return _nonterminals.ToArray(); }
 		}
-		public IReadOnlyCollection<ProductionRule> ProductionRules { get; private set; }
-		public IReadOnlyCollection<Symbol> Terminals
+		public IReadOnlyList<IProductionRule> ProductionRules { get; private set; }
+		public IReadOnlyList<Symbol> Terminals
 		{
 			get { return _terminals.ToArray(); }
 		}

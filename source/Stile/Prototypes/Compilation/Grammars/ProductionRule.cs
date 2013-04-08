@@ -14,46 +14,52 @@ using Stile.Types.Enumerables;
 
 namespace Stile.Prototypes.Compilation.Grammars
 {
-	public partial class ProductionRule
+	public interface IProductionRule : IEquatable<ProductionRule>
+	{
+		bool CanBeInlined { get; set; }
+		[NotNull]
+		Symbol Left { get; }
+		[NotNull]
+		IClause Right { get; }
+		int SortOrder { get; set; }
+
+		[NotNull]
+		IProductionRule Inline(Symbol target, IReadOnlyList<Symbol> replacement);
+	}
+
+	public partial class ProductionRule : IProductionRule
 	{
 		public ProductionRule([NotNull] Symbol left, [NotNull] Symbol right, params Symbol[] rights)
 			: this(left, rights.Unshift(right).ToList()) {}
 
-		public ProductionRule([NotNull] Symbol left, [NotNull] IList<Symbol> right)
+		public ProductionRule([NotNull] Symbol left, [NotNull] IEnumerable<Symbol> right)
+			: this(left, new Clause(right)) {}
+
+		public ProductionRule([NotNull] Symbol left, [NotNull] IClause right)
 		{
 			Left = left.ValidateArgumentIsNotNull();
-			Right = right.Validate().EnumerableOf<Symbol>().IsNotNullOrEmpty();
-			string[] badElements = Right.Select(x => x.Token).Where(string.IsNullOrWhiteSpace).ToArray();
-			if (badElements.Length == Right.Count)
-			{
-				throw new ArgumentException(
-					"Right side must have at least one element that's not null or whitespace, but had "
-						+ string.Join(", ", badElements),
-					"right");
-			}
+			Right = right.ValidateArgumentIsNotNull();
 		}
 
 		public bool CanBeInlined { get; set; }
-		[NotNull]
 		public Symbol Left { get; private set; }
-		[NotNull]
-		public IList<Symbol> Right { get; private set; }
+		public IClause Right { get; private set; }
 		public int SortOrder { get; set; }
 
-		public ProductionRule Inline(Symbol target, IList<Symbol> replacement)
+		public IProductionRule Inline(Symbol target, IReadOnlyList<Symbol> replacement)
 		{
-			List<Symbol> newRight = Right.SelectMany(x => x == target ? replacement : new[] {x}).ToList();
+			List<Symbol> newRight = Right.Symbols.SelectMany(x => x == target ? replacement : new[] {x}).ToList();
 			var rule = new ProductionRule(Left, newRight) {CanBeInlined = CanBeInlined, SortOrder = SortOrder};
 			return rule;
 		}
 
 		public override string ToString()
 		{
-			return string.Join(" ", new[] {Left, Symbol.EBNFAssignment}.Concat(Right));
+			return string.Join(" ", new[] {Left, Symbol.EBNFAssignment}.Concat(Right.Symbols));
 		}
 	}
 
-	public partial class ProductionRule : IEquatable<ProductionRule>
+	public partial class ProductionRule
 	{
 		public bool Equals(ProductionRule other)
 		{
@@ -66,7 +72,7 @@ namespace Stile.Prototypes.Compilation.Grammars
 				return true;
 			}
 			return CanBeInlined.Equals(other.CanBeInlined) && string.Equals(Left, other.Left)
-				&& Right.SequenceEqual(other.Right);
+				&& Right.Symbols.SequenceEqual(other.Right.Symbols);
 		}
 
 		public override bool Equals(object obj)

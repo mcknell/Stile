@@ -22,19 +22,19 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		private readonly HashBucket<Symbol, Symbol> _ruleStartingSymbols;
 		private readonly HashSet<NonterminalSymbol> _symbols;
 
-		public ContextFreeGrammarBuilder([NotNull] ProductionRule rule, params ProductionRule[] rules)
+		public ContextFreeGrammarBuilder([NotNull] IProductionRule rule, params IProductionRule[] rules)
 			: this(rules.Unshift(rule.ValidateArgumentIsNotNull())) {}
 
-		public ContextFreeGrammarBuilder(IEnumerable<ProductionRule> rules)
+		public ContextFreeGrammarBuilder(IEnumerable<IProductionRule> rules)
 		{
 			_symbols = new HashSet<NonterminalSymbol>();
 			_links = new HashSet<SymbolLink>();
 			_leftSymbols = new HashSet<Symbol>();
 			_ruleStartingSymbols = new HashBucket<Symbol, Symbol>();
-			foreach (ProductionRule rule in rules)
+			foreach (IProductionRule rule in rules)
 			{
 				Symbol left = GetOrAdd(rule.Left, false);
-				List<Symbol> rightSymbols = rule.Right.Select(symbol => GetOrAdd(symbol.Token)).ToList();
+				List<Symbol> rightSymbols = rule.Right.Symbols.Select(symbol => GetOrAdd(symbol.Token)).ToList();
 				if (rightSymbols.Any())
 				{
 					_ruleStartingSymbols.Add(rightSymbols.First(), left);
@@ -70,7 +70,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		[NotNull]
 		public ContextFreeGrammar Build()
 		{
-			var rules = new List<ProductionRule>();
+			var rules = new List<IProductionRule>();
 			foreach (Symbol leftSymbol in _leftSymbols)
 			{
 				List<Symbol> startingSymbols =

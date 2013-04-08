@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System.Globalization;
 using JetBrains.Annotations;
 #endregion
 
@@ -14,6 +15,11 @@ namespace Stile.Prototypes.Compilation.Grammars
 		public static readonly Symbol Start = new NonterminalSymbol("S");
 
 		protected NonterminalSymbol([NotNull] string token)
-			: base(token) {}
+			: base(ToTitleCase(token)) {}
+
+		protected static string ToTitleCase(string parameterName)
+		{
+			return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(parameterName);
+		}
 	}
 }

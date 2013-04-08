@@ -67,11 +67,6 @@ namespace Stile.Prototypes.Compilation.Grammars
 			return Token.GetHashCode();
 		}
 
-		public static Symbol Make([NotNull] string token)
-		{
-			return new Symbol(token);
-		}
-
 		public override string ToString()
 		{
 			return Token;

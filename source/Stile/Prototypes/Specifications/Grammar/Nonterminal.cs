@@ -46,5 +46,10 @@ namespace Stile.Prototypes.Specifications.Grammar
 
 		public Nonterminal([NotNull] string token)
 			: base(token) {}
+
+		public static Symbol Make([NotNull] string token)
+		{
+			return new Nonterminal(token);
+		}
 	}
 }

@@ -12,22 +12,22 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars
 {
 	public static class ProductionRuleLibrary
 	{
-		public static ProductionRule AndLater
+		public static IProductionRule AndLater
 		{
 			get { return new ProductionRule(Nonterminal.Specification, Nonterminal.Specification, Nonterminal.AndLater); }
 		}
 
-		public static ProductionRule Expectation
+		public static IProductionRule Expectation
 		{
 			get { return new ProductionRule(Nonterminal.Expectation, Nonterminal.Expectation, Nonterminal.Before); }
 		}
 
-		public static ProductionRule Inspection
+		public static IProductionRule Inspection
 		{
 			get { return new ProductionRule(Nonterminal.Inspection, Nonterminal.Instrument, Nonterminal.Action); }
 		}
 
-		public static ProductionRule Specification
+		public static IProductionRule Specification
 		{
 			get
 			{

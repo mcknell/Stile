@@ -43,22 +43,21 @@ namespace Stile.DocumentationGeneration
 			}
 			foreach (Tuple<PropertyInfo, RuleExpansionAttribute> tuple in GetProperties<RuleExpansionAttribute>())
 			{
-				yield return
-					new SymbolLink(new Nonterminal(tuple.Item2.Prior), new Nonterminal(tuple.Item1.Name));
+				yield return new SymbolLink(new Nonterminal(tuple.Item2.Prior), new Nonterminal(tuple.Item1.Name));
 			}
 		}
 
-		public HashBucket<Symbol, ProductionRule> FindRules()
+		public HashBucket<Symbol, IProductionRule> FindRules()
 		{
-			var rules = new HashBucket<Symbol, ProductionRule>();
+			var rules = new HashBucket<Symbol, IProductionRule>();
 			foreach (Tuple<MethodBase, RuleAttribute> tuple in GetRuleMethods())
 			{
-				ProductionRule rule = GetRule(tuple.Item1, tuple.Item2);
+				IProductionRule rule = GetRule(tuple.Item1, tuple.Item2);
 				rules.Add(rule.Left, rule);
 			}
 			foreach (Tuple<PropertyInfo, RuleAttribute> tuple in GetRuleProperties())
 			{
-				ProductionRule rule = GetRule(tuple.Item1, tuple.Item2);
+				IProductionRule rule = GetRule(tuple.Item1, tuple.Item2);
 				rules.Add(rule.Left, rule);
 			}
 			return rules;
@@ -104,7 +103,7 @@ namespace Stile.DocumentationGeneration
 			}
 		}
 
-		private ProductionRule GetRule([NotNull] PropertyInfo propertyInfo, [NotNull] RuleAttribute attribute)
+		private IProductionRule GetRule([NotNull] PropertyInfo propertyInfo, [NotNull] RuleAttribute attribute)
 		{
 			var left = new Nonterminal(attribute.SymbolToken);
 			var right = new Nonterminal(propertyInfo.Name);
@@ -116,24 +115,26 @@ namespace Stile.DocumentationGeneration
 			return productionRule;
 		}
 
-		private ProductionRule GetRule([NotNull] MethodBase methodInfo, [NotNull] RuleAttribute attribute)
+		private IProductionRule GetRule([NotNull] MethodBase methodInfo, [NotNull] RuleAttribute attribute)
 		{
 			string symbol = GetSymbol(methodInfo, attribute.SymbolToken);
-			var symbols = new List<string>();
+			var clauses = new List<IClause>();
 			foreach (ParameterInfo parameterInfo in methodInfo.GetParameters())
 			{
 				string parameterName = parameterInfo.Name;
 				var parameterAttribute = parameterInfo.GetCustomAttribute<SymbolAttribute>();
 				if (parameterAttribute != null)
 				{
+					var cardinality = Cardinality.One;
 					if (parameterInfo.IsOptional)
 					{
-						parameterName = string.Format("{0}?", parameterName);
+						cardinality = Cardinality.ZeroOrOne;
 					}
-					symbols.Add(ToTitleCase(parameterName));
+					clauses.Add(new Clause(cardinality, new Nonterminal(parameterName)));
 				}
 			}
-			var productionRule = new ProductionRule(new Nonterminal(symbol), symbols.Select(Symbol.Make).ToList());
+			var clause = new Clause(clauses);
+			var productionRule = new ProductionRule(new Nonterminal(symbol), clause);
 			if (attribute.StartsGrammar)
 			{
 				productionRule.SortOrder = -1;

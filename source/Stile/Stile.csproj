@@ -73,8 +73,6 @@
     <Compile Include="Prototypes\Collections\Sorting\Toposort.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\Clause.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\NonterminalSymbol.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\Rule.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\Term.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\TerminalSymbol.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\Symbol.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\Cardinality.cs" />
