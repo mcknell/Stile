@@ -1,6 +1,6 @@
 ﻿#region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Propter project on GitHub
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -14,33 +14,48 @@ using Stile.Readability;
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-    public class ContextFreeGrammar
-    {
-        public ContextFreeGrammar([NotNull] HashSet<string> variables,
-            [NotNull] HashSet<string> terminals,
-            [NotNull] List<ProductionRule> productionRules,
-            [NotNull] string initialToken)
-        {
-            Variables = variables.ValidateArgumentIsNotNull();
-            Terminals = terminals.ValidateArgumentIsNotNull();
-            ProductionRules = productionRules.ValidateArgumentIsNotNull();
-            InitialToken = initialToken.ValidateArgumentIsNotNull();
+	public class ContextFreeGrammar
+	{
+		private readonly HashSet<Symbol> _nonterminals;
+		private readonly HashSet<Symbol> _terminals;
 
-            List<string> overlap = variables.Intersect(terminals).ToList();
-            if (overlap.Any())
-            {
-                int count = overlap.Count;
-                throw new ArgumentException(
-                    string.Format("Variables and terminals should not overlap but had {0} {1} in common:\r\n{2}",
-                        count,
-                        count.Pluralize("item"),
-                        string.Join(", ", overlap)));
-            }
-        }
+		public ContextFreeGrammar([NotNull] HashSet<Symbol> nonterminals,
+			[NotNull] HashSet<Symbol> terminals,
+			[NotNull] List<ProductionRule> productionRules,
+			[NotNull] Symbol initialToken)
+		{
+			_nonterminals = nonterminals.ValidateArgumentIsNotNull();
+			_terminals = terminals.ValidateArgumentIsNotNull();
+			ProductionRules = productionRules.ValidateArgumentIsNotNull();
+			InitialToken = initialToken.ValidateArgumentIsNotNull();
 
-        public string InitialToken { get; private set; }
-        public List<ProductionRule> ProductionRules { get; private set; }
-        public HashSet<string> Terminals { get; private set; }
-        public HashSet<string> Variables { get; private set; }
-    }
+			List<Symbol> overlap = nonterminals.Intersect(terminals).ToList();
+			if (overlap.Any())
+			{
+				int count = overlap.Count;
+				throw new ArgumentException(
+					string.Format("Variables and terminals should not overlap but had {0} {1} in common:\r\n{2}",
+						count,
+						count.Pluralize("item"),
+						string.Join(", ", overlap)));
+			}
+
+			if (_nonterminals.Contains(InitialToken) == false)
+			{
+				throw new ArgumentException(string.Format("Initial token {0} must be in the set of nonterminals.",
+					InitialToken));
+			}
+		}
+
+		public Symbol InitialToken { get; private set; }
+		public IReadOnlyCollection<Symbol> Nonterminals
+		{
+			get { return _nonterminals.ToArray(); }
+		}
+		public IReadOnlyCollection<ProductionRule> ProductionRules { get; private set; }
+		public IReadOnlyCollection<Symbol> Terminals
+		{
+			get { return _terminals.ToArray(); }
+		}
+	}
 }

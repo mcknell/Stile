@@ -50,7 +50,10 @@
     <Compile Include="Patterns\Lifetimes\Disposables\DisposableFixture.cs" />
     <Compile Include="Patterns\Behavioral\Traversal\NonrepeatingTraverserFixture.cs" />
     <Compile Include="Patterns\Behavioral\Traversal\TraverserFixture.cs" />
+    <Compile Include="Prototypes\Collections\Graphs\GraphExtensionsFixture.cs" />
     <Compile Include="Prototypes\Collections\HashBucketFixture.cs" />
+    <Compile Include="Prototypes\Collections\Sorting\ToposortFixture.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\GrammarBuilderFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\SymbolLinkFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\CodeMetadata\SymbolNodeFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIsTests.cs" />

@@ -26,6 +26,11 @@ namespace Stile.Types.Enumerables
 			return items.Any() == false;
 		}
 
+		public static bool None<TItem>(this IEnumerable<TItem> items, Func<TItem, bool> predicate)
+		{
+			return items.Any(predicate) == false;
+		}
+
 		[NotNull]
 		[System.Diagnostics.Contracts.Pure]
 		public static IEnumerable<TItem> SkipWith<TItem>([NotNull] this IEnumerable<TItem> items,

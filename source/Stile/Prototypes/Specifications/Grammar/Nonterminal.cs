@@ -8,10 +8,17 @@ namespace Stile.Prototypes.Specifications.Grammar
 	public enum Nonterminal
 	{
 		Specification,
-		Deadline,
+		Source,
+		Inspection,
 		Expectation,
+		Deadline,
+		Instrument,
+		Action,
 		Has,
 		Is,
-		HashCode
+		HashCode,
+		Before,
+		AndLater,
+		Start
 	}
 }

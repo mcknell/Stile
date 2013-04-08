@@ -7,17 +7,12 @@
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Specifications.Grammar;
 #endregion
 
-namespace Stile.Prototypes.Compilation.Grammars.CodeMetadata
+namespace Stile.Prototypes.Compilation.Grammars
 {
-	public class Symbol : IEquatable<Symbol>
+	public partial class Symbol : IEquatable<Symbol>
 	{
-		public static readonly Symbol Deadline = new Symbol(Nonterminal.Deadline.ToString());
-		public static readonly Symbol Expectation = new Symbol(Nonterminal.Expectation.ToString());
-		public static readonly Symbol Specification = new Symbol(Nonterminal.Specification.ToString());
-
 		public Symbol([NotNull] string token)
 		{
 			Token = token.Trim().Validate().EnumerableOf<char>().IsNotNullOrEmpty();
@@ -25,7 +20,10 @@ namespace Stile.Prototypes.Compilation.Grammars.CodeMetadata
 
 		[NotNull]
 		public string Token { get; private set; }
+	}
 
+	public partial class Symbol
+	{
 		public bool Equals(Symbol other)
 		{
 			if (ReferenceEquals(null, other))

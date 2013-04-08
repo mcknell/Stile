@@ -13,11 +13,14 @@ namespace Stile.Prototypes.Compilation.Grammars.CodeMetadata
 {
 	public class SymbolLink : IEquatable<SymbolLink>
 	{
-		public SymbolLink([NotNull] Symbol prior, [NotNull] Symbol current)
+		public SymbolLink([NotNull] Symbol prior, [NotNull] Symbol current, SymbolCardinality? cardinality = null)
 		{
 			Prior = prior.ValidateArgumentIsNotNull();
 			Current = current.ValidateArgumentIsNotNull();
+			Cardinality = cardinality ?? SymbolCardinality.One;
 		}
+
+		public SymbolCardinality Cardinality { get; private set; }
 
 		[NotNull]
 		public Symbol Current { get; private set; }
@@ -49,13 +52,14 @@ namespace Stile.Prototypes.Compilation.Grammars.CodeMetadata
 
 		public override int GetHashCode()
 		{
-			// shift in case Current === Prior, so XOR doesn't yield zero (except in rare edge cases)
 			return Current.GetHashCode() ^ (Prior.GetHashCode() >> 1);
 		}
 
-		public static SymbolLink Make([NotNull] Symbol prior, [NotNull] Symbol next)
+		public static SymbolLink Make([NotNull] Symbol prior,
+			[NotNull] Symbol next,
+			SymbolCardinality? cardinality = null)
 		{
-			return new SymbolLink(prior, next);
+			return new SymbolLink(prior, next, cardinality);
 		}
 
 		public static bool operator ==(SymbolLink left, SymbolLink right)

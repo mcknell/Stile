@@ -5,6 +5,7 @@
 
 #region using...
 using NUnit.Framework;
+using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.CodeMetadata;
 #endregion
 

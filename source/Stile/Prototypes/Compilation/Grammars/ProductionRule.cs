@@ -10,13 +10,17 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.Grammar;
 using Stile.Types.Enumerables;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars
 {
-	public class ProductionRule
+	public partial class ProductionRule
 	{
+		public ProductionRule(Nonterminal left, Nonterminal right, params Nonterminal[] rights)
+			: this(left.ToString(), rights.Select(x => x.ToString()).Unshift(right.ToString()).ToList()) {}
+
 		public ProductionRule([NotNull] string left, [NotNull] string right, params string[] rights)
 			: this(left, rights.Unshift(right).ToList()) {}
 
@@ -35,7 +39,9 @@ namespace Stile.Prototypes.Compilation.Grammars
 		}
 
 		public bool CanBeInlined { get; set; }
+		[NotNull]
 		public string Left { get; private set; }
+		[NotNull]
 		public IList<string> Right { get; private set; }
 		public int SortOrder { get; set; }
 
@@ -50,6 +56,58 @@ namespace Stile.Prototypes.Compilation.Grammars
 		public override string ToString()
 		{
 			return string.Join(" ", new[] {Left, "::="}.Concat(Right));
+		}
+	}
+
+	public partial class ProductionRule : IEquatable<ProductionRule>
+	{
+		public bool Equals(ProductionRule other)
+		{
+			if (ReferenceEquals(null, other))
+			{
+				return false;
+			}
+			if (ReferenceEquals(this, other))
+			{
+				return true;
+			}
+			return CanBeInlined.Equals(other.CanBeInlined) && string.Equals(Left, other.Left)
+				&& Right.SequenceEqual(other.Right);
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (ReferenceEquals(null, obj))
+			{
+				return false;
+			}
+			if (ReferenceEquals(this, obj))
+			{
+				return true;
+			}
+			var other = obj as ProductionRule;
+			return other != null && Equals(other);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hashCode = Left.GetHashCode();
+				hashCode = (hashCode * 397) ^ Right.GetHashCode();
+				hashCode = (hashCode * 397) ^ CanBeInlined.GetHashCode();
+				return hashCode;
+			}
+		}
+
+		public static bool operator ==(ProductionRule left, ProductionRule right)
+		{
+			return Equals(left, right);
+		}
+
+		public static bool operator !=(ProductionRule left, ProductionRule right)
+		{
+			return !Equals(left, right);
 		}
 	}
 }

@@ -43,6 +43,7 @@ namespace Stile.Tests.Patterns.Behavioral.Traversal
 			// arrange
 			var ints = new[] {2, 3, 5};
 			var testSubject = new Traverser<int>(ints, AccumulatingAccepter);
+			Assert.That(_traversed, Is.Empty, "precondition");
 
 			// act
 			bool result = testSubject.Traverse();
