@@ -4,8 +4,6 @@
 #endregion
 
 #region using...
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
@@ -40,12 +38,7 @@ namespace Stile.DocumentationGeneration
 				grammarBuilder.Add(symbolLink);
 			}
 
-			IList<IProductionRule> consolidated = rules.SelectMany(x => x.Value).ToList();
-
-			IOrderedEnumerable<IProductionRule> sorted = consolidated.OrderBy(x => x.SortOrder);
-
-			string generated = string.Join(Environment.NewLine, sorted.Select(x => x.ToEBNF()));
-			return generated;
+			return grammarBuilder.ToEBNF();
 		}
 	}
 }

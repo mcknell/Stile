@@ -42,5 +42,23 @@ namespace Stile.Tests.Prototypes.Collections
 				Is.EqualTo(2),
 				string.Format("Adding to bucket {0} shouldn't affect bucket {1}", secondBucket, firstBucket));
 		}
+
+		[Test]
+		public void Concat()
+		{
+			const int firstBucket = 1;
+			const int secondBucket = 5;
+			var hashBucket = new HashBucket<int, int> {{firstBucket, 2}, {firstBucket, 3}};
+
+			var bucket2 = new HashBucket<int, int> {{secondBucket, 7}, {firstBucket, 2}};
+
+			HashBucket<int, int> bucket3 = hashBucket.Concat(bucket2);
+
+			Assert.That(bucket3[firstBucket], Has.Member(2));
+			Assert.That(bucket3[firstBucket], Has.Member(3));
+			Assert.That(bucket3[firstBucket].Count, Is.EqualTo(2));
+			Assert.That(bucket3[secondBucket], Has.Member(7));
+			Assert.That(bucket3[secondBucket].Count, Is.EqualTo(1));
+		}
 	}
 }

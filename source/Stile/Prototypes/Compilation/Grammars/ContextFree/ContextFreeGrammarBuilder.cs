@@ -38,11 +38,16 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			}
 		}
 
-		public IReadOnlyCollection<IFollower> Links
+		public IReadOnlyDictionary<Symbol, ISet<IClause>> Clauses
+		{
+			get { return _clauses; }
+		}
+
+		public IReadOnlyList<IFollower> Links
 		{
 			get { return _links.ToArray(); }
 		}
-		public IReadOnlyCollection<Symbol> Symbols
+		public IReadOnlyList<Symbol> Symbols
 		{
 			get { return _symbols.ToArray(); }
 		}
@@ -63,9 +68,9 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		public ContextFreeGrammar Build()
 		{
 			var rules = new List<IProductionRule>();
-			foreach (Symbol leftSymbol in _clauses.Keys)
+			foreach (Symbol leftSymbol in Clauses.Keys)
 			{
-				foreach (IClause clause in _clauses[leftSymbol])
+				foreach (IClause clause in Clauses[leftSymbol])
 				{
 					var stack = new Stack<IClause>();
 					stack.Push(clause);
@@ -81,10 +86,10 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		public string ToEBNF()
 		{
 			var builder = new StringBuilder();
-			foreach (Symbol leftSymbol in _clauses.Keys)
+			foreach (Symbol leftSymbol in Clauses.Keys)
 			{
 				builder.AppendFormat("{0}{1} {2} ", Environment.NewLine, leftSymbol, Symbol.EBNFAssignment);
-				ISet<IClause> clauses = _clauses[leftSymbol];
+				ISet<IClause> clauses = Clauses[leftSymbol];
 				if (clauses.Count > 1)
 				{
 					builder.Append("(");

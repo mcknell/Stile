@@ -37,7 +37,10 @@ namespace Stile.Prototypes.Collections
 		{
 			foreach (KeyValuePair<TKey, ISet<TItem>> pair in hashBucket)
 			{
-				Add(pair.Key, pair.Value);
+				foreach (TItem item in pair.Value)
+				{
+					Add(pair.Key, item);
+				}
 			}
 			return this;
 		}
