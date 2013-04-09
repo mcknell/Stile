@@ -27,17 +27,17 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			Symbol hashcode = Nonterminal.HashCode;
 
 			// act
-			testSubject.AddLink(has, hashcode);
+			testSubject.Add(has, hashcode);
 
 			Assert.That(testSubject.Symbols.Any(x => x.Token == has));
 			Assert.That(testSubject.Symbols.Any(x => x.Token == hashcode));
 			Assert.That(testSubject.Symbols.Count, Is.EqualTo(2));
 
 			Assert.That(testSubject.Links.Count, Is.EqualTo(1));
-			SymbolLink link = testSubject.Links.FirstOrDefault();
+			IFollower link = testSubject.Links.FirstOrDefault();
 			Assert.NotNull(link);
-			Assert.That(link.Prior, Is.EqualTo(has));
-			Assert.That(link.Current, Is.EqualTo(hashcode));
+			Assert.That(link.Prior.Symbols.First(), Is.EqualTo(has));
+			Assert.That(link.Current.Symbols.First(), Is.EqualTo(hashcode));
 		}
 
 		[Test]
@@ -46,7 +46,9 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			IProductionRule inspection = ProductionRuleLibrary.Inspection;
 			IProductionRule specification = ProductionRuleLibrary.Specification;
 			IProductionRule andLater = ProductionRuleLibrary.AndLater;
-			var testSubject = new ContextFreeGrammarBuilder(inspection, specification, andLater);
+			IProductionRule expectationHas = ProductionRuleLibrary.ExpectationHas;
+			var testSubject = new ContextFreeGrammarBuilder(inspection, specification, andLater, expectationHas);
+			testSubject.Add(Nonterminal.Enum.Has.ToString(), Nonterminal.Enum.HashCode.ToString());
 
 			// act
 			ContextFreeGrammar grammar = testSubject.Build();
@@ -55,24 +57,23 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			AssertRuleIsInGrammar(grammar, specification);
 			AssertRuleIsInGrammar(grammar, inspection);
 			AssertRuleIsInGrammar(grammar, andLater);
-			Assert.That(grammar.ProductionRules, Has.Count.EqualTo(3));
+			var joinedRule = new ProductionRule(Nonterminal.Expectation,
+				new Clause(new Clause(Nonterminal.Has), new Clause(Nonterminal.HashCode)));
+			AssertRuleIsInGrammar(grammar, joinedRule);
+			Assert.That(grammar.ProductionRules, Has.Count.EqualTo(4));
 		}
 
 		[Test]
 		public void ConstructsFromRules()
 		{
-			IProductionRule expectation = ProductionRuleLibrary.Expectation;
+			IProductionRule expectation = ProductionRuleLibrary.ExpectationBefore;
 
 			// act
 			var testSubject = new ContextFreeGrammarBuilder(expectation);
 
 			Assert.That(testSubject.Symbols, Has.Member(Nonterminal.Expectation));
 			Assert.That(testSubject.Symbols, Has.Member(Nonterminal.Before));
-			Assert.That(testSubject.Links.Count, Is.EqualTo(1));
-			SymbolLink link = testSubject.Links.FirstOrDefault();
-			Assert.NotNull(link);
-			Assert.That(link.Prior, Is.EqualTo(Nonterminal.Expectation));
-			Assert.That(link.Current, Is.EqualTo(Nonterminal.Before));
+			Assert.That(testSubject.Links.Count, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -83,10 +84,17 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		}
 
 		[Test]
-		[Explicit("WIP")]
 		public void EmitsEBNF()
 		{
-			Assert.Fail("wip");
+			IProductionRule inspection = ProductionRuleLibrary.Inspection;
+			IProductionRule specification = ProductionRuleLibrary.Specification;
+			IProductionRule andLater = ProductionRuleLibrary.AndLater;
+			var testSubject = new ContextFreeGrammarBuilder(inspection, specification, andLater);
+
+			string ebnf = testSubject.ToEBNF();
+
+			StringAssert.Contains("Inspection ::= (Instrument Action)", ebnf);
+			StringAssert.Contains("Specification ::= (Source? Inspection Deadline? Reason? | (Specification AndLater))", ebnf);
 		}
 
 		[Test]
@@ -99,7 +107,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		private static void AssertRuleIsInGrammar(ContextFreeGrammar grammar, IProductionRule rule)
 		{
 			Assert.That(grammar.Nonterminals.Any(x => x.Token == rule.Left));
-			foreach (Symbol right in rule.Right.Symbols)
+			foreach (Symbol right in rule.Right.Flatten())
 			{
 				Assert.That(grammar.Nonterminals, Has.Member(right), right);
 			}

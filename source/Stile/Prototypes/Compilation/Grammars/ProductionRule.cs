@@ -72,7 +72,7 @@ namespace Stile.Prototypes.Compilation.Grammars
 				return true;
 			}
 			return CanBeInlined.Equals(other.CanBeInlined) && string.Equals(Left, other.Left)
-				&& Right.Symbols.SequenceEqual(other.Right.Symbols);
+				&& Right.Equals(other.Right);
 		}
 
 		public override bool Equals(object obj)

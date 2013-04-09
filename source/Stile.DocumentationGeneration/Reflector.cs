@@ -32,18 +32,18 @@ namespace Stile.DocumentationGeneration
 				.Validate().EnumerableOf<Assembly>().IsNotNullOrEmpty();
 		}
 
-		public IEnumerable<SymbolLink> FindRuleExpansions()
+		public IEnumerable<Follower> FindRuleExpansions()
 		{
 			foreach (Tuple<MethodBase, RuleExpansionAttribute> tuple in GetMethods<RuleExpansionAttribute>())
 			{
 				MethodBase methodInfo = tuple.Item1;
 				RuleExpansionAttribute ruleExpansion = tuple.Item2;
 				string symbol = GetSymbol(methodInfo, ruleExpansion.SymbolToken);
-				yield return new SymbolLink(new Nonterminal(ruleExpansion.Prior), new Nonterminal(symbol));
+				yield return new Follower(ruleExpansion.Prior, symbol);
 			}
 			foreach (Tuple<PropertyInfo, RuleExpansionAttribute> tuple in GetProperties<RuleExpansionAttribute>())
 			{
-				yield return new SymbolLink(new Nonterminal(tuple.Item2.Prior), new Nonterminal(tuple.Item1.Name));
+				yield return new Follower(new Nonterminal(tuple.Item2.Prior), new Nonterminal(tuple.Item1.Name));
 			}
 		}
 

@@ -17,9 +17,14 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars
 			get { return new ProductionRule(Nonterminal.Specification, Nonterminal.Specification, Nonterminal.AndLater); }
 		}
 
-		public static IProductionRule Expectation
+		public static IProductionRule ExpectationBefore
 		{
 			get { return new ProductionRule(Nonterminal.Expectation, Nonterminal.Expectation, Nonterminal.Before); }
+		}
+
+		public static IProductionRule ExpectationHas
+		{
+			get { return new ProductionRule(Nonterminal.Expectation, Nonterminal.Has); }
 		}
 
 		public static IProductionRule Inspection
@@ -31,11 +36,15 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars
 		{
 			get
 			{
-				return new ProductionRule(Nonterminal.Specification,
-					Nonterminal.Source,
-					Nonterminal.Inspection,
-					Nonterminal.Expectation,
-					Nonterminal.Deadline);
+				var clause =
+					new Clause(new IClause[]
+					{
+						new Clause(Cardinality.ZeroOrOne, Nonterminal.Source),
+						new Clause(Cardinality.One, Nonterminal.Inspection),
+						new Clause(Cardinality.ZeroOrOne, Nonterminal.Deadline),
+						new Clause(Cardinality.ZeroOrOne, Nonterminal.Reason)
+					});
+				return new ProductionRule(Nonterminal.Specification, clause);
 			}
 		}
 	}

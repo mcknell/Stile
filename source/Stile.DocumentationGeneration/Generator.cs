@@ -35,9 +35,9 @@ namespace Stile.DocumentationGeneration
 
 			var grammarBuilder = new ContextFreeGrammarBuilder(rules.SelectMany(x => x.Value));
 
-			foreach (SymbolLink symbolLink in _reflector.FindRuleExpansions())
+			foreach (Follower symbolLink in _reflector.FindRuleExpansions())
 			{
-				grammarBuilder.AddLink(symbolLink);
+				grammarBuilder.Add(symbolLink);
 			}
 
 			IList<IProductionRule> consolidated = rules.SelectMany(x => x.Value).ToList();

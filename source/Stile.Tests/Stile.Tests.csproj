@@ -53,6 +53,7 @@
     <Compile Include="Prototypes\Collections\Graphs\GraphExtensionsFixture.cs" />
     <Compile Include="Prototypes\Collections\HashBucketFixture.cs" />
     <Compile Include="Prototypes\Collections\Sorting\ToposortFixture.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ClauseFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ContextFreeGrammarBuilderFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ProductionRuleLibrary.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\SymbolLinkFixture.cs" />

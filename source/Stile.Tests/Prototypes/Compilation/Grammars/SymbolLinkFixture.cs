@@ -17,20 +17,20 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars
 		[Test]
 		public void HashCode()
 		{
-			SymbolLink fooLink = MakeSymbolLinkWithMatchingSymbols("foo");
+			Follower fooLink = MakeSymbolLinkWithMatchingSymbols("foo");
 			Assert.That(fooLink.GetHashCode(),
 				Is.Not.EqualTo(0),
 				"Matching symbols should not degenerate to a zero hashcode");
-			SymbolLink barLink = MakeSymbolLinkWithMatchingSymbols("bar");
+			Follower barLink = MakeSymbolLinkWithMatchingSymbols("bar");
 			Assert.That(fooLink.GetHashCode(),
 				Is.Not.EqualTo(barLink.GetHashCode()),
 				"Two links whose symbols are internal matches should not match each other");
 		}
 
-		private static SymbolLink MakeSymbolLinkWithMatchingSymbols(string token)
+		private static Follower MakeSymbolLinkWithMatchingSymbols(string token)
 		{
 			var symbol = new Nonterminal(token);
-			var symbolLink = new SymbolLink(symbol, symbol);
+			var symbolLink = new Follower(symbol, symbol);
 			return symbolLink;
 		}
 	}

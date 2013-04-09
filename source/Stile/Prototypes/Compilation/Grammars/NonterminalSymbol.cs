@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System;
 using System.Globalization;
 using JetBrains.Annotations;
 #endregion
@@ -19,7 +20,12 @@ namespace Stile.Prototypes.Compilation.Grammars
 
 		protected static string ToTitleCase(string parameterName)
 		{
-			return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(parameterName);
+			if (string.IsNullOrWhiteSpace(parameterName))
+			{
+				throw new ArgumentOutOfRangeException("parameterName");
+			}
+			string trimmed = parameterName.Trim();
+			return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(trimmed.Substring(0, 1)) + trimmed.Substring(1);
 		}
 	}
 }

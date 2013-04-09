@@ -77,7 +77,7 @@
     <Compile Include="Prototypes\Compilation\Grammars\Symbol.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\Cardinality.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ContextFreeGrammarBuilder.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\SymbolLink.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\Follower.cs" />
     <Compile Include="Prototypes\Specifications\Builders\Lifecycle\IHasSource.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\FluentBoundExceptionFilterBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\FluentExceptionFilterBuilder.cs" />
