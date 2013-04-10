@@ -12,37 +12,39 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 
 namespace Stile.Prototypes.Specifications.Builders.Lifecycle
 {
-	public interface IHasSource<TSubject>
+	public interface ILifecycleStage {}
+
+	public interface IHasSource<TSubject> : ILifecycleStage
 	{
 		[CanBeNull]
 		ISource<TSubject> Source { get; }
 	}
 
-	public interface IHasProcedure<TSubject>
+	public interface IHasProcedure<TSubject> : ILifecycleStage
 	{
 		[NotNull]
 		IProcedure<TSubject> Procedure { get; }
 	}
 
-	public interface IHasInstrument<TSubject, out TResult>
+	public interface IHasInstrument<TSubject, out TResult> : ILifecycleStage
 	{
 		[NotNull]
 		IInstrument<TSubject, TResult> Instrument { get; }
 	}
 
-	public interface IHasExpectation<TSubject, TResult>
+	public interface IHasExpectation<TSubject, TResult> : ILifecycleStage
 	{
 		[NotNull]
 		IExpectation<TSubject, TResult> Expectation { get; }
 	}
 
-	public interface IHasFaultSpecification<TSubject>
+	public interface IHasFaultSpecification<TSubject> : ILifecycleStage
 	{
 		[NotNull]
 		IFaultSpecification<TSubject> Specification { get; }
 	}
 
-	public interface IHasSpecification<TSubject, TResult>
+	public interface IHasSpecification<TSubject, TResult> : ILifecycleStage
 	{
 		[NotNull]
 		ISpecification<TSubject, TResult> Specification { get; }

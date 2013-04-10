@@ -7,6 +7,8 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
+using Stile.Prototypes.Specifications.Grammar;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -26,6 +28,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		}
 
 		[Pure]
+		[RuleExpansion(Nonterminal.Enum.Is)]
 		public static TSpecification GreaterThan<TSpecification, TSubject, TResult>(
 			this IIs<TSpecification, TSubject, TResult> builder, TResult result)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification

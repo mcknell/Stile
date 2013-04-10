@@ -21,6 +21,53 @@ namespace Stile.Types.Enumerables
 		private static readonly MethodInfo ToDebugStringGenericMethodDefinition =
 			((EnumerableLazyPrintMethod<int>) ToDebugString).Method.GetGenericMethodDefinition();
 
+		[NotNull]
+		public static IEnumerable<TItem> Append<TItem>([NotNull] this IEnumerable<TItem> items,
+			TItem item,
+			params TItem[] others)
+		{
+			return items.Concat(others.Unshift(item));
+		}
+
+		[NotNull]
+		public static IEnumerable<IList<TItem>> ForAll<TItem>([NotNull] this IEnumerable<TItem> first,
+			[NotNull] IEnumerable<TItem> second,
+			params IEnumerable<TItem>[] others)
+		{
+			List<IEnumerable<TItem>> sequences =
+				others.Unshift(first.ValidateArgumentIsNotNull(), second.ValidateArgumentIsNotNull()).ToList();
+			List<IEnumerator<TItem>> enumerators = sequences.Select(x => x.GetEnumerator()).ToList();
+			while (enumerators.All(x => x.MoveNext()))
+			{
+				yield return enumerators.Select(x => x.Current).ToList();
+			}
+		}
+
+		[NotNull]
+		public static IEnumerable<IList<TItem>> ForAll<TItem>(
+			[NotNull] this IEnumerable<IEnumerable<TItem>> sequences)
+		{
+			List<IEnumerator<TItem>> enumerators = sequences.Select(x => x.GetEnumerator()).ToList();
+			while (enumerators.All(x => x.MoveNext()))
+			{
+				yield return enumerators.Select(x => x.Current).ToList();
+			}
+		}
+
+		[NotNull]
+		public static IEnumerable<TItem> Interlace<TItem>([NotNull] this IEnumerable<TItem> items, TItem item)
+		{
+			if (items.Any())
+			{
+				yield return items.First();
+				foreach (TItem subsequent in items.Skip(1))
+				{
+					yield return item;
+					yield return subsequent;
+				}
+			}
+		}
+
 		public static bool None<TItem>(this IEnumerable<TItem> items)
 		{
 			return items.Any() == false;

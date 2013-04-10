@@ -20,7 +20,6 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars
 		public void Flatten()
 		{
 			IClause testSubject = ProductionRuleLibrary.Specification.Right;
-			Assert.That(testSubject.Symbols, Is.Empty, "precondition");
 
 			// act
 			List<Symbol> symbols = testSubject.Flatten().ToList();

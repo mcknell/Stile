@@ -4,12 +4,12 @@
 #endregion
 
 #region using...
-using System.Linq;
+using System.Collections.Generic;
 using System.Reflection;
 using JetBrains.Annotations;
-using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 #endregion
 
 namespace Stile.DocumentationGeneration
@@ -29,9 +29,9 @@ namespace Stile.DocumentationGeneration
 		[NotNull]
 		public string Generate()
 		{
-			HashBucket<Symbol, IProductionRule> rules = _reflector.FindRules();
+			IEnumerable<IProductionRule> rules = _reflector.FindRules();
 
-			var grammarBuilder = new ContextFreeGrammarBuilder(rules.SelectMany(x => x.Value));
+			var grammarBuilder = new ContextFreeGrammarBuilder(rules);
 
 			foreach (Follower symbolLink in _reflector.FindRuleExpansions())
 			{

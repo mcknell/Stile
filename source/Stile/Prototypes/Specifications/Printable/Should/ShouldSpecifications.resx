@@ -129,6 +129,9 @@
   <data name="AnyType" xml:space="preserve">
     <value>Any {0}</value>
   </data>
+  <data name="AtLeast" xml:space="preserve">
+    <value>at least</value>
+  </data>
   <data name="Because" xml:space="preserve">
     <value>because</value>
   </data>

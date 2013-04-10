@@ -9,27 +9,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
-using Stile.Prototypes.Specifications.Grammar;
-using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers
 {
-	public interface IHasAll<TSpecification, TSubject, TResult, TItem> :
+	public interface IAtLeast<TSpecification, TSubject, TResult, TItem> :
 		IQuantifier<TSpecification, TSubject, TResult, TItem>
-		where TSpecification : class, ISpecification, IChainableSpecification {}
+		where TSpecification : class, ISpecification, IChainableSpecification
+	{
+		int Limit { get; }
+	}
 
-	public class HasAll<TSpecification, TSubject, TResult, TItem> :
+	public class AtLeast<TSpecification, TSubject, TResult, TItem> :
 		Quantifier<TSpecification, TSubject, TResult, TItem>,
-		IHasAll<TSpecification, TSubject, TResult, TItem>
+		IAtLeast<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>
 	{
-		[RuleExpansion(Nonterminal.Enum.Has, Nonterminal.Enum.All)]
-		public HasAll([NotNull] IHasState<TSpecification, TSubject, TResult> hasState)
-			: base(hasState) {}
+		public AtLeast([NotNull] IHasState<TSpecification, TSubject, TResult> hasState, int limit)
+			: base(hasState)
+		{
+			Limit = limit;
+		}
+
+		public int Limit { get; private set; }
 
 		public override void Accept(IExpectationVisitor visitor)
 		{

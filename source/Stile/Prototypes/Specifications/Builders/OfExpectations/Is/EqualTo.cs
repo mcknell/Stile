@@ -8,6 +8,8 @@ using System;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.Grammar;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
@@ -48,6 +50,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		IEqualToState<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
+		[RuleExpansion(Nonterminal.Enum.Is)]
 		public EqualTo([NotNull] Expression<Predicate<TResult>> expression,
 			[NotNull] IIsState<TSpecification, TSubject, TResult> prior,
 			TResult expected)

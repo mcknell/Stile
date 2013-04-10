@@ -11,7 +11,10 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Patterns.Structural.Hierarchy;
+using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExceptionFilters;
+using Stile.Prototypes.Specifications.Grammar;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
@@ -31,14 +34,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	public interface IFaultSpecificationState {}
 
 	public interface IFaultSpecificationState<TSubject> : IFaultSpecificationState,
-		ISpecificationState<TSubject>
+		ISpecificationState<TSubject>,
+		IHasProcedure<TSubject>
 	{
 		[NotNull]
 		IExceptionFilter<TSubject> ExceptionFilter { get; }
 		[CanBeNull]
 		IFaultSpecification<TSubject> Prior { get; }
-		[NotNull]
-		IProcedure<TSubject> Procedure { get; }
 
 		[NotNull]
 		[System.Diagnostics.Contracts.Pure]
@@ -59,6 +61,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	{
 		private readonly TExceptionFilterBuilder _filterBuilder;
 		private readonly IExceptionFilterBuilderState _filterBuilderState;
+		private readonly ISource<TSubject> _source;
 
 		public FaultSpecification([NotNull] IProcedure<TSubject> procedure,
 			[NotNull] IExceptionFilter<TSubject> exceptionFilter,
@@ -66,6 +69,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			[CanBeNull] IFaultSpecification<TSubject> prior,
 			IDeadline deadline = null,
 			string reason = null)
+			: this(procedure.Xray.Source, procedure, exceptionFilter, filterBuilder, prior, deadline, reason) {}
+
+		[Rule(Nonterminal.Enum.Specification)]
+		private FaultSpecification([Symbol] [CanBeNull] ISource<TSubject> source,
+			[Symbol] [NotNull] IProcedure<TSubject> procedure,
+			[NotNull] IExceptionFilter<TSubject> exceptionFilter,
+			[NotNull] TExceptionFilterBuilder filterBuilder,
+			[CanBeNull] IFaultSpecification<TSubject> prior,
+			[Symbol] IDeadline deadline = null,
+			[Symbol] string reason = null)
 			: base(exceptionFilter, exceptionFilter, deadline, reason)
 		{
 			Procedure = procedure.ValidateArgumentIsNotNull();
@@ -78,6 +91,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 					typeof(IExceptionFilterBuilderState).Name));
 			}
 			Prior = prior;
+			_source = source;
 		}
 
 		public TExceptionFilterBuilder AndThen
@@ -101,7 +115,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public IFaultEvaluation<TSubject> Evaluate(IDeadline deadline = null)
 		{
 			IFaultSpecification<TSubject> specification = GetPredecessors().LastOrDefault() ?? this;
-			return specification.Xray.Evaluate(Procedure.Xray.Source, null, this, deadline);
+			return specification.Xray.Evaluate(_source, null, this, deadline);
 		}
 
 		public void Accept(ISpecificationVisitor visitor)

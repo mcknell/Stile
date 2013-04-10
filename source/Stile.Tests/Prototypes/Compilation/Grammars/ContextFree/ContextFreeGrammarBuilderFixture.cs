@@ -4,8 +4,10 @@
 #endregion
 
 #region using...
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Specifications.Grammar;
@@ -36,8 +38,8 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			Assert.That(testSubject.Links.Count, Is.EqualTo(1));
 			IFollower link = testSubject.Links.FirstOrDefault();
 			Assert.NotNull(link);
-			Assert.That(link.Prior.Symbols.First(), Is.EqualTo(has));
-			Assert.That(link.Current.Symbols.First(), Is.EqualTo(hashcode));
+			Assert.That(link.Prior.Flatten().First(), Is.EqualTo(has));
+			Assert.That(link.Current.Flatten().First(), Is.EqualTo(hashcode));
 		}
 
 		[Test]
@@ -60,7 +62,34 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			var joinedRule = new ProductionRule(Nonterminal.Expectation,
 				new Clause(new Clause(Nonterminal.Has), new Clause(Nonterminal.HashCode)));
 			AssertRuleIsInGrammar(grammar, joinedRule);
-			Assert.That(grammar.ProductionRules, Has.Count.EqualTo(4));
+			Assert.That(grammar.ProductionRules.Count, Is.EqualTo(4));
+		}
+
+		[Test]
+		public void Consolidate()
+		{
+			var hashBucket = new HashBucket<Symbol, IClause>();
+			var source = new Clause(Cardinality.ZeroOrOne, Nonterminal.Source);
+			var deadline = new Clause(Cardinality.ZeroOrOne, Nonterminal.Deadline);
+			var reason = new Clause(Cardinality.ZeroOrOne, Nonterminal.Reason);
+			Symbol procedure = Nonterminal.Procedure;
+			hashBucket.Add(Nonterminal.Specification, new Clause(source, procedure, deadline, reason));
+			Symbol instrument = Nonterminal.Instrument;
+			Symbol expectation = Nonterminal.Expectation;
+			hashBucket.Add(Nonterminal.Specification, new Clause(source, instrument, expectation, deadline, reason));
+
+			var middle = new Clause(new Clause(procedure),
+				TerminalSymbol.EBNFAlternation,
+				new Clause(instrument, expectation));
+			var right = new Clause(source, middle, deadline, reason);
+			var expected = new ProductionRule(Nonterminal.Specification, right);
+
+			// act
+			IList<IProductionRule> rules = ContextFreeGrammarBuilder.Consolidate(hashBucket);
+
+			Assert.NotNull(rules);
+			IProductionRule rule = rules.FirstOrDefault();
+			Assert.That(rule, Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -94,7 +123,8 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			string ebnf = testSubject.ToEBNF();
 
 			StringAssert.Contains("Inspection ::= (Instrument Action)", ebnf);
-			StringAssert.Contains("Specification ::= (Source? Inspection Deadline? Reason? | (Specification AndLater))", ebnf);
+			StringAssert.Contains(
+				"Specification ::= ((Source? Inspection Deadline? Reason?) | (Specification AndLater))", ebnf);
 		}
 
 		[Test]

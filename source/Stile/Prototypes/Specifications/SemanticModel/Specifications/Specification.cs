@@ -116,9 +116,31 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		private readonly IDeadline _deadline;
 		private readonly TExpectationBuilder _expectationBuilder;
 		private readonly IExpectationBuilderState _expectationBuilderState;
+		private readonly IInstrument<TSubject, TResult> _instrument;
+		private readonly ISource<TSubject> _source;
+
+		public Specification([NotNull] IExpectation<TSubject, TResult> expectation,
+			[NotNull] TExpectationBuilder expectationBuilder,
+			[NotNull] IAcceptSpecificationVisitors lastTerm,
+			[CanBeNull] ISpecification<TSubject, TResult> prior,
+			IExceptionFilter<TSubject, TResult> exceptionFilter = null,
+			IDeadline deadline = null,
+			string reason = null)
+			: this(
+				expectation.Xray.Instrument.Xray.Source,
+				expectation.Xray.Instrument,
+				expectation,
+				expectationBuilder,
+				lastTerm,
+				prior,
+				exceptionFilter,
+				deadline,
+				reason) {}
 
 		[Rule(StartsGrammar = true)]
-		public Specification([Symbol] [NotNull] IExpectation<TSubject, TResult> expectation,
+		private Specification([Symbol] [CanBeNull] ISource<TSubject> source,
+			[Symbol] [NotNull] IInstrument<TSubject, TResult> instrument,
+			[Symbol] [NotNull] IExpectation<TSubject, TResult> expectation,
 			[NotNull] TExpectationBuilder expectationBuilder,
 			[NotNull] IAcceptSpecificationVisitors lastTerm,
 			[CanBeNull] ISpecification<TSubject, TResult> prior,
@@ -127,6 +149,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			[Symbol] string reason = null)
 			: base(lastTerm, exceptionFilter, deadline, reason)
 		{
+			_source = source;
+			_instrument = instrument;
 			Expectation = expectation.ValidateArgumentIsNotNull();
 			_expectationBuilder = expectationBuilder.ValidateArgumentIsNotNull();
 			_expectationBuilderState = expectationBuilder as IExpectationBuilderState;
@@ -177,8 +201,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		public IEvaluation<TSubject, TResult> Evaluate(IDeadline deadline = null)
 		{
 			ISpecification<TSubject, TResult> specification = GetPredecessors().LastOrDefault() ?? this;
-			ISource<TSubject> source = Expectation.Xray.Instrument.Xray.Source;
-			return specification.Xray.Evaluate(source, null, this, deadline);
+			return specification.Xray.Evaluate(_source, null, this, deadline);
 		}
 
 		public TData Accept<TData>(IEvaluationVisitor<TData> visitor, TData data)
@@ -229,8 +252,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			ISpecificationState<TSubject, TResult> tailSpecification,
 			IDeadline deadline = null)
 		{
-			IMeasurement<TSubject, TResult> measurement = Expectation.Xray.Instrument.Measure(source,
-				deadline ?? _deadline);
+			IMeasurement<TSubject, TResult> measurement = _instrument.Measure(source, deadline ?? _deadline);
 			if (ExpectsException)
 			{
 				measurement = ExceptionFilter.Filter(measurement);

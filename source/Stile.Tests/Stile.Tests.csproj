@@ -54,6 +54,7 @@
     <Compile Include="Prototypes\Collections\HashBucketFixture.cs" />
     <Compile Include="Prototypes\Collections\Sorting\ToposortFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ClauseFixture.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ContextFreeGrammarBuilderAcceptanceTests.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ContextFreeGrammarBuilderFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ProductionRuleLibrary.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\SymbolLinkFixture.cs" />
@@ -75,6 +76,8 @@
     <Compile Include="Prototypes\Specifications\SemanticModel\SourceFixture.cs" />
     <Compile Include="Readability\NullFixture.cs" />
     <Compile Include="Readability\PrintExtensionsFixture.cs" />
+    <Compile Include="Types\Enumerables\ForAllFixture.cs" />
+    <Compile Include="Types\Enumerables\InterlaceFixture.cs" />
     <Compile Include="Types\Enumerables\ToAdjacentPairsFixture.cs" />
     <Compile Include="Types\Enumerables\SkipWithFixture.cs" />
     <Compile Include="Types\Enumerables\UnshiftFixture.cs" />

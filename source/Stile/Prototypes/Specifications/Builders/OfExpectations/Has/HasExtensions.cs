@@ -4,7 +4,9 @@
 #endregion
 
 #region using...
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
@@ -15,6 +17,16 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 {
 	public static class HasExtensions
 	{
+		[Pure]
+		[RuleExpansion(Nonterminal.Enum.Has)]
+		public static IQuantifier<TSpecification, TItem> AtLeast<TSpecification, TSubject, TResult, TItem>(
+			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, int limit)
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+			where TResult : class, IEnumerable<TItem>
+		{
+			return new AtLeast<TSpecification, TSubject, TResult, TItem>(has.Xray, limit);
+		}
+
 		[Pure]
 		[RuleExpansion(Nonterminal.Enum.Has)]
 		public static TSpecification HashCode<TSpecification, TSubject, TResult>(

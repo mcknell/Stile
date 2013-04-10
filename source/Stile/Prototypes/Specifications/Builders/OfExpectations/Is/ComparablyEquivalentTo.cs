@@ -5,6 +5,8 @@
 
 #region using...
 using JetBrains.Annotations;
+using Stile.Prototypes.Specifications.Grammar;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
@@ -23,6 +25,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		IComparablyEquivalentTo<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
+		[RuleExpansion(Nonterminal.Enum.Is)]
 		public ComparablyEquivalentTo([NotNull] IIsState<TSpecification, TSubject, TResult> prior, TResult expected)
 			: base(prior)
 		{

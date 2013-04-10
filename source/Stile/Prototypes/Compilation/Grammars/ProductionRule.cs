@@ -22,9 +22,6 @@ namespace Stile.Prototypes.Compilation.Grammars
 		[NotNull]
 		IClause Right { get; }
 		int SortOrder { get; set; }
-
-		[NotNull]
-		IProductionRule Inline(Symbol target, IReadOnlyList<Symbol> replacement);
 	}
 
 	public partial class ProductionRule : IProductionRule
@@ -46,16 +43,9 @@ namespace Stile.Prototypes.Compilation.Grammars
 		public IClause Right { get; private set; }
 		public int SortOrder { get; set; }
 
-		public IProductionRule Inline(Symbol target, IReadOnlyList<Symbol> replacement)
-		{
-			List<Symbol> newRight = Right.Symbols.SelectMany(x => x == target ? replacement : new[] {x}).ToList();
-			var rule = new ProductionRule(Left, newRight) {CanBeInlined = CanBeInlined, SortOrder = SortOrder};
-			return rule;
-		}
-
 		public override string ToString()
 		{
-			return string.Join(" ", new[] {Left, Symbol.EBNFAssignment}.Concat(Right.Symbols));
+			return string.Join(" ", new[] {Left, TerminalSymbol.EBNFAssignment, Right.ToString()});
 		}
 	}
 
@@ -71,8 +61,7 @@ namespace Stile.Prototypes.Compilation.Grammars
 			{
 				return true;
 			}
-			return CanBeInlined.Equals(other.CanBeInlined) && string.Equals(Left, other.Left)
-				&& Right.Equals(other.Right);
+			return CanBeInlined.Equals(other.CanBeInlined) && Left.Equals(other.Left) && Right.Equals(other.Right);
 		}
 
 		public override bool Equals(object obj)

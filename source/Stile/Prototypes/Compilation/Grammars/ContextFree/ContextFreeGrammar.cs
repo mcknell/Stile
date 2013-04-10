@@ -21,12 +21,12 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public ContextFreeGrammar([NotNull] HashSet<NonterminalSymbol> nonterminals,
 			[NotNull] HashSet<TerminalSymbol> terminals,
-			[NotNull] List<IProductionRule> productionRules,
+			[NotNull] IList<IProductionRule> productionRules,
 			[NotNull] Symbol initialToken)
 		{
 			_nonterminals = nonterminals.ValidateArgumentIsNotNull();
 			_terminals = terminals.ValidateArgumentIsNotNull();
-			ProductionRules = productionRules.ValidateArgumentIsNotNull();
+			ProductionRules = productionRules.ValidateArgumentIsNotNull().ToArray();
 			InitialToken = initialToken.ValidateArgumentIsNotNull();
 
 			List<Symbol> overlap = nonterminals.Cast<Symbol>().Intersect(terminals).ToList();

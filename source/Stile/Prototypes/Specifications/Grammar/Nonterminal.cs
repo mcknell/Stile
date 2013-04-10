@@ -23,11 +23,14 @@ namespace Stile.Prototypes.Specifications.Grammar
 			Instrument,
 			Action,
 			Has,
+			EnumerableHas,
 			Is,
 			HashCode,
 			Before,
 			AndLater,
-			Reason
+			Reason,
+			All,
+			Procedure
 		}
 
 		public static readonly Symbol Action = new Nonterminal(Enum.Action);
@@ -39,6 +42,7 @@ namespace Stile.Prototypes.Specifications.Grammar
 		public static readonly Symbol HashCode = new Nonterminal(Enum.HashCode);
 		public static readonly Symbol Inspection = new Nonterminal(Enum.Inspection);
 		public static readonly Symbol Instrument = new Nonterminal(Enum.Instrument);
+		public static readonly Symbol Procedure = new Nonterminal(Enum.Procedure);
 		public static readonly Symbol Reason = new Nonterminal(Enum.Reason);
 		public static readonly Symbol Source = new Nonterminal(Enum.Source);
 		public static readonly Symbol Specification = new Nonterminal(Enum.Specification);

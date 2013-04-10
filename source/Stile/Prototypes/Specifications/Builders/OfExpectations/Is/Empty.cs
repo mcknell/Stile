@@ -5,6 +5,8 @@
 
 #region using...
 using JetBrains.Annotations;
+using Stile.Prototypes.Specifications.Grammar;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
@@ -20,6 +22,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		IEmpty<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
+		[RuleExpansion(Nonterminal.Enum.Is)]
 		public Empty([NotNull] IIsState<TSpecification, TSubject, TResult> prior)
 			: base(prior) {}
 

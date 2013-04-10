@@ -14,85 +14,91 @@ using Stile.Types.Enumerables;
 
 namespace Stile.Prototypes.Compilation.Grammars
 {
-	public interface IClause : IEquatable<IClause>
+	public interface IClauseMember
+	{
+		[NotNull]
+		IEnumerable<Symbol> Flatten();
+	}
+
+	public interface IClause : IClauseMember,
+		IEquatable<IClause>
 	{
 		Cardinality Cardinality { get; }
 		[NotNull]
-		IReadOnlyList<IClause> Clauses { get; }
-		[NotNull]
-		IReadOnlyList<Symbol> Symbols { get; }
+		IReadOnlyList<IClauseMember> Members { get; }
 
 		[NotNull]
 		IClause Clone([NotNull] Func<Symbol, Symbol> symbolCloner);
 
 		[NotNull]
-		IEnumerable<Symbol> Flatten();
+		IClause Prune();
 	}
 
 	public partial class Clause : IClause
 	{
-		private static readonly IClause[] EmptyClauseArray = new IClause[0];
-		private static readonly Symbol[] EmptySymbolArray = new Symbol[0];
+		public delegate IClauseMember ClauseMemberCloner(IClauseMember member, Func<Symbol, Symbol> symbolCloner);
 
-		public Clause([NotNull] IEnumerable<Symbol> symbols, Cardinality? cardinality = null)
-			: this(EmptyClauseArray, symbols, cardinality) {}
+		private readonly ClauseMemberCloner _cloner;
 
-		public Clause([NotNull] Symbol symbol, params Symbol[] symbols)
-			: this(Cardinality.One, symbol, symbols) {}
+		public Clause(Cardinality cardinality, [NotNull] IClauseMember member, params IClauseMember[] members)
+			: this(members.Unshift(member.ValidateArgumentIsNotNull()), cardinality) {}
 
-		public Clause(Cardinality cardinality, [NotNull] Symbol symbol, params Symbol[] symbols)
-			: this(EmptyClauseArray, symbols.Unshift(symbol.ValidateArgumentIsNotNull()), cardinality) {}
+		public Clause([NotNull] IClauseMember member, params IClauseMember[] members)
+			: this(members.Unshift(member.ValidateArgumentIsNotNull())) {}
 
-		public Clause([NotNull] IClause clause, params IClause[] clauses)
-			: this(clauses.Unshift(clause.ValidateArgumentIsNotNull()), Cardinality.One) {}
-
-		public Clause([NotNull] IEnumerable<IClause> clauses, Cardinality? cardinality = null)
-			: this(clauses, EmptySymbolArray, cardinality) {}
-
-		public Clause([NotNull] IEnumerable<IClause> clauses,
-			[NotNull] IEnumerable<Symbol> symbols,
-			Cardinality? cardinality = null)
+		public Clause([NotNull] IEnumerable<IClauseMember> members,
+			Cardinality? cardinality = null,
+			ClauseMemberCloner cloner = null)
 		{
+			Members = members.ValidateArgumentIsNotNull().ToArray();
 			Cardinality = cardinality ?? Cardinality.One;
-			Clauses = clauses.ToArray();
-			Symbols = symbols.ToArray();
+			_cloner = cloner ?? DefaultCloner;
 		}
 
 		public Cardinality Cardinality { get; private set; }
-		public IReadOnlyList<IClause> Clauses { get; private set; }
-		public IReadOnlyList<Symbol> Symbols { get; private set; }
+		public IReadOnlyList<IClauseMember> Members { get; private set; }
 
 		public IClause Clone(Func<Symbol, Symbol> symbolCloner)
 		{
-			Func<Symbol, Symbol> cloner = symbolCloner.ValidateArgumentIsNotNull();
-			var clauses = new List<IClause>();
-			foreach (IClause subClause in Clauses)
+			symbolCloner = symbolCloner.ValidateArgumentIsNotNull();
+			var members = new List<IClauseMember>();
+			foreach (IClauseMember member in Members)
 			{
-				clauses.Add(subClause.Clone(cloner));
+				members.Add(_cloner.Invoke(member, symbolCloner));
 			}
-			IEnumerable<Symbol> symbols = Symbols.Select(cloner);
-			return new Clause(clauses, symbols, Cardinality);
+			return new Clause(members, Cardinality);
 		}
 
 		public IEnumerable<Symbol> Flatten()
 		{
-			foreach (IClause clause in Clauses)
+			foreach (IClauseMember member in Members)
 			{
-				foreach (Symbol symbol in clause.Flatten())
+				foreach (Symbol symbol in member.Flatten())
 				{
 					yield return symbol;
 				}
 			}
-			foreach (Symbol symbol in Symbols)
+		}
+
+		public IClause Prune()
+		{
+			IClause clause = this;
+			while (clause.Members.Count == 1 && clause.Cardinality == Cardinality.One)
 			{
-				yield return symbol;
+				var subClause = clause.Members[0] as IClause;
+				if (subClause == null)
+				{
+					break;
+				}
+				clause = subClause;
 			}
+			return clause;
 		}
 
 		public override string ToString()
 		{
-			string s = Symbols.Any() ? string.Join(" ", Symbols) : string.Join(" ", Clauses);
-			if (Symbols.Count > 1)
+			string s = string.Join(" ", Members);
+			if (Members.Count > 1)
 			{
 				s = string.Format("({0})", s);
 			}
@@ -106,6 +112,23 @@ namespace Stile.Prototypes.Compilation.Grammars
 					return s + "?";
 			}
 			return s;
+		}
+
+		private IClauseMember DefaultCloner([NotNull] IClauseMember member, Func<Symbol, Symbol> symbolCloner)
+		{
+			IClauseMember validMember = member.ValidateArgumentIsNotNull();
+			Func<Symbol, Symbol> cloner = symbolCloner.ValidateArgumentIsNotNull();
+			var symbol = validMember as Symbol;
+			if (symbol != null)
+			{
+				return cloner.Invoke(symbol);
+			}
+			var clause = validMember as IClause;
+			if (clause != null)
+			{
+				return clause.Clone(cloner);
+			}
+			throw new ArgumentOutOfRangeException("member");
 		}
 	}
 
@@ -121,8 +144,7 @@ namespace Stile.Prototypes.Compilation.Grammars
 			{
 				return true;
 			}
-			return Cardinality == other.Cardinality && Clauses.SequenceEqual(other.Clauses)
-				&& Symbols.SequenceEqual(other.Symbols);
+			return Cardinality == other.Cardinality && Members.SequenceEqual(other.Members);
 		}
 
 		public override bool Equals(object obj)
@@ -143,7 +165,7 @@ namespace Stile.Prototypes.Compilation.Grammars
 		{
 			unchecked
 			{
-				return (Clauses.GetHashCode() * 397) ^ (int) Cardinality;
+				return (Members.GetHashCode() * 397) ^ (int) Cardinality;
 			}
 		}
 

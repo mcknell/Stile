@@ -50,6 +50,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 			where TSpecification : class, IChainableSpecification where TResult : struct;
 
 		void Visit4<TSpecification, TSubject, TResult, TItem>(
+			IAtLeast<TSpecification, TSubject, TResult, TItem> target)
+			where TSpecification : class, ISpecification, IChainableSpecification;
+
+		void Visit4<TSpecification, TSubject, TResult, TItem>(
 			IHasAll<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
@@ -92,6 +96,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 		TData Visit3<TSpecification, TSubject, TResult>(
 			[NotNull] INullableState<TSpecification, TSubject, TResult> target, TData data)
 			where TSpecification : class, IChainableSpecification where TResult : struct;
+
+		TData Visit4<TSpecification, TSubject, TResult, TItem>(
+			IAtLeast<TSpecification, TSubject, TResult, TItem> target, TData data)
+			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		TData Visit4<TSpecification, TSubject, TResult, TItem>(
 			IHasAll<TSpecification, TSubject, TResult, TItem> target, TData data)

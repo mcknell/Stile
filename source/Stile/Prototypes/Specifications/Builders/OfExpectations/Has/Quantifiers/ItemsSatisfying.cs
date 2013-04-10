@@ -8,6 +8,8 @@ using System;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.Grammar;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 using Stile.Types.Expressions;
@@ -30,6 +32,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 		IItemsSatisfying<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification, IChainableSpecification
 	{
+		[RuleExpansion(Nonterminal.Enum.All)]
 		public ItemsSatisfying([NotNull] Expression<Func<TItem, bool>> expression,
 			[NotNull] IQuantifierState<TSpecification, TSubject, TResult> prior)
 			: base(prior)

@@ -97,6 +97,15 @@ namespace Stile.Prototypes.Specifications.Printable.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to at least.
+        /// </summary>
+        internal static string AtLeast {
+            get {
+                return ResourceManager.GetString("AtLeast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to because.
         /// </summary>
         internal static string Because {

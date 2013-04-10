@@ -23,8 +23,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		private readonly HashSet<IFollower> _links;
 		private readonly HashSet<NonterminalSymbol> _symbols;
 
-		public ContextFreeGrammarBuilder([NotNull] IProductionRule rule, params IProductionRule[] rules)
-			: this(rules.Unshift(rule.ValidateArgumentIsNotNull())) {}
+		public ContextFreeGrammarBuilder(params IProductionRule[] rules)
+			: this(rules.AsEnumerable()) {}
 
 		public ContextFreeGrammarBuilder([NotNull] IEnumerable<IProductionRule> rules)
 		{
@@ -38,7 +38,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			}
 		}
 
-		public IReadOnlyDictionary<Symbol, ISet<IClause>> Clauses
+		public IReadOnlyHashBucket<Symbol, IClause> Clauses
 		{
 			get { return _clauses; }
 		}
@@ -83,12 +83,30 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			return new ContextFreeGrammar(_symbols, new HashSet<TerminalSymbol>(), rules, Nonterminal.Specification);
 		}
 
+		public static IList<IProductionRule> Consolidate(IReadOnlyHashBucket<Symbol, IClause> rules)
+		{
+			var list = new List<IProductionRule>();
+			foreach (Symbol key in rules.Keys)
+			{
+				List<IReadOnlyList<IClauseMember>> listsOfMembers = rules[key].Select(x => x.Members).ToList();
+				List<IClause> front = GetCommonClauses(listsOfMembers);
+				List<IClause> back = GetCommonClauses(listsOfMembers.Select(x=>x.Reverse()));
+				IEnumerable<IClauseMember> middle = GetMiddle(rules[key], front.Count, back.Count);
+				var clauses = new List<IClause>(front);
+				clauses.Add(new Clause(middle));
+				clauses.AddRange(Enumerable.Reverse(back));
+				var right = new Clause(clauses);
+				list.Add(new ProductionRule(key, right));
+			}
+			return list;
+		}
+
 		public string ToEBNF()
 		{
 			var builder = new StringBuilder();
 			foreach (Symbol leftSymbol in Clauses.Keys)
 			{
-				builder.AppendFormat("{0}{1} {2} ", Environment.NewLine, leftSymbol, Symbol.EBNFAssignment);
+				builder.AppendFormat("{0}{1} {2} ", Environment.NewLine, leftSymbol, TerminalSymbol.EBNFAssignment);
 				ISet<IClause> clauses = Clauses[leftSymbol];
 				if (clauses.Count > 1)
 				{
@@ -96,7 +114,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				}
 				foreach (IClause clause in clauses.SkipWith(x =>
 				{
-					builder.Append(x);
+					builder.AppendFormat("{0} ", x);
 					AppendFollowers(builder, x);
 				}))
 				{
@@ -108,7 +126,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 					builder.Append(")");
 				}
 			}
-			return builder.ToString();
+			return builder.ToString().Replace("  ", " ");
 		}
 
 		private void AppendFollowers(StringBuilder builder, IClause clause)
@@ -116,11 +134,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			List<IFollower> followers = GetFollowers(clause);
 			if (followers.Count > 1)
 			{
-				builder.Append(" (");
+				builder.Append("(");
 			}
 			foreach (IFollower follower in followers.SkipWith(x =>
 			{
-				builder.AppendFormat(" {0}", x.Current);
+				builder.AppendFormat("{0} ", x.Current);
 				AppendFollowers(builder, x.Current);
 			}))
 			{
@@ -158,9 +176,37 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			}
 		}
 
+		private static List<IClause> GetCommonClauses(IEnumerable<IEnumerable<IClauseMember>> listsOfMembers)
+		{
+			var clauses = new List<IClause>();
+			foreach (IList<IClauseMember> cohort in listsOfMembers.ForAll())
+			{
+				List<IClauseMember> distinct = cohort.Distinct().ToList();
+				if (distinct.Count == 1)
+				{
+					clauses.Add(new Clause(distinct[0]).Prune());
+				}
+				else
+				{
+					break;
+				}
+			}
+			return clauses;
+		}
+
 		private List<IFollower> GetFollowers(IClause clause)
 		{
 			return _links.Where(x => x.Prior.Equals(clause)).ToList();
+		}
+
+		private static IEnumerable<IClauseMember> GetMiddle(IEnumerable<IClause> clauses,
+			int frontMatches,
+			int backMatches)
+		{
+			IEnumerable<IClauseMember> middle =
+				clauses.Select(
+					x => new Clause(x.Members.Skip(frontMatches).Take(x.Members.Count - frontMatches - backMatches)));
+			return middle.Interlace(TerminalSymbol.EBNFAlternation);
 		}
 
 		private Symbol GetOrAdd(Symbol symbol)
@@ -178,6 +224,13 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			symbol = new Nonterminal(token);
 			_symbols.Add(symbol);
 			return symbol;
+		}
+
+		public class ConsolidatedClause
+		{
+			public IList<IClause> CommonBack { get; private set; }
+			public IList<IClause> CommonFront { get; private set; }
+			public IList<IList<IClause>> UniqueMiddles { get; private set; }
 		}
 	}
 }

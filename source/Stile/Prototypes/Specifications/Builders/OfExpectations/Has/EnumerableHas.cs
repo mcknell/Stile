@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
@@ -15,7 +16,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 {
 	public interface IEnumerableHas : IHas {}
 
-	public interface IEnumerableHas<TSpecification, TSubject, TResult, TItem> : IEnumerableHas,
+	public interface IEnumerableHas<out TSpecification, TSubject, TResult, TItem> : IEnumerableHas,
 		IHas<TSpecification, TSubject, TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>
@@ -30,6 +31,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 	{
 		private readonly Lazy<IQuantifier<TSpecification, TItem>> _lazyAll;
 
+		[Specialization]
 		public EnumerableHas([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState)
 			: base(builderState)
 		{

@@ -5,16 +5,16 @@
 
 #region using...
 using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars
 {
-	public partial class Symbol : IEquatable<Symbol>
+	public partial class Symbol : IEquatable<Symbol>,
+		IClauseMember
 	{
-		public static readonly Symbol EBNFAssignment = new Symbol("::=");
-
 		protected Symbol([NotNull] string token)
 		{
 			Token = token.Trim().Validate().EnumerableOf<char>().IsNotNullOrEmpty();
@@ -22,6 +22,16 @@ namespace Stile.Prototypes.Compilation.Grammars
 
 		[NotNull]
 		public string Token { get; private set; }
+
+		public IEnumerable<Symbol> Flatten()
+		{
+			yield return this;
+		}
+
+		public override string ToString()
+		{
+			return Token;
+		}
 
 		public static implicit operator string(Symbol symbol)
 		{
@@ -65,11 +75,6 @@ namespace Stile.Prototypes.Compilation.Grammars
 		public override int GetHashCode()
 		{
 			return Token.GetHashCode();
-		}
-
-		public override string ToString()
-		{
-			return Token;
 		}
 
 		public static bool operator ==(Symbol left, Symbol right)

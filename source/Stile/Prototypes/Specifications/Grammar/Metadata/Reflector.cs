@@ -6,25 +6,25 @@
 #region using...
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars;
-using Stile.Prototypes.Specifications.Grammar;
-using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Types.Enumerables;
 #endregion
 
-namespace Stile.DocumentationGeneration
+namespace Stile.Prototypes.Specifications.Grammar.Metadata
 {
 	public class Reflector
 	{
 		private const BindingFlags Everything =
 			BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 		private readonly List<Assembly> _assemblies;
+
+		public Reflector()
+			: this(typeof(Reflector).Assembly) {}
 
 		public Reflector([NotNull] Assembly stile, params Assembly[] others)
 		{
@@ -47,20 +47,23 @@ namespace Stile.DocumentationGeneration
 			}
 		}
 
-		public HashBucket<Symbol, IProductionRule> FindRules()
+		public IEnumerable<IProductionRule> FindRules()
 		{
-			var rules = new HashBucket<Symbol, IProductionRule>();
 			foreach (Tuple<MethodBase, RuleAttribute> tuple in GetRuleMethods())
 			{
 				IProductionRule rule = GetRule(tuple.Item1, tuple.Item2);
-				rules.Add(rule.Left, rule);
+				yield return rule;
 			}
 			foreach (Tuple<PropertyInfo, RuleAttribute> tuple in GetRuleProperties())
 			{
 				IProductionRule rule = GetRule(tuple.Item1, tuple.Item2);
-				rules.Add(rule.Left, rule);
+				yield return rule;
 			}
-			return rules;
+			foreach (Tuple<MethodBase, SpecializationAttribute> tuple in GetMethods<SpecializationAttribute>())
+			{
+				ProductionRule rule = GetRule(tuple.Item1, tuple.Item2);
+				yield return rule;
+			}
 		}
 
 		public IEnumerable<Tuple<PropertyInfo, TAttribute>> GetProperties<TAttribute>() where TAttribute : Attribute
@@ -103,6 +106,20 @@ namespace Stile.DocumentationGeneration
 			}
 		}
 
+		private static ProductionRule GetRule(MethodBase methodInfo, SpecializationAttribute attribute)
+		{
+			string symbol = GetSymbol(methodInfo, attribute.SymbolToken);
+			Type baseType = methodInfo.ReflectedType.BaseType;
+			string name = baseType.Name;
+			if (baseType.IsGenericType)
+			{
+				name = name.Substring(0, name.IndexOf("`"));
+			}
+			var left = new Nonterminal(name);
+			var rule = new ProductionRule(left, new Nonterminal(symbol));
+			return rule;
+		}
+
 		private IProductionRule GetRule([NotNull] PropertyInfo propertyInfo, [NotNull] RuleAttribute attribute)
 		{
 			var left = new Nonterminal(attribute.SymbolToken);
@@ -126,7 +143,7 @@ namespace Stile.DocumentationGeneration
 				if (parameterAttribute != null)
 				{
 					var cardinality = Cardinality.One;
-					if (parameterInfo.IsOptional)
+					if (parameterInfo.IsOptional || parameterInfo.GetCustomAttribute<CanBeNullAttribute>() != null)
 					{
 						cardinality = Cardinality.ZeroOrOne;
 					}
@@ -181,13 +198,7 @@ namespace Stile.DocumentationGeneration
 			{
 				symbol = methodInfo.Name;
 			}
-			string titleCase = ToTitleCase(symbol);
-			return titleCase;
-		}
-
-		private static string ToTitleCase(string parameterName)
-		{
-			return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(parameterName);
+			return symbol;
 		}
 	}
 }

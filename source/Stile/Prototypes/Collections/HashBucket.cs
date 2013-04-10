@@ -9,7 +9,10 @@ using System.Collections.Generic;
 
 namespace Stile.Prototypes.Collections
 {
-	public class HashBucket<TKey, TItem> : Dictionary<TKey, ISet<TItem>>
+	public interface IReadOnlyHashBucket<TKey, TItem> : IReadOnlyDictionary<TKey, ISet<TItem>> {}
+
+	public class HashBucket<TKey, TItem> : Dictionary<TKey, ISet<TItem>>,
+		IReadOnlyHashBucket<TKey, TItem>
 	{
 		private readonly IEqualityComparer<TItem> _itemComparer;
 
