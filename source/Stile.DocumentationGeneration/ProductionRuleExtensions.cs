@@ -7,6 +7,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Stile.Prototypes.Compilation.Grammars;
+using Stile.Prototypes.Compilation.Grammars.ContextFree;
 #endregion
 
 namespace Stile.DocumentationGeneration

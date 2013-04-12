@@ -42,7 +42,6 @@ namespace Stile.Prototypes.Specifications.Printable
 	public abstract class Describer : IDescriber
 	{
 		/*
-		 * 
       string pattern = "^[^<>]*" +
                        "(" + 
                        "((?'Open'<)[^<>]*)+" +
@@ -55,7 +54,7 @@ namespace Stile.Prototypes.Specifications.Printable
 		/// </summary>
 		private static readonly Regex SingleToken = new Regex(@"^@?[A-Z]\w*" //
 			+ "(" // balancing construct; see 
-			+ @"((?'Open'<)[A-Z]\w*(\,\s*[A-Z]\w*)*)*" // [A-Z]\w*(\,\s*[A-Z]\w*)*
+			+ @"((?'Open'<)[A-Z]\w*(\,\s*[A-Z]\w*)*)*" // 
 			+ @"((?'Close-Open'>)([A-Z]\w*)?(\,\s*[A-Z]\w*)*)+" //
 			+ ")*" //
 			+ "(?(Open)(?!))" // fails on imbalance

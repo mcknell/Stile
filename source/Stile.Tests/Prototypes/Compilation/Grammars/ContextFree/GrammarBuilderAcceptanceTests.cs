@@ -6,7 +6,6 @@
 #region using...
 using System.Collections.Generic;
 using NUnit.Framework;
-using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 #endregion
@@ -14,16 +13,16 @@ using Stile.Prototypes.Specifications.Grammar.Metadata;
 namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 {
 	[TestFixture]
-	public class ContextFreeGrammarBuilderAcceptanceTests
+	public class GrammarBuilderAcceptanceTests
 	{
 		[Test]
 		public void Builds()
 		{
 			IEnumerable<IProductionRule> rules = new Reflector().FindRules();
-			var builder = new ContextFreeGrammarBuilder(rules);
+			var builder = new GrammarBuilder(rules);
 
 			// act
-			ContextFreeGrammar grammar = builder.Build();
+			IGrammar grammar = builder.Build();
 
 			Assert.NotNull(grammar);
 		}
@@ -32,7 +31,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		public void Prints()
 		{
 			IEnumerable<IProductionRule> rules = new Reflector().FindRules();
-			var builder = new ContextFreeGrammarBuilder(rules);
+			var builder = new GrammarBuilder(rules);
 
 			// act
 			string ebnf = builder.ToEBNF();

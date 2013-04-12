@@ -5,11 +5,11 @@
 
 #region using...
 using NUnit.Framework;
-using Stile.Prototypes.Compilation.Grammars;
+using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Specifications.Grammar;
 #endregion
 
-namespace Stile.Tests.Prototypes.Compilation.Grammars
+namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 {
 	[TestFixture]
 	public class SymbolLinkFixture

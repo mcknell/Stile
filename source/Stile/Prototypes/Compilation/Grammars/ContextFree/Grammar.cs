@@ -14,12 +14,20 @@ using Stile.Readability;
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-	public class ContextFreeGrammar
+	public interface IGrammar : IAcceptGrammarVisitors
+	{
+		Symbol InitialToken { get; }
+		IReadOnlyList<Symbol> Nonterminals { get; }
+		IReadOnlyList<IProductionRule> ProductionRules { get; }
+		IReadOnlyList<Symbol> Terminals { get; }
+	}
+
+	public class Grammar : IGrammar
 	{
 		private readonly HashSet<NonterminalSymbol> _nonterminals;
 		private readonly HashSet<TerminalSymbol> _terminals;
 
-		public ContextFreeGrammar([NotNull] HashSet<NonterminalSymbol> nonterminals,
+		public Grammar([NotNull] HashSet<NonterminalSymbol> nonterminals,
 			[NotNull] HashSet<TerminalSymbol> terminals,
 			[NotNull] IList<IProductionRule> productionRules,
 			[NotNull] Symbol initialToken)
@@ -56,6 +64,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		public IReadOnlyList<Symbol> Terminals
 		{
 			get { return _terminals.ToArray(); }
+		}
+
+		public void Accept(IGrammarVisitor visitor)
+		{
+			visitor.Visit(this);
 		}
 	}
 }

@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Prototypes.Compilation.Grammars;
 #endregion
@@ -33,19 +34,20 @@ namespace Stile.Prototypes.Specifications.Grammar
 			Procedure
 		}
 
-		public static readonly Symbol Action = new Nonterminal(Enum.Action);
-		public static readonly Symbol AndLater = new Nonterminal(Enum.AndLater);
-		public static readonly Symbol Before = new Nonterminal(Enum.Before);
-		public static readonly Symbol Deadline = new Nonterminal(Enum.Deadline);
-		public static readonly Symbol Expectation = new Nonterminal(Enum.Expectation);
-		public static readonly Symbol Has = new Nonterminal(Enum.Has);
-		public static readonly Symbol HashCode = new Nonterminal(Enum.HashCode);
-		public static readonly Symbol Inspection = new Nonterminal(Enum.Inspection);
-		public static readonly Symbol Instrument = new Nonterminal(Enum.Instrument);
-		public static readonly Symbol Procedure = new Nonterminal(Enum.Procedure);
-		public static readonly Symbol Reason = new Nonterminal(Enum.Reason);
-		public static readonly Symbol Source = new Nonterminal(Enum.Source);
-		public static readonly Symbol Specification = new Nonterminal(Enum.Specification);
+		public static readonly Nonterminal Action = new Nonterminal(Enum.Action);
+		public static readonly Nonterminal AndLater = new Nonterminal(Enum.AndLater);
+		public static readonly Nonterminal Before = new Nonterminal(Enum.Before);
+		public static readonly Nonterminal Deadline = new Nonterminal(Enum.Deadline);
+		public static readonly Nonterminal Expectation = new Nonterminal(Enum.Expectation);
+		public static readonly Nonterminal Has = new Nonterminal(Enum.Has);
+		public static readonly Nonterminal HashCode = new Nonterminal(Enum.HashCode);
+		public static readonly Nonterminal Inspection = new Nonterminal(Enum.Inspection);
+		public static readonly Nonterminal Instrument = new Nonterminal(Enum.Instrument);
+		public static readonly Nonterminal Procedure = new Nonterminal(Enum.Procedure);
+		public static readonly Nonterminal Reason = new Nonterminal(Enum.Reason);
+		public static readonly Nonterminal Source = new Nonterminal(Enum.Source);
+		public static readonly Nonterminal Specification = new Nonterminal(Enum.Specification);
+		public static readonly IReadOnlyList<Nonterminal> All = new[] {Specification, Source, Inspection};
 
 		protected Nonterminal(Enum token)
 			: this(token.ToString()) {}

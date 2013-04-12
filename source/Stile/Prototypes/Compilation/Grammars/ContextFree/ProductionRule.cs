@@ -12,9 +12,9 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Types.Enumerables;
 #endregion
 
-namespace Stile.Prototypes.Compilation.Grammars
+namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-	public interface IProductionRule : IEquatable<ProductionRule>
+	public interface IProductionRule : IEquatable<ProductionRule>, IAcceptGrammarVisitors
 	{
 		bool CanBeInlined { get; set; }
 		[NotNull]
@@ -42,6 +42,11 @@ namespace Stile.Prototypes.Compilation.Grammars
 		public Symbol Left { get; private set; }
 		public IClause Right { get; private set; }
 		public int SortOrder { get; set; }
+
+		public void Accept(IGrammarVisitor visitor)
+		{
+			visitor.Visit(this);
+		}
 
 		public override string ToString()
 		{

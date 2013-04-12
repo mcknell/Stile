@@ -17,16 +17,16 @@ using Stile.Types.Enumerables;
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-	public class ContextFreeGrammarBuilder
+	public class GrammarBuilder
 	{
 		private readonly HashBucket<Symbol, IClause> _clauses;
 		private readonly HashSet<IFollower> _links;
 		private readonly HashSet<NonterminalSymbol> _symbols;
 
-		public ContextFreeGrammarBuilder(params IProductionRule[] rules)
+		public GrammarBuilder(params IProductionRule[] rules)
 			: this(rules.AsEnumerable()) {}
 
-		public ContextFreeGrammarBuilder([NotNull] IEnumerable<IProductionRule> rules)
+		public GrammarBuilder([NotNull] IEnumerable<IProductionRule> rules)
 		{
 			_symbols = new HashSet<NonterminalSymbol>();
 			_links = new HashSet<IFollower>();
@@ -65,7 +65,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		}
 
 		[NotNull]
-		public ContextFreeGrammar Build()
+		public IGrammar Build(bool consolidate = true)
 		{
 			var rules = new List<IProductionRule>();
 			foreach (Symbol leftSymbol in Clauses.Keys)
@@ -80,7 +80,21 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 					}
 				}
 			}
-			return new ContextFreeGrammar(_symbols, new HashSet<TerminalSymbol>(), rules, Nonterminal.Specification);
+			IList<IProductionRule> consolidated = rules;
+			if (consolidate)
+			{
+				consolidated = Consolidate(rules);
+			}
+			return new Grammar(_symbols,
+				new HashSet<TerminalSymbol> {TerminalSymbol.EBNFAlternation, TerminalSymbol.EBNFAssignment},
+				consolidated,
+				Nonterminal.Specification);
+		}
+
+		public static IList<IProductionRule> Consolidate(IEnumerable<IProductionRule> rules)
+		{
+			HashBucket<Symbol, IClause> hashBucket = rules.ToHashBucket(x => x.Left, x => x.Right);
+			return Consolidate(hashBucket);
 		}
 
 		public static IList<IProductionRule> Consolidate(IReadOnlyHashBucket<Symbol, IClause> rules)
@@ -89,12 +103,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			foreach (Symbol key in rules.Keys)
 			{
 				List<IReadOnlyList<IClauseMember>> listsOfMembers = rules[key].Select(x => x.Members).ToList();
-				List<IClause> front = GetCommonClauses(listsOfMembers);
-				List<IClause> back = GetCommonClauses(listsOfMembers.Select(x=>x.Reverse()));
-				IEnumerable<IClauseMember> middle = GetMiddle(rules[key], front.Count, back.Count);
-				var clauses = new List<IClause>(front);
+				var clauses = new List<IClause>(GetCommonClauses(listsOfMembers));
+				List<IClause> back = GetCommonClauses(listsOfMembers, true);
+				IEnumerable<IClauseMember> middle = GetMiddle(rules[key], clauses.Count, back.Count);
 				clauses.Add(new Clause(middle));
-				clauses.AddRange(Enumerable.Reverse(back));
+				clauses.AddRange(back);
 				var right = new Clause(clauses);
 				list.Add(new ProductionRule(key, right));
 			}
@@ -176,10 +189,16 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			}
 		}
 
-		private static List<IClause> GetCommonClauses(IEnumerable<IEnumerable<IClauseMember>> listsOfMembers)
+		private static List<IClause> GetCommonClauses(
+			[NotNull] IEnumerable<IEnumerable<IClauseMember>> listsOfMembers, bool reverse = false)
 		{
+			IEnumerable<IEnumerable<IClauseMember>> members = listsOfMembers.ValidateArgumentIsNotNull();
+			if (reverse)
+			{
+				members = members.Select(x => x.Reverse());
+			}
 			var clauses = new List<IClause>();
-			foreach (IList<IClauseMember> cohort in listsOfMembers.ForAll())
+			foreach (IList<IClauseMember> cohort in members.ForAll())
 			{
 				List<IClauseMember> distinct = cohort.Distinct().ToList();
 				if (distinct.Count == 1)
@@ -190,6 +209,10 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				{
 					break;
 				}
+			}
+			if (reverse)
+			{
+				clauses.Reverse();
 			}
 			return clauses;
 		}
@@ -224,13 +247,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			symbol = new Nonterminal(token);
 			_symbols.Add(symbol);
 			return symbol;
-		}
-
-		public class ConsolidatedClause
-		{
-			public IList<IClause> CommonBack { get; private set; }
-			public IList<IClause> CommonFront { get; private set; }
-			public IList<IList<IClause>> UniqueMiddles { get; private set; }
 		}
 	}
 }

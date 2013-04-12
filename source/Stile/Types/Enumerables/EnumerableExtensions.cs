@@ -162,6 +162,13 @@ namespace Stile.Types.Enumerables
 			return (string) invoked;
 		}
 
+		[NotNull]
+		public static HashSet<TItem> ToHashSet<TItem>([NotNull] this IEnumerable<TItem> items,
+			IEqualityComparer<TItem> comparer = null)
+		{
+			return new HashSet<TItem>(items.ValidateArgumentIsNotNull(), comparer);
+		}
+
 		public static Lazy<string> ToLazyDebugString<TItem>(this IEnumerable<TItem> enumerable)
 		{
 			return new Lazy<string>(() => enumerable.ToDebugString());

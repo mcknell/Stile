@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Compilation.Grammars.ContextFree;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars
@@ -26,6 +27,11 @@ namespace Stile.Prototypes.Compilation.Grammars
 		public IEnumerable<Symbol> Flatten()
 		{
 			yield return this;
+		}
+
+		public void Accept(IGrammarVisitor visitor)
+		{
+			visitor.Visit(this);
 		}
 
 		public override string ToString()

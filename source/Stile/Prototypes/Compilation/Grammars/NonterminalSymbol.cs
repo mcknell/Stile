@@ -13,8 +13,6 @@ namespace Stile.Prototypes.Compilation.Grammars
 {
 	public class NonterminalSymbol : Symbol
 	{
-		public static readonly Symbol Start = new NonterminalSymbol("S");
-
 		protected NonterminalSymbol([NotNull] string token)
 			: base(ToTitleCase(token)) {}
 

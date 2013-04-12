@@ -12,9 +12,9 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Types.Enumerables;
 #endregion
 
-namespace Stile.Prototypes.Compilation.Grammars
+namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-	public interface IClauseMember
+	public interface IClauseMember : IAcceptGrammarVisitors
 	{
 		[NotNull]
 		IEnumerable<Symbol> Flatten();
@@ -57,6 +57,11 @@ namespace Stile.Prototypes.Compilation.Grammars
 
 		public Cardinality Cardinality { get; private set; }
 		public IReadOnlyList<IClauseMember> Members { get; private set; }
+
+		public void Accept(IGrammarVisitor visitor)
+		{
+			visitor.Visit(this);
+		}
 
 		public IClause Clone(Func<Symbol, Symbol> symbolCloner)
 		{

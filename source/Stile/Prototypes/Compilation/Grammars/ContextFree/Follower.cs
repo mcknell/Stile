@@ -10,7 +10,7 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Grammar;
 #endregion
 
-namespace Stile.Prototypes.Compilation.Grammars
+namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
 	public interface IFollower : IEquatable<IFollower>
 	{

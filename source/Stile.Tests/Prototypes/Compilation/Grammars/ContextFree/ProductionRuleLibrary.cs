@@ -5,10 +5,11 @@
 
 #region using...
 using Stile.Prototypes.Compilation.Grammars;
+using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Specifications.Grammar;
 #endregion
 
-namespace Stile.Tests.Prototypes.Compilation.Grammars
+namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 {
 	public static class ProductionRuleLibrary
 	{

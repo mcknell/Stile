@@ -31,7 +31,7 @@ namespace Stile.DocumentationGeneration
 		{
 			IEnumerable<IProductionRule> rules = _reflector.FindRules();
 
-			var grammarBuilder = new ContextFreeGrammarBuilder(rules);
+			var grammarBuilder = new GrammarBuilder(rules);
 
 			foreach (Follower symbolLink in _reflector.FindRuleExpansions())
 			{

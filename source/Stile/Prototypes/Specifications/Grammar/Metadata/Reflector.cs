@@ -12,6 +12,7 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars;
+using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Types.Enumerables;
 #endregion
 

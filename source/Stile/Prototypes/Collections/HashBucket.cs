@@ -4,7 +4,9 @@
 #endregion
 
 #region using...
+using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 #endregion
 
 namespace Stile.Prototypes.Collections
@@ -46,6 +48,24 @@ namespace Stile.Prototypes.Collections
 				}
 			}
 			return this;
+		}
+	}
+
+	public static class HashBucketExtensions
+	{
+		public static HashBucket<TKey, TValue> ToHashBucket<TItem, TKey, TValue>(
+			[NotNull] this IEnumerable<TItem> items,
+			[NotNull] Func<TItem, TKey> keySelector,
+			[NotNull] Func<TItem, TValue> valueSelector,
+			IEqualityComparer<TKey> keyComparer = null,
+			IEqualityComparer<TValue> itemComparer = null)
+		{
+			var hashBucket = new HashBucket<TKey, TValue>(keyComparer, itemComparer);
+			foreach (TItem item in items)
+			{
+				hashBucket.Add(keySelector.Invoke(item), valueSelector.Invoke(item));
+			}
+			return hashBucket;
 		}
 	}
 }
