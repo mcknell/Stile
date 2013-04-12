@@ -53,12 +53,14 @@
     <Compile Include="Prototypes\Collections\Graphs\GraphExtensionsFixture.cs" />
     <Compile Include="Prototypes\Collections\HashBucketFixture.cs" />
     <Compile Include="Prototypes\Collections\Sorting\ToposortFixture.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ClauseEqualityFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ClauseFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\GrammarBuilderAcceptanceTests.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\GrammarBuilderFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\GrammarDescriberFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\GrammarLibrary.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ProductionRuleLibrary.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\SymbolEqualityFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\SymbolLinkFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIsTests.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\IsComparableExtensionsTests.cs" />
@@ -102,6 +104,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Stile.NUnit\Stile.NUnit.csproj">
+      <Project>{cf4ac73e-5699-45da-8dae-d111f57fe79c}</Project>
+      <Name>Stile.NUnit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Stile.Testing\Stile.Testing.csproj">
       <Project>{77e2400f-633f-477a-9b7c-fc7e1a4c11d9}</Project>
       <Name>Stile.Testing</Name>

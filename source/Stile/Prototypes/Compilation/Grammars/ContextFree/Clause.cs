@@ -135,6 +135,14 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			}
 			throw new ArgumentOutOfRangeException("member");
 		}
+
+		private static int MemberHash(int x, IClauseMember y)
+		{
+			unchecked
+			{
+				return (y.GetHashCode() * 397) ^ x;
+			}
+		}
 	}
 
 	public partial class Clause
@@ -170,7 +178,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			unchecked
 			{
-				return (Members.GetHashCode() * 397) ^ (int) Cardinality;
+				int aggregateHash = Members.Aggregate(0, MemberHash);
+				return aggregateHash ^ (int) Cardinality;
 			}
 		}
 

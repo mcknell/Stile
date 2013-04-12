@@ -16,9 +16,16 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		[Test]
 		public void Describes()
 		{
-			string described = GrammarDescriber.Describe(GrammarLibrary.Simplest);
+			IProductionRule inspection = ProductionRuleLibrary.Inspection;
+			IProductionRule specification = ProductionRuleLibrary.Specification;
+			IProductionRule andLater = ProductionRuleLibrary.AndLater;
+			IGrammar grammar = new GrammarBuilder(inspection, specification, andLater).Build();
 
-			Assert.That(described, Is.EqualTo("Specification ::= (Source? Inspection Deadline? Reason?)"));
+			string ebnf = GrammarDescriber.Describe(grammar);
+
+			StringAssert.Contains("Inspection ::= (Instrument Action)", ebnf);
+			StringAssert.Contains(
+				"Specification ::= ((Source? Inspection Deadline? Reason?) | (Specification AndLater))", ebnf);
 		}
 	}
 }

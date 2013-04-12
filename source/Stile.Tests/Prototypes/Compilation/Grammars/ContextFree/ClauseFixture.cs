@@ -31,13 +31,5 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			StringAssert.Contains(Nonterminal.Deadline.Token, joined);
 			StringAssert.Contains(Nonterminal.Reason.Token, joined);
 		}
-
-		[Test]
-		public void Equal()
-		{
-			var clause = new Clause(Nonterminal.Specification);
-			Assert.That(clause.Equals(clause));
-			Assert.That(clause.Equals(new Clause(Nonterminal.Deadline)), Is.False);
-		}
 	}
 }

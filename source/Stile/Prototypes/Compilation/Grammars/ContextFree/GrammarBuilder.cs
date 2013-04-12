@@ -102,13 +102,24 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			var list = new List<IProductionRule>();
 			foreach (Symbol key in rules.Keys)
 			{
-				List<IReadOnlyList<IClauseMember>> listsOfMembers = rules[key].Select(x => x.Members).ToList();
-				var clauses = new List<IClause>(GetCommonClauses(listsOfMembers));
-				List<IClause> back = GetCommonClauses(listsOfMembers, true);
-				IEnumerable<IClauseMember> middle = GetMiddle(rules[key], clauses.Count, back.Count);
-				clauses.Add(new Clause(middle));
-				clauses.AddRange(back);
-				var right = new Clause(clauses);
+				IClause right;
+				if (rules[key].Count == 1)
+				{
+					right = rules[key].First();
+				}
+				else
+				{
+					List<IReadOnlyList<IClauseMember>> listsOfMembers = rules[key].Select(x => x.Members).ToList();
+					var clauses = new List<IClause>(GetCommonClauses(listsOfMembers));
+					if (clauses.Count != listsOfMembers.Max(x => x.Count))
+					{
+						List<IClause> back = GetCommonClauses(listsOfMembers, true);
+						IEnumerable<IClauseMember> middle = GetMiddle(rules[key], clauses.Count, back.Count);
+						clauses.Add(new Clause(middle));
+						clauses.AddRange(back);
+					}
+					right = new Clause(clauses).Prune();
+				}
 				list.Add(new ProductionRule(key, right));
 			}
 			return list;
@@ -164,15 +175,17 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			}
 		}
 
+		private void BuildClauses(IClause clause) {}
+
 		private IEnumerable<IClause> EnumerateClauses(Stack<IClause> clauses)
 		{
 			List<IFollower> following = GetFollowers(clauses.Peek());
 			foreach (IFollower link in following)
 			{
 				clauses.Push(link.Current);
-				foreach (IClause list in EnumerateClauses(clauses))
+				foreach (IClause clause in EnumerateClauses(clauses))
 				{
-					yield return list;
+					yield return clause;
 				}
 				clauses.Pop();
 			}

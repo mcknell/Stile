@@ -7,7 +7,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using JetBrains.Annotations;
-using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 #endregion
@@ -38,7 +37,8 @@ namespace Stile.DocumentationGeneration
 				grammarBuilder.Add(symbolLink);
 			}
 
-			return grammarBuilder.ToEBNF();
+			IGrammar grammar = grammarBuilder.Build();
+			return GrammarDescriber.Describe(grammar);
 		}
 	}
 }

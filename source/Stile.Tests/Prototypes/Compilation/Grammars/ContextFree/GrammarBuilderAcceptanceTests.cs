@@ -16,25 +16,14 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 	public class GrammarBuilderAcceptanceTests
 	{
 		[Test]
-		public void Builds()
-		{
-			IEnumerable<IProductionRule> rules = new Reflector().FindRules();
-			var builder = new GrammarBuilder(rules);
-
-			// act
-			IGrammar grammar = builder.Build();
-
-			Assert.NotNull(grammar);
-		}
-
-		[Test]
 		public void Prints()
 		{
 			IEnumerable<IProductionRule> rules = new Reflector().FindRules();
 			var builder = new GrammarBuilder(rules);
+			IGrammar grammar = builder.Build();
 
 			// act
-			string ebnf = builder.ToEBNF();
+			string ebnf = GrammarDescriber.Describe(grammar);
 
 			Assert.NotNull(ebnf);
 		}

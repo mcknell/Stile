@@ -4,34 +4,34 @@
 #endregion
 
 #region using...
-using NUnit.Framework;
 using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Builders.OfProcedures;
 using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Tests.Prototypes.Specifications.SampleObjects;
+using NUnitFramework = NUnit.Framework;
 #endregion
 
 namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Is
 {
-	[TestFixture]
+	[NUnitFramework.TestFixtureAttribute]
 	public class NullFixture
 	{
-		[Test]
+		[NUnitFramework.TestAttribute]
 		public void Null()
 		{
 			var subject = new Foo<int>();
 
 			IEvaluation<Foo<int>, Foo<int>> evaluation =
 				Specify.For(() => subject).That(x => x).Is.Not.Null().Evaluate();
-			Assert.That(evaluation.Outcome, NUnit.Framework.Is.EqualTo(Outcome.Succeeded));
+			NUnitFramework.Assert.That(evaluation.Outcome, NUnitFramework.Is.EqualTo(Outcome.Succeeded));
 
 			subject = null;
 			IEvaluation<Foo<int>, Foo<int>> secondEvaluation = evaluation.ReEvaluate();
 
-			Assert.That(secondEvaluation.Outcome, NUnit.Framework.Is.EqualTo(Outcome.Failed));
-			Assert.AreEqual(@"subject should not be null
+			NUnitFramework.Assert.That(secondEvaluation.Outcome, NUnitFramework.Is.EqualTo(Outcome.Failed));
+			NUnitFramework.Assert.AreEqual(@"subject should not be null
 but was <null>", secondEvaluation.ToPastTense());
 		}
 	}

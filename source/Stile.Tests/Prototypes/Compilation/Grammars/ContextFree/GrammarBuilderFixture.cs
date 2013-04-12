@@ -93,6 +93,13 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		}
 
 		[Test]
+		public void ConsolidateTrivial()
+		{
+			AssertTrivialConsolidation(ProductionRuleLibrary.ExpectationHas, 1);
+			AssertTrivialConsolidation(ProductionRuleLibrary.ExpectationBefore, 2);
+		}
+
+		[Test]
 		public void ConstructsFromRules()
 		{
 			IProductionRule expectation = ProductionRuleLibrary.ExpectationBefore;
@@ -113,21 +120,6 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		}
 
 		[Test]
-		public void EmitsEBNF()
-		{
-			IProductionRule inspection = ProductionRuleLibrary.Inspection;
-			IProductionRule specification = ProductionRuleLibrary.Specification;
-			IProductionRule andLater = ProductionRuleLibrary.AndLater;
-			var testSubject = new GrammarBuilder(inspection, specification, andLater);
-
-			string ebnf = testSubject.ToEBNF();
-
-			StringAssert.Contains("Inspection ::= (Instrument Action)", ebnf);
-			StringAssert.Contains(
-				"Specification ::= ((Source? Inspection Deadline? Reason?) | (Specification AndLater))", ebnf);
-		}
-
-		[Test]
 		[Explicit("WIP")]
 		public void TopologicallySortsProductionRules()
 		{
@@ -142,6 +134,20 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 				Assert.That(grammar.Nonterminals, Has.Member(right), right);
 			}
 			Assert.That(grammar.ProductionRules, Has.Member(rule));
+		}
+
+		private static void AssertTrivialConsolidation(IProductionRule productionRule, int expected)
+		{
+			IClause single = productionRule.Right;
+			Assert.That(single.Members.Count, Is.EqualTo(expected), "prec");
+
+			// act
+			IList<IProductionRule> rules =
+				GrammarBuilder.Consolidate(new HashBucket<Symbol, IClause> {{productionRule.Left, single}});
+
+			Assert.NotNull(rules);
+			IProductionRule rule = rules.FirstOrDefault();
+			Assert.That(rule, Is.EqualTo(productionRule));
 		}
 	}
 }

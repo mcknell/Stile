@@ -4,19 +4,19 @@
 #endregion
 
 #region using...
-using NUnit.Framework;
 using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Tests.Prototypes.Specifications.SampleObjects;
+using NUnitFramework = NUnit.Framework;
 #endregion
 
 namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Is
 {
-	[TestFixture]
+	[NUnitFramework.TestFixtureAttribute]
 	public class EnumerableIsTests
 	{
-		[Test]
+		[NUnitFramework.TestAttribute]
 		public void Empty()
 		{
 			var subject = new Foo<int>();
@@ -24,13 +24,13 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Is
 			IEvaluation<Foo<int>, Foo<int>> evaluationOfNew = Specify.ThatAny<Foo<int>>().OfItemsLike(0).Is.Empty //
 				.AndThen.Is.Not.Empty.Evaluate(() => subject);
 
-			Assert.That(evaluationOfNew.Outcome, NUnit.Framework.Is.EqualTo(Outcome.Succeeded));
+			NUnitFramework.Assert.That(evaluationOfNew.Outcome, NUnitFramework.Is.EqualTo(Outcome.Succeeded));
 
 			subject.Add(1);
 			IEvaluation<Foo<int>, Foo<int>> evaluationOfOne =
 				Specify.ThatAny<Foo<int>>().OfItemsLike(0).Is.Not.Empty.Evaluate(() => subject);
 
-			Assert.That(evaluationOfOne.Outcome, NUnit.Framework.Is.EqualTo(Outcome.Succeeded));
+			NUnitFramework.Assert.That(evaluationOfOne.Outcome, NUnitFramework.Is.EqualTo(Outcome.Succeeded));
 		}
 	}
 }
