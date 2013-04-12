@@ -4,10 +4,8 @@
 #endregion
 
 #region using...
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Collections;
@@ -72,12 +70,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			{
 				foreach (IClause clause in Clauses[leftSymbol])
 				{
-					var stack = new Stack<IClause>();
-					stack.Push(clause);
-					foreach (IClause enumeratedClause in EnumerateClauses(stack))
-					{
-						rules.Add(new ProductionRule(leftSymbol, enumeratedClause));
-					}
+					IClause clauses = BuildClauses(clause);
+					rules.Add(new ProductionRule(leftSymbol, clauses));
 				}
 			}
 			IList<IProductionRule> consolidated = rules;
@@ -125,81 +119,22 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			return list;
 		}
 
-		public string ToEBNF()
-		{
-			var builder = new StringBuilder();
-			foreach (Symbol leftSymbol in Clauses.Keys)
-			{
-				builder.AppendFormat("{0}{1} {2} ", Environment.NewLine, leftSymbol, TerminalSymbol.EBNFAssignment);
-				ISet<IClause> clauses = Clauses[leftSymbol];
-				if (clauses.Count > 1)
-				{
-					builder.Append("(");
-				}
-				foreach (IClause clause in clauses.SkipWith(x =>
-				{
-					builder.AppendFormat("{0} ", x);
-					AppendFollowers(builder, x);
-				}))
-				{
-					builder.AppendFormat(" | {0}", clause);
-					AppendFollowers(builder, clause);
-				}
-				if (clauses.Count > 1)
-				{
-					builder.Append(")");
-				}
-			}
-			return builder.ToString().Replace("  ", " ");
-		}
-
-		private void AppendFollowers(StringBuilder builder, IClause clause)
+		private IClause BuildClauses(IClause clause)
 		{
 			List<IFollower> followers = GetFollowers(clause);
-			if (followers.Count > 1)
+			if (followers.Count == 0)
 			{
-				builder.Append("(");
+				return clause;
 			}
-			foreach (IFollower follower in followers.SkipWith(x =>
+			if (followers.Count == 1)
 			{
-				builder.AppendFormat("{0} ", x.Current);
-				AppendFollowers(builder, x.Current);
-			}))
-			{
-				builder.AppendFormat(" | {0}", follower.Current);
-				AppendFollowers(builder, follower.Current);
+				return new Clause(clause, BuildClauses(followers.First().Current));
 			}
-			if (followers.Count > 1)
-			{
-				builder.Append(")");
-			}
-		}
-
-		private void BuildClauses(IClause clause) {}
-
-		private IEnumerable<IClause> EnumerateClauses(Stack<IClause> clauses)
-		{
-			List<IFollower> following = GetFollowers(clauses.Peek());
-			foreach (IFollower link in following)
-			{
-				clauses.Push(link.Current);
-				foreach (IClause clause in EnumerateClauses(clauses))
-				{
-					yield return clause;
-				}
-				clauses.Pop();
-			}
-			if (following.None())
-			{
-				if (clauses.Count == 1)
-				{
-					yield return clauses.Peek();
-				}
-				else
-				{
-					yield return new Clause(clauses.Reverse());
-				}
-			}
+			IEnumerable<IClauseMember> clauses = followers.Select(x => BuildClauses(x.Current)) //
+				.Cast<IClauseMember>() //
+				.Interlace(TerminalSymbol.EBNFAlternation);
+			IClause alternatives = new Clause(clauses).Prune();
+			return new Clause(clause, alternatives).Prune();
 		}
 
 		private static List<IClause> GetCommonClauses(
