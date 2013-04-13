@@ -74,7 +74,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		[Rule(Nonterminal.Enum.Specification)]
 		private FaultSpecification([Symbol] [CanBeNull] ISource<TSubject> source,
 			[Symbol] [NotNull] IProcedure<TSubject> procedure,
-			[NotNull] IExceptionFilter<TSubject> exceptionFilter,
+			[Symbol] [NotNull] IExceptionFilter<TSubject> exceptionFilter,
 			[NotNull] TExceptionFilterBuilder filterBuilder,
 			[CanBeNull] IFaultSpecification<TSubject> prior,
 			[Symbol] IDeadline deadline = null,

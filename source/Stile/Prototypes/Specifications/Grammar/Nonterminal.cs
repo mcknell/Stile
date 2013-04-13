@@ -31,7 +31,8 @@ namespace Stile.Prototypes.Specifications.Grammar
 			AndLater,
 			Reason,
 			All,
-			Procedure
+			Procedure,
+			ExceptionFilter
 		}
 
 		public static readonly Nonterminal Action = new Nonterminal(Enum.Action);

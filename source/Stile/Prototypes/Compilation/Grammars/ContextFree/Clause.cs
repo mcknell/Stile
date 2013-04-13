@@ -23,6 +23,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 	public interface IClause : IClauseMember,
 		IEquatable<IClause>
 	{
+		bool CanBeInlined { get; }
 		Cardinality Cardinality { get; }
 		[NotNull]
 		IReadOnlyList<IClauseMember> Members { get; }
@@ -31,7 +32,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		IClause Clone([NotNull] Func<Symbol, Symbol> symbolCloner);
 
 		[NotNull]
-		IClause Prune();
+		IClause Inline();
 	}
 
 	public partial class Clause : IClause
@@ -55,6 +56,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			_cloner = cloner ?? DefaultCloner;
 		}
 
+		public bool CanBeInlined { get; private set; }
+
 		public Cardinality Cardinality { get; private set; }
 		public IReadOnlyList<IClauseMember> Members { get; private set; }
 
@@ -71,7 +74,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			{
 				members.Add(_cloner.Invoke(member, symbolCloner));
 			}
-			return new Clause(members, Cardinality);
+			return new Clause(members, Cardinality, _cloner);
 		}
 
 		public IEnumerable<Symbol> Flatten()
@@ -85,7 +88,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			}
 		}
 
-		public IClause Prune()
+		public IClause Inline()
 		{
 			IClause clause = this;
 			while (clause.Members.Count == 1 && clause.Cardinality == Cardinality.One)

@@ -95,7 +95,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIs.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\ExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\EnumerableHas.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\HasAll.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\All.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\Quantifier.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentBoundExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentExpectationBuilder.cs" />

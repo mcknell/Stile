@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers;
+using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -31,13 +32,13 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 	{
 		private readonly Lazy<IQuantifier<TSpecification, TItem>> _lazyAll;
 
-		[Specialization]
+		[RuleExpansion(Nonterminal.Enum.Has)]
 		public EnumerableHas([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState)
 			: base(builderState)
 		{
 			_lazyAll =
 				new Lazy<IQuantifier<TSpecification, TItem>>(
-					() => new HasAll<TSpecification, TSubject, TResult, TItem>(Xray));
+					() => new All<TSpecification, TSubject, TResult, TItem>(Xray));
 		}
 
 		public IQuantifier<TSpecification, TItem> All

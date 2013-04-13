@@ -29,6 +29,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 	{
 		[NotNull]
 		[System.Diagnostics.Contracts.Pure]
+		[RuleExpansion(Nonterminal.Enum.Instrument, Nonterminal.Enum.ExceptionFilter)]
 		TSpecification Throws<TException>() where TException : Exception;
 	}
 
@@ -39,7 +40,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		where TIs : class, IIs<TSpecification, TSubject, TResult>
 	{
 		[System.Diagnostics.Contracts.Pure]
-		[Rule(Nonterminal.Enum.Expectation)]
+		[Rule(Nonterminal.Enum.Expectation, CanBeInlined = false)]
 		THas Has { get; }
 		[System.Diagnostics.Contracts.Pure]
 		[Rule(Nonterminal.Enum.Expectation)]

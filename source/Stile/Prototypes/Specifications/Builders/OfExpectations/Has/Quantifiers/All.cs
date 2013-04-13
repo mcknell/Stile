@@ -17,18 +17,18 @@ using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers
 {
-	public interface IHasAll<out TSpecification, TSubject, TResult, TItem> :
+	public interface IAll<out TSpecification, TSubject, TResult, TItem> :
 		IQuantifier<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification, IChainableSpecification {}
 
-	public class HasAll<TSpecification, TSubject, TResult, TItem> :
+	public class All<TSpecification, TSubject, TResult, TItem> :
 		Quantifier<TSpecification, TSubject, TResult, TItem>,
-		IHasAll<TSpecification, TSubject, TResult, TItem>
+		IAll<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>
 	{
-		[RuleExpansion(Nonterminal.Enum.Has, Nonterminal.Enum.All)]
-		public HasAll([NotNull] IHasState<TSpecification, TSubject, TResult> hasState)
+		[RuleExpansion(Nonterminal.Enum.EnumerableHas)]
+		public All([NotNull] IHasState<TSpecification, TSubject, TResult> hasState)
 			: base(hasState) {}
 
 		public override void Accept(IExpectationVisitor visitor)

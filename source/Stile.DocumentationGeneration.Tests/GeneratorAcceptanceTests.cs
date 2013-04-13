@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System;
 using NUnit.Framework;
 #endregion
 
@@ -18,6 +19,7 @@ namespace Stile.DocumentationGeneration.Tests
 			var generator = new Generator();
 			string generated = generator.Generate();
 			Assert.That(generated, Is.Not.Null);
+			Console.Write(generated);
 			//StringAssert.Contains("Expectation ::= Is", generated);
 			//StringAssert.Contains("Expectation ::= Has", generated);
 		}

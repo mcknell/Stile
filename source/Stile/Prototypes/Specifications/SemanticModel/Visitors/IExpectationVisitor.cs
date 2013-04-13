@@ -54,7 +54,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		void Visit4<TSpecification, TSubject, TResult, TItem>(
-			IHasAll<TSpecification, TSubject, TResult, TItem> target)
+			IAll<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		void Visit4<TSpecification, TSubject, TResult, TItem>(
@@ -102,7 +102,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		TData Visit4<TSpecification, TSubject, TResult, TItem>(
-			IHasAll<TSpecification, TSubject, TResult, TItem> target, TData data)
+			IAll<TSpecification, TSubject, TResult, TItem> target, TData data)
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		TData Visit4<TSpecification, TSubject, TResult, TItem>(

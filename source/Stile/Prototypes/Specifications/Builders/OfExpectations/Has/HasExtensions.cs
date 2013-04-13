@@ -18,7 +18,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 	public static class HasExtensions
 	{
 		[Pure]
-		[RuleExpansion(Nonterminal.Enum.Has)]
+		[RuleExpansion(Nonterminal.Enum.EnumerableHas)]
 		public static IQuantifier<TSpecification, TItem> AtLeast<TSpecification, TSubject, TResult, TItem>(
 			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, int limit)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification

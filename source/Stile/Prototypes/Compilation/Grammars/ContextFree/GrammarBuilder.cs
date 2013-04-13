@@ -28,12 +28,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			_symbols = new HashSet<NonterminalSymbol>();
 			_links = new HashSet<IFollower>();
-			_clauses = new HashBucket<Symbol, IClause>();
-			foreach (IProductionRule rule in rules.ValidateArgumentIsNotNull())
-			{
-				Symbol left = GetOrAdd(rule.Left);
-				_clauses.Add(left, rule.Right.Clone(GetOrAdd));
-			}
+			_clauses = Inline(rules.ValidateArgumentIsNotNull());
 		}
 
 		public IReadOnlyHashBucket<Symbol, IClause> Clauses
@@ -65,7 +60,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		[NotNull]
 		public IGrammar Build(bool consolidate = true)
 		{
-			var rules = new List<IProductionRule>();
+			IList<IProductionRule> rules = new List<IProductionRule>();
 			foreach (Symbol leftSymbol in Clauses.Keys)
 			{
 				foreach (IClause clause in Clauses[leftSymbol])
@@ -74,14 +69,13 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 					rules.Add(new ProductionRule(leftSymbol, clauses));
 				}
 			}
-			IList<IProductionRule> consolidated = rules;
 			if (consolidate)
 			{
-				consolidated = Consolidate(rules);
+				rules = Consolidate(rules);
 			}
 			return new Grammar(_symbols,
 				new HashSet<TerminalSymbol> {TerminalSymbol.EBNFAlternation, TerminalSymbol.EBNFAssignment},
-				consolidated,
+				rules,
 				Nonterminal.Specification);
 		}
 
@@ -112,7 +106,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 						clauses.Add(new Clause(middle));
 						clauses.AddRange(back);
 					}
-					right = new Clause(clauses).Prune();
+					right = new Clause(clauses).Inline();
 				}
 				list.Add(new ProductionRule(key, right));
 			}
@@ -133,8 +127,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			IEnumerable<IClauseMember> clauses = followers.Select(x => BuildClauses(x.Current)) //
 				.Cast<IClauseMember>() //
 				.Interlace(TerminalSymbol.EBNFAlternation);
-			IClause alternatives = new Clause(clauses).Prune();
-			return new Clause(clause, alternatives).Prune();
+			IClause alternatives = new Clause(clauses).Inline();
+			return new Clause(clause, alternatives).Inline();
 		}
 
 		private static List<IClause> GetCommonClauses(
@@ -151,7 +145,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				List<IClauseMember> distinct = cohort.Distinct().ToList();
 				if (distinct.Count == 1)
 				{
-					clauses.Add(new Clause(distinct[0]).Prune());
+					clauses.Add(new Clause(distinct[0]).Inline());
 				}
 				else
 				{
@@ -195,6 +189,95 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			symbol = new Nonterminal(token);
 			_symbols.Add(symbol);
 			return symbol;
+		}
+
+		private HashBucket<Symbol, IClause> Inline(IEnumerable<IProductionRule> rules)
+		{
+			var clauses = new HashBucket<Symbol, IClause>();
+			var candidatesToInline = new HashSet<IProductionRule>();
+			foreach (IProductionRule rule in rules)
+			{
+				Symbol left = GetOrAdd(rule.Left);
+				IClause right = rule.Right.Clone(GetOrAdd); // GetOrAdd symbols, even if we don't use the clause
+				if (rule.CanBeInlined)
+				{
+					candidatesToInline.Add(rule);
+				}
+				else
+				{
+					clauses.Add(left, right);
+				}
+			}
+			IList<IProductionRule> consolidatedCandidates = Consolidate(candidatesToInline);
+			var rulesToInline = new HashSet<IProductionRule>();
+			foreach (IProductionRule rule in consolidatedCandidates)
+			{
+				bool symbolMatchesRuleThatCannotInline = clauses.ContainsKey(rule.Left);
+				if (symbolMatchesRuleThatCannotInline)
+				{
+					clauses.Add(rule.Left, rule.Right);
+				}
+				else
+				{
+					rulesToInline.Add(rule);
+				}
+			}
+			return Inline(rulesToInline, clauses);
+		}
+
+		private HashBucket<Symbol, IClause> Inline(HashSet<IProductionRule> rulesToInline,
+			HashBucket<Symbol, IClause> clauses)
+		{
+			HashSet<Symbol> symbolsToInline = rulesToInline.Select(y => y.Left).ToHashSet();
+			var symbolsNeverInlined = new HashSet<Symbol>(symbolsToInline);
+			var result = new HashBucket<Symbol, IClause>();
+			foreach (Symbol key in clauses.Keys)
+			{
+				foreach (IClause clause in clauses[key])
+				{
+					if (symbolsToInline.Intersect(clause.Flatten()).Any())
+					{
+						foreach (IProductionRule rule in rulesToInline)
+						{
+							symbolsNeverInlined.Remove(rule.Left);
+							IClause inlined = Inline(rule, clause);
+							result.Add(key, inlined);
+						}
+					}
+					else
+					{
+						result.Add(key, clause);
+					}
+				}
+			}
+			foreach (IProductionRule ruleNeverInlined in rulesToInline.Where(x => symbolsNeverInlined.Contains(x.Left))
+				)
+			{
+				result.Add(GetOrAdd(ruleNeverInlined.Left), ruleNeverInlined.Right.Clone(GetOrAdd));
+			}
+			return result;
+		}
+
+		private IClause Inline(IProductionRule ruleToInline, IClause clause)
+		{
+			var members = new List<IClauseMember>();
+			foreach (IClauseMember member in clause.Members)
+			{
+				var memberAsClause = member as IClause;
+				if (memberAsClause != null)
+				{
+					members.Add(Inline(ruleToInline, memberAsClause));
+				}
+				else if (member.Equals(ruleToInline.Left))
+				{
+					members.Add(ruleToInline.Right);
+				}
+				else
+				{
+					members.Add(member);
+				}
+			}
+			return new Clause(members, clause.Cardinality);
 		}
 	}
 }
