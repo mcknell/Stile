@@ -10,7 +10,6 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Collections;
 using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Types.Enumerables;
@@ -41,6 +40,13 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 				RuleExpansionAttribute ruleExpansion = tuple.Item2;
 				string symbol = GetSymbol(methodInfo, ruleExpansion.SymbolToken);
 				yield return new Follower(ruleExpansion.Prior, symbol);
+			}
+			foreach (
+				Tuple<MethodBase, CategoryExpansionAttribute> tuple in GetMethods<CategoryExpansionAttribute>(false)
+				)
+			{
+				string name = GetName(tuple.Item1.ReflectedType);
+				yield return new Follower(name, tuple.Item1.Name);
 			}
 			foreach (Tuple<PropertyInfo, RuleExpansionAttribute> tuple in GetProperties<RuleExpansionAttribute>())
 			{
@@ -89,13 +95,14 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			get { return _assemblies.SelectMany(x => x.GetTypes()); }
 		}
 
-		private IEnumerable<Tuple<MethodBase, TAttribute>> GetMethods<TAttribute>() where TAttribute : Attribute
+		private IEnumerable<Tuple<MethodBase, TAttribute>> GetMethods<TAttribute>(
+			bool reflectedTypeIsDeclaringType = true) where TAttribute : Attribute
 		{
 			foreach (Type type in Types)
 			{
 				IEnumerable<MethodBase> methodBases = type.GetMethods(Everything).Cast<MethodBase>() //
 					.Concat(type.GetConstructors(Everything)) //
-					.Where(x => x.ReflectedType == x.DeclaringType);
+					.Where(x => (x.ReflectedType == x.DeclaringType) == reflectedTypeIsDeclaringType);
 				foreach (MethodBase methodInfo in methodBases)
 				{
 					var attribute = methodInfo.GetCustomAttribute<TAttribute>(false);
@@ -107,15 +114,21 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			}
 		}
 
-		private static ProductionRule GetRule(MethodBase methodInfo, SpecializationAttribute attribute)
+		private static string GetName(Type baseType)
 		{
-			string symbol = GetSymbol(methodInfo, attribute.SymbolToken);
-			Type baseType = methodInfo.ReflectedType.BaseType;
 			string name = baseType.Name;
 			if (baseType.IsGenericType)
 			{
 				name = name.Substring(0, name.IndexOf("`"));
 			}
+			return name;
+		}
+
+		private static ProductionRule GetRule(MethodBase methodInfo, SpecializationAttribute attribute)
+		{
+			string symbol = GetSymbol(methodInfo, attribute.SymbolToken);
+			Type baseType = methodInfo.ReflectedType.BaseType;
+			string name = GetName(baseType);
 			var left = new Nonterminal(name);
 			var rule = new ProductionRule(left, new Nonterminal(symbol));
 			return rule;

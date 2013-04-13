@@ -102,6 +102,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EqualTo.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Null.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Nullable.cs" />
+    <Compile Include="Prototypes\Specifications\Grammar\Metadata\CategoryExpansionAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Metadata\Reflector.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Metadata\SpecializationAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Describer.cs" />

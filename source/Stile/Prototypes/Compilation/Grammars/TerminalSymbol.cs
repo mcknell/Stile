@@ -13,6 +13,7 @@ namespace Stile.Prototypes.Compilation.Grammars
 	{
 		public static readonly TerminalSymbol EBNFAlternation = new TerminalSymbol("|");
 		public static readonly TerminalSymbol EBNFAssignment = new TerminalSymbol("::=");
+		public static readonly TerminalSymbol UseReflection = new TerminalSymbol(">|");
 
 		public TerminalSymbol([NotNull] string token)
 			: base(token) {}

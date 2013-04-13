@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
@@ -26,20 +27,21 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 		TSpecification ItemsSatisfying(Expression<Func<TItem, bool>> expression);
 	}
 
-	public interface IQuantifier<TSpecification, TSubject, TResult, TItem> : IQuantifier<TSpecification, TItem>,
+	public interface IQuantifier<out TSpecification, TSubject, TResult, TItem> :
+		IQuantifier<TSpecification, TItem>,
 		IHides<IQuantifierState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, ISpecification, IChainableSpecification {}
 
 	public interface IQuantifierState : IAcceptExpectationVisitors {}
 
-	public interface IQuantifierState<TSpecification, TSubject, TResult> : IQuantifierState
+	public interface IQuantifierState<out TSpecification, TSubject, TResult> : IQuantifierState
 		where TSpecification : class, IChainableSpecification
 	{
 		IHasState<TSpecification, TSubject, TResult> Has { get; }
 	}
 
 	public abstract class Quantifier<TSpecification, TSubject, TResult, TItem> :
-		IQuantifier<TSpecification, TItem>,
+		IQuantifier<TSpecification, TSubject, TResult, TItem>,
 		IQuantifierState<TSpecification, TSubject, TResult>
 		where TSpecification : class, ISpecification, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>
@@ -65,11 +67,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 			get { return this; }
 		}
 
+		[CategoryExpansion]
 		public TSpecification ItemsSatisfying(Expression<Func<TItem, bool>> expression)
 		{
 			var itemsSatisfying = new ItemsSatisfying<TSpecification, TSubject, TResult, TItem>(expression, this);
 			Predicate<TResult> func = MakePredicate(expression);
-			var expectation = new Expectation<TSubject, TResult>(_hasState.ExpectationBuilder.Instrument, result => func(result), itemsSatisfying);
+			var expectation = new Expectation<TSubject, TResult>(_hasState.ExpectationBuilder.Instrument,
+				result => func(result),
+				itemsSatisfying);
 			return _hasState.ExpectationBuilder.Make(expectation);
 		}
 

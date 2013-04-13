@@ -17,7 +17,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers
 {
-	public interface IHasAll<TSpecification, TSubject, TResult, TItem> :
+	public interface IHasAll<out TSpecification, TSubject, TResult, TItem> :
 		IQuantifier<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification, IChainableSpecification {}
 
@@ -43,7 +43,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 
 		protected override Predicate<TResult> MakePredicate(Expression<Func<TItem, bool>> expression)
 		{
-			return result => result.All(expression.Compile());
+			var func = new Lazy<Func<TItem, bool>>(expression.Compile);
+			return result => result.All(func.Value);
 		}
 	}
 }

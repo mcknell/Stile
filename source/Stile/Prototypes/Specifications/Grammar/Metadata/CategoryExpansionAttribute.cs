@@ -14,19 +14,15 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 	/// <summary>
 	/// Indicates a fragment that expands the right side of a <see cref="IProductionRule"/>.
 	/// </summary>
-	[AttributeUsage(
-		AttributeTargets.Parameter | AttributeTargets.Method | AttributeTargets.Property
-			| AttributeTargets.Constructor, AllowMultiple = false, Inherited = false)]
-	public class RuleExpansionAttribute : Attribute
+	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor, AllowMultiple = true,
+		Inherited = true)]
+	public class CategoryExpansionAttribute : Attribute
 	{
-		public RuleExpansionAttribute([NotNull] object prior, object name = null)
+		public CategoryExpansionAttribute(object name = null)
 		{
 			SymbolToken = (name == null) ? null : name.ToString();
-			Prior = prior.ToString();
 		}
 
-		[NotNull]
-		public string Prior { get; private set; }
 		[CanBeNull]
 		public string SymbolToken { get; private set; }
 	}
