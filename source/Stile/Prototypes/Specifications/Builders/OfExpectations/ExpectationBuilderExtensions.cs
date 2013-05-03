@@ -34,5 +34,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		{
 			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(builder.Xray, null);
 		}
+		[Pure]
+		public static IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem> CollectingItemsLike
+			<TSpecification, TSubject, TResult, TItem>(
+			this IBoundExpectationBuilder<TSpecification, TSubject, TResult> builder, TItem throwaway)
+			where TSpecification : class,
+				IBoundSpecification<TSubject, TResult, IBoundExpectationBuilder<TSpecification, TSubject, TResult>>
+			where TResult : class, ICollection<TItem>
+		{
+			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(builder.Xray, null);
+		}
 	}
 }

@@ -23,6 +23,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		where TResult : class, IEnumerable<TItem>
 	{
 		IQuantifier<TSpecification, TItem> All { get; }
+		IQuantifier<TSpecification, TItem> No { get; }
 	}
 
 	public class EnumerableHas<TSpecification, TSubject, TResult, TItem> : Has<TSpecification, TSubject, TResult>,
@@ -31,14 +32,14 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		where TResult : class, IEnumerable<TItem>
 	{
 		private readonly Lazy<IQuantifier<TSpecification, TItem>> _lazyAll;
+		private readonly Lazy<IQuantifier<TSpecification, TItem>> _lazyNo;
 
 		[RuleExpansion(Nonterminal.Enum.Has)]
 		public EnumerableHas([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState)
 			: base(builderState)
 		{
-			_lazyAll =
-				new Lazy<IQuantifier<TSpecification, TItem>>(
-					() => new All<TSpecification, TSubject, TResult, TItem>(Xray));
+			_lazyAll = MakeLazy(All<TSpecification, TSubject, TResult, TItem>.Make);
+			_lazyNo = MakeLazy(No<TSpecification, TSubject, TResult, TItem>.Make);
 		}
 
 		public IQuantifier<TSpecification, TItem> All
@@ -48,6 +49,20 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 				IQuantifier<TSpecification, TItem> all = _lazyAll.Value;
 				return all;
 			}
+		}
+		public IQuantifier<TSpecification, TItem> No
+		{
+			get
+			{
+				IQuantifier<TSpecification, TItem> quantifier = _lazyNo.Value;
+				return quantifier;
+			}
+		}
+
+		protected Lazy<IQuantifier<TSpecification, TItem>> MakeLazy(
+			Func<IHasState<TSpecification, TSubject, TResult>, IQuantifier<TSpecification, TItem>> factory)
+		{
+			return new Lazy<IQuantifier<TSpecification, TItem>>(() => factory.Invoke(Xray));
 		}
 	}
 }

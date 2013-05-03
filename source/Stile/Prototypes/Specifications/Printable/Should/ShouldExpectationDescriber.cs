@@ -111,7 +111,14 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			IItemsSatisfying<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification
 		{
-			AppendFormat(" {0}", target.Description.Value);
+			AppendFormat(" {0} {1}", ShouldSpecifications.Items, target.Description.Value);
+		}
+
+		public void Visit4<TSpecification, TSubject, TResult, TItem>(
+			INo<TSpecification, TSubject, TResult, TItem> target)
+			where TSpecification : class, ISpecification, IChainableSpecification
+		{
+			AppendFormat(" {0}", ShouldSpecifications.No);
 		}
 	}
 }

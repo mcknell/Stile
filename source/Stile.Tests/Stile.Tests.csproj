@@ -63,11 +63,14 @@
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\SymbolEqualityFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\SymbolLinkFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\HasExtensionsFixture.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\NoFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIsTests.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\IsComparableExtensionsTests.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\NullFixture.cs" />
     <Compile Include="Prototypes\Specifications\Construction\ChainedSpecificationAcceptanceTests.cs" />
+    <Compile Include="Prototypes\Specifications\Construction\CollectionSpecifyAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Construction\EnumerableSpecifyAcceptanceTests.cs" />
+    <Compile Include="Prototypes\Specifications\SampleObjects\Baz.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\DeadlineFixture.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Past\PastEvaluationDescriberFixture.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Past\PrintablePastAcceptanceTests.cs" />

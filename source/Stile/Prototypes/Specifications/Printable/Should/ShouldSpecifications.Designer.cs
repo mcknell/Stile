@@ -61,7 +61,7 @@ namespace Stile.Prototypes.Specifications.Printable.Should {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to all items.
+        ///   Looks up a localized string similar to all.
         /// </summary>
         internal static string All {
             get {
@@ -169,11 +169,29 @@ namespace Stile.Prototypes.Specifications.Printable.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to items.
+        /// </summary>
+        internal static string Items {
+            get {
+                return ResourceManager.GetString("Items", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to in runtime &lt;.
         /// </summary>
         internal static string MeasurableInLessThan {
             get {
                 return ResourceManager.GetString("MeasurableInLessThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to no.
+        /// </summary>
+        internal static string No {
+            get {
+                return ResourceManager.GetString("No", resourceCulture);
             }
         }
         

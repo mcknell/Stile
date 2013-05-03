@@ -13,22 +13,23 @@ using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Types.Enumerables;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers
 {
-	public interface IAll<out TSpecification, TSubject, TResult, TItem> :
+	public interface INo<out TSpecification, TSubject, TResult, TItem> :
 		IQuantifier<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification, IChainableSpecification {}
 
-	public class All<TSpecification, TSubject, TResult, TItem> :
+	public class No<TSpecification, TSubject, TResult, TItem> :
 		Quantifier<TSpecification, TSubject, TResult, TItem>,
-		IAll<TSpecification, TSubject, TResult, TItem>
+		INo<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>
 	{
 		[RuleExpansion(Nonterminal.Enum.EnumerableHas)]
-		public All([NotNull] IHasState<TSpecification, TSubject, TResult> hasState)
+		public No([NotNull] IHasState<TSpecification, TSubject, TResult> hasState)
 			: base(hasState) {}
 
 		public override void Accept(IExpectationVisitor visitor)
@@ -41,16 +42,16 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 			return visitor.Visit4(this, data);
 		}
 
-		public static All<TSpecification, TSubject, TResult, TItem> Make(
+		public static No<TSpecification, TSubject, TResult, TItem> Make(
 			[NotNull] IHasState<TSpecification, TSubject, TResult> hasState)
 		{
-			return new All<TSpecification, TSubject, TResult, TItem>(hasState);
+			return new No<TSpecification, TSubject, TResult, TItem>(hasState);
 		}
 
 		protected override Predicate<TResult> MakePredicate(Expression<Func<TItem, bool>> expression)
 		{
 			var func = new Lazy<Func<TItem, bool>>(expression.Compile);
-			return result => result.All(func.Value);
+			return result => result.None(func.Value);
 		}
 	}
 }

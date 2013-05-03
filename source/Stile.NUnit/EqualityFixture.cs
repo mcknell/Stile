@@ -11,7 +11,6 @@ using NUnit.Framework;
 
 namespace Stile.NUnit
 {
-	[TestFixture]
 	public abstract class EqualityFixture<TSubject>
 		where TSubject : IEquatable<TSubject>
 	{
@@ -66,7 +65,6 @@ namespace Stile.NUnit
 		}
 	}
 
-	[TestFixture]
 	public abstract class EqualityFixtureWithClone<TSubject> : EqualityFixture<TSubject>
 		where TSubject : IEquatable<TSubject>
 	{
