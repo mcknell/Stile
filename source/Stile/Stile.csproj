@@ -72,7 +72,9 @@
     <Compile Include="Prototypes\Collections\Graphs\Vertex.cs" />
     <Compile Include="Prototypes\Collections\Sorting\Toposort.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Clause.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\GrammarDescriber.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\IAcceptGrammarVisitors.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\IClauseMember.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\IGrammarVisitor.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\NonterminalSymbol.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\TerminalSymbol.cs" />

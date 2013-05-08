@@ -34,7 +34,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		private readonly Lazy<IQuantifier<TSpecification, TItem>> _lazyAll;
 		private readonly Lazy<IQuantifier<TSpecification, TItem>> _lazyNo;
 
-		[RuleExpansion(Nonterminal.Enum.Has)]
+		[RuleExpansion(Nonterminal.Enum.Has, "\"(if enumerable)\"")]
 		public EnumerableHas([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState)
 			: base(builderState)
 		{

@@ -13,8 +13,8 @@ namespace Stile.Prototypes.Compilation.Grammars
 {
 	public class NonterminalSymbol : Symbol
 	{
-		protected NonterminalSymbol([NotNull] string token)
-			: base(ToTitleCase(token)) {}
+		protected NonterminalSymbol([NotNull] string token, string alias = null)
+			: base(ToTitleCase(token), alias) {}
 
 		protected static string ToTitleCase(string parameterName)
 		{

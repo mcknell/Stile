@@ -14,16 +14,9 @@ using Stile.Types.Enumerables;
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-	public interface IClauseMember : IAcceptGrammarVisitors
-	{
-		[NotNull]
-		IEnumerable<Symbol> Flatten();
-	}
-
 	public interface IClause : IClauseMember,
 		IEquatable<IClause>
 	{
-		bool CanBeInlined { get; }
 		Cardinality Cardinality { get; }
 		[NotNull]
 		IReadOnlyList<IClauseMember> Members { get; }
@@ -31,8 +24,10 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		[NotNull]
 		IClause Clone([NotNull] Func<Symbol, Symbol> symbolCloner);
 
+		bool Intersects(HashSet<Symbol> symbols);
+
 		[NotNull]
-		IClause Inline();
+		IClause Tidy();
 	}
 
 	public partial class Clause : IClause
@@ -56,8 +51,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			_cloner = cloner ?? DefaultCloner;
 		}
 
-		public bool CanBeInlined { get; private set; }
-
+		public string Alias { get; private set; }
 		public Cardinality Cardinality { get; private set; }
 		public IReadOnlyList<IClauseMember> Members { get; private set; }
 
@@ -77,20 +71,23 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			return new Clause(members, Cardinality, _cloner);
 		}
 
-		public IEnumerable<Symbol> Flatten()
+		public bool Intersects(HashSet<Symbol> symbols)
 		{
-			foreach (IClauseMember member in Members)
+			if (symbols.None())
 			{
-				foreach (Symbol symbol in member.Flatten())
-				{
-					yield return symbol;
-				}
+				return false;
 			}
+			if (symbols.Intersect(Members.OfType<Symbol>()).Any())
+			{
+				return true;
+			}
+			IEnumerable<Clause> clauses = Members.OfType<Clause>();
+			return clauses.Any(x => x.Intersects(symbols));
 		}
 
-		public IClause Inline()
+		public IClause Tidy()
 		{
-			IClause clause = this;
+			IClause clause = Consolidate();
 			while (clause.Members.Count == 1 && clause.Cardinality == Cardinality.One)
 			{
 				var subClause = clause.Members[0] as IClause;
@@ -120,6 +117,35 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 					return s + "?";
 			}
 			return s;
+		}
+
+		private IClause Consolidate()
+		{
+			IClause clause = this;
+			List<Clause> clauses = clause.Members.OfType<Clause>().ToList();
+			if (clauses.Count > 1 && clauses.None(x => x.Members.Count == 1))
+			{
+				List<IClauseMember> lastMembers = clauses.Select(x => x.Members.Last()).Distinct().ToList();
+				if (lastMembers.Count == 1)
+				{
+					var members = new List<IClauseMember>();
+					foreach (IClauseMember clauseMember in clause.Members)
+					{
+						var subclause = clauseMember as Clause;
+						if (subclause == (IClause) null)
+						{
+							members.Add(clauseMember);
+						}
+						else
+						{
+							members.Add(new Clause(subclause.Members.Take(subclause.Members.Count - 1)).Tidy());
+						}
+					}
+					IClause tidied = new Clause(members).Tidy();
+					clause = new Clause(tidied, lastMembers[0]);
+				}
+			}
+			return clause;
 		}
 
 		private IClauseMember DefaultCloner([NotNull] IClauseMember member, Func<Symbol, Symbol> symbolCloner)
@@ -205,5 +231,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			return !Equals(left, right);
 		}
+
 	}
 }

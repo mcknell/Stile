@@ -38,8 +38,8 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			{
 				MethodBase methodInfo = tuple.Item1;
 				RuleExpansionAttribute ruleExpansion = tuple.Item2;
-				string symbol = GetSymbol(methodInfo, ruleExpansion.SymbolToken);
-				yield return new Follower(ruleExpansion.Prior, symbol);
+				string symbol = GetSymbol(methodInfo, null);
+				yield return new Follower(ruleExpansion.Prior, symbol, ruleExpansion.SymbolToken);
 			}
 			foreach (
 				Tuple<MethodBase, CategoryExpansionAttribute> tuple in GetMethods<CategoryExpansionAttribute>(false)

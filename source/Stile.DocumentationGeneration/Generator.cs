@@ -32,9 +32,9 @@ namespace Stile.DocumentationGeneration
 
 			var grammarBuilder = new GrammarBuilder(rules);
 
-			foreach (Follower symbolLink in _reflector.FindRuleExpansions())
+			foreach (Follower follower in _reflector.FindRuleExpansions())
 			{
-				grammarBuilder.Add(symbolLink);
+				grammarBuilder.Add(follower);
 			}
 
 			IGrammar grammar = grammarBuilder.Build();

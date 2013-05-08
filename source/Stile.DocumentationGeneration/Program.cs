@@ -20,7 +20,7 @@ namespace Stile.DocumentationGeneration
 			Assembly[] others = args.Select(Assembly.ReflectionOnlyLoadFrom).ToArray();
 			var generator = new Generator(others);
 			string generated = generator.Generate();
-			Debugger.Break();
+			//Debugger.Break();
 			Console.WriteLine(generated);
 			return 0;
 		}

@@ -25,8 +25,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 	public partial class Follower : IFollower
 	{
-		public Follower([NotNull] string prior, [NotNull] string current)
-			: this(new Clause(new Nonterminal(prior)), new Clause(new Nonterminal(current))) {}
+		public Follower([NotNull] string prior, [NotNull] string current, string alias = null)
+			: this(new Clause(new Nonterminal(prior)), new Clause(new Nonterminal(current, alias))) {}
 
 		public Follower([NotNull] IClause prior, [NotNull] IClause current)
 		{

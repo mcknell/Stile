@@ -5,7 +5,6 @@
 
 #region using...
 using System;
-using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
@@ -16,18 +15,15 @@ namespace Stile.Prototypes.Compilation.Grammars
 	public partial class Symbol : IEquatable<Symbol>,
 		IClauseMember
 	{
-		protected Symbol([NotNull] string token)
+		protected Symbol([NotNull] string token, string @alias = null)
 		{
 			Token = token.Trim().Validate().EnumerableOf<char>().IsNotNullOrEmpty();
+			Alias = alias;
 		}
 
+		public string Alias { get; private set; }
 		[NotNull]
 		public string Token { get; private set; }
-
-		public IEnumerable<Symbol> Flatten()
-		{
-			yield return this;
-		}
 
 		public void Accept(IGrammarVisitor visitor)
 		{
@@ -36,7 +32,7 @@ namespace Stile.Prototypes.Compilation.Grammars
 
 		public override string ToString()
 		{
-			return Token;
+			return Alias ?? Token;
 		}
 
 		public static implicit operator string(Symbol symbol)
@@ -57,7 +53,10 @@ namespace Stile.Prototypes.Compilation.Grammars
 			{
 				return true;
 			}
-			return string.Equals(Token, other.Token);
+			return string.Equals(Token, other.Token) 
+				// ignore Alias!
+				//&& string.Equals(Alias, other.Alias)
+				;
 		}
 
 		public override bool Equals(object obj)
@@ -80,7 +79,16 @@ namespace Stile.Prototypes.Compilation.Grammars
 
 		public override int GetHashCode()
 		{
-			return Token.GetHashCode();
+			int hashCode = Token.GetHashCode();
+			/* ignore Alias!
+			 * if (Alias != null)
+			{
+				unchecked
+				{
+					hashCode ^= Alias.GetHashCode();
+				}
+			}*/
+			return hashCode;
 		}
 
 		public static bool operator ==(Symbol left, Symbol right)

@@ -5,7 +5,6 @@
 
 #region using...
 using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
 using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
@@ -18,18 +17,12 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 	public class ClauseFixture
 	{
 		[Test]
-		public void Flatten()
+		public void Intersects()
 		{
 			IClause testSubject = ProductionRuleLibrary.Specification.Right;
 
 			// act
-			List<Symbol> symbols = testSubject.Flatten().ToList();
-
-			string joined = string.Join(" ", symbols);
-			StringAssert.Contains(Nonterminal.Source.Token, joined);
-			StringAssert.Contains(Nonterminal.Inspection.Token, joined);
-			StringAssert.Contains(Nonterminal.Deadline.Token, joined);
-			StringAssert.Contains(Nonterminal.Reason.Token, joined);
+			Assert.That(testSubject.Intersects(new HashSet<Symbol> {Nonterminal.Source}));
 		}
 	}
 }

@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -43,13 +44,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		public IReadOnlyList<Symbol> Symbols
 		{
 			get { return _symbols.ToArray(); }
-		}
-
-		public void Add(string prior, string symbol)
-		{
-			Symbol priorSymbol = GetOrAdd(prior);
-			Symbol currentSymbol = GetOrAdd(symbol);
-			_links.Add(new Follower(priorSymbol, currentSymbol));
 		}
 
 		public void Add([NotNull] IFollower follower)
@@ -106,11 +100,18 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 						clauses.Add(new Clause(middle));
 						clauses.AddRange(back);
 					}
-					right = new Clause(clauses).Inline();
+					right = new Clause(clauses).Tidy();
 				}
 				list.Add(new ProductionRule(key, right));
 			}
 			return list;
+		}
+
+		internal void Add(string prior, string symbol, string alias = null)
+		{
+			Symbol priorSymbol = GetOrAdd(prior, null);
+			Symbol currentSymbol = GetOrAdd(symbol, alias);
+			_links.Add(new Follower(priorSymbol, currentSymbol));
 		}
 
 		private IClause BuildClauses(IClause clause)
@@ -124,11 +125,13 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			{
 				return new Clause(clause, BuildClauses(followers.First().Current));
 			}
-			IEnumerable<IClauseMember> clauses = followers.Select(x => BuildClauses(x.Current)) //
+			List<IClauseMember> clauses = followers.Select(x => BuildClauses(x.Current)) //
+				.ToList() //
 				.Cast<IClauseMember>() //
-				.Interlace(TerminalSymbol.EBNFAlternation);
-			IClause alternatives = new Clause(clauses).Inline();
-			return new Clause(clause, alternatives).Inline();
+				.Interlace(TerminalSymbol.EBNFAlternation) //
+				.ToList();
+			IClause alternatives = new Clause(clauses).Tidy();
+			return new Clause(clause, alternatives).Tidy();
 		}
 
 		private static List<IClause> GetCommonClauses(
@@ -145,7 +148,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				List<IClauseMember> distinct = cohort.Distinct().ToList();
 				if (distinct.Count == 1)
 				{
-					clauses.Add(new Clause(distinct[0]).Inline());
+					clauses.Add(new Clause(distinct[0]).Tidy());
 				}
 				else
 				{
@@ -176,17 +179,37 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		private Symbol GetOrAdd(Symbol symbol)
 		{
-			return GetOrAdd(symbol.Token);
+			return GetOrAdd(symbol.Token, symbol.Alias);
 		}
 
-		private Symbol GetOrAdd(string token)
+		private Symbol GetOrAdd(string token, string alias)
 		{
+			if (alias != null)
+			{
+				alias.GetHashCode();
+			}
 			NonterminalSymbol symbol = _symbols.FirstOrDefault(x => x.Token == token);
 			if (symbol != null)
 			{
-				return symbol;
+				if (symbol.Alias == alias || alias == null)
+				{
+					return symbol;
+				}
+				if (symbol.Alias == null)
+				{
+					_symbols.Remove(symbol);
+				}
+				else
+				{
+					throw new Exception(
+						string.Format(
+							"Tried to add token '{0}' with alias '{1}', but found a symbol with that token and alias '{2}' instead.",
+							token,
+							alias,
+							symbol.Alias));
+				}
 			}
-			symbol = new Nonterminal(token);
+			symbol = new Nonterminal(token, alias);
 			_symbols.Add(symbol);
 			return symbol;
 		}
@@ -235,7 +258,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			{
 				foreach (IClause clause in clauses[key])
 				{
-					if (symbolsToInline.Intersect(clause.Flatten()).Any())
+					if (clause.Intersects(symbolsToInline))
 					{
 						foreach (IProductionRule rule in rulesToInline)
 						{

@@ -38,8 +38,8 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			Assert.That(testSubject.Links.Count, Is.EqualTo(1));
 			IFollower link = testSubject.Links.FirstOrDefault();
 			Assert.NotNull(link);
-			Assert.That(link.Prior.Flatten().First(), Is.EqualTo(has));
-			Assert.That(link.Current.Flatten().First(), Is.EqualTo(hashcode));
+			Assert.That(link.Prior.Members.First(), Is.EqualTo(has));
+			Assert.That(link.Current.Members.First(), Is.EqualTo(hashcode));
 		}
 
 		[Test]
@@ -129,7 +129,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		private static void AssertRuleIsInGrammar(IGrammar grammar, IProductionRule rule)
 		{
 			Assert.That(grammar.Nonterminals.Any(x => x.Token == rule.Left));
-			foreach (Symbol right in rule.Right.Flatten())
+			foreach (Symbol right in Flatten(rule.Right))
 			{
 				Assert.That(grammar.Nonterminals, Has.Member(right), right);
 			}
@@ -148,6 +148,29 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			Assert.NotNull(rules);
 			IProductionRule rule = rules.FirstOrDefault();
 			Assert.That(rule, Is.EqualTo(productionRule));
+		}
+
+		private static IEnumerable<Symbol> Flatten(IClause clause)
+		{
+			if (clause == null)
+			{
+				yield break;
+			}
+			foreach (IClauseMember member in clause.Members)
+			{
+				var symbol1 = member as Symbol;
+				if (symbol1 != null)
+				{
+					yield return symbol1;
+				}
+				else
+				{
+					foreach (Symbol symbol in Flatten(member as Clause))
+					{
+						yield return symbol;
+					}
+				}
+			}
 		}
 	}
 }

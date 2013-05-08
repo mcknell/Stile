@@ -15,6 +15,20 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 	[TestFixture]
 	public class SymbolEqualityFixture : EqualityFixture<Symbol>
 	{
+		[Test]
+		public void AliasDoesNotCount()
+		{
+			const string token = "token";
+			var aliased = new Nonterminal(token, "alias");
+			var plain = new Nonterminal(token);
+			Assert.That(aliased.Alias, Is.Not.EqualTo(plain.Alias), "precondition");
+			Assert.That(aliased.Token, Is.EqualTo(plain.Token), "precondition");
+
+			Assert.That(aliased.Equals(plain), Is.True);
+			Assert.That(plain.Equals(aliased), Is.True);
+			Assert.That(plain.GetHashCode(), Is.EqualTo(aliased.GetHashCode()));
+		}
+
 		protected override Symbol GetOther()
 		{
 			return Nonterminal.Specification;

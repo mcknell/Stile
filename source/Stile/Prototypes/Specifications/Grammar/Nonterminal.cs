@@ -39,6 +39,8 @@ namespace Stile.Prototypes.Specifications.Grammar
 		public static readonly Nonterminal AndLater = new Nonterminal(Enum.AndLater);
 		public static readonly Nonterminal Before = new Nonterminal(Enum.Before);
 		public static readonly Nonterminal Deadline = new Nonterminal(Enum.Deadline);
+		public static readonly Nonterminal EnumerableHas = new Nonterminal(Enum.EnumerableHas.ToString(),
+			"\"(if enumerable)\"");
 		public static readonly Nonterminal Expectation = new Nonterminal(Enum.Expectation);
 		public static readonly Nonterminal Has = new Nonterminal(Enum.Has);
 		public static readonly Nonterminal HashCode = new Nonterminal(Enum.HashCode);
@@ -53,8 +55,8 @@ namespace Stile.Prototypes.Specifications.Grammar
 		protected Nonterminal(Enum token)
 			: this(token.ToString()) {}
 
-		public Nonterminal([NotNull] string token)
-			: base(token) {}
+		public Nonterminal([NotNull] string token, string alias = null)
+			: base(token, alias) {}
 
 		public static Symbol Make([NotNull] string token)
 		{
