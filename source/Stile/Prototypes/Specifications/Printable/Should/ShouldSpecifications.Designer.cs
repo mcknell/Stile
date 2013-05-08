@@ -142,6 +142,15 @@ namespace Stile.Prototypes.Specifications.Printable.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to exactly.
+        /// </summary>
+        internal static string Exactly {
+            get {
+                return ResourceManager.GetString("Exactly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to hashcode.
         /// </summary>
         internal static string Hashcode {

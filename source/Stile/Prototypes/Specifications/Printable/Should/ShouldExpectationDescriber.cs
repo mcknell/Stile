@@ -94,6 +94,13 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
+			IExactly<TSpecification, TSubject, TResult, TItem> target)
+			where TSpecification : class, ISpecification, IChainableSpecification
+		{
+			AppendFormat(" {0}", ShouldSpecifications.Exactly);
+		}
+
+		public void Visit4<TSpecification, TSubject, TResult, TItem>(
 			IAtLeast<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification
 		{

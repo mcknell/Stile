@@ -91,8 +91,10 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\ExpectationTerm.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Hashcode.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\AtLeast.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\CountedLimit.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\No.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\ItemsSatisfying.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\Exactly.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\ComparablyEquivalentTo.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Empty.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIs.cs" />

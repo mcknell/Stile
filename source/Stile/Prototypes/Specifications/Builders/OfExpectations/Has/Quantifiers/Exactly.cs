@@ -12,17 +12,17 @@ using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers
 {
-	public interface IAtLeast<out TSpecification, TSubject, TResult, TItem> :
+	public interface IExactly<out TSpecification, TSubject, TResult, TItem> :
 		ICountedLimit<TSpecification, TSubject, TResult, TItem>
-		where TSpecification : class, ISpecification, IChainableSpecification {}
+		where TSpecification : class, IChainableSpecification {}
 
-	public class AtLeast<TSpecification, TSubject, TResult, TItem> :
+	public class Exactly<TSpecification, TSubject, TResult, TItem> :
 		CountedLimit<TSpecification, TSubject, TResult, TItem>,
-		IAtLeast<TSpecification, TSubject, TResult, TItem>
+		IExactly<TSpecification, TSubject, TResult, TItem>
 		where TSpecification : class, ISpecification, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>
 	{
-		public AtLeast([NotNull] IHasState<TSpecification, TSubject, TResult> hasState, int limit)
+		public Exactly([NotNull] IHasState<TSpecification, TSubject, TResult> hasState, int limit)
 			: base(hasState, limit) {}
 
 		public override void Accept(IExpectationVisitor visitor)
@@ -37,7 +37,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 
 		protected override bool Judge(int count)
 		{
-			return count >= Limit;
+			return count == Limit;
 		}
 	}
 }

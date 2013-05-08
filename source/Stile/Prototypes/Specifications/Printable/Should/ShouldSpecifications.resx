@@ -144,6 +144,9 @@
   <data name="Empty" xml:space="preserve">
     <value>empty</value>
   </data>
+  <data name="Exactly" xml:space="preserve">
+    <value>exactly</value>
+  </data>
   <data name="Hashcode" xml:space="preserve">
     <value>hashcode</value>
   </data>
