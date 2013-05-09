@@ -107,6 +107,11 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			AppendFormat(" {0} {1}", ShouldSpecifications.AtLeast, target.Limit);
 		}
 
+		public void Visit4<TSpecification, TSubject, TResult, TItem>(IAtMost<TSpecification, TSubject, TResult, TItem> target) where TSpecification : class, ISpecification, IChainableSpecification
+		{
+			AppendFormat(" {0} {1}", ShouldSpecifications.AtMost, target.Limit);
+		}
+
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
 			IAll<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification

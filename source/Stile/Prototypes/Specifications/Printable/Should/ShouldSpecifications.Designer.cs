@@ -106,6 +106,15 @@ namespace Stile.Prototypes.Specifications.Printable.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to at most.
+        /// </summary>
+        internal static string AtMost {
+            get {
+                return ResourceManager.GetString("AtMost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to because.
         /// </summary>
         internal static string Because {

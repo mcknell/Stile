@@ -13,10 +13,10 @@ using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers;
+using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Iz = NUnit.Framework.Is;
-using Stile.Prototypes.Specifications.Printable;
 #endregion
 
 namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
@@ -40,6 +40,14 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
 			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.AtLeast(1));
 			AssertCountProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Succeeded, Outcome.Succeeded);
 			Assert.That(evaluation.ToPastTense(), Contains.Substring("_list should have at least 1 items == 1"));
+		}
+
+		[Test]
+		public void AtMost()
+		{
+			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.AtMost(1));
+			AssertCountProgressingFrom0To2(evaluation, Outcome.Succeeded, Outcome.Succeeded, Outcome.Failed);
+			Assert.That(evaluation.ToPastTense(), Contains.Substring("_list should have at most 1 items == 1"));
 		}
 
 		[Test]

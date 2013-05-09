@@ -28,6 +28,16 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		}
 
 		[Pure]
+		[RuleExpansion(Nonterminal.Enum.EnumerableHas, "AtMost \"limit\"")]
+		public static IQuantifier<TSpecification, TItem> AtMost<TSpecification, TSubject, TResult, TItem>(
+			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, int limit)
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+			where TResult : class, IEnumerable<TItem>
+		{
+			return new AtMost<TSpecification, TSubject, TResult, TItem>(has.Xray, limit);
+		}
+
+		[Pure]
 		[RuleExpansion(Nonterminal.Enum.EnumerableHas, "Exactly \"limit\"")]
 		public static IQuantifier<TSpecification, TItem> Exactly<TSpecification, TSubject, TResult, TItem>(
 			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, int limit)

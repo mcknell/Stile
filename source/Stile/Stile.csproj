@@ -91,6 +91,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\ExpectationTerm.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Hashcode.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\AtLeast.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\AtMost.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\CountedLimit.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\No.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\ItemsSatisfying.cs" />
