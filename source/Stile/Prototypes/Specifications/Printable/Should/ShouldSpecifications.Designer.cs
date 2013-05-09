@@ -178,6 +178,15 @@ namespace Stile.Prototypes.Specifications.Printable.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to item.
+        /// </summary>
+        internal static string Item {
+            get {
+                return ResourceManager.GetString("Item", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to items.
         /// </summary>
         internal static string Items {

@@ -41,6 +41,8 @@ namespace Stile.Prototypes.Specifications.Printable
 
 	public abstract class Describer : IDescriber
 	{
+		private const string chars = @"([A-Z]|_)(_|\w)*";
+
 		/*
       string pattern = "^[^<>]*" +
                        "(" + 
@@ -52,10 +54,10 @@ namespace Stile.Prototypes.Specifications.Printable
 		/// <summary>
 		/// Docs at <seealso cref="http://msdn.microsoft.com/en-us/library/bs2twtah.aspx#balancing_group_definition"/>
 		/// </summary>
-		private static readonly Regex SingleToken = new Regex(@"^@?[A-Z]\w*" //
+		private static readonly Regex SingleToken = new Regex(@"^@?" + chars //
 			+ "(" // balancing construct; see 
-			+ @"((?'Open'<)[A-Z]\w*(\,\s*[A-Z]\w*)*)*" // 
-			+ @"((?'Close-Open'>)([A-Z]\w*)?(\,\s*[A-Z]\w*)*)+" //
+			+ @"((?'Open'<)" + chars + @"(\,\s*" + chars + @")*)*" //
+			+ @"((?'Close-Open'>)(" + chars + @")?(\,\s*" + chars + @")*)+" //
 			+ ")*" //
 			+ "(?(Open)(?!))" // fails on imbalance
 			+ "$",

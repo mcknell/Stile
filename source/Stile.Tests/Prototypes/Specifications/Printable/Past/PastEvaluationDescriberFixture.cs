@@ -30,6 +30,10 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.Past
 			AssertSingleToken("Func<int>", true);
 			AssertSingleToken("Func<int, string>", true);
 			AssertSingleToken("Func<int, Foo<string>>", true);
+			AssertSingleToken("_x", true);
+			AssertSingleToken("Page_Load", true);
+			AssertSingleToken("@Page_Load", true);
+			AssertSingleToken("@_x", true);
 		}
 
 		private static void AssertSingleToken(string sourceName, bool expected)

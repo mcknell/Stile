@@ -16,6 +16,7 @@ using Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Iz = NUnit.Framework.Is;
+using Stile.Prototypes.Specifications.Printable;
 #endregion
 
 namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
@@ -38,6 +39,7 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
 		{
 			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.AtLeast(1));
 			AssertCountProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Succeeded, Outcome.Succeeded);
+			Assert.That(evaluation.ToPastTense(), Contains.Substring("_list should have at least 1 items == 1"));
 		}
 
 		[Test]
@@ -45,6 +47,7 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
 		{
 			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.Exactly(1));
 			AssertCountProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Succeeded, Outcome.Failed);
+			Assert.That(evaluation.ToPastTense(), Contains.Substring("_list should have exactly 1 items == 1"));
 		}
 
 		private IEnumerableHas<IBoundSpecification<List<int>, List<int>>, List<int>, List<int>, int> Has

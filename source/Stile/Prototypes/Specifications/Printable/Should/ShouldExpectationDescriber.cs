@@ -97,7 +97,7 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			IExactly<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification
 		{
-			AppendFormat(" {0}", ShouldSpecifications.Exactly);
+			AppendFormat(" {0} {1}", ShouldSpecifications.Exactly, target.Limit);
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
