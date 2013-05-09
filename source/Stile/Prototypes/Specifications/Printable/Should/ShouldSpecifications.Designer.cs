@@ -160,6 +160,15 @@ namespace Stile.Prototypes.Specifications.Printable.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to fewer than.
+        /// </summary>
+        internal static string FewerThan {
+            get {
+                return ResourceManager.GetString("FewerThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to hashcode.
         /// </summary>
         internal static string Hashcode {
@@ -210,6 +219,15 @@ namespace Stile.Prototypes.Specifications.Printable.Should {
         internal static string MeasurableInLessThan {
             get {
                 return ResourceManager.GetString("MeasurableInLessThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to more than.
+        /// </summary>
+        internal static string MoreThan {
+            get {
+                return ResourceManager.GetString("MoreThan", resourceCulture);
             }
         }
         

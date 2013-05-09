@@ -48,6 +48,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		}
 
 		[Pure]
+		public static IQuantifier<TSpecification, TItem> FewerThan<TSpecification, TSubject, TResult, TItem>(
+			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, int limit)
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+			where TResult : class, IEnumerable<TItem>
+		{
+			return new FewerThan<TSpecification, TSubject, TResult, TItem>(has.Xray, limit);
+		}
+
+		[Pure]
 		[RuleExpansion(Nonterminal.Enum.Has)]
 		public static TSpecification HashCode<TSpecification, TSubject, TResult>(
 			this IHas<TSpecification, TSubject, TResult> has, int hashCode)
@@ -59,6 +68,24 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 				hashcode);
 			TSpecification specification = has.Xray.ExpectationBuilder.Make(expectation);
 			return specification;
+		}
+
+		[Pure]
+		public static IQuantifier<TSpecification, TItem> LessThanOrEqualTo<TSpecification, TSubject, TResult, TItem>
+			(this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, int limit)
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+			where TResult : class, IEnumerable<TItem>
+		{
+			return has.AtMost(limit);
+		}
+
+		[Pure]
+		public static IQuantifier<TSpecification, TItem> MoreThan<TSpecification, TSubject, TResult, TItem>(
+			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, int limit)
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+			where TResult : class, IEnumerable<TItem>
+		{
+			return new MoreThan<TSpecification, TSubject, TResult, TItem>(has.Xray, limit);
 		}
 	}
 }

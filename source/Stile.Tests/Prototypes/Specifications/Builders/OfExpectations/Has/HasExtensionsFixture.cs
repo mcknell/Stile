@@ -58,6 +58,22 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
 			Assert.That(evaluation.ToPastTense(), Contains.Substring("_list should have exactly 1 items == 1"));
 		}
 
+		[Test]
+		public void FewerThan()
+		{
+			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.FewerThan(1));
+			AssertCountProgressingFrom0To2(evaluation, Outcome.Succeeded, Outcome.Failed, Outcome.Failed);
+			Assert.That(evaluation.ToPastTense(), Contains.Substring("_list should have fewer than 1 items == 1"));
+		}
+
+		[Test]
+		public void MoreThan()
+		{
+			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.MoreThan(1));
+			AssertCountProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Failed, Outcome.Succeeded);
+			Assert.That(evaluation.ToPastTense(), Contains.Substring("_list should have more than 1 items == 1"));
+		}
+
 		private IEnumerableHas<IBoundSpecification<List<int>, List<int>>, List<int>, List<int>, int> Has
 		{
 			get { return Specify.That(() => _list).OfItemsLike(0).Has; }

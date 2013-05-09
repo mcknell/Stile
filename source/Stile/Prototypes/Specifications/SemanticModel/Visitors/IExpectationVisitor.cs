@@ -49,8 +49,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 			[NotNull] INullableState<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification where TResult : struct;
 
-		void Visit4<TSpecification, TSubject, TResult, TItem>(
-			IExactly<TSpecification, TSubject, TResult, TItem> target)
+		void Visit4<TSpecification, TSubject, TResult, TItem>(IAll<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		void Visit4<TSpecification, TSubject, TResult, TItem>(
@@ -61,11 +60,20 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 			IAtMost<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
-		void Visit4<TSpecification, TSubject, TResult, TItem>(IAll<TSpecification, TSubject, TResult, TItem> target)
+		void Visit4<TSpecification, TSubject, TResult, TItem>(
+			IExactly<TSpecification, TSubject, TResult, TItem> target)
+			where TSpecification : class, ISpecification, IChainableSpecification;
+
+		void Visit4<TSpecification, TSubject, TResult, TItem>(
+			IFewerThan<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		void Visit4<TSpecification, TSubject, TResult, TItem>(
 			IItemsSatisfying<TSpecification, TSubject, TResult, TItem> target)
+			where TSpecification : class, ISpecification, IChainableSpecification;
+
+		void Visit4<TSpecification, TSubject, TResult, TItem>(
+			IMoreThan<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		void Visit4<TSpecification, TSubject, TResult, TItem>(INo<TSpecification, TSubject, TResult, TItem> target)
@@ -120,11 +128,19 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		TData Visit4<TSpecification, TSubject, TResult, TItem>(
+			IFewerThan<TSpecification, TSubject, TResult, TItem> target, TData data)
+			where TSpecification : class, ISpecification, IChainableSpecification;
+
+		TData Visit4<TSpecification, TSubject, TResult, TItem>(
 			IAll<TSpecification, TSubject, TResult, TItem> target, TData data)
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		TData Visit4<TSpecification, TSubject, TResult, TItem>(
 			IItemsSatisfying<TSpecification, TSubject, TResult, TItem> target, TData data)
+			where TSpecification : class, ISpecification, IChainableSpecification;
+
+		TData Visit4<TSpecification, TSubject, TResult, TItem>(
+			IMoreThan<TSpecification, TSubject, TResult, TItem> target, TData data)
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		TData Visit4<TSpecification, TSubject, TResult, TItem>(INo<TSpecification, TSubject, TResult, TItem> target,

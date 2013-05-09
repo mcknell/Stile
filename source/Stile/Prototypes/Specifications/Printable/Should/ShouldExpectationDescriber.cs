@@ -100,6 +100,12 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			AppendFormat(" {0} {1}", ShouldSpecifications.Exactly, target.Limit);
 		}
 
+		public void Visit4<TSpecification, TSubject, TResult, TItem>(IFewerThan<TSpecification, TSubject, TResult, TItem> target) where TSpecification : class, ISpecification, IChainableSpecification
+		{
+			AppendFormat(" {0} {1}", ShouldSpecifications.FewerThan, target.Limit);
+
+		}
+
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
 			IAtLeast<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification
@@ -107,7 +113,9 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			AppendFormat(" {0} {1}", ShouldSpecifications.AtLeast, target.Limit);
 		}
 
-		public void Visit4<TSpecification, TSubject, TResult, TItem>(IAtMost<TSpecification, TSubject, TResult, TItem> target) where TSpecification : class, ISpecification, IChainableSpecification
+		public void Visit4<TSpecification, TSubject, TResult, TItem>(
+			IAtMost<TSpecification, TSubject, TResult, TItem> target)
+			where TSpecification : class, ISpecification, IChainableSpecification
 		{
 			AppendFormat(" {0} {1}", ShouldSpecifications.AtMost, target.Limit);
 		}
@@ -124,6 +132,13 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			where TSpecification : class, ISpecification, IChainableSpecification
 		{
 			AppendFormat(" {0} {1}", ShouldSpecifications.Items, target.Description.Value);
+		}
+
+		public void Visit4<TSpecification, TSubject, TResult, TItem>(
+			IMoreThan<TSpecification, TSubject, TResult, TItem> target)
+			where TSpecification : class, ISpecification, IChainableSpecification
+		{
+			AppendFormat(" {0} {1}", ShouldSpecifications.MoreThan, target.Limit);
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
