@@ -13,6 +13,7 @@ namespace Stile.Prototypes.Compilation.Grammars
 {
 	public class NonterminalSymbol : Symbol
 	{
+		public const string IfComparable = "\"(if comparable)\"";
 		public const string IfEnumerable = "\"(if enumerable)\"";
 
 		protected NonterminalSymbol([NotNull] string token, string alias = null)

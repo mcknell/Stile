@@ -6,11 +6,11 @@
 #region using...
 using System;
 using System.Diagnostics.Contracts;
-using System.Linq.Expressions;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Types.Comparison;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
@@ -18,48 +18,35 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 	public static class IsComparableExtensions
 	{
 		[Pure]
+		[RuleExpansion(Nonterminal.Enum.ComparableExpectationTerm, "ComparablyEquivalentTo \"item\"")]
 		public static TSpecification ComparablyEquivalentTo<TSpecification, TSubject, TResult>(
 			this IIs<TSpecification, TSubject, TResult> builder, TResult expected)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
-			var term = new ComparablyEquivalentTo<TSpecification, TSubject, TResult>(builder.Xray, expected);
-			return Make(builder.Xray, expected, term);
+			return Make(builder.Xray, expected, ComparisonRelation.Equal);
 		}
 
 		[Pure]
-		[RuleExpansion(Nonterminal.Enum.Is)]
+		[RuleExpansion(Nonterminal.Enum.ComparableExpectationTerm, "GreaterThan \"item\"")]
 		public static TSpecification GreaterThan<TSpecification, TSubject, TResult>(
-			this IIs<TSpecification, TSubject, TResult> builder, TResult result)
+			this IIs<TSpecification, TSubject, TResult> builder, TResult expected)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
-			return Make(x => x.CompareTo(result) > 0, builder.Xray);
+			return Make(builder.Xray, expected, ComparisonRelation.GreaterThan);
 		}
 
 		private static TSpecification Make<TSpecification, TSubject, TResult>(
-			IIsState<TSpecification, TSubject, TResult> state,
-			TResult expected,
-			ComparablyEquivalentTo<TSpecification, TSubject, TResult> term)
+			IIsState<TSpecification, TSubject, TResult> state, TResult expected, ComparisonRelation comparison)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
-			Expectation<TSubject, TResult> expectation = Expectation<TSubject>.From(x => x.CompareTo(expected) == 0,
-				state.Negated,
-				state.BuilderState.Instrument,
-				term);
-			return state.BuilderState.Make(expectation);
-		}
-
-		private static TSpecification Make<TSpecification, TSubject, TResult>(Expression<Predicate<TResult>> lambda,
-			IIsState<TSpecification, TSubject, TResult> state)
-			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
-			where TResult : IComparable<TResult>
-		{
-			Expectation<TSubject, TResult> expectation = Expectation<TSubject>.From(lambda,
-				state.Negated,
-				state.BuilderState.Instrument,
-				state);
+			var term = new ComparableExpectationTerm<TSpecification, TSubject, TResult>(state, expected, comparison);
+			var expectation = new Expectation<TSubject, TResult>(state.BuilderState.Instrument,
+				x => comparison.PassesFor(x, expected),
+				term,
+				state.Negated);
 			return state.BuilderState.Make(expectation);
 		}
 	}

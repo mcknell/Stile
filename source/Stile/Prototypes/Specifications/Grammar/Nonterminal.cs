@@ -34,7 +34,8 @@ namespace Stile.Prototypes.Specifications.Grammar
 			All,
 			Procedure,
 			ExceptionFilter,
-			Contains
+			Contains,
+			ComparableExpectationTerm
 		}
 
 		public static readonly Nonterminal Action = new Nonterminal(Enum.Action);

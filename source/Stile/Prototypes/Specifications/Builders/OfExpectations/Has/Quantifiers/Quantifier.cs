@@ -67,7 +67,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 			get { return this; }
 		}
 
-		[CategoryExpansion]
+		[CategoryExpansion("ItemsSatisfying \"predicate\"")]
 		public TSpecification ItemsSatisfying(Expression<Func<TItem, bool>> expression)
 		{
 			var itemsSatisfying = new ItemsSatisfying<TSpecification, TSubject, TResult, TItem>(expression, this);

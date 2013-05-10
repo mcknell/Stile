@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable;
@@ -15,6 +16,8 @@ using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 using Stile.Readability;
+using Stile.Types.Comparison;
+using Stile.Types.Enums;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Should
@@ -47,11 +50,31 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 
 		public void Visit3<TSpecification, TSubject, TResult>(
 			IComparablyEquivalentTo<TSpecification, TSubject, TResult> target)
-			where TSpecification : class, IChainableSpecification
+			where TSpecification : class, IChainableSpecification where TResult : IComparable<TResult>
 		{
-			string s = target.Prior.Negated
-				? ShouldSpecifications.ComparablyEquivalentToNegated
-				: ShouldSpecifications.ComparablyEquivalentTo;
+			string s;
+			switch (target.Comparison)
+			{
+				case ComparisonRelation.Equal:
+					s = target.Prior.Negated
+						? ShouldSpecifications.ComparablyEquivalentToNegated
+						: ShouldSpecifications.ComparablyEquivalentTo;
+					break;
+				case ComparisonRelation.GreaterThan:
+					s = ShouldSpecifications.GreaterThan;
+					break;
+				case ComparisonRelation.GreaterThanOrEqual:
+					s = ShouldSpecifications.GreaterThanOrEqualTo;
+					break;
+				case ComparisonRelation.LessThan:
+					s = ShouldSpecifications.LessThan;
+					break;
+				case ComparisonRelation.LessThanOrEqual:
+					s = ShouldSpecifications.LessThanOrEqualTo;
+					break;
+				default:
+					throw Enumeration.FailedToRecognize(() => target.Comparison);
+			}
 			AppendFormat(" {0} {1}", s, target.Expected.ToDebugString());
 		}
 

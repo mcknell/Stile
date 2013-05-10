@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
@@ -23,7 +24,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 
 		void Visit3<TSpecification, TSubject, TResult>(
 			[NotNull] IComparablyEquivalentTo<TSpecification, TSubject, TResult> target)
-			where TSpecification : class, IChainableSpecification;
+			where TSpecification : class, IChainableSpecification where TResult : IComparable<TResult>;
 
 		void Visit3<TSpecification, TSubject, TResult>([NotNull] IEmpty<TSpecification, TSubject, TResult> target)
 			where TSpecification : class, IChainableSpecification;
@@ -89,7 +90,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 
 		TData Visit3<TSpecification, TSubject, TResult>(
 			[NotNull] IComparablyEquivalentTo<TSpecification, TSubject, TResult> target, TData data)
-			where TSpecification : class, IChainableSpecification;
+			where TSpecification : class, IChainableSpecification where TResult : IComparable<TResult>;
 
 		TData Visit3<TSpecification, TSubject, TResult>([NotNull] IEmpty<TSpecification, TSubject, TResult> target,
 			TData data) where TSpecification : class, IChainableSpecification;

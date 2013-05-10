@@ -85,6 +85,7 @@
     <Compile Include="Prototypes\Specifications\SemanticModel\SourceFixture.cs" />
     <Compile Include="Readability\NullFixture.cs" />
     <Compile Include="Readability\PrintExtensionsFixture.cs" />
+    <Compile Include="Types\Comparison\ComparisonRelationExtensionsFixture.cs" />
     <Compile Include="Types\Enumerables\ForAllFixture.cs" />
     <Compile Include="Types\Enumerables\InterlaceFixture.cs" />
     <Compile Include="Types\Enumerables\ToAdjacentPairsFixture.cs" />

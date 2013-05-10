@@ -31,7 +31,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			IProductionRule expectation = grammar.ProductionRules.FirstOrDefault(x => x.Left == Nonterminal.Expectation);
 			Assert.NotNull(expectation);
 			Assert.That(expectation.Right.Members, Has.Member(TerminalSymbol.EBNFAlternation));
-			Assert.That(expectation.Right.Members.Count, Is.EqualTo(3));
+			Assert.That(expectation.Right.Members.Count, Is.EqualTo(5));
 		}
 
 		[Test]

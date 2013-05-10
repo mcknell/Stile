@@ -4,11 +4,14 @@
 #endregion
 
 #region using...
+using System;
 using JetBrains.Annotations;
+using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Types.Comparison;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
@@ -16,22 +19,29 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 	public interface IComparablyEquivalentTo<out TSpecification, TSubject, TResult> :
 		IExpectationTerm<IIsState<TSpecification, TSubject, TResult>>
 		where TSpecification : class, IChainableSpecification
+		where TResult : IComparable<TResult>
 	{
+		ComparisonRelation Comparison { get; }
 		TResult Expected { get; }
 	}
 
-	public class ComparablyEquivalentTo<TSpecification, TSubject, TResult> :
+	public class ComparableExpectationTerm<TSpecification, TSubject, TResult> :
 		ExpectationTerm<IIsState<TSpecification, TSubject, TResult>>,
 		IComparablyEquivalentTo<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
+		where TResult : IComparable<TResult>
 	{
-		[RuleExpansion(Nonterminal.Enum.Is)]
-		public ComparablyEquivalentTo([NotNull] IIsState<TSpecification, TSubject, TResult> prior, TResult expected)
+		[RuleExpansion(Nonterminal.Enum.Is, NonterminalSymbol.IfComparable)]
+		public ComparableExpectationTerm([NotNull] IIsState<TSpecification, TSubject, TResult> prior,
+			TResult expected,
+			ComparisonRelation comparison)
 			: base(prior)
 		{
+			Comparison = comparison;
 			Expected = expected;
 		}
 
+		public ComparisonRelation Comparison { get; private set; }
 		public TResult Expected { get; private set; }
 
 		public override void Accept(IExpectationVisitor visitor)

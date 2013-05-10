@@ -153,6 +153,12 @@
   <data name="FewerThan" xml:space="preserve">
     <value>fewer than</value>
   </data>
+  <data name="GreaterThan" xml:space="preserve">
+    <value>&gt;</value>
+  </data>
+  <data name="GreaterThanOrEqualTo" xml:space="preserve">
+    <value>&gt;=</value>
+  </data>
   <data name="Hashcode" xml:space="preserve">
     <value>hashcode</value>
   </data>
@@ -167,6 +173,12 @@
   </data>
   <data name="Items" xml:space="preserve">
     <value>items</value>
+  </data>
+  <data name="LessThan" xml:space="preserve">
+    <value>&lt;</value>
+  </data>
+  <data name="LessThanOrEqualTo" xml:space="preserve">
+    <value>&lt;=</value>
   </data>
   <data name="MeasurableInLessThan" xml:space="preserve">
     <value>in runtime &lt;</value>

@@ -45,7 +45,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 				Tuple<MethodBase, CategoryExpansionAttribute> tuple in GetMethods<CategoryExpansionAttribute>(false))
 			{
 				string name = GetName(tuple.Item1.ReflectedType);
-				yield return new Follower(name, tuple.Item1.Name);
+				yield return new Follower(name, tuple.Item1.Name, tuple.Item2.SymbolToken);
 			}
 			foreach (Tuple<PropertyInfo, RuleExpansionAttribute> tuple in GetProperties<RuleExpansionAttribute>())
 			{

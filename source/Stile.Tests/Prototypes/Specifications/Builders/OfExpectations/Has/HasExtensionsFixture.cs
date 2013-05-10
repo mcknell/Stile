@@ -39,7 +39,7 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
 		{
 			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.AtLeast(1));
 			AssertCountProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Succeeded, Outcome.Succeeded);
-			Assert.That(evaluation.ToPastTense(), Contains.Substring("_list should have at least 1 items == 1"));
+			AssertPastTenseContains(evaluation, "_list should have at least 1 items == 1");
 		}
 
 		[Test]
@@ -47,7 +47,7 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
 		{
 			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.AtMost(1));
 			AssertCountProgressingFrom0To2(evaluation, Outcome.Succeeded, Outcome.Succeeded, Outcome.Failed);
-			Assert.That(evaluation.ToPastTense(), Contains.Substring("_list should have at most 1 items == 1"));
+			AssertPastTenseContains(evaluation, "_list should have at most 1 items == 1");
 		}
 
 		[Test]
@@ -55,7 +55,7 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
 		{
 			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.Exactly(1));
 			AssertCountProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Succeeded, Outcome.Failed);
-			Assert.That(evaluation.ToPastTense(), Contains.Substring("_list should have exactly 1 items == 1"));
+			AssertPastTenseContains(evaluation, "_list should have exactly 1 items == 1");
 		}
 
 		[Test]
@@ -63,7 +63,7 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
 		{
 			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.FewerThan(1));
 			AssertCountProgressingFrom0To2(evaluation, Outcome.Succeeded, Outcome.Failed, Outcome.Failed);
-			Assert.That(evaluation.ToPastTense(), Contains.Substring("_list should have fewer than 1 items == 1"));
+			AssertPastTenseContains(evaluation, "_list should have fewer than 1 items == 1");
 		}
 
 		[Test]
@@ -71,7 +71,7 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
 		{
 			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.MoreThan(1));
 			AssertCountProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Failed, Outcome.Succeeded);
-			Assert.That(evaluation.ToPastTense(), Contains.Substring("_list should have more than 1 items == 1"));
+			AssertPastTenseContains(evaluation, "_list should have more than 1 items == 1");
 		}
 
 		private IEnumerableHas<IBoundSpecification<List<int>, List<int>>, List<int>, List<int>, int> Has
@@ -97,6 +97,11 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
 			_list.Add(1);
 			Assert.That(_list.Count(predicate), Iz.EqualTo(2));
 			Assert.That(evaluation.ReEvaluate().Outcome == two);
+		}
+
+		private static void AssertPastTenseContains(IEvaluation<List<int>, List<int>> evaluation, string substring)
+		{
+			Assert.That(evaluation.ToPastTense(), Contains.Substring(substring));
 		}
 
 		private IEvaluation<List<int>, List<int>> MakeEvaluation(

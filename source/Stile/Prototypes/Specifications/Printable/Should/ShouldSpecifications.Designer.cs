@@ -169,6 +169,24 @@ namespace Stile.Prototypes.Specifications.Printable.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &gt;.
+        /// </summary>
+        internal static string GreaterThan {
+            get {
+                return ResourceManager.GetString("GreaterThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;=.
+        /// </summary>
+        internal static string GreaterThanOrEqualTo {
+            get {
+                return ResourceManager.GetString("GreaterThanOrEqualTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to hashcode.
         /// </summary>
         internal static string Hashcode {
@@ -210,6 +228,24 @@ namespace Stile.Prototypes.Specifications.Printable.Should {
         internal static string Items {
             get {
                 return ResourceManager.GetString("Items", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;.
+        /// </summary>
+        internal static string LessThan {
+            get {
+                return ResourceManager.GetString("LessThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;=.
+        /// </summary>
+        internal static string LessThanOrEqualTo {
+            get {
+                return ResourceManager.GetString("LessThanOrEqualTo", resourceCulture);
             }
         }
         

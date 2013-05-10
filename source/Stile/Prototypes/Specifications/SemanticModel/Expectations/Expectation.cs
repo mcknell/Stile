@@ -60,6 +60,12 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			: this(instrument, expression.Compile, lastTerm) {}
 
 		public Expectation([NotNull] IInstrument<TSubject, TResult> instrument,
+			[NotNull] Predicate<TResult> predicate,
+			[NotNull] IAcceptExpectationVisitors lastTerm,
+			Negated negated)
+			: this(instrument, MakeCompiledPredicate(predicate, negated), lastTerm) {}
+
+		public Expectation([NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] Func<Predicate<TResult>> predicateFactory,
 			[NotNull] IAcceptExpectationVisitors lastTerm)
 		{
@@ -129,6 +135,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 				outcome = Outcome.Failed;
 			}
 			return outcome;
+		}
+
+		public static Func<Predicate<TResult>> MakeCompiledPredicate(Predicate<TResult> predicate, Negated negated)
+		{
+			Predicate<TResult> negatablePredicate = x => negated.AgreesWith(predicate.Invoke(x));
+			Func<Predicate<TResult>> doubleFunc = () => negatablePredicate;
+			return doubleFunc;
 		}
 
 		public static Func<Predicate<TResult>> MakeCompiler(Expression<Predicate<TResult>> expression,
