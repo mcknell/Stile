@@ -135,8 +135,8 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 
 		private IProductionRule GetRule([NotNull] PropertyInfo propertyInfo, [NotNull] RuleAttribute attribute)
 		{
-			var left = new Nonterminal(attribute.Symbol, attribute.Alias);
-			var right = new Nonterminal(propertyInfo.Name);
+			var left = new Nonterminal(attribute.Symbol);
+			var right = new Nonterminal(propertyInfo.Name, attribute.Alias);
 			var productionRule = new ProductionRule(left, right) {CanBeInlined = attribute.CanBeInlined};
 			if (attribute.StartsGrammar)
 			{

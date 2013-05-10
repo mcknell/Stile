@@ -43,7 +43,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		[Rule(Nonterminal.Enum.Expectation, CanBeInlined = false)]
 		THas Has { get; }
 		[System.Diagnostics.Contracts.Pure]
-		[Rule(Nonterminal.Enum.Expectation)]
+		[Rule(Nonterminal.Enum.Expectation, "Is Not?")]
 		TIs Is { get; }
 	}
 
