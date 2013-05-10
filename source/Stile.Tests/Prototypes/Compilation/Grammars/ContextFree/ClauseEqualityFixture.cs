@@ -23,12 +23,12 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 
 		protected override IClause GetOther()
 		{
-			return new Clause(Nonterminal.Specification);
+			return Clause.Make(Nonterminal.Specification);
 		}
 
 		protected override IClause GetTestSubject()
 		{
-			return new Clause(Nonterminal.Deadline);
+			return Clause.Make(Nonterminal.Deadline);
 		}
 	}
 }

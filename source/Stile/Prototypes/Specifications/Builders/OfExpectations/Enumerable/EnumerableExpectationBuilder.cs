@@ -6,15 +6,18 @@
 #region using...
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
+using Stile.Prototypes.Specifications.Grammar;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfExpectations
+namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable
 {
-	public interface IEnumerableExpectationBuilder<TSpecification, TSubject, TResult, TItem> :
+	public interface IEnumerableExpectationBuilder<out TSpecification, TSubject, TResult, TItem> :
 		IExpectationBuilder
 			<TSpecification, TSubject, TResult, IEnumerableHas<TSpecification, TSubject, TResult, TItem>,
 				INegatableEnumerableIs
@@ -33,7 +36,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		where TResult : class, IEnumerable<TItem>
 		where TBuilder : class, IExpectationBuilder
 	{
+		[Rule(Nonterminal.Enum.Expectation)]
 		protected EnumerableExpectationBuilder(
+			[Symbol(Nonterminal.Enum.EnumerableResult, NonterminalSymbol.IfEnumerable)] //
 			[NotNull] IExpectationBuilderState<IChainableSpecification, TSubject, TResult> state,
 			[CanBeNull] TSpecification prior)
 			: base(state.Instrument, prior) {}

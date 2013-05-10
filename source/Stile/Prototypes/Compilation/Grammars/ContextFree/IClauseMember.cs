@@ -3,15 +3,7 @@
 // Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
-#region using...
-using JetBrains.Annotations;
-#endregion
-
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-	public interface IClauseMember : IAcceptGrammarVisitors
-	{
-		[CanBeNull]
-		string Alias { get; }
-	}
+	public interface IClauseMember : IAcceptGrammarVisitors {}
 }

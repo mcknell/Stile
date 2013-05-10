@@ -259,6 +259,15 @@ namespace Stile.Prototypes.Specifications.Printable.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to should contain {0}.
+        /// </summary>
+        internal static string ShouldContain {
+            get {
+                return ResourceManager.GetString("ShouldContain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to should have.
         /// </summary>
         internal static string ShouldHave {

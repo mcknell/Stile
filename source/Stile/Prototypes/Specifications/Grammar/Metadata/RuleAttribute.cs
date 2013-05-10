@@ -17,18 +17,16 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 		AllowMultiple = false, Inherited = false)]
 	public class RuleAttribute : Attribute
 	{
-		public RuleAttribute(object symbol = null)
+		public RuleAttribute(object symbol = null, object alias = null)
 		{
-			Symbol = symbol;
+			Symbol = symbol == null ? null : symbol.ToString();
+			Alias = alias == null ? null : alias.ToString();
 			CanBeInlined = true;
 		}
 
+		public string Alias { get; private set; }
 		public bool CanBeInlined { get; set; }
 		public bool StartsGrammar { get; set; }
-		public object Symbol { get; private set; }
-		public string SymbolToken
-		{
-			get { return Symbol == null ? null : Symbol.ToString(); }
-		}
+		public string Symbol { get; private set; }
 	}
 }

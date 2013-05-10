@@ -13,6 +13,8 @@ namespace Stile.Prototypes.Compilation.Grammars
 {
 	public class NonterminalSymbol : Symbol
 	{
+		public const string IfEnumerable = "\"(if enumerable)\"";
+
 		protected NonterminalSymbol([NotNull] string token, string alias = null)
 			: base(ToTitleCase(token), alias) {}
 

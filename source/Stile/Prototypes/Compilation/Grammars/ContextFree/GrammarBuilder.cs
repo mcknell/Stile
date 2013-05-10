@@ -97,10 +97,10 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 					{
 						List<IClause> back = GetCommonClauses(listsOfMembers, true);
 						IEnumerable<IClauseMember> middle = GetMiddle(rules[key], clauses.Count, back.Count);
-						clauses.Add(new Clause(middle));
+						clauses.Add(Clause.Make(middle));
 						clauses.AddRange(back);
 					}
-					right = new Clause(clauses).Tidy();
+					right = Clause.Make(clauses);
 				}
 				list.Add(new ProductionRule(key, right));
 			}
@@ -123,15 +123,15 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			}
 			if (followers.Count == 1)
 			{
-				return new Clause(clause, BuildClauses(followers.First().Current));
+				return Clause.Make(clause, BuildClauses(followers.First().Current));
 			}
 			List<IClauseMember> clauses = followers.Select(x => BuildClauses(x.Current)) //
 				.ToList() //
 				.Cast<IClauseMember>() //
 				.Interlace(TerminalSymbol.EBNFAlternation) //
 				.ToList();
-			IClause alternatives = new Clause(clauses).Tidy();
-			return new Clause(clause, alternatives).Tidy();
+			IClause alternatives = Clause.Make(clauses);
+			return Clause.Make(clause, alternatives);
 		}
 
 		private static List<IClause> GetCommonClauses(
@@ -148,7 +148,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				List<IClauseMember> distinct = cohort.Distinct().ToList();
 				if (distinct.Count == 1)
 				{
-					clauses.Add(new Clause(distinct[0]).Tidy());
+					clauses.Add(Clause.Make(distinct[0]));
 				}
 				else
 				{
@@ -173,7 +173,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			IEnumerable<IClauseMember> middle =
 				clauses.Select(
-					x => new Clause(x.Members.Skip(frontMatches).Take(x.Members.Count - frontMatches - backMatches)));
+					x => Clause.Make(x.Members.Skip(frontMatches).Take(x.Members.Count - frontMatches - backMatches)));
 			return middle.Interlace(TerminalSymbol.EBNFAlternation);
 		}
 
@@ -184,10 +184,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		private Symbol GetOrAdd(string token, string alias)
 		{
-			if (alias != null)
-			{
-				alias.GetHashCode();
-			}
 			NonterminalSymbol symbol = _symbols.FirstOrDefault(x => x.Token == token);
 			if (symbol != null)
 			{
@@ -300,7 +296,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 					members.Add(member);
 				}
 			}
-			return new Clause(members, clause.Cardinality);
+			return Clause.Make(members, clause.Cardinality);
 		}
 	}
 }

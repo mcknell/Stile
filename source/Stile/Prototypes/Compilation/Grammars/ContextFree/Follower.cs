@@ -26,7 +26,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 	public partial class Follower : IFollower
 	{
 		public Follower([NotNull] string prior, [NotNull] string current, string alias = null)
-			: this(new Clause(new Nonterminal(prior)), new Clause(new Nonterminal(current, alias))) {}
+			: this(Clause.Make(new Nonterminal(prior)), Clause.Make(new Nonterminal(current, alias))) {}
 
 		public Follower([NotNull] IClause prior, [NotNull] IClause current)
 		{
@@ -40,6 +40,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		public IFollower Clone(Func<Symbol, Symbol> symbolCloner)
 		{
 			return new Follower(Prior.Clone(symbolCloner), Current.Clone(symbolCloner));
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{{{0}}} {{{1}}}", Prior, Current);
 		}
 	}
 

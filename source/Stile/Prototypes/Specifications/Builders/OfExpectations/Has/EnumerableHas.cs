@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
@@ -34,7 +35,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		private readonly Lazy<IQuantifier<TSpecification, TItem>> _lazyAll;
 		private readonly Lazy<IQuantifier<TSpecification, TItem>> _lazyNo;
 
-		[RuleExpansion(Nonterminal.Enum.Has, "\"(if enumerable)\"")]
+		[RuleExpansion(Nonterminal.Enum.Has, NonterminalSymbol.IfEnumerable)]
 		public EnumerableHas([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState)
 			: base(builderState)
 		{

@@ -38,12 +38,12 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			get
 			{
 				var clause =
-					new Clause(new IClause[]
+					Clause.Make(new IClause[]
 					{
-						new Clause(Cardinality.ZeroOrOne, Nonterminal.Source),
-						new Clause(Cardinality.One, Nonterminal.Inspection),
-						new Clause(Cardinality.ZeroOrOne, Nonterminal.Deadline),
-						new Clause(Cardinality.ZeroOrOne, Nonterminal.Reason)
+						Clause.Make(Cardinality.ZeroOrOne, Nonterminal.Source),
+						Clause.Make(Cardinality.One, Nonterminal.Inspection),
+						Clause.Make(Cardinality.ZeroOrOne, Nonterminal.Deadline),
+						Clause.Make(Cardinality.ZeroOrOne, Nonterminal.Reason)
 					});
 				return new ProductionRule(Nonterminal.Specification, clause);
 			}

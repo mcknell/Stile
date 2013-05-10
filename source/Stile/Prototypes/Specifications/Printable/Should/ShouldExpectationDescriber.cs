@@ -6,6 +6,7 @@
 #region using...
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
@@ -25,6 +26,12 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 	{
 		public ShouldExpectationDescriber([CanBeNull] ISource source)
 			: base(source) {}
+
+		public void Visit1<TItem>(IContains<TItem> target)
+		{
+			Append(" ");
+			AppendFormat(ShouldSpecifications.ShouldContain, target.Item.ToDebugString());
+		}
 
 		public void Visit2<TSubject, TResult>(IExceptionFilter<TSubject, TResult> target)
 		{
@@ -100,10 +107,11 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			AppendFormat(" {0} {1}", ShouldSpecifications.Exactly, target.Limit);
 		}
 
-		public void Visit4<TSpecification, TSubject, TResult, TItem>(IFewerThan<TSpecification, TSubject, TResult, TItem> target) where TSpecification : class, ISpecification, IChainableSpecification
+		public void Visit4<TSpecification, TSubject, TResult, TItem>(
+			IFewerThan<TSpecification, TSubject, TResult, TItem> target)
+			where TSpecification : class, ISpecification, IChainableSpecification
 		{
 			AppendFormat(" {0} {1}", ShouldSpecifications.FewerThan, target.Limit);
-
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(

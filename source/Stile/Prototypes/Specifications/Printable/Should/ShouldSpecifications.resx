@@ -183,6 +183,9 @@
   <data name="ShouldBe" xml:space="preserve">
     <value>should be</value>
   </data>
+  <data name="ShouldContain" xml:space="preserve">
+    <value>should contain {0}</value>
+  </data>
   <data name="ShouldHave" xml:space="preserve">
     <value>should have</value>
   </data>

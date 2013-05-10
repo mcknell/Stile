@@ -42,8 +42,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 				yield return new Follower(ruleExpansion.Prior, symbol, ruleExpansion.SymbolToken);
 			}
 			foreach (
-				Tuple<MethodBase, CategoryExpansionAttribute> tuple in GetMethods<CategoryExpansionAttribute>(false)
-				)
+				Tuple<MethodBase, CategoryExpansionAttribute> tuple in GetMethods<CategoryExpansionAttribute>(false))
 			{
 				string name = GetName(tuple.Item1.ReflectedType);
 				yield return new Follower(name, tuple.Item1.Name);
@@ -119,7 +118,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			string name = baseType.Name;
 			if (baseType.IsGenericType)
 			{
-				name = name.Substring(0, name.IndexOf("`"));
+				name = name.Substring(0, name.IndexOf("`", StringComparison.Ordinal));
 			}
 			return name;
 		}
@@ -136,7 +135,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 
 		private IProductionRule GetRule([NotNull] PropertyInfo propertyInfo, [NotNull] RuleAttribute attribute)
 		{
-			var left = new Nonterminal(attribute.SymbolToken);
+			var left = new Nonterminal(attribute.Symbol, attribute.Alias);
 			var right = new Nonterminal(propertyInfo.Name);
 			var productionRule = new ProductionRule(left, right) {CanBeInlined = attribute.CanBeInlined};
 			if (attribute.StartsGrammar)
@@ -148,24 +147,25 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 
 		private IProductionRule GetRule([NotNull] MethodBase methodInfo, [NotNull] RuleAttribute attribute)
 		{
-			string symbol = GetSymbol(methodInfo, attribute.SymbolToken);
+			string symbol = GetSymbol(methodInfo, attribute.Symbol);
 			var clauses = new List<IClause>();
 			foreach (ParameterInfo parameterInfo in methodInfo.GetParameters())
 			{
 				string parameterName = parameterInfo.Name;
-				var parameterAttribute = parameterInfo.GetCustomAttribute<SymbolAttribute>();
-				if (parameterAttribute != null)
+				var symbolAttribute = parameterInfo.GetCustomAttribute<SymbolAttribute>();
+				if (symbolAttribute != null)
 				{
 					var cardinality = Cardinality.One;
 					if (parameterInfo.IsOptional || parameterInfo.GetCustomAttribute<CanBeNullAttribute>() != null)
 					{
 						cardinality = Cardinality.ZeroOrOne;
 					}
-					clauses.Add(new Clause(cardinality, new Nonterminal(parameterName)));
+					var nonterminal = new Nonterminal(symbolAttribute.Symbol ?? parameterName, symbolAttribute.Alias);
+					clauses.Add(Clause.Make(cardinality, nonterminal));
 				}
 			}
-			var clause = new Clause(clauses);
-			var productionRule = new ProductionRule(new Nonterminal(symbol), clause);
+			var clause = Clause.Make(clauses);
+			var productionRule = new ProductionRule(new Nonterminal(symbol, attribute.Alias), clause);
 			if (attribute.StartsGrammar)
 			{
 				productionRule.SortOrder = -1;

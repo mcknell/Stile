@@ -12,7 +12,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
-namespace Stile.Prototypes.Specifications.Builders.OfExpectations
+namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable
 {
 	public interface IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem> :
 		IEnumerableExpectationBuilder

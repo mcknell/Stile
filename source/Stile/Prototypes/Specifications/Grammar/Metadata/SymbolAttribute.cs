@@ -16,11 +16,13 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 	[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
 	public class SymbolAttribute : Attribute
 	{
-		public SymbolAttribute(object name = null)
+		public SymbolAttribute(object symbol = null, object alias = null)
 		{
-			Name = name;
+			Symbol = symbol == null ? null : symbol.ToString();
+			Alias = alias == null ? null : alias.ToString();
 		}
 
-		public object Name { get; set; }
+		public string Alias { get; private set; }
+		public string Symbol { get; private set; }
 	}
 }

@@ -86,8 +86,10 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\FluentBoundExceptionFilterBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\FluentExceptionFilterBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\BoundExpectationBuilder.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentEnumerableBoundExpectationBuilder.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\FluentEnumerableExpectationBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Enumerable\Contains.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Enumerable\EnumerableExpectationBuilderExtensions.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Enumerable\FluentEnumerableBoundExpectationBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Enumerable\FluentEnumerableExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\ExpectationTerm.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Hashcode.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\AtLeast.cs" />
@@ -152,7 +154,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\ExpectationBuilderExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfProcedures\BoundProcedureBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfProcedures\ProcedureBuilder.cs" />
-    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\EnumerableExpectationBuilder.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Enumerable\EnumerableExpectationBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\IsComparableExtensions.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Has.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Is.cs" />

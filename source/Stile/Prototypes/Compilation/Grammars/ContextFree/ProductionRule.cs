@@ -30,7 +30,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			: this(left, rights.Unshift(right).ToList()) {}
 
 		public ProductionRule([NotNull] Symbol left, [NotNull] IEnumerable<Symbol> right)
-			: this(left, new Clause(right)) {}
+			: this(left, Clause.Make(right)) { }
 
 		public ProductionRule([NotNull] Symbol left, [NotNull] IClause right)
 		{

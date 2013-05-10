@@ -6,6 +6,7 @@
 #region using...
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 

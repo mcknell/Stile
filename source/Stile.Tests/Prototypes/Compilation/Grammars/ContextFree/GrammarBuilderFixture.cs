@@ -60,7 +60,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			AssertRuleIsInGrammar(grammar, inspection);
 			AssertRuleIsInGrammar(grammar, andLater);
 			var joinedRule = new ProductionRule(Nonterminal.Expectation,
-				new Clause(new Clause(Nonterminal.Has), new Clause(Nonterminal.HashCode)));
+				Clause.Make(Clause.Make(Nonterminal.Has), Clause.Make(Nonterminal.HashCode)));
 			AssertRuleIsInGrammar(grammar, joinedRule);
 			Assert.That(grammar.ProductionRules.Count, Is.EqualTo(4));
 		}
@@ -69,19 +69,19 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		public void Consolidate()
 		{
 			var hashBucket = new HashBucket<Symbol, IClause>();
-			var source = new Clause(Cardinality.ZeroOrOne, Nonterminal.Source);
-			var deadline = new Clause(Cardinality.ZeroOrOne, Nonterminal.Deadline);
-			var reason = new Clause(Cardinality.ZeroOrOne, Nonterminal.Reason);
+			var source = Clause.Make(Cardinality.ZeroOrOne, Nonterminal.Source);
+			var deadline = Clause.Make(Cardinality.ZeroOrOne, Nonterminal.Deadline);
+			var reason = Clause.Make(Cardinality.ZeroOrOne, Nonterminal.Reason);
 			Symbol procedure = Nonterminal.Procedure;
-			hashBucket.Add(Nonterminal.Specification, new Clause(source, procedure, deadline, reason));
+			hashBucket.Add(Nonterminal.Specification, Clause.Make(source, procedure, deadline, reason));
 			Symbol instrument = Nonterminal.Instrument;
 			Symbol expectation = Nonterminal.Expectation;
-			hashBucket.Add(Nonterminal.Specification, new Clause(source, instrument, expectation, deadline, reason));
+			hashBucket.Add(Nonterminal.Specification, Clause.Make(source, instrument, expectation, deadline, reason));
 
-			var middle = new Clause(new Clause(procedure),
+			var middle = Clause.Make(Clause.Make(procedure),
 				TerminalSymbol.EBNFAlternation,
-				new Clause(instrument, expectation));
-			var right = new Clause(source, middle, deadline, reason);
+				Clause.Make(instrument, expectation));
+			var right = Clause.Make(source, middle, deadline, reason);
 			var expected = new ProductionRule(Nonterminal.Specification, right);
 
 			// act

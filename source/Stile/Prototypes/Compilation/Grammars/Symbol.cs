@@ -32,7 +32,11 @@ namespace Stile.Prototypes.Compilation.Grammars
 
 		public override string ToString()
 		{
-			return Alias ?? Token;
+			if (Alias == null)
+			{
+				return Token;
+			}
+			return string.Format("{0} aka {1}", Token, Alias);
 		}
 
 		public static implicit operator string(Symbol symbol)

@@ -62,6 +62,7 @@
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ProductionRuleLibrary.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\SymbolEqualityFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\SymbolLinkFixture.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\EnumerableExpectationBuilderExtensionsFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\HasExtensionsFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\NoFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIsTests.cs" />

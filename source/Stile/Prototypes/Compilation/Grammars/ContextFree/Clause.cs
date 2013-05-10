@@ -25,9 +25,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		IClause Clone([NotNull] Func<Symbol, Symbol> symbolCloner);
 
 		bool Intersects(HashSet<Symbol> symbols);
-
-		[NotNull]
-		IClause Tidy();
 	}
 
 	public partial class Clause : IClause
@@ -36,13 +33,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		private readonly ClauseMemberCloner _cloner;
 
-		public Clause(Cardinality cardinality, [NotNull] IClauseMember member, params IClauseMember[] members)
-			: this(members.Unshift(member.ValidateArgumentIsNotNull()), cardinality) {}
-
-		public Clause([NotNull] IClauseMember member, params IClauseMember[] members)
-			: this(members.Unshift(member.ValidateArgumentIsNotNull())) {}
-
-		public Clause([NotNull] IEnumerable<IClauseMember> members,
+		protected Clause([NotNull] IEnumerable<IClauseMember> members,
 			Cardinality? cardinality = null,
 			ClauseMemberCloner cloner = null)
 		{
@@ -51,7 +42,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			_cloner = cloner ?? DefaultCloner;
 		}
 
-		public string Alias { get; private set; }
 		public Cardinality Cardinality { get; private set; }
 		public IReadOnlyList<IClauseMember> Members { get; private set; }
 
@@ -68,7 +58,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			{
 				members.Add(_cloner.Invoke(member, symbolCloner));
 			}
-			return new Clause(members, Cardinality, _cloner);
+			return Make(members, Cardinality, _cloner);
 		}
 
 		public bool Intersects(HashSet<Symbol> symbols)
@@ -85,19 +75,23 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			return clauses.Any(x => x.Intersects(symbols));
 		}
 
-		public IClause Tidy()
+		public static Clause Make(Cardinality cardinality,
+			[NotNull] IClauseMember member,
+			params IClauseMember[] members)
 		{
-			IClause clause = Consolidate();
-			while (clause.Members.Count == 1 && clause.Cardinality == Cardinality.One)
-			{
-				var subClause = clause.Members[0] as IClause;
-				if (subClause == null)
-				{
-					break;
-				}
-				clause = subClause;
-			}
-			return clause;
+			return Make(members.Unshift(member.ValidateArgumentIsNotNull()), cardinality);
+		}
+
+		public static Clause Make([NotNull] IClauseMember member, params IClauseMember[] members)
+		{
+			return Make(members.Unshift(member.ValidateArgumentIsNotNull()));
+		}
+
+		public static Clause Make([NotNull] IEnumerable<IClauseMember> members,
+			Cardinality? cardinality = null,
+			ClauseMemberCloner cloner = null)
+		{
+			return new Clause(members, cardinality, cloner).Tidy();
 		}
 
 		public override string ToString()
@@ -119,9 +113,9 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			return s;
 		}
 
-		private IClause Consolidate()
+		private Clause Consolidate()
 		{
-			IClause clause = this;
+			Clause clause = this;
 			List<Clause> clauses = clause.Members.OfType<Clause>().ToList();
 			if (clauses.Count > 1 && clauses.None(x => x.Members.Count == 1))
 			{
@@ -138,11 +132,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 						}
 						else
 						{
-							members.Add(new Clause(subclause.Members.Take(subclause.Members.Count - 1)).Tidy());
+							members.Add(Make(subclause.Members.Take(subclause.Members.Count - 1)).Tidy());
 						}
 					}
-					IClause tidied = new Clause(members).Tidy();
-					clause = new Clause(tidied, lastMembers[0]);
+					IClause tidied = Make(members);
+					clause = Make(tidied, lastMembers[0]);
 				}
 			}
 			return clause;
@@ -171,6 +165,21 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			{
 				return (y.GetHashCode() * 397) ^ x;
 			}
+		}
+
+		private Clause Tidy()
+		{
+			Clause clause = Consolidate();
+			while (clause.Members.Count == 1 && clause.Cardinality == Cardinality.One)
+			{
+				var subClause = clause.Members[0] as Clause;
+				if (subClause == (IClause) null)
+				{
+					break;
+				}
+				clause = subClause;
+			}
+			return clause;
 		}
 	}
 
@@ -231,6 +240,5 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			return !Equals(left, right);
 		}
-
 	}
 }

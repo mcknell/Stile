@@ -25,6 +25,7 @@ namespace Stile.Prototypes.Specifications.Grammar
 			Action,
 			Has,
 			EnumerableHas,
+			EnumerableResult,
 			Is,
 			HashCode,
 			Before,
@@ -32,7 +33,8 @@ namespace Stile.Prototypes.Specifications.Grammar
 			Reason,
 			All,
 			Procedure,
-			ExceptionFilter
+			ExceptionFilter,
+			Contains
 		}
 
 		public static readonly Nonterminal Action = new Nonterminal(Enum.Action);
@@ -40,7 +42,7 @@ namespace Stile.Prototypes.Specifications.Grammar
 		public static readonly Nonterminal Before = new Nonterminal(Enum.Before);
 		public static readonly Nonterminal Deadline = new Nonterminal(Enum.Deadline);
 		public static readonly Nonterminal EnumerableHas = new Nonterminal(Enum.EnumerableHas.ToString(),
-			"\"(if enumerable)\"");
+			IfEnumerable);
 		public static readonly Nonterminal Expectation = new Nonterminal(Enum.Expectation);
 		public static readonly Nonterminal Has = new Nonterminal(Enum.Has);
 		public static readonly Nonterminal HashCode = new Nonterminal(Enum.HashCode);

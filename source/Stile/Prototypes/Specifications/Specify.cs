@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
+using Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable;
 using Stile.Prototypes.Specifications.Builders.OfProcedures;
 using Stile.Prototypes.Specifications.SemanticModel;
 #endregion
