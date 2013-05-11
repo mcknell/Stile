@@ -37,6 +37,36 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			return Make(builder.Xray, expected, ComparisonRelation.GreaterThan);
 		}
 
+		[Pure]
+		[RuleExpansion(Nonterminal.Enum.ComparableExpectationTerm)]
+		public static TSpecification GreaterThanOrEqualTo<TSpecification, TSubject, TResult>(
+			this IIs<TSpecification, TSubject, TResult> builder, [Symbol(Terminal = true)] TResult expected)
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+			where TResult : IComparable<TResult>
+		{
+			return Make(builder.Xray, expected, ComparisonRelation.GreaterThanOrEqual);
+		}
+
+		[Pure]
+		[RuleExpansion(Nonterminal.Enum.ComparableExpectationTerm)]
+		public static TSpecification LessThan<TSpecification, TSubject, TResult>(
+			this IIs<TSpecification, TSubject, TResult> builder, [Symbol(Terminal = true)] TResult expected)
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+			where TResult : IComparable<TResult>
+		{
+			return Make(builder.Xray, expected, ComparisonRelation.LessThan);
+		}
+
+		[Pure]
+		[RuleExpansion(Nonterminal.Enum.ComparableExpectationTerm)]
+		public static TSpecification LessThanOrEqualTo<TSpecification, TSubject, TResult>(
+			this IIs<TSpecification, TSubject, TResult> builder, [Symbol(Terminal = true)] TResult expected)
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+			where TResult : IComparable<TResult>
+		{
+			return Make(builder.Xray, expected, ComparisonRelation.LessThanOrEqual);
+		}
+
 		private static TSpecification Make<TSpecification, TSubject, TResult>(
 			IIsState<TSpecification, TSubject, TResult> state, TResult expected, ComparisonRelation comparison)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification

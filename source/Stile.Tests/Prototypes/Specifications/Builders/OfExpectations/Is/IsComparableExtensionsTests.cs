@@ -8,9 +8,9 @@ using NUnit.Framework;
 using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
+using Stile.Prototypes.Specifications.Printable;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
-using Stile.Prototypes.Specifications.Printable;
 #endregion
 
 namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Is
@@ -42,12 +42,34 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Is
 			AssertPastTenseContains(evaluation, "_int should be > 1");
 		}
 
-		private static void AssertPastTenseContains(IEvaluation<int, int> evaluation, string substring)
+		[Test]
+		public void GreaterThanOrEqualTo()
 		{
-			Assert.That(evaluation.ToPastTense(), Contains.Substring(substring));
+			IEvaluation<int, int> evaluation = Is.GreaterThanOrEqualTo(1).Evaluate();
+			AssertFrom0To2(evaluation, Outcome.Failed, Outcome.Succeeded, Outcome.Succeeded);
+			AssertPastTenseContains(evaluation, "_int should be >= 1");
 		}
 
-		private INegatableIs<IBoundSpecification<int, int, IFluentBoundExpectationBuilder<int, int>>, int, int, IIs<IBoundSpecification<int, int, IFluentBoundExpectationBuilder<int, int>>, int, int>> Is
+		[Test]
+		public void LessThan()
+		{
+			IEvaluation<int, int> evaluation = Is.LessThan(1).Evaluate();
+			AssertFrom0To2(evaluation, Outcome.Succeeded, Outcome.Failed, Outcome.Failed);
+			AssertPastTenseContains(evaluation, "_int should be < 1");
+		}
+
+		[Test]
+		public void LessThanOrEqualTo()
+		{
+			IEvaluation<int, int> evaluation = Is.LessThanOrEqualTo(1).Evaluate();
+			AssertFrom0To2(evaluation, Outcome.Succeeded, Outcome.Succeeded, Outcome.Failed);
+			AssertPastTenseContains(evaluation, "_int should be <= 1");
+		}
+
+		private
+			INegatableIs
+				<IBoundSpecification<int, int, IFluentBoundExpectationBuilder<int, int>>, int, int,
+					IIs<IBoundSpecification<int, int, IFluentBoundExpectationBuilder<int, int>>, int, int>> Is
 		{
 			get { return Specify.That(() => _int).Is; }
 		}
@@ -62,6 +84,11 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Is
 			Assert.That(evaluation.ReEvaluate().Outcome == one);
 			_int = 2;
 			Assert.That(evaluation.ReEvaluate().Outcome == two);
+		}
+
+		private static void AssertPastTenseContains(IEvaluation<int, int> evaluation, string substring)
+		{
+			Assert.That(evaluation.ToPastTense(), Contains.Substring(substring));
 		}
 	}
 }
