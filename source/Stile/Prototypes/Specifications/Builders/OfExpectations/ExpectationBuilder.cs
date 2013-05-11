@@ -126,7 +126,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			Expression<Predicate<TResult>> expression = result => true;
 			var expectation = new Expectation<TSubject, TResult>(exceptionFilter.Instrument,
 				expression,
-				exceptionFilter);
+				exceptionFilter,
+				Negated.False);
 			return Make(expectation, exceptionFilter);
 		}
 

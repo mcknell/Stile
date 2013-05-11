@@ -5,8 +5,11 @@
 
 #region using...
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Types.Enumerables;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
@@ -22,7 +25,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			{
 				return x.Equals(result);
 			};
-			return Is.EqualTo.Make(x => accepterForDebugging.Invoke(x) , result, builder.Xray);
+			return Is.EqualTo.Make(x => accepterForDebugging.Invoke(x), result, builder.Xray);
 		}
 
 		[Pure]
@@ -43,6 +46,19 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		{
 			var result = new Null<TSpecification, TSubject, TResult>(builder.Xray);
 			return result.Build();
+		}
+
+		[Pure]
+		public static TSpecification SequenceEqualTo<TSpecification, TSubject, TResult, TItem>(
+			this IEnumerableIs<TSpecification, TSubject, TResult, TItem> builder, IEnumerable<TItem> sequence)
+			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
+			where TResult : class, IEnumerable<TItem>
+		{
+			var expectation = new Expectation<TSubject, TResult>(builder.Xray.BuilderState.Instrument,
+				x => x.SequenceEquals(sequence) == -1,
+				new SequenceEqual<TSpecification, TSubject, TResult, TItem>(builder.Xray, sequence),
+				builder.Xray.Negated);
+			return builder.Xray.BuilderState.Make(expectation);
 		}
 	}
 }

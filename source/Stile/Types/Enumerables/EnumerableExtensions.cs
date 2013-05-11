@@ -57,13 +57,14 @@ namespace Stile.Types.Enumerables
 		[NotNull]
 		public static IEnumerable<TItem> Interlace<TItem>([NotNull] this IEnumerable<TItem> items, TItem item)
 		{
-			if (items.Any())
+			IEnumerator<TItem> enumerator = items.GetEnumerator();
+			if (enumerator.MoveNext())
 			{
-				yield return items.First();
-				foreach (TItem subsequent in items.Skip(1))
+				yield return enumerator.Current;
+				while (enumerator.MoveNext())
 				{
 					yield return item;
-					yield return subsequent;
+					yield return enumerator.Current;
 				}
 			}
 		}
@@ -76,6 +77,52 @@ namespace Stile.Types.Enumerables
 		public static bool None<TItem>(this IEnumerable<TItem> items, Func<TItem, bool> predicate)
 		{
 			return items.Any(predicate) == false;
+		}
+
+		[System.Diagnostics.Contracts.Pure]
+		public static int SequenceEquals<TItem>([NotNull] this IEnumerable<TItem> left,
+			[NotNull] IEnumerable<TItem> right,
+			params IEnumerable<TItem>[] others)
+		{
+			return SequenceEquals(left, right, null, others);
+		}
+
+		[System.Diagnostics.Contracts.Pure]
+		public static int SequenceEquals<TItem>([NotNull] this IEnumerable<TItem> left,
+			[NotNull] IEnumerable<TItem> right,
+			[CanBeNull] IEqualityComparer<TItem> comparer,
+			params IEnumerable<TItem>[] others)
+		{
+			comparer = comparer ?? EqualityComparer<TItem>.Default;
+			IEnumerable<IEnumerable<TItem>> cohort = others.Unshift(left.ValidateArgumentIsNotNull(),
+				right.ValidateArgumentIsNotNull());
+			List<IEnumerator<TItem>> enumerators = cohort.Select(x => x.GetEnumerator()).ToList();
+			int cohortSize = enumerators.Count;
+			int firstDifference = 0;
+			int canMove = enumerators.Count(x => x.MoveNext());
+			if (canMove == 0)
+			{
+				return -1;
+			}
+			if (canMove < cohortSize)
+			{
+				return 0;
+			}
+			while (canMove == cohortSize)
+			{
+				TItem item = enumerators.First().Current;
+				if (enumerators.Skip(1).Any(x => comparer.Equals(x.Current, item) == false))
+				{
+					break;
+				}
+				firstDifference++;
+				canMove = enumerators.Count(x => x.MoveNext());
+			}
+			if (canMove == 0)
+			{
+				return -1;
+			}
+			return firstDifference;
 		}
 
 		[NotNull]
@@ -203,7 +250,7 @@ namespace Stile.Types.Enumerables
 			}
 		}
 
-		public class Default
+		public static class Default
 		{
 			public const int LengthLimit = 400;
 		}

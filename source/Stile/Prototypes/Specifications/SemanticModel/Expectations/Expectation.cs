@@ -43,8 +43,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			[NotNull] IInstrument<TSubject, TResult> instrument,
 			IAcceptExpectationVisitors lastTerm)
 		{
-			Func<Predicate<TResult>> compiler = Expectation<TSubject, TResult>.MakeCompiler(expression, negated);
-			return new Expectation<TSubject, TResult>(instrument, compiler, lastTerm);
+			return new Expectation<TSubject, TResult>(instrument, expression, lastTerm, negated);
 		}
 	}
 
@@ -56,23 +55,25 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 
 		public Expectation([NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] Expression<Predicate<TResult>> expression,
-			[NotNull] IAcceptExpectationVisitors lastTerm)
-			: this(instrument, expression.Compile, lastTerm) {}
+			[NotNull] IAcceptExpectationVisitors lastTerm,
+			Negated negated)
+			: this(instrument, expression.Compile, lastTerm, negated) {}
 
 		public Expectation([NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] Predicate<TResult> predicate,
-			[NotNull] IAcceptExpectationVisitors lastTerm,
-			Negated negated)
-			: this(instrument, MakeCompiledPredicate(predicate, negated), lastTerm) {}
+			Negated negated,
+			[NotNull] IAcceptExpectationVisitors lastTerm)
+			: this(instrument, () => predicate, lastTerm, negated) {}
 
 		public Expectation([NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] Func<Predicate<TResult>> predicateFactory,
-			[NotNull] IAcceptExpectationVisitors lastTerm)
+			[NotNull] IAcceptExpectationVisitors lastTerm,
+			Negated negated)
 		{
 			Instrument = instrument.ValidateArgumentIsNotNull();
 			LastTerm = lastTerm.ValidateArgumentIsNotNull();
 			Func<Predicate<TResult>> factory = predicateFactory.ValidateArgumentIsNotNull();
-			_lazyPredicate = MakeLazyPredicate(factory);
+			_lazyPredicate = MakeLazyPredicate(factory, negated);
 		}
 
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
@@ -137,26 +138,18 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			return outcome;
 		}
 
-		public static Func<Predicate<TResult>> MakeCompiledPredicate(Predicate<TResult> predicate, Negated negated)
-		{
-			Predicate<TResult> negatablePredicate = x => negated.AgreesWith(predicate.Invoke(x));
-			Func<Predicate<TResult>> doubleFunc = () => negatablePredicate;
-			return doubleFunc;
-		}
-
-		public static Func<Predicate<TResult>> MakeCompiler(Expression<Predicate<TResult>> expression,
-			Negated negated)
-		{
-			var lazy = new Lazy<Predicate<TResult>>(expression.Compile);
-			Predicate<TResult> predicate = x => negated.AgreesWith(lazy.Value.Invoke(x));
-			Func<Predicate<TResult>> doubleFunc = () => predicate;
-			return doubleFunc;
-		}
-
 		private static Lazy<Predicate<IMeasurement<TSubject, TResult>>> MakeLazyPredicate(
-			Func<Predicate<TResult>> factory)
+			Func<Predicate<TResult>> factory, Negated negated)
 		{
-			return new Lazy<Predicate<IMeasurement<TSubject, TResult>>>(() => x => factory.Invoke().Invoke(x.Value));
+			return new Lazy<Predicate<IMeasurement<TSubject, TResult>>>(() => MakeNegatablePredicate(factory, negated));
+		}
+
+		private static Predicate<IMeasurement<TSubject, TResult>> MakeNegatablePredicate(
+			Func<Predicate<TResult>> factory, Negated negated)
+		{
+			Predicate<TResult> compiled = factory.Invoke(); // possibly compiling an expression
+			Predicate<IMeasurement<TSubject, TResult>> predicate = x => negated.AgreesWith(compiled.Invoke(x.Value));
+			return predicate;
 		}
 	}
 }

@@ -286,6 +286,15 @@ namespace Stile.Prototypes.Specifications.Printable.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to sequence equal to.
+        /// </summary>
+        internal static string SequenceEqual {
+            get {
+                return ResourceManager.GetString("SequenceEqual", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to should be.
         /// </summary>
         internal static string ShouldBe {

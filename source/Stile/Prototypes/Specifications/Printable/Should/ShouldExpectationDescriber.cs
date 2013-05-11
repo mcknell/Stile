@@ -36,6 +36,11 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			AppendFormat(ShouldSpecifications.ShouldContain, target.Item.ToDebugString());
 		}
 
+		public void Visit1<TItem>(ISequenceEqual<TItem> target)
+		{
+			AppendFormat(" {0} {1}", ShouldSpecifications.SequenceEqual, target.Expected.ToDebugString());
+		}
+
 		public void Visit2<TSubject, TResult>(IExceptionFilter<TSubject, TResult> target)
 		{
 			Append(" ");

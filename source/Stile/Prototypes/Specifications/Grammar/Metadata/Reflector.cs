@@ -36,15 +36,12 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 		{
 			foreach (Tuple<MethodBase, RuleExpansionAttribute> tuple in GetMethods<RuleExpansionAttribute>())
 			{
-				MethodBase methodInfo = tuple.Item1;
-				RuleExpansionAttribute ruleExpansion = tuple.Item2;
-				string symbol = GetSymbol(methodInfo, null);
-				yield return new Follower(ruleExpansion.Prior, symbol, ruleExpansion.SymbolToken);
+				yield return GetFollower(tuple.Item1, tuple.Item2);
 			}
 			foreach (
 				Tuple<MethodBase, CategoryExpansionAttribute> tuple in GetMethods<CategoryExpansionAttribute>(false))
 			{
-				string name = GetName(tuple.Item1.ReflectedType);
+				string name = tuple.Item2.Prior ?? GetName(tuple.Item1.ReflectedType);
 				yield return new Follower(name, tuple.Item1.Name, tuple.Item2.SymbolToken);
 			}
 			foreach (Tuple<PropertyInfo, RuleExpansionAttribute> tuple in GetProperties<RuleExpansionAttribute>())
@@ -94,6 +91,38 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			get { return _assemblies.SelectMany(x => x.GetTypes()); }
 		}
 
+		private static List<IClause> GetClause(MethodBase methodInfo)
+		{
+			var clauses = new List<IClause>();
+			foreach (ParameterInfo parameterInfo in methodInfo.GetParameters())
+			{
+				var symbolAttribute = parameterInfo.GetCustomAttribute<SymbolAttribute>();
+				if (symbolAttribute != null)
+				{
+					var cardinality = Cardinality.One;
+					if (parameterInfo.IsOptional || parameterInfo.GetCustomAttribute<CanBeNullAttribute>() != null)
+					{
+						cardinality = Cardinality.ZeroOrOne;
+					}
+					string name = parameterInfo.Name;
+					string token = symbolAttribute.Symbol ?? name;
+					string alias = symbolAttribute.Alias ?? (symbolAttribute.Terminal ? "\"" + name + "\"" : null);
+					var nonterminal = new Nonterminal(token, alias);
+					clauses.Add(Clause.Make(cardinality, nonterminal));
+				}
+			}
+			return clauses;
+		}
+
+		private Follower GetFollower(MethodBase methodBase, RuleExpansionAttribute ruleExpansion)
+		{
+			Nonterminal nonterminal = GetNonterminal(methodBase, null, ruleExpansion.SymbolToken);
+			List<IClause> clauses = GetClause(methodBase);
+			Clause clause = Clause.Make(nonterminal, clauses.ToArray());
+			var follower = new Follower(ruleExpansion.Prior, clause);
+			return follower;
+		}
+
 		private IEnumerable<Tuple<MethodBase, TAttribute>> GetMethods<TAttribute>(
 			bool reflectedTypeIsDeclaringType = true) where TAttribute : Attribute
 		{
@@ -104,8 +133,8 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 					.Where(x => (x.ReflectedType == x.DeclaringType) == reflectedTypeIsDeclaringType);
 				foreach (MethodBase methodInfo in methodBases)
 				{
-					var attribute = methodInfo.GetCustomAttribute<TAttribute>(false);
-					if (attribute != null)
+					IEnumerable<TAttribute> attributes = methodInfo.GetCustomAttributes<TAttribute>(false);
+					foreach (TAttribute attribute in attributes)
 					{
 						yield return Tuple.Create(methodInfo, attribute);
 					}
@@ -121,6 +150,13 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 				name = name.Substring(0, name.IndexOf("`", StringComparison.Ordinal));
 			}
 			return name;
+		}
+
+		private static Nonterminal GetNonterminal(MethodBase methodInfo, string symbolToken, string alias)
+		{
+			string symbol = GetSymbol(methodInfo, symbolToken);
+			var nonterminal = new Nonterminal(symbol, alias);
+			return nonterminal;
 		}
 
 		private static ProductionRule GetRule(MethodBase methodInfo, SpecializationAttribute attribute)
@@ -147,25 +183,10 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 
 		private IProductionRule GetRule([NotNull] MethodBase methodInfo, [NotNull] RuleAttribute attribute)
 		{
-			string symbol = GetSymbol(methodInfo, attribute.Symbol);
-			var clauses = new List<IClause>();
-			foreach (ParameterInfo parameterInfo in methodInfo.GetParameters())
-			{
-				string parameterName = parameterInfo.Name;
-				var symbolAttribute = parameterInfo.GetCustomAttribute<SymbolAttribute>();
-				if (symbolAttribute != null)
-				{
-					var cardinality = Cardinality.One;
-					if (parameterInfo.IsOptional || parameterInfo.GetCustomAttribute<CanBeNullAttribute>() != null)
-					{
-						cardinality = Cardinality.ZeroOrOne;
-					}
-					var nonterminal = new Nonterminal(symbolAttribute.Symbol ?? parameterName, symbolAttribute.Alias);
-					clauses.Add(Clause.Make(cardinality, nonterminal));
-				}
-			}
-			var clause = Clause.Make(clauses);
-			var productionRule = new ProductionRule(new Nonterminal(symbol, attribute.Alias), clause);
+			Nonterminal nonterminal = GetNonterminal(methodInfo, attribute.Symbol, attribute.Alias);
+			List<IClause> clauses = GetClause(methodInfo);
+			Clause clause = Clause.Make(clauses);
+			var productionRule = new ProductionRule(nonterminal, clause);
 			if (attribute.StartsGrammar)
 			{
 				productionRule.SortOrder = -1;

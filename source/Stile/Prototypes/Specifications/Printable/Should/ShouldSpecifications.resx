@@ -192,6 +192,9 @@
   <data name="Null" xml:space="preserve">
     <value>null</value>
   </data>
+  <data name="SequenceEqual" xml:space="preserve">
+    <value>sequence equal to</value>
+  </data>
   <data name="ShouldBe" xml:space="preserve">
     <value>should be</value>
   </data>

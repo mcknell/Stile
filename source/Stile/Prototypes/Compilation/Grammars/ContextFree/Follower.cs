@@ -26,7 +26,10 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 	public partial class Follower : IFollower
 	{
 		public Follower([NotNull] string prior, [NotNull] string current, string alias = null)
-			: this(Clause.Make(new Nonterminal(prior)), Clause.Make(new Nonterminal(current, alias))) {}
+			: this(prior, Clause.Make(new Nonterminal(current, alias))) {}
+
+		public Follower([NotNull] string prior, [NotNull] IClause current)
+			: this(Clause.Make(new Nonterminal(prior)), current) {}
 
 		public Follower([NotNull] IClause prior, [NotNull] IClause current)
 		{

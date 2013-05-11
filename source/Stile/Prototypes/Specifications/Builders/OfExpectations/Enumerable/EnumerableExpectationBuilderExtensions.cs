@@ -9,6 +9,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
+using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -18,9 +19,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable
 	public static class EnumerableExpectationBuilderExtensions
 	{
 		[Pure]
-		[RuleExpansion(Nonterminal.Enum.EnumerableResult, "Contains \"item\"")]
+		[RuleExpansion(Nonterminal.Enum.EnumerableResult)]
 		public static TSpecification Contains<TSpecification, TSubject, TResult, TItem>(
-			this IExpectationBuilder<TSpecification, TSubject, TResult> builder, TItem item)
+			this IExpectationBuilder<TSpecification, TSubject, TResult> builder, [Symbol(Terminal = true)] TItem item)
 			where TSpecification : class,
 				ISpecification<TSubject, TResult, IExpectationBuilder<TSpecification, TSubject, TResult>>
 			where TResult : class, IEnumerable<TItem>
@@ -28,7 +29,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable
 			var contains = new Contains<TItem>(item);
 			var expectation = new Expectation<TSubject, TResult>(builder.Xray.Instrument,
 				x => x.Contains(item),
-				contains);
+				contains, Negated.False);
 			return builder.Xray.Make(expectation);
 		}
 	}

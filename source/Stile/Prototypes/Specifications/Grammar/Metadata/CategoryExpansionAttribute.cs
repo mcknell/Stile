@@ -24,6 +24,8 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 		}
 
 		[CanBeNull]
+		public string Prior { get; set; }
+		[CanBeNull]
 		public string SymbolToken { get; private set; }
 	}
 }

@@ -4,7 +4,7 @@
 #endregion
 
 #region using...
-using JetBrains.Annotations;
+using System.Collections.Generic;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
@@ -13,27 +13,34 @@ using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 {
-	public interface IEmpty<out TSpecification, TSubject, TResult> :
-		IExpectationTerm<IIsState<TSpecification, TSubject, TResult>>
-		where TSpecification : class, IChainableSpecification {}
+	public interface ISequenceEqual<out TItem> : IAcceptExpectationVisitors
+	{
+		IEnumerable<TItem> Expected { get; }
+	}
 
-	public class Empty<TSpecification, TSubject, TResult> :
+	public class SequenceEqual<TSpecification, TSubject, TResult, TItem> :
 		ExpectationTerm<IIsState<TSpecification, TSubject, TResult>>,
-		IEmpty<TSpecification, TSubject, TResult>
+		ISequenceEqual<TItem>
 		where TSpecification : class, IChainableSpecification
 	{
 		[RuleExpansion(Nonterminal.Enum.EnumerableIs)]
-		public Empty([NotNull] IIsState<TSpecification, TSubject, TResult> prior)
-			: base(prior) {}
+		public SequenceEqual(IIsState<TSpecification, TSubject, TResult> prior,
+			[Symbol(Terminal = true)] IEnumerable<TItem> sequence)
+			: base(prior)
+		{
+			Expected = sequence;
+		}
+
+		public IEnumerable<TItem> Expected { get; private set; }
 
 		public override void Accept(IExpectationVisitor visitor)
 		{
-			visitor.Visit3(this);
+			visitor.Visit1(this);
 		}
 
 		public override TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
 		{
-			return visitor.Visit3(this, data);
+			return visitor.Visit1(this, data);
 		}
 	}
 }

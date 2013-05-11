@@ -8,7 +8,7 @@ using NUnit.Framework;
 using Stile.Types.Comparison;
 #endregion
 
-namespace Stile.Tests.Types.Comparison
+namespace Stile.Tests.Types.Enumerables
 {
 	[TestFixture]
 	public class ComparisonRelationExtensionsFixture

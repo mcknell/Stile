@@ -24,5 +24,6 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 
 		public string Alias { get; private set; }
 		public string Symbol { get; private set; }
+		public bool Terminal { get; set; }
 	}
 }

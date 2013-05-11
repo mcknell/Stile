@@ -11,6 +11,7 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
+using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
@@ -24,7 +25,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 		where TSpecification : class, ISpecification
 	{
 		[System.Diagnostics.Contracts.Pure]
-		TSpecification ItemsSatisfying(Expression<Func<TItem, bool>> expression);
+		TSpecification ItemsSatisfying(Expression<Func<TItem, bool>> predicate);
 	}
 
 	public interface IQuantifier<out TSpecification, TSubject, TResult, TItem> :
@@ -67,14 +68,16 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 			get { return this; }
 		}
 
-		[CategoryExpansion("ItemsSatisfying \"predicate\"")]
-		public TSpecification ItemsSatisfying(Expression<Func<TItem, bool>> expression)
+		[CategoryExpansion]
+		[CategoryExpansion(Prior = "limit")]
+		public TSpecification ItemsSatisfying([Symbol(Terminal = true)] Expression<Func<TItem, bool>> predicate)
 		{
-			var itemsSatisfying = new ItemsSatisfying<TSpecification, TSubject, TResult, TItem>(expression, this);
-			Predicate<TResult> func = MakePredicate(expression);
+			var itemsSatisfying = new ItemsSatisfying<TSpecification, TSubject, TResult, TItem>(predicate, this);
+			Predicate<TResult> func = MakePredicate(predicate);
 			var expectation = new Expectation<TSubject, TResult>(_hasState.ExpectationBuilder.Instrument,
 				result => func(result),
-				itemsSatisfying);
+				itemsSatisfying,
+				Negated.False);
 			return _hasState.ExpectationBuilder.Make(expectation);
 		}
 

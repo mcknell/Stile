@@ -18,9 +18,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 	public static class IsComparableExtensions
 	{
 		[Pure]
-		[RuleExpansion(Nonterminal.Enum.ComparableExpectationTerm, "ComparablyEquivalentTo \"item\"")]
+		[RuleExpansion(Nonterminal.Enum.ComparableExpectationTerm)]
 		public static TSpecification ComparablyEquivalentTo<TSpecification, TSubject, TResult>(
-			this IIs<TSpecification, TSubject, TResult> builder, TResult expected)
+			this IIs<TSpecification, TSubject, TResult> builder, [Symbol(Terminal = true)] TResult expected)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
@@ -28,9 +28,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		}
 
 		[Pure]
-		[RuleExpansion(Nonterminal.Enum.ComparableExpectationTerm, "GreaterThan \"item\"")]
+		[RuleExpansion(Nonterminal.Enum.ComparableExpectationTerm)]
 		public static TSpecification GreaterThan<TSpecification, TSubject, TResult>(
-			this IIs<TSpecification, TSubject, TResult> builder, TResult expected)
+			this IIs<TSpecification, TSubject, TResult> builder, [Symbol(Terminal = true)] TResult expected)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
