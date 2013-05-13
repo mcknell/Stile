@@ -1,20 +1,27 @@
-﻿using System.Resources;
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
+#endregion
+
+#region using...
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System.Resources;
+#endregion
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Stile.Testing")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
+
+[assembly : AssemblyTitle("Stile.Testing")]
+[assembly : AssemblyDescription("")]
+[assembly : AssemblyConfiguration("")]
 //[assembly: AssemblyCompany("")]
 //[assembly: AssemblyProduct("Stile.Testing")]
 //[assembly: AssemblyCopyright("Copyright ©  2012")]
 //[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: NeutralResourcesLanguage("en")]
+
+[assembly : AssemblyCulture("")]
+[assembly : NeutralResourcesLanguage("en")]
 
 // Version information for an assembly consists of the following four values:
 //

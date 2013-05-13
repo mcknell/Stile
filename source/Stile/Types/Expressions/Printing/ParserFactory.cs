@@ -1,11 +1,11 @@
-﻿#region License statement
-// NJamb, a specification and delta-specification DSL
-// Copyright (c) 2010-2011, Mark Knell
-// Published under the MIT License; all other rights reserved
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Stile.Types.Enums;
 using Stile.Types.Expressions.Printing.ExpressionParsers;
@@ -16,6 +16,9 @@ namespace Stile.Types.Expressions.Printing
 {
 	public class ParserFactory
 	{
+		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
+		[SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public ExpressionParser Make(Expression expression, IPrintStrategy printStrategy)
 		{
 			Func<BinaryOperatorToken, BinaryExpressionParser> makeBinary =

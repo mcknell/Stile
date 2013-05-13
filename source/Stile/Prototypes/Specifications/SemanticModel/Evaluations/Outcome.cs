@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Stile.Types.Comparison;
 using Stile.Types.Enumerables;
 using Stile.Types.Enums;
 #endregion
@@ -22,7 +23,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		IComparable<Outcome>
 	{
 		[Flags]
-		public enum Enumerated : byte
+		private enum Outcomes : byte
 		{
 			Failed = 0,
 			Succeeded = 1,
@@ -32,31 +33,33 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			Suspended = 16
 		}
 
-		public static readonly Outcome Succeeded;
+#pragma warning disable 649
 		public static readonly Outcome Failed;
 		public static readonly Outcome Incomplete;
 		public static readonly Outcome Interrupted;
-		public static readonly Outcome TimedOut;
 		public static readonly Outcome Suspended;
+		public static readonly Outcome Succeeded;
+		public static readonly Outcome TimedOut;
+#pragma warning restore 649
 		private static readonly ReadOnlyCollection<Outcome> sValues;
 		private static readonly IEqualityComparer<Outcome> ValueComparerInstance = new ValueEqualityComparer();
-		private readonly Enumerated _value;
+		private readonly Outcomes _value;
 
 		static Outcome()
 		{
 			var outcomes = new List<Outcome>();
 
-			Make(() => Failed, outcomes, Enumerated.Failed);
-			Make(() => Succeeded, outcomes, Enumerated.Succeeded);
-			Make(() => Incomplete, outcomes, Enumerated.Incomplete);
-			Make(() => Interrupted, outcomes, Enumerated.Interrupted);
-			Make(() => TimedOut, outcomes, Enumerated.Incomplete | Enumerated.TimedOut);
-			Make(() => Suspended, outcomes, Enumerated.Suspended);
+			Make(() => Failed, outcomes, Outcomes.Failed);
+			Make(() => Succeeded, outcomes, Outcomes.Succeeded);
+			Make(() => Incomplete, outcomes, Outcomes.Incomplete);
+			Make(() => Interrupted, outcomes, Outcomes.Interrupted);
+			Make(() => TimedOut, outcomes, Outcomes.Incomplete | Outcomes.TimedOut);
+			Make(() => Suspended, outcomes, Outcomes.Suspended);
 
 			sValues = outcomes.ToReadOnly();
 		}
 
-		private Outcome(Enumerated enumerated)
+		private Outcome(Outcomes enumerated)
 		{
 			_value = enumerated;
 		}
@@ -111,7 +114,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			return _value.ToString();
 		}
 
-		private static void Make(Expression<Func<Outcome>> field, List<Outcome> outcomes, Enumerated enumerated)
+		private static void Make(Expression<Func<Outcome>> field, List<Outcome> outcomes, Outcomes enumerated)
 		{
 			var memberExpression = (MemberExpression) field.Body;
 			var fieldInfo = (FieldInfo) memberExpression.Member;
@@ -123,7 +126,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 				CultureInfo.InvariantCulture);
 		}
 
-		private static Outcome MakeNext(List<Outcome> outcomes, Enumerated enumerated)
+		private static Outcome MakeNext(List<Outcome> outcomes, Outcomes enumerated)
 		{
 			var outcome = new Outcome(enumerated);
 			outcomes.Add(outcome);
@@ -138,6 +141,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public static explicit operator Outcome(bool b)
 		{
 			return b ? Succeeded : Failed;
+		}
+
+		public static bool operator >(Outcome left, Outcome right)
+		{
+			return left.IsGreaterThan(right);
+		}
+
+		public static bool operator >=(Outcome left, Outcome right)
+		{
+			return left.IsGreaterThanOrEqualTo(right);
 		}
 
 		public static implicit operator bool(Outcome outcome)
@@ -168,6 +181,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		public static bool operator !=(Outcome left, Outcome right)
 		{
 			return !left.Equals(right);
+		}
+
+		public static bool operator <(Outcome left, Outcome right)
+		{
+			return left.IsLessThan(right);
+		}
+
+		public static bool operator <=(Outcome left, Outcome right)
+		{
+			return left.IsLessThanOrEqualTo(right);
 		}
 
 		private sealed class ValueEqualityComparer : IEqualityComparer<Outcome>

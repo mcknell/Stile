@@ -8,6 +8,7 @@ using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars
@@ -36,7 +37,7 @@ namespace Stile.Prototypes.Compilation.Grammars
 			{
 				return Token;
 			}
-			return string.Format("{0} aka {1}", Token, Alias);
+			return "{0} aka {1}".InvariantFormat(Token, Alias);
 		}
 
 		public static implicit operator string(Symbol symbol)

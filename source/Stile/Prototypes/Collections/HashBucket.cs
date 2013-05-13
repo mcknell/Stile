@@ -6,6 +6,7 @@
 #region using...
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
 #endregion
 
@@ -13,15 +14,24 @@ namespace Stile.Prototypes.Collections
 {
 	public interface IReadOnlyHashBucket<TKey, TItem> : IReadOnlyDictionary<TKey, ISet<TItem>> {}
 
+	[Serializable]
 	public class HashBucket<TKey, TItem> : Dictionary<TKey, ISet<TItem>>,
 		IReadOnlyHashBucket<TKey, TItem>
 	{
+		private const string ComparerSerializationToken = "hashBucketComparer";
 		private readonly IEqualityComparer<TItem> _itemComparer;
 
 		public HashBucket(IEqualityComparer<TKey> keyComparer = null, IEqualityComparer<TItem> itemComparer = null)
 			: base(keyComparer)
 		{
 			_itemComparer = itemComparer;
+		}
+
+		protected HashBucket(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+			_itemComparer =
+				(IEqualityComparer<TItem>) info.GetValue(ComparerSerializationToken, typeof(IEqualityComparer<TItem>));
 		}
 
 		public void Add(TKey key, TItem item)
@@ -48,6 +58,12 @@ namespace Stile.Prototypes.Collections
 				}
 			}
 			return this;
+		}
+
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue(ComparerSerializationToken, _itemComparer);
 		}
 	}
 

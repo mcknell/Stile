@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
@@ -16,7 +17,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		[NotNull]
 		IDeadline Deadline { get; }
 		[NotNull]
-		IError[] Errors { get; }
+		IReadOnlyList<IError> Errors { get; }
 		TaskStatus TaskStatus { get; }
 		bool TimedOut { get; }
 	}
@@ -42,7 +43,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 
 		public IDeadline Deadline { get; private set; }
 
-		public IError[] Errors { get; private set; }
+		public IReadOnlyList<IError> Errors { get; private set; }
 		public TaskStatus TaskStatus { get; private set; }
 		public bool TimedOut { get; private set; }
 	}

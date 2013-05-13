@@ -6,6 +6,7 @@
 #region using...
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -77,7 +78,7 @@ namespace Stile.Prototypes.Specifications.Printable
 
 		public void AppendFormat(string format, params object[] parameters)
 		{
-			_stringBuilder.AppendFormat(format, parameters);
+			_stringBuilder.AppendFormat(CultureInfo.CurrentCulture, format, parameters);
 		}
 
 		public bool CanBeInlined(Expression expression)
@@ -101,12 +102,11 @@ namespace Stile.Prototypes.Specifications.Printable
 		where TVisitor : class
 		where TTerm : class, IAcceptVisitors<TVisitor>, IHasParent<TTerm>
 	{
-		protected readonly ISource _source;
 		private readonly Stack<TTerm> _terms;
 
 		protected Describer([CanBeNull] ISource source)
 		{
-			_source = source;
+			Source = source;
 			_terms = new Stack<TTerm>();
 		}
 
@@ -162,6 +162,8 @@ namespace Stile.Prototypes.Specifications.Printable
 				}
 			}
 		}
+
+		protected ISource Source { get; set; }
 
 		private bool Unwind()
 		{

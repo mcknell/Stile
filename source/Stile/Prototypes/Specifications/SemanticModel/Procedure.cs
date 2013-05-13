@@ -141,13 +141,17 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 					{
 						foreach (DictionaryEntry dictionaryEntry in e.Data)
 						{
-							var additionalException = (Exception) dictionaryEntry.Value;
+							var additionalException = (Exception)dictionaryEntry.Value;
 							errors.Add(new Error(additionalException, false));
 						}
 					}
 				}
 			}
 			var observation = new Observation<TSubject>(task.Status, timedOut, sample, deadline, errors.ToArray());
+			if (task.IsCompleted)
+			{
+				task.Dispose();
+			}
 			return observation;
 		}
 	}

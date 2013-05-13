@@ -15,7 +15,7 @@ namespace Stile.Tests.Patterns.Behavioral.Traversal
 	[TestFixture]
 	public class TraverserFixture
 	{
-		protected HashSet<int> _traversed;
+		private HashSet<int> _traversed;
 
 		[SetUp]
 		public void Init()

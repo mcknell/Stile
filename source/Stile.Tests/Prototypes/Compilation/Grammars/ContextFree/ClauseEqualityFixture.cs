@@ -16,17 +16,17 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 	[TestFixture]
 	public class ClauseEqualityFixture : EqualityFixtureWithClone<IClause>
 	{
-		protected override Func<IClause, IClause> GetCloner()
+		protected override Func<IClause, IClause> ClonerFactory()
 		{
 			return x => x.Clone(y => y);
 		}
 
-		protected override IClause GetOther()
+		protected override IClause OtherFactory()
 		{
 			return Clause.Make(Nonterminal.Specification);
 		}
 
-		protected override IClause GetTestSubject()
+		protected override IClause TestSubjectFactory()
 		{
 			return Clause.Make(Nonterminal.Deadline);
 		}

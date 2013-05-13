@@ -32,23 +32,27 @@ namespace Stile.Types.Expressions.Printing
 				try
 				{
 					return HandleOtherFormats(format, arg);
-				} catch (FormatException e)
+				}
+				catch (FormatException e)
 				{
-					throw new FormatException(string.Format("The format of '{0}' is invalid.", format), e);
+					throw new FormatException(ErrorMessages.ExpressionFormatProvider_Format_Invalid.InvariantFormat(format),
+						e);
 				}
 			}
 
 			if (format.IsNeitherNullNorEmpty())
 			{
-				string upper = format.ToUpper();
+				string upper = format.ToUpper(CultureInfo.InvariantCulture);
 				if (upper != CSharp4)
 				{
 					try
 					{
 						return HandleOtherFormats(format, arg);
-					} catch (FormatException e)
+					}
+					catch (FormatException e)
 					{
-						throw new FormatException(string.Format("The format of '{0}' is invalid.", format), e);
+						throw new FormatException(
+							ErrorMessages.ExpressionFormatProvider_Format_Invalid.InvariantFormat(format), e);
 					}
 				}
 			}

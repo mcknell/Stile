@@ -17,8 +17,8 @@ namespace Stile.NUnit
 		[SetUp]
 		public virtual void Init()
 		{
-			TestSubject = GetTestSubject();
-			Other = GetOther();
+			TestSubject = TestSubjectFactory();
+			Other = OtherFactory();
 			Assert.NotNull(TestSubject);
 			Assert.NotNull(Other);
 		}
@@ -52,8 +52,8 @@ namespace Stile.NUnit
 			Assert.That(testSubject.GetHashCode().Equals(other.GetHashCode()), Is.EqualTo(expected));
 		}
 
-		protected abstract TSubject GetOther();
-		protected abstract TSubject GetTestSubject();
+		protected abstract TSubject OtherFactory();
+		protected abstract TSubject TestSubjectFactory();
 
 		protected void RequireDistinctObjects(TSubject subject = default(TSubject))
 		{
@@ -61,7 +61,7 @@ namespace Stile.NUnit
 			{
 				subject = Other;
 			}
-			Assert.That(ReferenceEquals(TestSubject, subject), Is.False, "precondition");
+			Assert.That(ReferenceEquals(TestSubject, subject), Is.False, Strings.Precondition);
 		}
 	}
 
@@ -72,7 +72,7 @@ namespace Stile.NUnit
 		public override void Init()
 		{
 			base.Init();
-			Cloner = GetCloner();
+			Cloner = ClonerFactory();
 		}
 
 		[Test]
@@ -86,6 +86,6 @@ namespace Stile.NUnit
 		[NotNull]
 		protected Func<TSubject, TSubject> Cloner { get; set; }
 
-		protected abstract Func<TSubject, TSubject> GetCloner();
+		protected abstract Func<TSubject, TSubject> ClonerFactory();
 	}
 }

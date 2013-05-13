@@ -21,6 +21,27 @@ namespace Stile.Types.Comparison
 
 	public static class ComparisonRelationExtensions
 	{
+		public static bool IsGreaterThan<TItem>(this TItem left, TItem right) where TItem : IComparable<TItem>
+		{
+			return left.CompareTo(right) > 0;
+		}
+
+		public static bool IsGreaterThanOrEqualTo<TItem>(this TItem left, TItem right)
+			where TItem : IComparable<TItem>
+		{
+			return left.CompareTo(right) >= 0;
+		}
+
+		public static bool IsLessThan<TItem>(this TItem left, TItem right) where TItem : IComparable<TItem>
+		{
+			return left.CompareTo(right) < 0;
+		}
+
+		public static bool IsLessThanOrEqualTo<TItem>(this TItem left, TItem right) where TItem : IComparable<TItem>
+		{
+			return left.CompareTo(right) <= 0;
+		}
+
 		public static bool PassesFor<TItem>(this ComparisonRelation relation, TItem left, TItem right)
 			where TItem : IComparable<TItem>
 		{

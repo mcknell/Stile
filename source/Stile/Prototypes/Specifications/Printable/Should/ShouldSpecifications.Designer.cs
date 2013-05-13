@@ -250,7 +250,7 @@ namespace Stile.Prototypes.Specifications.Printable.Should {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to in runtime &lt;.
+        ///   Looks up a localized string similar to in runtime &lt; {0}.
         /// </summary>
         internal static string MeasurableInLessThan {
             get {

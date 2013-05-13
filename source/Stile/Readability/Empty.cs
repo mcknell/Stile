@@ -15,6 +15,7 @@ namespace Stile.Readability
 		public static readonly Action Action = () => {};
 
 // ReSharper disable UnusedParameter.Global
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "item")]
 		public static void ActionOn<TItem>(TItem item) {}
 // ReSharper restore UnusedParameter.Global
 	}

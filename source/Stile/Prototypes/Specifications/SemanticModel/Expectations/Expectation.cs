@@ -112,7 +112,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 		public Outcome Evaluate(IMeasurement<TSubject, TResult> measurement, bool expectedAnException)
 		{
 			int handledErrors = measurement.Errors.Count(x => x.Handled);
-			int allErrorsIfAny = measurement.Errors.Length;
+			int allErrorsIfAny = measurement.Errors.Count;
 
 			Outcome outcome;
 			if (handledErrors < allErrorsIfAny)

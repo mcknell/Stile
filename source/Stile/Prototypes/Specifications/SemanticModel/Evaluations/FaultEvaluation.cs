@@ -41,7 +41,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		IFaultSpecificationState<TSubject> TailSpecification { get; }
 
 		[NotNull]
-		IEnumerable<IFaultEvaluation<TSubject>> GetPredecessors();
+		IEnumerable<IFaultEvaluation<TSubject>> Predecessors();
 	}
 
 	public static class FaultEvaluation
@@ -67,7 +67,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			bool expectedAnException)
 		{
 			int handledErrors = observation.Errors.Count(x => x.Handled);
-			int allErrorsIfAny = observation.Errors.Length;
+			int allErrorsIfAny = observation.Errors.Count;
 
 			Outcome outcome;
 			if (handledErrors < allErrorsIfAny)
@@ -150,7 +150,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			return visitor.Visit1(this, data);
 		}
 
-		public IEnumerable<IFaultEvaluation<TSubject>> GetPredecessors()
+		public IEnumerable<IFaultEvaluation<TSubject>> Predecessors()
 		{
 			IFaultEvaluation<TSubject> prior = this;
 			while (prior.Xray.Prior != null)
@@ -163,7 +163,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		[CanBeNull]
 		private IFaultSpecification<TSubject> GetNextSpecification()
 		{
-			List<IFaultEvaluation<TSubject>> list = GetPredecessors().Reverse().ToList();
+			List<IFaultEvaluation<TSubject>> list = Predecessors().Reverse().ToList();
 			int distanceOfNextFromRootSpec = list.Count + 1;
 			IFaultSpecification<TSubject> specification =
 				TailSpecification.GetPredecessors(true).Reverse().Skip(distanceOfNextFromRootSpec).FirstOrDefault();

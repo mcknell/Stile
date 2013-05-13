@@ -8,9 +8,9 @@ namespace Stile.Types.Primitives
 {
     public static class BoolExtensions
     {
-        public static string ToNot(this bool b)
+        public static string ToNot(this bool maybe)
         {
-            if (!b)
+            if (!maybe)
             {
                 return "not";
             }

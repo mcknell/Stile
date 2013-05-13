@@ -41,7 +41,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			Assert.That(evaluation.Sample.Value, Is.EqualTo(saboteur));
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.Value, Is.EqualTo(1));
-			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
+			Assert.That(evaluation.Errors.Count, Is.EqualTo(0));
 			Assert.That(evaluation.Xray.Specification, Is.EqualTo(spec1));
 
 			IEvaluation<Saboteur, int?> secondEvaluation = evaluation.EvaluateNext();
@@ -49,7 +49,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			Assert.That(secondEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(secondEvaluation.Value, Is.EqualTo(0));
 			Assert.That(secondEvaluation.Xray.TailSpecification, Is.EqualTo(evaluation.Xray.TailSpecification));
-			Assert.That(secondEvaluation.Errors.Length, Is.EqualTo(0));
+			Assert.That(secondEvaluation.Errors.Count, Is.EqualTo(0));
 			Assert.That(secondEvaluation.Xray.Specification, Is.EqualTo(spec2));
 
 			/* this should only pass if indeed the third specification is being evaluated;
@@ -57,7 +57,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			IEvaluation<Saboteur, int?> thirdEvaluation = secondEvaluation.EvaluateNext();
 			Assert.NotNull(thirdEvaluation);
 			Assert.That(thirdEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
-			Assert.That(thirdEvaluation.Errors.Length, Is.EqualTo(1));
+			Assert.That(thirdEvaluation.Errors.Count, Is.EqualTo(1));
 			Assert.That(thirdEvaluation.Xray.Specification, Is.EqualTo(spec3));
 			Assert.That(thirdEvaluation.Xray.TailSpecification, Is.EqualTo(secondEvaluation.Xray.TailSpecification));
 

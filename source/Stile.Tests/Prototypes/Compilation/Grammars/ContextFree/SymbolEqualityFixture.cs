@@ -29,12 +29,12 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			Assert.That(plain.GetHashCode(), Is.EqualTo(aliased.GetHashCode()));
 		}
 
-		protected override Symbol GetOther()
+		protected override Symbol OtherFactory()
 		{
 			return Nonterminal.Specification;
 		}
 
-		protected override Symbol GetTestSubject()
+		protected override Symbol TestSubjectFactory()
 		{
 			return Nonterminal.Deadline;
 		}

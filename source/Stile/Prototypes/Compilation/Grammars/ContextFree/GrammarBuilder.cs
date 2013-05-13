@@ -4,14 +4,15 @@
 #endregion
 
 #region using...
-using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Collections;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Types.Enumerables;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
@@ -197,12 +198,9 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				}
 				else
 				{
-					throw new Exception(
-						string.Format(
-							"Tried to add token '{0}' with alias '{1}', but found a symbol with that token and alias '{2}' instead.",
-							token,
-							alias,
-							symbol.Alias));
+					throw new InvalidDataException(ErrorMessages.GrammarBuilder_AliasCollision.InvariantFormat(token,
+						alias,
+						symbol.Alias));
 				}
 			}
 			symbol = new Nonterminal(token, alias);

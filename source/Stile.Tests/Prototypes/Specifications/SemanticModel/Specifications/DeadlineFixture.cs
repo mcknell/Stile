@@ -15,11 +15,11 @@ namespace Stile.Tests.Prototypes.Specifications.SemanticModel.Specifications
 	public class DeadlineFixture
 	{
 		[Test]
-		public void DefaultTimeoutIsSettable()
+		public void SetDefaultTimeout()
 		{
 			TimeSpan timeout = TimeSpan.FromMilliseconds(10);
 			Assert.That(Deadline.DefaultTimeout, Is.Not.EqualTo(timeout));
-			Deadline.DefaultTimeout = timeout;
+			Deadline.SetDefaultTimeout(timeout);
 			Assert.That(Deadline.DefaultTimeout, Is.EqualTo(timeout));
 		}
 

@@ -15,6 +15,17 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 	public static class ExpectationBuilderExtensions
 	{
 		[Pure]
+		public static IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem> CollectingItemsLike
+			<TSpecification, TSubject, TResult, TItem>(
+			this IBoundExpectationBuilder<TSpecification, TSubject, TResult> builder, TItem throwaway)
+			where TSpecification : class,
+				IBoundSpecification<TSubject, TResult, IBoundExpectationBuilder<TSpecification, TSubject, TResult>>
+			where TResult : class, ICollection<TItem>
+		{
+			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(builder.Xray, null);
+		}
+
+		[Pure]
 		public static IFluentEnumerableExpectationBuilder<TSubject, TResult, TItem> OfItemsLike
 			<TSpecification, TSubject, TResult, TItem>(
 			this IExpectationBuilder<TSpecification, TSubject, TResult> builder, TItem throwaway)
@@ -32,16 +43,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			where TSpecification : class,
 				IBoundSpecification<TSubject, TResult, IBoundExpectationBuilder<TSpecification, TSubject, TResult>>
 			where TResult : class, IEnumerable<TItem>
-		{
-			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(builder.Xray, null);
-		}
-		[Pure]
-		public static IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem> CollectingItemsLike
-			<TSpecification, TSubject, TResult, TItem>(
-			this IBoundExpectationBuilder<TSpecification, TSubject, TResult> builder, TItem throwaway)
-			where TSpecification : class,
-				IBoundSpecification<TSubject, TResult, IBoundExpectationBuilder<TSpecification, TSubject, TResult>>
-			where TResult : class, ICollection<TItem>
 		{
 			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(builder.Xray, null);
 		}

@@ -21,6 +21,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\CodeAnalysisVS2012.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>1699</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +33,14 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1699</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -48,6 +59,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -59,7 +71,18 @@
     <Compile Include="..\SharedAssemblyVersionInfo.cs">
       <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="ErrorMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ErrorMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="JetBrains.Annotations.cs" />
+    <Compile Include="LocalizableStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LocalizableStrings.resx</DependentUpon>
+    </Compile>
     <Compile Include="Patterns\Behavioral\Visitor\IAcceptVisitors.cs" />
     <Compile Include="Patterns\Lifetimes\Disposables\Disposable.cs" />
     <Compile Include="Patterns\Structural\FluentInterface\IHides.cs" />
@@ -102,6 +125,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\Exactly.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\ComparableExpectationTerm.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\SequenceEqual.cs" />
+    <Compile Include="Properties\SharedKeyAttributes.cs" />
     <Compile Include="Types\Comparison\ComparisonRelation.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Empty.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIs.cs" />
@@ -199,7 +223,6 @@
     <Compile Include="Types\Equality\ComparableExtensions.cs" />
     <Compile Include="Types\Equality\EqualityExtensions.cs" />
     <Compile Include="Types\Expressions\ExpressionExtensions.cs" />
-    <Compile Include="Types\Expressions\ExpressionStringBuilder.cs" />
     <Compile Include="Types\Expressions\ExpressionTypeExtensions.cs" />
     <Compile Include="Types\Expressions\MemberExpressionExtensions.cs" />
     <Compile Include="Types\Expressions\Printing\ExpressionFormatProvider.cs" />
@@ -247,6 +270,14 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ErrorMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LocalizableStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LocalizableStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Prototypes\Specifications\Printable\Past\PastTenseEvaluations.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>PastTenseEvaluations.Designer.cs</LastGenOutput>
@@ -258,7 +289,9 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

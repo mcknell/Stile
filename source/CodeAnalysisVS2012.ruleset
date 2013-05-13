@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="CodeAnalysisVS2012" ToolsVersion="11.0">
+  <Include Path="basiccorrectnessrules.ruleset" Action="Default" />
+  <Include Path="extendedcorrectnessrules.ruleset" Action="Default" />
+  <Include Path="minimumrecommendedrules.ruleset" Action="Default" />
+  <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+    <Rule Id="CA1003" Action="Warning" />
+    <Rule Id="CA1007" Action="Warning" />
+    <Rule Id="CA1010" Action="Warning" />
+    <Rule Id="CA1023" Action="Warning" />
+    <Rule Id="CA1024" Action="Warning" />
+    <Rule Id="CA1030" Action="Warning" />
+    <Rule Id="CA1035" Action="Warning" />
+    <Rule Id="CA1036" Action="Warning" />
+    <Rule Id="CA1038" Action="Warning" />
+    <Rule Id="CA1039" Action="Warning" />
+    <Rule Id="CA1041" Action="Warning" />
+    <Rule Id="CA1043" Action="Warning" />
+    <Rule Id="CA1044" Action="Warning" />
+    <Rule Id="CA1045" Action="Warning" />
+    <Rule Id="CA1046" Action="Warning" />
+    <Rule Id="CA1047" Action="Warning" />
+    <Rule Id="CA1048" Action="Warning" />
+    <Rule Id="CA1050" Action="Warning" />
+    <Rule Id="CA1051" Action="Warning" />
+    <Rule Id="CA1052" Action="Warning" />
+    <Rule Id="CA1053" Action="Warning" />
+    <Rule Id="CA1058" Action="Warning" />
+    <Rule Id="CA1059" Action="Warning" />
+    <Rule Id="CA1064" Action="Warning" />
+    <Rule Id="CA1300" Action="Warning" />
+    <Rule Id="CA1302" Action="Warning" />
+    <Rule Id="CA1304" Action="Warning" />
+    <Rule Id="CA1305" Action="Warning" />
+    <Rule Id="CA1306" Action="Warning" />
+    <Rule Id="CA1307" Action="Warning" />
+    <Rule Id="CA1309" Action="Warning" />
+    <Rule Id="CA1500" Action="Warning" />
+    <Rule Id="CA1501" Action="Warning" />
+    <Rule Id="CA1502" Action="Warning" />
+    <Rule Id="CA1504" Action="Warning" />
+    <Rule Id="CA1505" Action="Warning" />
+    <Rule Id="CA1506" Action="Warning" />
+    <Rule Id="CA1700" Action="Warning" />
+    <Rule Id="CA1712" Action="Warning" />
+    <Rule Id="CA1714" Action="Warning" />
+    <Rule Id="CA1717" Action="Warning" />
+    <Rule Id="CA1719" Action="Warning" />
+    <Rule Id="CA1721" Action="Warning" />
+    <Rule Id="CA1724" Action="Warning" />
+    <Rule Id="CA1725" Action="Warning" />
+    <Rule Id="CA1726" Action="Warning" />
+    <Rule Id="CA1801" Action="Warning" />
+    <Rule Id="CA1812" Action="Warning" />
+    <Rule Id="CA1815" Action="Warning" />
+    <Rule Id="CA1823" Action="Warning" />
+    <Rule Id="CA2000" Action="Warning" />
+    <Rule Id="CA2104" Action="None" />
+    <Rule Id="CA2105" Action="None" />
+    <Rule Id="CA2201" Action="Warning" />
+    <Rule Id="CA2208" Action="Warning" />
+    <Rule Id="CA2210" Action="Warning" />
+  </Rules>
+</RuleSet>

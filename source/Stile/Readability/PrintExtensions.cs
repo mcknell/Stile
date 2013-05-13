@@ -6,6 +6,7 @@
 #region using...
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -19,9 +20,13 @@ namespace Stile.Readability
 {
 	public static class PrintExtensions
 	{
-		public const string ReadableEmpty = "<empty>";
-		public const string ReadableNull = "<null>";
-		public const string ReadableNullString = @"""<null>""";
+		public static readonly string ReadableNull = LocalizableStrings.PrintExtensions_ReadableNull;
+		public static readonly string ReadableNullString = LocalizableStrings.PrintExtensions_ReadableNullString;
+
+		public static string CurrentFormat(this string format, params object[] args)
+		{
+			return string.Format(CultureInfo.CurrentCulture, format, args);
+		}
 
 		public static string Pluralize(this int count, string singular, string plural = null)
 		{
@@ -31,7 +36,7 @@ namespace Stile.Readability
 			}
 			if (string.IsNullOrWhiteSpace(plural))
 			{
-				return string.Format("{0}s", singular);
+				return LocalizableStrings.PrintExtensions_Pluralize.CurrentFormat(singular);
 			}
 			return plural;
 		}
@@ -50,12 +55,12 @@ namespace Stile.Readability
 				{
 					return ReadableNullString;
 				}
-				var sb = new StringBuilder(s);
-				sb.Replace("\n", "\\n");
-				sb.Replace("\r", "\\r");
-				sb.Replace("\t", "\\t");
-				sb.Insert(0, "\"");
-				sb.Append("\"");
+				var sb = new StringBuilder(LocalizableStrings.PrintExtensions_ToDebugString_OpenQuote);
+				sb.Append(s);
+				sb.Replace("\n", LocalizableStrings.PrintExtensions_ToDebugString_ReplaceN);
+				sb.Replace("\r", LocalizableStrings.PrintExtensions_ToDebugString_ReplaceR);
+				sb.Replace("\t", LocalizableStrings.PrintExtensions_ToDebugString_ReplaceT);
+				sb.Append(LocalizableStrings.PrintExtensions_ToDebugString_CloseQuote);
 				return sb.ToString();
 			}
 			if (ReferenceEquals(null, obj))
@@ -69,11 +74,11 @@ namespace Stile.Readability
 			}
 			if (false.Equals(obj))
 			{
-				return "false";
+				return LocalizableStrings.PrintExtensions_ToDebugString_False;
 			}
 			if (true.Equals(obj))
 			{
-				return "true";
+				return LocalizableStrings.PrintExtensions_ToDebugString_True;
 			}
 			Type type = obj.GetType();
 			if (type.IsArray)

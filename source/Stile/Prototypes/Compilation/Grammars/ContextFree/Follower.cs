@@ -8,6 +8,7 @@ using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Grammar;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
@@ -47,7 +48,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public override string ToString()
 		{
-			return string.Format("{{{0}}} {{{1}}}", Prior, Current);
+			return "{{{0}}} {{{1}}}".InvariantFormat(Prior, Current);
 		}
 	}
 

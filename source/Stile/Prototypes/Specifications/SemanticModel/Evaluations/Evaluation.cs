@@ -19,7 +19,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	public interface IEvaluation
 	{
 		[System.Diagnostics.Contracts.Pure]
-		IError[] Errors { get; }
+		IReadOnlyList<IError> Errors { get; }
 		[System.Diagnostics.Contracts.Pure]
 		Outcome Outcome { get; }
 		bool TimedOut { get; }
@@ -56,7 +56,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		[CanBeNull]
 		IEvaluation<TSubject, TResult> Prior { get; }
 		ISpecificationState<TSubject, TResult> TailSpecification { get; }
-		IEnumerable<IEvaluation<TSubject, TResult>> GetPredecessors();
+		IEnumerable<IEvaluation<TSubject, TResult>> Predecessors();
 	}
 
 	public abstract class Evaluation : IEvaluation
@@ -72,7 +72,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			}
 		}
 
-		public IError[] Errors { get; private set; }
+		public IReadOnlyList<IError> Errors { get; private set; }
 		public Outcome Outcome { get; private set; }
 		public bool TimedOut { get; private set; }
 	}
@@ -157,7 +157,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 			return visitor.Visit2(this, data);
 		}
 
-		public IEnumerable<IEvaluation<TSubject, TResult>> GetPredecessors()
+		public IEnumerable<IEvaluation<TSubject, TResult>> Predecessors()
 		{
 			IEvaluation<TSubject, TResult> prior = this;
 			while (prior.Xray.Prior != null)
@@ -170,7 +170,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		[CanBeNull]
 		private ISpecification<TSubject, TResult> GetNextSpecification()
 		{
-			List<IEvaluation<TSubject, TResult>> list = GetPredecessors().Reverse().ToList();
+			List<IEvaluation<TSubject, TResult>> list = Predecessors().Reverse().ToList();
 			int distanceOfNextFromRootSpec = list.Count + 1;
 			ISpecification<TSubject, TResult> specification =
 				TailSpecification.GetPredecessors(true).Reverse().Skip(distanceOfNextFromRootSpec).FirstOrDefault();

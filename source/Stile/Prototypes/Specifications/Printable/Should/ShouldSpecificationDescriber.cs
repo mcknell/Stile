@@ -14,6 +14,7 @@ using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Readability;
 using Stile.Types.Expressions;
 using Stile.Types.Primitives;
 using Stile.Types.Reflection;
@@ -43,19 +44,19 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			AppendSpecificationAfterthoughts(target.Xray);
 		}
 
-		public void Visit1<TSubject>(IProcedure<TSubject> procedure)
+		public void Visit1<TSubject>(IProcedure<TSubject> target)
 		{
-			ISource<TSubject> source = procedure.Xray.Source ?? _source as ISource<TSubject>;
+			ISource<TSubject> source = target.Xray.Source ?? Source as ISource<TSubject>;
 			if (source != null)
 			{
-				DescribeSourceAndProcedure(this, procedure, source, ShouldSpecifications.InstrumentedBy);
+				DescribeSourceAndProcedure(this, target, source, ShouldSpecifications.InstrumentedBy);
 			}
 			else
 			{
 				string type = typeof(TSubject).ToDebugString();
 				if (IsSingleToken(type))
 				{
-					ILazyDescriptionOfLambda lambda = procedure.Xray.Lambda;
+					ILazyDescriptionOfLambda lambda = target.Xray.Lambda;
 					AppendFormat("{0} {1}", ShouldSpecifications.AnyCaps, lambda.AliasParametersIntoBody(type));
 				}
 				else
@@ -66,7 +67,7 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			}
 		}
 
-		public void Visit1<TSubject>(ISource<TSubject> source)
+		public void Visit1<TSubject>(ISource<TSubject> target)
 		{
 			// do nothin'
 		}
@@ -77,16 +78,16 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			AppendFormat(ShouldSpecifications.ShouldThrow, target.Description.Value);
 		}
 
-		public void Visit2<TSubject, TResult>(IExpectation<TSubject, TResult> expectation)
+		public void Visit2<TSubject, TResult>(IExpectation<TSubject, TResult> target)
 		{
-			var expectationDescriber = new ShouldExpectationDescriber(_source);
-			expectationDescriber.Visit2(expectation.ValidateArgumentIsNotNull());
+			var expectationDescriber = new ShouldExpectationDescriber(Source);
+			expectationDescriber.Visit2(target.ValidateArgumentIsNotNull());
 			Append(expectationDescriber.ToString());
 		}
 
-		public void Visit2<TSubject, TResult>(IInstrument<TSubject, TResult> instrument)
+		public void Visit2<TSubject, TResult>(IInstrument<TSubject, TResult> target)
 		{
-			Visit1(instrument);
+			Visit1(target);
 		}
 
 		public void Visit2<TSubject, TResult>(ISpecification<TSubject, TResult> target)
@@ -98,10 +99,10 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 		}
 
 		public void Visit3<TSubject, TResult, TExpectationBuilder>(
-			ISpecification<TSubject, TResult, TExpectationBuilder> specification)
+			ISpecification<TSubject, TResult, TExpectationBuilder> target)
 			where TExpectationBuilder : class, IExpectationBuilder
 		{
-			Visit2(specification);
+			Visit2(target);
 		}
 
 		public static string Describe<TSubject>(IFaultSpecification<TSubject> specification)
@@ -140,9 +141,8 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			{
 				if (deadline.Timeout > TimeSpan.Zero)
 				{
-					return string.Format(", {0} {1}",
-						ShouldSpecifications.MeasurableInLessThan,
-						deadline.Timeout.ToReadableUnits());
+					return ", "
+						+ ShouldSpecifications.MeasurableInLessThan.CurrentFormat(deadline.Timeout.ToReadableUnits());
 				}
 			}
 			return null;
@@ -171,10 +171,10 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			while (stack.Count > 0)
 			{
 				TSpecification popped = stack.Pop();
-				describer.Append(string.Format("{0}{1} {2},",
+				describer.AppendFormat("{0}{1} {2},",
 					Environment.NewLine,
 					ShouldSpecifications.Then,
-					ShouldSpecifications.WhenMeasuredAgain));
+					ShouldSpecifications.WhenMeasuredAgain);
 				repeatVisitor(popped);
 				describer.AppendSpecificationAfterthoughts(popped.Xray);
 			}
@@ -188,7 +188,7 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 				string trim = because.Trim();
 				if (trim.Length > 0)
 				{
-					return string.Format(", {0} {1}", ShouldSpecifications.Because, trim);
+					return ", {0} {1}".CurrentFormat(ShouldSpecifications.Because, trim);
 				}
 			}
 			return null;

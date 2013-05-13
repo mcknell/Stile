@@ -102,46 +102,49 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 				return _lazyFunc.Value.Invoke(subject);
 			});
 
-			bool timedOut = false;
-			TResult result = default(TResult);
-			try
+			using(task)
 			{
-				if (onThisThread)
+				bool timedOut = false;
+				TResult result = default(TResult);
+				try
 				{
-					task.RunSynchronously();
-				}
-				else
-				{
-					task.Start();
-				}
-				timedOut = !task.Wait(millisecondsTimeout, cancellationToken);
-				result = task.Result;
-			}
-			catch (Exception e)
-			{
-				if (e is AggregateException)
-				{
-					if (e.InnerException != null)
+					if (onThisThread)
 					{
-						errors.Add(new Error(e.InnerException, false));
+						task.RunSynchronously();
 					}
 					else
 					{
-						foreach (DictionaryEntry dictionaryEntry in e.Data)
+						task.Start();
+					}
+					timedOut = !task.Wait(millisecondsTimeout, cancellationToken);
+					result = task.Result;
+				}
+				catch (Exception e)
+				{
+					if (e is AggregateException)
+					{
+						if (e.InnerException != null)
 						{
-							var additionalException = (Exception) dictionaryEntry.Value;
-							errors.Add(new Error(additionalException, false));
+							errors.Add(new Error(e.InnerException, false));
+						}
+						else
+						{
+							foreach (DictionaryEntry dictionaryEntry in e.Data)
+							{
+								var additionalException = (Exception) dictionaryEntry.Value;
+								errors.Add(new Error(additionalException, false));
+							}
 						}
 					}
 				}
+				var measurement = new Measurement<TSubject, TResult>(sample,
+					result,
+					task.Status,
+					timedOut,
+					deadline,
+					errors.ToArray());
+				return measurement;
 			}
-			var measurement = new Measurement<TSubject, TResult>(sample,
-				result,
-				task.Status,
-				timedOut,
-				deadline,
-				errors.ToArray());
-			return measurement;
 		}
 
 		IObservation<TSubject> IProcedure<TSubject>.Observe(ISource<TSubject> source, IDeadline deadline)

@@ -16,7 +16,7 @@ namespace Stile.Types.Expressions
 	public interface ILazyDescriptionOfLambda
 	{
 		string Body { get; }
-		string[] SubjectTokens { get; }
+		IReadOnlyList<string> SubjectTokens { get; }
 		string AliasParametersIntoBody(params string[] aliases);
 	}
 
@@ -41,7 +41,7 @@ namespace Stile.Types.Expressions
 				return value;
 			}
 		}
-		public string[] SubjectTokens { get; private set; }
+		public IReadOnlyList<string> SubjectTokens { get; private set; }
 
 		public string AliasParametersIntoBody(params string[] aliases)
 		{

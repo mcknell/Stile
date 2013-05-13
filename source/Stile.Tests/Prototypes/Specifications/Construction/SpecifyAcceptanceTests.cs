@@ -31,7 +31,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			IEvaluation<Foo<int>, int> evaluation = specification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
 			Assert.That(evaluation.TimedOut, Is.False);
-			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
+			Assert.That(evaluation.Errors.Count, Is.EqualTo(0));
 			Assert.That(evaluation.ToPastTense(),
 				Is.EqualTo(@"new Foo<int>().Count should not be 12, in runtime < 1 second"));
 		}
@@ -51,7 +51,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 			IFaultEvaluation<Saboteur> evaluation = boundSpecification.Evaluate();
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Incomplete));
 			Assert.That(evaluation.TimedOut, Is.True);
-			Assert.That(evaluation.Errors.Length, Is.EqualTo(0));
+			Assert.That(evaluation.Errors.Count, Is.EqualTo(0));
 			Assert.That(evaluation.ToPastTense(),
 				Is.EqualTo(string.Format(@"saboteur.Throw() should throw ArgumentException, in runtime < {0}ms
 but timed out", deadlineInMs)));

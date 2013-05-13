@@ -16,6 +16,7 @@ using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 using Stile.Readability;
 using Stile.Types.Enumerables;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Printable.Past
@@ -30,48 +31,48 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 
 		public void Visit1<TSubject>(IFaultSpecification<TSubject> target)
 		{
-			var describer = new ShouldSpecificationDescriber(_source);
+			var describer = new ShouldSpecificationDescriber(Source);
 			describer.Visit1(target);
 			Append(describer.ToString());
 		}
 
-		public void Visit1<TSubject>(IFaultEvaluation<TSubject> evaluation)
+		public void Visit1<TSubject>(IFaultEvaluation<TSubject> target)
 		{
-			Visit1(evaluation.Xray.Specification);
+			Visit1(target.Xray.Specification);
 
-			if (evaluation.Outcome != Outcome.Succeeded)
+			if (target.Outcome != Outcome.Succeeded)
 			{
 				AppendFormat("{0}{1}", Environment.NewLine, PastTenseEvaluations.But);
 			}
-			if (evaluation.TimedOut)
+			if (target.TimedOut)
 			{
 				AppendFormat(" {0}", PastTenseEvaluations.TimedOut);
 			}
-			else if (evaluation.Outcome == Outcome.Failed)
+			else if (target.Outcome == Outcome.Failed)
 			{
-				if (evaluation.Errors.None())
+				if (target.Errors.None())
 				{
 					AppendFormat(" {0}", PastTenseEvaluations.NoExceptionThrown);
 				}
 				else
 				{
-					string separator = string.Format(", {0} ", PastTenseEvaluations.Then);
-					string errorTypes = string.Join(separator, evaluation.Errors.Select(x => x.Exception.GetType().Name));
+					string separator = ", {0} ".InvariantFormat(PastTenseEvaluations.Then);
+					string errorTypes = string.Join(separator, target.Errors.Select(x => x.Exception.GetType().Name));
 					AppendFormat(" {0} {1}", PastTenseEvaluations.Threw, errorTypes);
 				}
 			}
 		}
 
-		public void Visit2<TSubject, TResult>(IEvaluation<TSubject, TResult> evaluation)
+		public void Visit2<TSubject, TResult>(IEvaluation<TSubject, TResult> target)
 		{
-			Visit(evaluation.Xray.Specification);
+			Visit(target.Xray.Specification);
 
-			if (evaluation.Outcome == false)
+			if (target.Outcome == false)
 			{
 				Append(Environment.NewLine);
 				Append(PastTenseEvaluations.But);
-				AppendFormat(" {0} {1}", PastTenseEvaluations.Was, evaluation.Value.ToDebugString());
-				if (evaluation.Xray.Specification.Xray.ExceptionFilter != null && evaluation.Errors.None())
+				AppendFormat(" {0} {1}", PastTenseEvaluations.Was, target.Value.ToDebugString());
+				if (target.Xray.Specification.Xray.ExceptionFilter != null && target.Errors.None())
 				{
 					AppendFormat(" {0} {1}", PastTenseEvaluations.And, PastTenseEvaluations.NoExceptionThrown);
 				}
@@ -79,10 +80,10 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 		}
 
 		public void Visit3<TSubject, TResult, TExpectationBuilder>(
-			ISpecification<TSubject, TResult, TExpectationBuilder> specification)
+			ISpecification<TSubject, TResult, TExpectationBuilder> target)
 			where TExpectationBuilder : class, IExpectationBuilder
 		{
-			Visit(specification);
+			Visit(target);
 		}
 
 		public static string Describe<TSubject>(IFaultEvaluation<TSubject> evaluation)
@@ -118,7 +119,7 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 
 		private void Visit<TSubject, TResult>(ISpecification<TSubject, TResult> target)
 		{
-			var describer = new ShouldSpecificationDescriber(_source);
+			var describer = new ShouldSpecificationDescriber(Source);
 			describer.Visit2(target);
 			Append(describer.ToString());
 		}

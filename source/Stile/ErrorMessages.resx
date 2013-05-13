@@ -117,103 +117,52 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="All" xml:space="preserve">
-    <value>all</value>
+  <data name="ExpressionExtensions_GetBodySubstring_BodyForm" xml:space="preserve">
+    <value>Body must be of the form 'x =&gt; x.&lt;...&gt;' but was '{0}'.</value>
   </data>
-  <data name="And" xml:space="preserve">
-    <value>and</value>
+  <data name="ExpressionExtensions_GetBodySubstring_ParameterCount" xml:space="preserve">
+    <value>Must have exactly one expression parameter but had {0}.</value>
   </data>
-  <data name="AnyCaps" xml:space="preserve">
-    <value>Any</value>
+  <data name="ExpressionFormatProvider_Format_Invalid" xml:space="preserve">
+    <value>The format of '{0}' is invalid.</value>
   </data>
-  <data name="AnyType" xml:space="preserve">
-    <value>Any {0}</value>
+  <data name="FaultSpecification_ctor_filterBuilder" xml:space="preserve">
+    <value>Argument of type {0} must have a {1}</value>
   </data>
-  <data name="AtLeast" xml:space="preserve">
-    <value>at least</value>
+  <data name="GrammarBuilder_AliasCollision" xml:space="preserve">
+    <value>Tried to add token '{0}' with alias '{1}', but found a symbol with that token and alias '{2}' instead.</value>
   </data>
-  <data name="AtMost" xml:space="preserve">
-    <value>at most</value>
+  <data name="Grammar_InitialToken" xml:space="preserve">
+    <value>Initial token {0} must be in the set of nonterminals.</value>
   </data>
-  <data name="Because" xml:space="preserve">
-    <value>because</value>
+  <data name="Grammar_Overlap" xml:space="preserve">
+    <value>Variables and terminals should not overlap but had {0} {1} in common:\r\n{2}</value>
   </data>
-  <data name="ComparablyEquivalentTo" xml:space="preserve">
-    <value>neither greater nor less than</value>
+  <data name="GraphExtensions_VerifyAreOn_EdgesNotInGraph" xml:space="preserve">
+    <value>These edges had vertices that were not in the graph:{0}{1}</value>
   </data>
-  <data name="ComparablyEquivalentToNegated" xml:space="preserve">
-    <value>either greater or less than</value>
+  <data name="Specification_ExpectationBuilderState" xml:space="preserve">
+    <value>Argument of type {0} must be convertible to {1}</value>
   </data>
-  <data name="Empty" xml:space="preserve">
-    <value>empty</value>
+  <data name="ValidateArgument_TryGetParameterName_Column" xml:space="preserve">
+    <value>, column {0}</value>
   </data>
-  <data name="Exactly" xml:space="preserve">
-    <value>exactly</value>
+  <data name="ValidateArgument_TryGetParameterName_Delimiter" xml:space="preserve">
+    <value>, </value>
   </data>
-  <data name="FewerThan" xml:space="preserve">
-    <value>fewer than</value>
+  <data name="ValidateArgument_TryGetParameterName_OneOf" xml:space="preserve">
+    <value>one of {{{0}}}</value>
   </data>
-  <data name="GreaterThan" xml:space="preserve">
-    <value>&gt;</value>
+  <data name="ValidateArgument_TryGetParameterName_ParameterFormat" xml:space="preserve">
+    <value>'{0}'</value>
   </data>
-  <data name="GreaterThanOrEqualTo" xml:space="preserve">
-    <value>&gt;=</value>
+  <data name="ValidateArgument_TryGetParameterName_ValidateAtLine" xml:space="preserve">
+    <value>, validated at line {0}</value>
   </data>
-  <data name="Hashcode" xml:space="preserve">
-    <value>hashcode</value>
+  <data name="ValidateArgument_ValidateArgumentIsNotNull" xml:space="preserve">
+    <value>(Could not determine the argument name via reflection, but a null was passed of type {0})</value>
   </data>
-  <data name="Initially" xml:space="preserve">
-    <value>initially,</value>
-  </data>
-  <data name="InstrumentedBy" xml:space="preserve">
-    <value>instrumented by</value>
-  </data>
-  <data name="Item" xml:space="preserve">
-    <value>item</value>
-  </data>
-  <data name="Items" xml:space="preserve">
-    <value>items</value>
-  </data>
-  <data name="LessThan" xml:space="preserve">
-    <value>&lt;</value>
-  </data>
-  <data name="LessThanOrEqualTo" xml:space="preserve">
-    <value>&lt;=</value>
-  </data>
-  <data name="MeasurableInLessThan" xml:space="preserve">
-    <value>in runtime &lt; {0}</value>
-  </data>
-  <data name="MoreThan" xml:space="preserve">
-    <value>more than</value>
-  </data>
-  <data name="No" xml:space="preserve">
-    <value>no</value>
-  </data>
-  <data name="Null" xml:space="preserve">
-    <value>null</value>
-  </data>
-  <data name="SequenceEqual" xml:space="preserve">
-    <value>sequence equal to</value>
-  </data>
-  <data name="ShouldBe" xml:space="preserve">
-    <value>should be</value>
-  </data>
-  <data name="ShouldContain" xml:space="preserve">
-    <value>should contain {0}</value>
-  </data>
-  <data name="ShouldHave" xml:space="preserve">
-    <value>should have</value>
-  </data>
-  <data name="ShouldNotBe" xml:space="preserve">
-    <value>should not be</value>
-  </data>
-  <data name="ShouldThrow" xml:space="preserve">
-    <value>should throw {0}</value>
-  </data>
-  <data name="Then" xml:space="preserve">
-    <value>then</value>
-  </data>
-  <data name="WhenMeasuredAgain" xml:space="preserve">
-    <value>when measured again</value>
+  <data name="ValidateArgument_ValidateArgumentIsNotNullOrEmpty" xml:space="preserve">
+    <value>Argument '{0}' cannot be empty.</value>
   </data>
 </root>

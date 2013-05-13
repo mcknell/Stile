@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using System.Configuration;
 using System.Threading;
 #endregion
 
@@ -19,9 +20,23 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 	public class Deadline : IDeadline
 	{
-		public static TimeSpan DefaultTimeout = TimeSpan. /*TODO: make this a config setting*/FromSeconds(5);
 		public static readonly Deadline Async = new Deadline(false);
 		public static readonly Deadline Synchronous = new Deadline(true);
+
+		static Deadline()
+		{
+			DefaultTimeout = TimeSpan.FromSeconds(5);
+			try
+			{
+				TimeSpan timeout;
+				if (TimeSpan.TryParse(ConfigurationManager.AppSettings["defaultEvaluationTimeoutForTimespanParse"],
+					out timeout))
+				{
+					DefaultTimeout = timeout;
+				}
+			}
+			catch (ConfigurationErrorsException) {}
+		}
 
 		protected Deadline(bool onThisThread)
 			: this(DefaultTimeout, onThisThread) {}
@@ -37,8 +52,19 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		}
 
 		public CancellationToken CancellationToken { get; private set; }
+		public static TimeSpan DefaultTimeout { get; private set; }
 		public bool OnThisThread { get; private set; }
 		public TimeSpan Timeout { get; private set; }
+
+		public static void SetDefaultTimeout(TimeSpan timeout)
+		{
+			DefaultTimeout = timeout.Duration();
+		}
+
+		public static Deadline ToDeadline(TimeSpan timeSpan)
+		{
+			return new Deadline(timeSpan, false);
+		}
 
 		public static implicit operator Deadline(TimeSpan timeSpan)
 		{

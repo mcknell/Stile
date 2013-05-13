@@ -1,7 +1,6 @@
-﻿#region License statement
-// NJamb, a specification and delta-specification DSL
-// Copyright (c) 2010-2011, Mark Knell
-// Published under the MIT License; all other rights reserved
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -87,7 +86,6 @@ namespace Stile.Types.Expressions.Printing
 		where TExpression : Expression
 	{
 		private readonly TExpression _expression;
-		protected bool _isTopLevel;
 
 		protected ExpressionParser(TExpression expression, IPrintStrategy printStrategy)
 			: base(printStrategy)
@@ -97,9 +95,11 @@ namespace Stile.Types.Expressions.Printing
 
 		public override void Parse(bool isTopLevel = false)
 		{
-			_isTopLevel = isTopLevel;
+			IsTopLevel = isTopLevel;
 			Parse(_expression);
 		}
+
+		protected bool IsTopLevel { get; set; }
 
 		protected abstract void Parse(TExpression expression);
 	}

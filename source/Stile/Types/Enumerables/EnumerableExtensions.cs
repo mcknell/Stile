@@ -196,7 +196,7 @@ namespace Stile.Types.Enumerables
 			}
 			else
 			{
-				sb.Append(PrintExtensions.ReadableEmpty);
+				sb.Append(LocalizableStrings.PrintExtensions_ReadableEmpty);
 			}
 			sb.Append("}");
 			return sb.ToString();

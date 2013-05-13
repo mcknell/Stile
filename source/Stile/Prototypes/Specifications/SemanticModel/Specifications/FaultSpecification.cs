@@ -17,6 +17,7 @@ using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
@@ -86,9 +87,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			_filterBuilderState = _filterBuilder.Xray;
 			if (_filterBuilderState == null)
 			{
-				throw new ArgumentException(string.Format("Argument of type {0} must have a {1}",
-					filterBuilder.GetType().Name,
-					typeof(IExceptionFilterBuilderState).Name));
+				throw new ArgumentException(
+					ErrorMessages.FaultSpecification_ctor_filterBuilder.InvariantFormat(filterBuilder.GetType().Name,
+						typeof(IExceptionFilterBuilderState).Name));
 			}
 			Prior = prior;
 			_source = source;

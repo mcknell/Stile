@@ -16,7 +16,7 @@ using Stile.Types.Enums;
 
 namespace Stile.Patterns.Behavioral.Traversal
 {
-	public class Traverser
+	public abstract class Traverser
 	{
 		#region Move enum
 		public enum Move

@@ -6,10 +6,12 @@
 #region using...
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Types.Enumerables;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
@@ -99,7 +101,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			string s = string.Join(" ", Members);
 			if (Members.Count > 1)
 			{
-				s = string.Format("({0})", s);
+				s = "({0})".InvariantFormat(s);
 			}
 			switch (Cardinality)
 			{

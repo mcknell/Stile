@@ -39,7 +39,7 @@ namespace Stile.Types.Expressions.Printing.ExpressionParsers
 
 		private bool ShouldUseParenthesis(BinaryExpression expression)
 		{
-			if (_isTopLevel)
+			if (IsTopLevel)
 			{
 				return false;
 			}

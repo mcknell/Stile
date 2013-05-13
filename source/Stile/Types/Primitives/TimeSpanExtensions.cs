@@ -30,55 +30,62 @@ namespace Stile.Types.Primitives
 
 		public static string ToReadableUnits(this TimeSpan timeSpan)
 		{
-			string readable = timeSpan < TimeSpan.Zero ? "minus " : string.Empty;
+			string readable = timeSpan < TimeSpan.Zero
+				? LocalizableStrings.TimeSpanExtensions_ToReadableUnits_Minus + " "
+				: string.Empty;
 			TimeSpan duration = timeSpan.Duration();
-			Func<long, string, string> round = (x, y) => string.Format("{0}{1} {2}", readable, x, x.Pluralize(y));
+			Func<long, string, string> round = (x, y) => "{0}{1} {2}".CurrentFormat(readable, x, x.Pluralize(y));
+			var lazy = new Lazy<string>(() => "{0}{1}".CurrentFormat(readable, timeSpan.ToString()));
 			if (timeSpan.Days > 0)
 			{
 				if (timeSpan.TotalDays - timeSpan.Days < TicksPerDay)
 				{
-					return round(timeSpan.Days, "day");
+					return round(timeSpan.Days, LocalizableStrings.TimeSpanExtensions_ToReadableUnits_Day);
 				}
-				return string.Format("{0}{1}", readable, timeSpan.ToString());
+				return lazy.Value;
 			}
 			if (timeSpan.Hours > 0)
 			{
 				if (timeSpan.TotalHours - timeSpan.Hours < TicksPerHour)
 				{
-					return round(timeSpan.Hours, "hour");
+					return round(timeSpan.Hours, LocalizableStrings.TimeSpanExtensions_ToReadableUnits_Hour);
 				}
-				return string.Format("{0}{1}", readable, timeSpan.ToString());
+				return lazy.Value;
 			}
 			if (timeSpan.Minutes > 0)
 			{
 				if (timeSpan.TotalMinutes - timeSpan.Minutes < TicksPerMinute)
 				{
-					return round(timeSpan.Minutes, "minute");
+					return round(timeSpan.Minutes, LocalizableStrings.TimeSpanExtensions_ToReadableUnits_Minute);
 				}
-				return string.Format("{0}{1}", readable, timeSpan.ToString());
+				return lazy.Value;
 			}
 			if (timeSpan.Seconds > 0)
 			{
 				if (timeSpan.TotalSeconds - timeSpan.Seconds < TicksPerSecond)
 				{
-					return round(timeSpan.Seconds, "second");
+					return round(timeSpan.Seconds, LocalizableStrings.TimeSpanExtensions_ToReadableUnits_Second);
 				}
 				if ((timeSpan.TotalMilliseconds % 1000) - timeSpan.Milliseconds < TicksPerMillisecond)
 				{
 					double seconds = Math.Round(timeSpan.TotalMilliseconds / 1000, 3);
-					return string.Format("{0}{1} seconds", readable, seconds);
+					return "{0}{1} {2}".CurrentFormat(readable,
+						seconds,
+						LocalizableStrings.TimeSpanExtensions_ToReadableUnits_Seconds);
 				}
-				return string.Format("{0}{1}", readable, timeSpan.ToString());
+				return lazy.Value;
 			}
 			if (timeSpan == TimeSpan.Zero)
 			{
-				return "TimeSpan.Zero";
+				return LocalizableStrings.TimeSpanExtensions_ToReadableUnits_TimeSpanZero;
 			}
 			if (duration < TimeSpan.FromMilliseconds(1))
 			{
-				return round(timeSpan.Ticks, "tick");
+				return round(timeSpan.Ticks, LocalizableStrings.TimeSpanExtensions_ToReadableUnits_Tick);
 			}
-			return string.Format("{0}{1}ms", readable, timeSpan.TotalMilliseconds);
+			return "{0}{1}{2}".CurrentFormat(readable,
+				timeSpan.TotalMilliseconds,
+				LocalizableStrings.TimeSpanExtensions_ToReadableUnits_Ms);
 		}
 	}
 }

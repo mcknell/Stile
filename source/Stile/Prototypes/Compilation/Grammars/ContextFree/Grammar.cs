@@ -10,6 +10,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Readability;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
@@ -41,17 +42,14 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			if (overlap.Any())
 			{
 				int count = overlap.Count;
-				throw new ArgumentException(
-					string.Format("Variables and terminals should not overlap but had {0} {1} in common:\r\n{2}",
-						count,
-						count.Pluralize("item"),
-						string.Join(", ", overlap)));
+				throw new ArgumentException(ErrorMessages.Grammar_Overlap.InvariantFormat(count,
+					count.Pluralize("item"),
+					string.Join(", ", overlap)));
 			}
 
 			if (_nonterminals.Contains(InitialToken) == false)
 			{
-				throw new ArgumentException(string.Format("Initial token {0} must be in the set of nonterminals.",
-					InitialToken));
+				throw new ArgumentException(ErrorMessages.Grammar_InitialToken.InvariantFormat(InitialToken));
 			}
 		}
 

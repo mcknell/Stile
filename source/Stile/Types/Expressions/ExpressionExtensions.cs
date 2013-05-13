@@ -12,6 +12,7 @@ using System.Reflection;
 using Stile.Readability;
 using Stile.Types.Enumerables;
 using Stile.Types.Expressions.Printing;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Types.Expressions
@@ -23,14 +24,15 @@ namespace Stile.Types.Expressions
 			if (expression.Parameters.Count != 1)
 			{
 				throw new ArgumentOutOfRangeException("expression",
-					"Must have exactly one expression parameter but had " + expression.Parameters.Count + ".");
+					ErrorMessages.ExpressionExtensions_GetBodySubstring_ParameterCount.InvariantFormat(
+						expression.Parameters.Count));
 			}
 			string bodyDescription = expression.Body.ToDebugString();
 			string firstParameterDescription = expression.Parameters[0].ToDebugString();
-			if (!bodyDescription.StartsWith(firstParameterDescription))
+			if (!bodyDescription.StartsWith(firstParameterDescription, StringComparison.Ordinal))
 			{
 				throw new ArgumentOutOfRangeException("expression",
-					"Body must be of the form 'x => x.<...>' but was '" + bodyDescription + "'.");
+					ErrorMessages.ExpressionExtensions_GetBodySubstring_BodyForm.InvariantFormat(bodyDescription));
 			}
 			int startIndex = Math.Min(bodyDescription.Length, 1 + firstParameterDescription.Length);
 			string bodySubstring = bodyDescription.Substring(startIndex);
@@ -55,7 +57,7 @@ namespace Stile.Types.Expressions
 		}
 
 		public static Lazy<string> ToLazyDebugString(this Expression expression,
-				Dictionary<string, string> parameterAliases = null)
+			Dictionary<string, string> parameterAliases = null)
 		{
 			return expression.ToLazyDebugString(Identity.Format, parameterAliases);
 		}
@@ -77,7 +79,8 @@ namespace Stile.Types.Expressions
 			if (memberExpression != null)
 			{
 				propertyInfo = memberExpression.Member as PropertyInfo;
-			} else
+			}
+			else
 			{
 				propertyInfo = null;
 			}

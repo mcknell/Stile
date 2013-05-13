@@ -13,6 +13,7 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Types.Enumerables;
+using Stile.Types.Reflection;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Grammar.Metadata
@@ -147,7 +148,8 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			string name = baseType.Name;
 			if (baseType.IsGenericType)
 			{
-				name = name.Substring(0, name.IndexOf("`", StringComparison.Ordinal));
+				name = name.Substring(0,
+					name.IndexOf(TypeStringBuilder.GenericArgumentDelimiter, StringComparison.Ordinal));
 			}
 			return name;
 		}
@@ -223,7 +225,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 					declaringType
 // ReSharper restore PossibleNullReferenceException
 						.Name;
-				int firstBackTick = symbol.IndexOf("`", StringComparison.InvariantCulture);
+				int firstBackTick = symbol.IndexOf(TypeStringBuilder.GenericArgumentDelimiter, StringComparison.Ordinal);
 				if (firstBackTick > 0)
 				{
 					symbol = symbol.Substring(0, firstBackTick);

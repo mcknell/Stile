@@ -17,6 +17,7 @@ using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
@@ -158,9 +159,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			Prior = prior;
 			if (_expectationBuilderState == null)
 			{
-				throw new ArgumentException(string.Format("Argument of type {0} must be convertible to {1}",
-					expectationBuilder.GetType().Name,
-					typeof(IExpectationBuilderState).Name));
+				throw new ArgumentException(
+					ErrorMessages.Specification_ExpectationBuilderState.InvariantFormat(expectationBuilder.GetType().Name,
+						typeof(IExpectationBuilderState).Name));
 			}
 			_deadline = deadline;
 		}
