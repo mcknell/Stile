@@ -28,6 +28,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 		[CanBeNull]
 		[System.Diagnostics.Contracts.Pure]
 		IFaultEvaluation<TSubject> EvaluateNextWith([NotNull] ISource<TSubject> source, IDeadline deadline = null);
+
+		[NotNull]
+		[System.Diagnostics.Contracts.Pure]
+		IFaultEvaluation<TSubject> ReEvaluate(IDeadline deadline = null);
 	}
 
 	public interface IFaultEvaluationState<TSubject> : IHasFaultSpecification<TSubject>,
@@ -138,6 +142,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 				TailSpecification,
 				deadline);
 			return evaluation;
+		}
+
+		public IFaultEvaluation<TSubject> ReEvaluate(IDeadline deadline = null)
+		{
+			return Specification.Xray.Evaluate(Observation.Sample.Source, Prior, TailSpecification, deadline);
 		}
 
 		public void Accept(IEvaluationVisitor visitor)

@@ -5,7 +5,9 @@
 
 #region using...
 using System;
+using System.Configuration;
 using System.Linq;
+using System.Threading;
 using NUnit.Framework;
 using Stile.Prototypes.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
@@ -23,6 +25,24 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 	[TestFixture]
 	public class SpecifyAcceptanceTests
 	{
+		private static readonly TimeSpan _SaboteurFuse = TimeSpan.FromMilliseconds(15);
+		private readonly TimeSpan _deadline = TimeSpan.FromMilliseconds(5);
+		private Saboteur _saboteur;
+		private bool _writeToConsole;
+
+		[TestFixtureSetUp]
+		public void FixtureInit()
+		{
+			bool b;
+			_writeToConsole = bool.TryParse(ConfigurationManager.AppSettings["TraceThreadsToConsole"], out b) && b;
+		}
+
+		[SetUp]
+		public void Init()
+		{
+			_saboteur = MakeSaboteur();
+		}
+
 		[Test]
 		public void Before_WhenBoundToInstance()
 		{
@@ -39,29 +59,33 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 		[Test]
 		public void Before_WhenBoundToInstance_OnlyTimesOutOnAsync()
 		{
-			const int deadlineInMs = 5;
-			var saboteur = new Saboteur();
-			saboteur.Load(() => new ArgumentException());
-			saboteur.Fuse = TimeSpan.FromMilliseconds(15);
-			IBoundFaultSpecification<Saboteur> boundSpecification =
-				Specify.For(() => saboteur)
-					.That(x => x.Throw())
-					.Throws<ArgumentException>()
-					.Before(TimeSpan.FromMilliseconds(deadlineInMs));
-			IFaultEvaluation<Saboteur> evaluation = boundSpecification.Evaluate();
-			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Incomplete));
-			Assert.That(evaluation.TimedOut, Is.True);
-			Assert.That(evaluation.Errors.Count, Is.EqualTo(0));
-			Assert.That(evaluation.ToPastTense(),
-				Is.EqualTo(string.Format(@"saboteur.Throw() should throw ArgumentException, in runtime < {0}ms
-but timed out", deadlineInMs)));
+			IFaultEvaluation<Saboteur> evaluation =
+				Specify.For(() => _saboteur).That(x => x.Throw()).Throws<ArgumentException>().Before(_deadline).Evaluate();
+			IFaultEvaluation<Saboteur> synchronousEvaluation = evaluation.ReEvaluate(Deadline.Synchronous);
 
-			IFaultEvaluation<Saboteur> synchronousEvaluation = boundSpecification.Evaluate(Deadline.Synchronous);
-			Assert.That(synchronousEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
-			Assert.That(synchronousEvaluation.TimedOut, Is.False);
-			Assert.That(synchronousEvaluation.ToPastTense(),
-				Is.EqualTo(string.Format(@"saboteur.Throw() should throw ArgumentException, in runtime < {0}ms",
-					deadlineInMs)));
+			Before_OnlyTimesOutOnAsync(evaluation,
+				synchronousEvaluation,
+				evaluation.ToPastTense(),
+				synchronousEvaluation.ToPastTense(),
+				"Throw()");
+		}
+
+		[Test]
+		public void Before_WhenBoundToInstrumentInstance_OnlyTimesOutOnAsync()
+		{
+			IEvaluation<Saboteur, Saboteur> evaluation =
+				Specify.For(() => _saboteur)
+					.That(x => x.SuicidalSideEffect)
+					.Throws<ArgumentException>()
+					.Before(_deadline)
+					.Evaluate();
+			IEvaluation<Saboteur, Saboteur> synchronousEvaluation = evaluation.ReEvaluate(Deadline.Synchronous);
+
+			Before_OnlyTimesOutOnAsync(evaluation,
+				synchronousEvaluation,
+				evaluation.ToPastTense(),
+				synchronousEvaluation.ToPastTense(),
+				"SuicidalSideEffect");
 		}
 
 		[Test]
@@ -175,6 +199,53 @@ but no exception was thrown"));
 			IEvaluation<Foo<int>, string> evaluation = specification.Evaluate(new Foo<int>());
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Failed));
 			Assert.That(evaluation.Value, Is.Not.EqualTo(45));
+		}
+
+		private void Before_OnlyTimesOutOnAsync(IEvaluation<Saboteur> evaluation,
+			IEvaluation<Saboteur> synchronousEvaluation,
+			string description,
+			string synchronousDescription,
+			string member)
+		{
+			Trace();
+			Assert.NotNull(evaluation.Sample, "precondition");
+			Assert.That(evaluation.Sample.Value.Fuse, Is.GreaterThan(_deadline), "precondition");
+			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Incomplete));
+			Assert.That(evaluation.TimedOut, Is.True);
+			Assert.That(evaluation.Errors.Count, Is.EqualTo(1));
+			Trace(2);
+			Assert.NotNull(synchronousEvaluation.Sample, "precondition");
+			Assert.That(synchronousEvaluation.Sample.Value.Fuse, Is.GreaterThan(_deadline), "precondition");
+			Assert.That(synchronousEvaluation.Outcome, Is.EqualTo(Outcome.Succeeded));
+			Assert.That(synchronousEvaluation.TimedOut, Is.False);
+			Assert.That(evaluation.Errors.Count, Is.GreaterThan(0));
+
+			string expected = string.Format(@"_saboteur.{1} should throw ArgumentException, in runtime < {0}ms",
+				_deadline.TotalMilliseconds,
+				member);
+			Assert.That(synchronousDescription, Is.EqualTo(expected));
+			Assert.That(description, Is.EqualTo(string.Format(@"{0}
+but timed out", expected)));
+		}
+
+		private static Saboteur MakeSaboteur()
+		{
+			var saboteur = new Saboteur();
+			saboteur.Load(() => new ArgumentException());
+			saboteur.Fuse = _SaboteurFuse;
+			return saboteur;
+		}
+
+		private void Trace(int? number = null)
+		{
+			if (_writeToConsole)
+			{
+				Console.WriteLine("asserting{3} on thread {0}, background=={1}, pool=={2}",
+					Thread.CurrentThread.ManagedThreadId,
+					Thread.CurrentThread.IsBackground,
+					Thread.CurrentThread.IsThreadPoolThread,
+					number.HasValue ? number.ToString() : string.Empty);
+			}
 		}
 	}
 }

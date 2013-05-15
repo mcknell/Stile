@@ -209,12 +209,8 @@ II.2.12 &lt;HandlesEvent /&gt;&#xD;
           &lt;Or&gt;&#xD;
             &lt;HasAttribute CLRName="NUnit.Framework.SetUpAttribute" Inherit="true"/&gt;&#xD;
             &lt;HasAttribute CLRName="NUnit.Framework.TearDownAttribute" Inherit="true"/&gt;&#xD;
-            &lt;HasAttribute CLRName="NUnit.Framework.FixtureSetUpAttribute" Inherit="true"/&gt;&#xD;
-            &lt;HasAttribute CLRName="NUnit.Framework.FixtureTearDownAttribute" Inherit="true"/&gt;&#xD;
-            &lt;HasAttribute CLRName="NUnit.Framework.SetUpAttribute" Inherit="false"/&gt;&#xD;
-            &lt;HasAttribute CLRName="NUnit.Framework.TearDownAttribute" Inherit="false"/&gt;&#xD;
-            &lt;HasAttribute CLRName="NUnit.Framework.FixtureSetUpAttribute" Inherit="false"/&gt;&#xD;
-            &lt;HasAttribute CLRName="NUnit.Framework.FixtureTearDownAttribute" Inherit="false"/&gt;&#xD;
+            &lt;HasAttribute CLRName="NUnit.Framework.TestFixtureSetUpAttribute" Inherit="true"/&gt;&#xD;
+            &lt;HasAttribute CLRName="NUnit.Framework.TestFixtureTearDownAttribute" Inherit="true"/&gt;&#xD;
           &lt;/Or&gt;&#xD;
         &lt;/And&gt;&#xD;
       &lt;/Match&gt;&#xD;
@@ -309,6 +305,7 @@ II.2.12 &lt;HandlesEvent /&gt;&#xD;
   &#xD;
 &lt;/Patterns&gt;&#xD;
 </s:String>
+	<s:String x:Key="/Default/CodeStyle/CSharpMemberOrderPattern/LayoutType/@EntryValue">CustomLayout</s:String>
 	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderRegionName/@EntryValue">License info...</s:String>
 	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">Stile for .NET, Copyright 2011-$CURRENT_YEAR$ by Mark Knell&#xD;
 Licensed under the MIT License found at the top directory of the Stile project on GitHub&#xD;

@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
@@ -23,6 +24,15 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	public class Measurement<TSubject, TResult> : Observation<TSubject>,
 		IMeasurement<TSubject, TResult>
 	{
+		public Measurement(IObservation<TSubject> observation, TResult value)
+			: this(
+				observation.Sample,
+				value,
+				observation.TaskStatus,
+				observation.TimedOut,
+				observation.Deadline,
+				observation.Errors.ToArray()) {}
+
 		public Measurement(ISample<TSubject> sample,
 			TResult value,
 			TaskStatus taskStatus,

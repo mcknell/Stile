@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.Threading;
 #endregion
@@ -15,9 +16,17 @@ namespace Stile.Tests.Prototypes.Specifications.SampleObjects
 	{
 		private readonly bool _writeToConsole;
 
-		public Saboteur(int? dudsBeforeThrow = null, bool writeToConsole = false)
+		public Saboteur(int? dudsBeforeThrow = null, bool? writeToConsole = null)
 		{
-			_writeToConsole = writeToConsole;
+			if (writeToConsole.HasValue)
+			{
+				_writeToConsole = writeToConsole.Value;
+			}
+			else
+			{
+				bool b;
+				_writeToConsole = bool.TryParse(ConfigurationManager.AppSettings["TraceThreadsToConsole"], out b) && b;
+			}
 			MisfiresRemaining = dudsBeforeThrow;
 		}
 
@@ -56,9 +65,14 @@ namespace Stile.Tests.Prototypes.Specifications.SampleObjects
 			{
 				if (_writeToConsole)
 				{
-					Console.WriteLine("Saboteur sleeping at {0:HH:mm:ss.fff} for {1}ms",
+					Thread currentThread = Thread.CurrentThread;
+					Console.WriteLine(
+						"Saboteur sleeping at {0:HH:mm:ss.fff} for {1}ms on thread {2}, background=={3}, pool=={4}",
 						DateTime.Now,
-						Fuse.Value.TotalMilliseconds);
+						Fuse.Value.TotalMilliseconds,
+						currentThread.ManagedThreadId,
+						currentThread.IsBackground,
+						currentThread.IsThreadPoolThread);
 				}
 				stopwatch.Start();
 				Thread.Sleep(Fuse.Value);

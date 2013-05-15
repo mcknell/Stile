@@ -80,8 +80,9 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 
 		public void Visit2<TSubject, TResult>(IExpectation<TSubject, TResult> target)
 		{
+			target = target.ValidateArgumentIsNotNull();
 			var expectationDescriber = new ShouldExpectationDescriber(Source);
-			expectationDescriber.Visit2(target.ValidateArgumentIsNotNull());
+			expectationDescriber.Visit2(target);
 			Append(expectationDescriber.ToString());
 		}
 

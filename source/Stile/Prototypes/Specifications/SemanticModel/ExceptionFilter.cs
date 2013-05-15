@@ -114,7 +114,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 		public IInstrument<TSubject, TResult> Instrument { get; private set; }
 
-		public virtual TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
+		public TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit2(this, data);
 		}
@@ -129,7 +129,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 			return visitor.Visit2(this, data);
 		}
 
-		public virtual void Accept(IExpectationVisitor visitor)
+		public void Accept(IExpectationVisitor visitor)
 		{
 			visitor.Visit2(this);
 		}

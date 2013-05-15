@@ -5,17 +5,12 @@
 
 #region using...
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
-using Stile.Types.Expressions;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel
@@ -41,115 +36,46 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		}
 	}
 
-	public class Instrument<TSubject, TResult> : IInstrument<TSubject, TResult>,
-		IProcedureState<TSubject>
+	public class Instrument<TSubject, TResult> : Procedure<TSubject>,
+		IInstrument<TSubject, TResult>
 	{
 		private readonly Lazy<Func<TSubject, TResult>> _lazyFunc;
 
 		public Instrument([NotNull] Expression<Func<TSubject, TResult>> expression,
 			[CanBeNull] ISource<TSubject> source)
+			: base(expression, source, null)
 		{
-			Expression<Func<TSubject, TResult>> validatedExpression = expression.ValidateArgumentIsNotNull();
-			_lazyFunc = new Lazy<Func<TSubject, TResult>>(validatedExpression.Compile);
-			Source = source;
-			Lambda = new LazyDescriptionOfLambda(expression);
+			expression = expression.ValidateArgumentIsNotNull();
+			_lazyFunc = new Lazy<Func<TSubject, TResult>>(expression.Compile);
 		}
 
-		public ILazyDescriptionOfLambda Lambda { get; private set; }
-		public IAcceptSpecificationVisitors Parent
-		{
-			get { return Source; }
-		}
-		public ISource<TSubject> Source { get; private set; }
-		public IProcedureState<TSubject> Xray
-		{
-			get { return this; }
-		}
-
-		public void Accept(ISpecificationVisitor visitor)
+		public override void Accept(ISpecificationVisitor visitor)
 		{
 			visitor.Visit2(this);
 		}
 
-		public TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
+		public override TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit2(this, data);
 		}
 
 		public IMeasurement<TSubject, TResult> Measure(ISource<TSubject> source, IDeadline deadline = null)
 		{
-// ReSharper disable ReturnValueOfPureMethodIsNotUsed
-			source.ValidateArgumentIsNotNull();
-// ReSharper restore ReturnValueOfPureMethodIsNotUsed
-			var errors = new List<IError>();
-			bool onThisThread = false;
-			CancellationToken cancellationToken = CancellationToken.None;
-			TimeSpan timeout = Deadline.DefaultTimeout;
-			if (deadline != null)
-			{
-				onThisThread = deadline.OnThisThread;
-				cancellationToken = deadline.CancellationToken;
-				timeout = deadline.Timeout;
-			}
-			var millisecondsTimeout = (int) timeout.TotalMilliseconds;
-
-			ISample<TSubject> sample = null;
-
-			var task = new Task<TResult>(() =>
-			{
-				sample = source.Get();
-				TSubject subject = sample.Value;
-				return _lazyFunc.Value.Invoke(subject);
-			});
-
-			using(task)
-			{
-				bool timedOut = false;
-				TResult result = default(TResult);
-				try
-				{
-					if (onThisThread)
-					{
-						task.RunSynchronously();
-					}
-					else
-					{
-						task.Start();
-					}
-					timedOut = !task.Wait(millisecondsTimeout, cancellationToken);
-					result = task.Result;
-				}
-				catch (Exception e)
-				{
-					if (e is AggregateException)
-					{
-						if (e.InnerException != null)
-						{
-							errors.Add(new Error(e.InnerException, false));
-						}
-						else
-						{
-							foreach (DictionaryEntry dictionaryEntry in e.Data)
-							{
-								var additionalException = (Exception) dictionaryEntry.Value;
-								errors.Add(new Error(additionalException, false));
-							}
-						}
-					}
-				}
-				var measurement = new Measurement<TSubject, TResult>(sample,
-					result,
-					task.Status,
-					timedOut,
-					deadline,
-					errors.ToArray());
-				return measurement;
-			}
+			source = source.ValidateArgumentIsNotNull();
+			ObservationResult<TResult> observationResult = Observe(source, deadline, TakeAction);
+			IObservation<TSubject> observation = observationResult.Observation;
+			var measurement = new Measurement<TSubject, TResult>(observation, observationResult.Result);
+			return measurement;
 		}
 
 		IObservation<TSubject> IProcedure<TSubject>.Observe(ISource<TSubject> source, IDeadline deadline)
 		{
 			return Measure(source, deadline);
+		}
+
+		private TResult TakeAction(TSubject subject)
+		{
+			return _lazyFunc.Value.Invoke(subject);
 		}
 	}
 }

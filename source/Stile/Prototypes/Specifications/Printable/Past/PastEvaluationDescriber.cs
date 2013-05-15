@@ -40,15 +40,7 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 		{
 			Visit1(target.Xray.Specification);
 
-			if (target.Outcome != Outcome.Succeeded)
-			{
-				AppendFormat("{0}{1}", Environment.NewLine, PastTenseEvaluations.But);
-			}
-			if (target.TimedOut)
-			{
-				AppendFormat(" {0}", PastTenseEvaluations.TimedOut);
-			}
-			else if (target.Outcome == Outcome.Failed)
+			if (IfAppendFailure(target))
 			{
 				if (target.Errors.None())
 				{
@@ -67,10 +59,8 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 		{
 			Visit(target.Xray.Specification);
 
-			if (target.Outcome == false)
+			if (IfAppendFailure(target))
 			{
-				Append(Environment.NewLine);
-				Append(PastTenseEvaluations.But);
 				AppendFormat(" {0} {1}", PastTenseEvaluations.Was, target.Value.ToDebugString());
 				if (target.Xray.Specification.Xray.ExceptionFilter != null && target.Errors.None())
 				{
@@ -86,20 +76,26 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 			Visit(target);
 		}
 
+		public static string Describe<TSubject>(IAcceptEvaluationVisitors target, ISource<TSubject> source)
+		{
+			target = target.ValidateArgumentIsNotNull();
+			var describer = new PastEvaluationDescriber(source.ValidateArgumentIsNotNull());
+			target.Accept(describer);
+			return describer.ToString();
+		}
+
 		public static string Describe<TSubject>(IFaultEvaluation<TSubject> evaluation)
 		{
-			ISource<TSubject> source = GetSource(evaluation.ValidateArgumentIsNotNull());
-			var describer = new PastEvaluationDescriber(source);
-			describer.Visit1(evaluation);
-			return describer.ToString();
+			evaluation = evaluation.ValidateArgumentIsNotNull();
+			ISource<TSubject> source = GetSource(evaluation);
+			return Describe(evaluation.Xray, source);
 		}
 
 		public static string Describe<TSubject, TResult>(IEvaluation<TSubject, TResult> evaluation)
 		{
-			ISource<TSubject> source = GetSource(evaluation.ValidateArgumentIsNotNull());
-			var describer = new PastEvaluationDescriber(source);
-			describer.Visit2(evaluation);
-			return describer.ToString();
+			evaluation = evaluation.ValidateArgumentIsNotNull();
+			ISource<TSubject> source = GetSource(evaluation);
+			return Describe(evaluation.Xray, source);
 		}
 
 		private static ISource<TSubject> GetSource<TSubject>(IEvaluation<TSubject> evaluation)
@@ -115,6 +111,20 @@ namespace Stile.Prototypes.Specifications.Printable.Past
 				source = sample.Source;
 			}
 			return source;
+		}
+
+		private bool IfAppendFailure(IEvaluation target)
+		{
+			if (target.Outcome != Outcome.Succeeded)
+			{
+				AppendFormat("{0}{1}", Environment.NewLine, PastTenseEvaluations.But);
+			}
+			if (target.TimedOut)
+			{
+				AppendFormat(" {0}", PastTenseEvaluations.TimedOut);
+				return false;
+			}
+			return target.Outcome == Outcome.Failed;
 		}
 
 		private void Visit<TSubject, TResult>(ISpecification<TSubject, TResult> target)

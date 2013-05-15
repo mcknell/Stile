@@ -43,13 +43,14 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 	public abstract class Procedure : IProcedure,
 		IProcedureState
 	{
-		protected Procedure(LambdaExpression lambda)
+		protected Procedure([NotNull] LambdaExpression lambda, [CanBeNull] IAcceptSpecificationVisitors parent)
 		{
-			Lambda = new LazyDescriptionOfLambda(lambda);
+			Lambda = new LazyDescriptionOfLambda(lambda.ValidateArgumentIsNotNull());
+			Parent = parent;
 		}
 
 		public ILazyDescriptionOfLambda Lambda { get; private set; }
-		public abstract IAcceptSpecificationVisitors Parent { get; }
+		public IAcceptSpecificationVisitors Parent { get; private set; }
 
 		public abstract void Accept(ISpecificationVisitor visitor);
 		public abstract TData Accept<TData>(ISpecificationVisitor<TData> visitor, TData data);
@@ -62,15 +63,18 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 		private readonly Lazy<Action<TSubject>> _lazyAction;
 
 		public Procedure([NotNull] Expression<Action<TSubject>> expression, [CanBeNull] ISource<TSubject> source)
-			: base(expression)
-		{
-			_lazyAction = new Lazy<Action<TSubject>>(expression.Compile);
-			Source = source;
-		}
+			: this(expression, source, expression.Compile) {}
 
-		public override IAcceptSpecificationVisitors Parent
+		protected Procedure([NotNull] LambdaExpression lambda,
+			[CanBeNull] ISource<TSubject> source,
+			Func<Action<TSubject>> actionFactory)
+			: base(lambda, source)
 		{
-			get { return Source; }
+			Source = source;
+			if (actionFactory != null)
+			{
+				_lazyAction = new Lazy<Action<TSubject>>(actionFactory);
+			}
 		}
 
 		public ISource<TSubject> Source { get; private set; }
@@ -92,9 +96,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 		public IObservation<TSubject> Observe(ISource<TSubject> source, IDeadline deadline = null)
 		{
-// ReSharper disable ReturnValueOfPureMethodIsNotUsed
-			source.ValidateArgumentIsNotNull();
-// ReSharper restore ReturnValueOfPureMethodIsNotUsed
+			source = source.ValidateArgumentIsNotNull();
+			ObservationResult<bool> observationResult = Observe(source, deadline, TakeAction);
+			return observationResult.Observation;
+		}
+
+		protected ObservationResult<TResult> Observe<TResult>(ISource<TSubject> source,
+			[CanBeNull] IDeadline deadline,
+			Func<TSubject, TResult> operation)
+		{
+			operation = operation.ValidateArgumentIsNotNull();
 			var errors = new List<IError>();
 			bool onThisThread = false;
 			CancellationToken cancellationToken = CancellationToken.None;
@@ -109,14 +120,15 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 
 			ISample<TSubject> sample = null;
 
-			var task = new Task(() =>
+			var task = new Task<TResult>(() =>
 			{
 				sample = source.Get();
 				TSubject subject = sample.Value;
-				_lazyAction.Value.Invoke(subject);
+				return operation.Invoke(subject);
 			});
 
 			bool timedOut = false;
+			TResult result = default(TResult);
 			try
 			{
 				if (onThisThread)
@@ -128,31 +140,49 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 					task.Start();
 				}
 				timedOut = !task.Wait(millisecondsTimeout, cancellationToken);
+				result = task.Result;
 			}
-			catch (Exception e)
+			catch (AggregateException e)
 			{
-				if (e is AggregateException)
+				if (e.InnerException != null)
 				{
-					if (e.InnerException != null)
+					errors.Add(new Error(e.InnerException, false));
+				}
+				else
+				{
+					foreach (DictionaryEntry dictionaryEntry in e.Data)
 					{
-						errors.Add(new Error(e.InnerException, false));
-					}
-					else
-					{
-						foreach (DictionaryEntry dictionaryEntry in e.Data)
-						{
-							var additionalException = (Exception)dictionaryEntry.Value;
-							errors.Add(new Error(additionalException, false));
-						}
+						var additionalException = (Exception) dictionaryEntry.Value;
+						errors.Add(new Error(additionalException, false));
 					}
 				}
 			}
-			var observation = new Observation<TSubject>(task.Status, timedOut, sample, deadline, errors.ToArray());
+
 			if (task.IsCompleted)
 			{
 				task.Dispose();
 			}
-			return observation;
+			var observation = new Observation<TSubject>(task.Status, timedOut, sample, deadline, errors.ToArray());
+			return new ObservationResult<TResult>(observation, result);
+		}
+
+		private bool TakeAction(TSubject subject)
+		{
+			_lazyAction.Value.Invoke(subject);
+			return false;
+		}
+
+		protected class ObservationResult<TResult>
+		{
+			public ObservationResult(IObservation<TSubject> observation, [CanBeNull] TResult result)
+			{
+				Observation = observation.ValidateArgumentIsNotNull();
+				Result = result;
+			}
+
+			public IObservation<TSubject> Observation { get; private set; }
+			[CanBeNull]
+			public TResult Result { get; private set; }
 		}
 	}
 }
