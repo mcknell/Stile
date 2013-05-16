@@ -24,7 +24,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 {
 	public interface IExpectationBuilder : IChainingConjuction {}
 
-	public interface IExpectationBuilder<out TSpecification, TSubject> : IExpectationBuilder
+	public interface IExpectationBuilder<out TSpecification> : IExpectationBuilder
 		where TSpecification : class, IChainableSpecification
 	{
 		[NotNull]
@@ -34,7 +34,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 	}
 
 	public interface IExpectationBuilder<out TSpecification, TSubject, TResult, out THas, out TIs> :
-		IExpectationBuilder<TSpecification, TSubject>
+		IExpectationBuilder<TSpecification>
 		where TSpecification : class, IChainableSpecification
 		where THas : class, IHas<TSpecification, TSubject, TResult>
 		where TIs : class, IIs<TSpecification, TSubject, TResult>
