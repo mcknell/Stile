@@ -36,7 +36,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 	public interface IFaultSpecificationState<TSubject> : IFaultSpecificationState,
 		ISpecificationState<TSubject>,
-		IHasProcedure<TSubject>
+		IHasProcedure<TSubject>,
+		ICanGetPredecessors<IFaultSpecification<TSubject>>
 	{
 		[NotNull]
 		IExceptionFilter<TSubject> ExceptionFilter { get; }
@@ -49,9 +50,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			[CanBeNull] IFaultEvaluation<TSubject> priorEvaluation,
 			[NotNull] IFaultSpecificationState<TSubject> tailSpecification,
 			IDeadline deadline = null);
-
-		[NotNull]
-		IEnumerable<IFaultSpecification<TSubject>> GetPredecessors(bool includeSelf = false);
 	}
 
 	public class FaultSpecification<TSubject, TExceptionFilterBuilder> :

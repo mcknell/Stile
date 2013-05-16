@@ -126,6 +126,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\ComparableExpectationTerm.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\SequenceEqual.cs" />
     <Compile Include="Properties\SharedKeyAttributes.cs" />
+    <Compile Include="Patterns\Structural\Hierarchy\ICanGetPredecessors.cs" />
     <Compile Include="Types\Comparison\ComparisonRelation.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Empty.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIs.cs" />

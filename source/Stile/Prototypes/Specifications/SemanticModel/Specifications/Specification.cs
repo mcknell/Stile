@@ -65,7 +65,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	}
 
 	public interface ISpecificationState<TSubject, TResult> : ISpecificationState<TSubject>,
-		IHasExpectation<TSubject, TResult>
+		IHasExpectation<TSubject, TResult>,
+		ICanGetPredecessors<ISpecification<TSubject, TResult>>
 	{
 		[CanBeNull]
 		IExceptionFilter<TSubject, TResult> ExceptionFilter { get; }
@@ -77,9 +78,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			[CanBeNull] IEvaluation<TSubject, TResult> priorEvaluation,
 			[NotNull] ISpecificationState<TSubject, TResult> tailSpecification,
 			IDeadline deadline = null);
-
-		[NotNull]
-		IEnumerable<ISpecification<TSubject, TResult>> GetPredecessors(bool includeSelf = false);
 	}
 
 	public abstract class Specification : ISpecificationState
