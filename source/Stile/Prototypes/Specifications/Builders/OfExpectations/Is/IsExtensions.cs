@@ -54,7 +54,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : class, IEnumerable<TItem>
 		{
-			var expectation = new Expectation<TSubject, TResult>(builder.Xray.BuilderState.Instrument,
+			var expectation = new Expectation<TSubject, TResult>(builder.Xray.BuilderState.Inspection,
 				x => x.SequenceEquals(sequence) == -1,
 				new SequenceEqual<TSpecification, TSubject, TResult, TItem>(builder.Xray, sequence),
 				builder.Xray.Negated);

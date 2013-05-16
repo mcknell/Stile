@@ -55,7 +55,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			{
 				var lastTerm = new Empty<TSpecification, TSubject, TResult>(this);
 				TSpecification specification =
-					BuilderState.Make(Expectation<TSubject>.From(_all, Negated, BuilderState.Instrument, lastTerm));
+					BuilderState.Make(Expectation<TSubject>.From(_all, Negated, BuilderState.Inspection, lastTerm));
 				return specification;
 			}
 		}

@@ -74,7 +74,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 		{
 			var itemsSatisfying = new ItemsSatisfying<TSpecification, TSubject, TResult, TItem>(predicate, this);
 			Predicate<TResult> func = MakePredicate(predicate);
-			var expectation = new Expectation<TSubject, TResult>(_hasState.ExpectationBuilder.Instrument,
+			var expectation = new Expectation<TSubject, TResult>(_hasState.ExpectationBuilder.Inspection,
 				result => func(result),
 				itemsSatisfying,
 				Negated.False);

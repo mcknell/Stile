@@ -41,7 +41,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable
 			[Symbol(Nonterminal.Enum.EnumerableResult, NonterminalSymbol.IfEnumerable)] //
 			[NotNull] IExpectationBuilderState<IChainableSpecification, TSubject, TResult> state,
 			[CanBeNull] TSpecification prior)
-			: base(state.Instrument, prior) {}
+			: base(state.Inspection, prior) {}
 
 		protected override IEnumerableHas<TSpecification, TSubject, TResult, TItem> MakeHas()
 		{

@@ -29,7 +29,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 
 		public override object CloneFor(object specification)
 		{
-			return new FluentExpectationBuilder<TSubject, TResult>(Instrument,
+			return new FluentExpectationBuilder<TSubject, TResult>(Inspection,
 				specification as ISpecification<TSubject, TResult, IFluentExpectationBuilder<TSubject, TResult>>);
 		}
 

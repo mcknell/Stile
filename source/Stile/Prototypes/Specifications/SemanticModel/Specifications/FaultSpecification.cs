@@ -95,7 +95,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public TExceptionFilterBuilder AndThen
 		{
-			get { return (TExceptionFilterBuilder) _filterBuilderState.CloneFor(this); }
+			get { return (TExceptionFilterBuilder) _filterBuilderState.ChainFrom(this); }
 		}
 
 		public IAcceptEvaluationVisitors Parent

@@ -13,6 +13,7 @@ using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
+using Stile.Readability;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
@@ -136,6 +137,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 				outcome = Outcome.Failed;
 			}
 			return outcome;
+		}
+
+		public static Expectation<TSubject, TResult> MakeFor<TException>(
+			IInstrument<TSubject, TResult> instrument) where TException : Exception
+		{
+			Expression<Predicate<TResult>> expression = result => true;
+			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(x => x is TException,
+				instrument,
+				typeof(TException).ToLazyDebugString());
+			return new Expectation<TSubject, TResult>(instrument, expression, exceptionFilter, Negated.False);
 		}
 
 		private static Lazy<Predicate<IMeasurement<TSubject, TResult>>> MakeLazyPredicate(

@@ -28,10 +28,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 	/// Might look useless, but is a base interface for <see cref="IFaultSpecification{TSubject}"/>
 	/// </summary>
 	/// <typeparam name="TSubject"></typeparam>
-	public interface ISpecification<in TSubject> : ISpecification {}
+	public interface ISpecification<in TSubject> : IChainableSpecification {}
 
 	public interface ISpecification<TSubject, TResult> : ISpecification<TSubject>,
-		IChainableSpecification,
 		IHides<ISpecificationState<TSubject, TResult>>,
 		IEvaluable<TSubject, TResult> {}
 

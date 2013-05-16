@@ -6,11 +6,9 @@
 #region using...
 using System;
 using JetBrains.Annotations;
-using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
-using Stile.Readability;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
@@ -19,7 +17,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 
 	public interface IExceptionFilterBuilder<out TSpecification, TSubject> : IExceptionFilterBuilder,
 		IHides<IExceptionFilterBuilderState<TSpecification, TSubject>>
-		where TSpecification : class, IFaultSpecification<TSubject>
+		where TSpecification : class, ISpecification<TSubject>
 	{
 		TSpecification Throws<TException>() where TException : Exception;
 	}
@@ -27,21 +25,22 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 	public interface IExceptionFilterBuilderState
 	{
 		[NotNull]
-		object CloneFor(object specification);
+		object ChainFrom(object specification);
 	}
 
 	public interface IExceptionFilterBuilderState<out TSpecification, TSubject> : IExceptionFilterBuilderState,
-		IChainingConjuctionState<TSpecification>
-		where TSpecification : class, IFaultSpecification<TSubject>
+		IChainingConjuctionState<TSpecification, IProcedure<TSubject>>
+		where TSpecification : class, ISpecification<TSubject>
 	{
 		Func<IExceptionFilter<TSubject>, TSpecification> Factory { get; }
-		[NotNull]
-		IProcedure<TSubject> Procedure { get; }
 		[CanBeNull]
 		ISource<TSubject> Source { get; }
 	}
 
 	public abstract class ExceptionFilterBuilder<TSpecification, TSubject, TBuilder> :
+		ChainingConjunction
+			<TSpecification, TSubject, IExceptionFilterBuilderState<TSpecification, TSubject>, IProcedure<TSubject>,
+				ExceptionFilter<TSubject>>,
 		IExceptionFilterBuilder<TSpecification, TSubject>,
 		IExceptionFilterBuilderState<TSpecification, TSubject>
 		where TSpecification : class, IFaultSpecification<TSubject>
@@ -50,37 +49,34 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 		protected ExceptionFilterBuilder([NotNull] IProcedure<TSubject> procedure,
 			[CanBeNull] TSpecification prior,
 			ISource<TSubject> source = null)
+			: base(procedure, prior)
 		{
-			Procedure = procedure.ValidateArgumentIsNotNull();
-			Prior = prior;
 			Source = source;
 		}
 
 		public abstract Func<IExceptionFilter<TSubject>, TSpecification> Factory { get; }
 
-		public TSpecification Prior { get; private set; }
-		public IProcedure<TSubject> Procedure { get; private set; }
 		public ISource<TSubject> Source { get; private set; }
-		public IExceptionFilterBuilderState<TSpecification, TSubject> Xray
+		public override IExceptionFilterBuilderState<TSpecification, TSubject> Xray
 		{
 			get { return this; }
 		}
 
-		public TSpecification Throws<TException>() where TException : Exception
-		{
-			var exceptionFilter = new ExceptionFilter<TSubject>(x => x is TException,
-				Procedure,
-				typeof(TException).ToLazyDebugString());
-			return Factory.Invoke(exceptionFilter);
-		}
-
-		public abstract object CloneFor(object specification);
+		public abstract object ChainFrom(object specification);
 		protected abstract TBuilder Builder { get; }
 
 		protected IBoundFaultSpecification<TSubject, TBuilder> MakeSpecification(
 			IExceptionFilter<TSubject> exceptionFilter)
 		{
-			return new FaultSpecification<TSubject, TBuilder>(Procedure, exceptionFilter, Builder, Prior);
+			return new FaultSpecification<TSubject, TBuilder>(Inspection, exceptionFilter, Builder, Prior);
+		}
+
+		protected override TSpecification SpecFactor(Predicate<Exception> predicate,
+			IProcedure<TSubject> inspection,
+			Lazy<string> description)
+		{
+			var exceptionFilter = new ExceptionFilter<TSubject>(predicate, inspection, description);
+			return Factory.Invoke(exceptionFilter);
 		}
 	}
 }

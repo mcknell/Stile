@@ -46,7 +46,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		{
 			Expectation<TSubject, TResult> expectation = Expectation<TSubject>.From(x => x == null,
 				Prior.Negated,
-				Prior.BuilderState.Instrument,
+				Prior.BuilderState.Inspection,
 				this);
 			return Prior.BuilderState.Make(expectation);
 		}

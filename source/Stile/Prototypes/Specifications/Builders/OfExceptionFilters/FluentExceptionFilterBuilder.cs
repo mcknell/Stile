@@ -33,9 +33,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 			get { return MakeSpecification; }
 		}
 
-		public override object CloneFor(object specification)
+		public override object ChainFrom(object specification)
 		{
-			return new FluentExceptionFilterBuilder<TSubject>(Procedure,
+			return new FluentExceptionFilterBuilder<TSubject>(Inspection,
 				specification as IFaultSpecification<TSubject, IFluentExceptionFilterBuilder<TSubject>>,
 				Source);
 		}

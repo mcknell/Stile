@@ -73,7 +73,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			where TResult : IComparable<TResult>
 		{
 			var term = new ComparableExpectationTerm<TSpecification, TSubject, TResult>(state, expected, comparison);
-			var expectation = new Expectation<TSubject, TResult>(state.BuilderState.Instrument,
+			var expectation = new Expectation<TSubject, TResult>(state.BuilderState.Inspection,
 				x => comparison.PassesFor(x, expected),
 				term,
 				state.Negated);

@@ -5,11 +5,8 @@
 
 #region using...
 using System;
-using System.Linq.Expressions;
 using JetBrains.Annotations;
-using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
-using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Grammar;
@@ -17,7 +14,6 @@ using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
-using Stile.Readability;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations
@@ -61,8 +57,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 	}
 
 	public interface IExpectationBuilderState<out TSpecification, TSubject, TResult> : IExpectationBuilderState,
-		IHasInstrument<TSubject, TResult>,
-		IChainingConjuctionState<TSpecification>
+		IChainingConjuctionState<TSpecification, IInstrument<TSubject, TResult>>
 		where TSpecification : class, IChainableSpecification
 	{
 		[NotNull]
@@ -70,10 +65,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null);
 	}
 
-	public abstract class ExpectationBuilder {}
-
 	public abstract class ExpectationBuilder<TSpecification, TSubject, TResult, THas, TIs, TBuilder> :
-		ExpectationBuilder,
+		ChainingConjunction
+			<TSpecification, TSubject, IExpectationBuilderState<TSpecification, TSubject, TResult>,
+				IInstrument<TSubject, TResult>, ExceptionFilter<TSubject, TResult>>,
 		IExpectationBuilder<TSpecification, TSubject, TResult, THas, TIs>,
 		IExpectationBuilderState<TSpecification, TSubject, TResult>
 		where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification<TBuilder>
@@ -87,9 +82,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 
 		protected ExpectationBuilder([NotNull] IInstrument<TSubject, TResult> instrument,
 			[CanBeNull] TSpecification prior)
+			: base(instrument, prior)
 		{
-			Instrument = instrument.ValidateArgumentIsNotNull();
-			Prior = prior;
 			_lazyHas = new Lazy<THas>(MakeHas);
 			_lazyIs = new Lazy<TIs>(MakeIs);
 		}
@@ -102,7 +96,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 				return value;
 			}
 		}
-		public IInstrument<TSubject, TResult> Instrument { get; private set; }
 		public TIs Is
 		{
 			get
@@ -111,24 +104,10 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 				return value;
 			}
 		}
-		public TSpecification Prior { get; private set; }
 
-		public IExpectationBuilderState<TSpecification, TSubject, TResult> Xray
+		public override IExpectationBuilderState<TSpecification, TSubject, TResult> Xray
 		{
 			get { return this; }
-		}
-
-		public TSpecification Throws<TException>() where TException : Exception
-		{
-			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(x => x is TException,
-				Instrument,
-				typeof(TException).ToLazyDebugString());
-			Expression<Predicate<TResult>> expression = result => true;
-			var expectation = new Expectation<TSubject, TResult>(exceptionFilter.Instrument,
-				expression,
-				exceptionFilter,
-				Negated.False);
-			return Make(expectation, exceptionFilter);
 		}
 
 		public abstract object CloneFor(object specification);
@@ -164,6 +143,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 				expectation.Xray,
 				Prior,
 				exceptionFilter);
+		}
+
+		protected override TSpecification SpecFactor(Predicate<Exception> predicate,
+			IInstrument<TSubject, TResult> inspection,
+			Lazy<string> description)
+		{
+			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(predicate, Inspection, description);
+			var expectation = new Expectation<TSubject, TResult>(inspection, x => true, exceptionFilter, Negated.False);
+			return Make(expectation, exceptionFilter);
 		}
 	}
 

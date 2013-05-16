@@ -27,7 +27,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable
 			where TResult : class, IEnumerable<TItem>
 		{
 			var contains = new Contains<TItem>(item);
-			var expectation = new Expectation<TSubject, TResult>(builder.Xray.Instrument,
+			var expectation = new Expectation<TSubject, TResult>(builder.Xray.Inspection,
 				x => x.Contains(item),
 				contains, Negated.False);
 			return builder.Xray.Make(expectation);
