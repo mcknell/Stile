@@ -10,7 +10,6 @@ using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
-using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 using Stile.Readability;
@@ -77,11 +76,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 
 		public TSpecification Build()
 		{
-			Expectation<TSubject, TResult> expectation = Expectation<TSubject>.From(Expression,
-				Prior.Negated,
-				Prior.BuilderState.Inspection,
-				this);
-			return Prior.BuilderState.Make(expectation);
+			return Prior.BuilderState.Make(Expression, this, Prior.Negated);
 		}
 	}
 }

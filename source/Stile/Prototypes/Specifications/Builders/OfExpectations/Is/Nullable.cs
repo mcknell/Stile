@@ -4,10 +4,10 @@
 #endregion
 
 #region using...
+using System;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
-using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
@@ -44,11 +44,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 
 		public TSpecification Build()
 		{
-			Expectation<TSubject, TResult?> expectation = Expectation<TSubject>.From(x => x.HasValue == false,
-				Prior.Negated,
-				Prior.BuilderState.Inspection,
-				this);
-			return Prior.BuilderState.Make(expectation);
+			Predicate<TResult?> predicate = x => x.HasValue == false;
+			return Prior.BuilderState.Make(predicate, this, Prior.Negated);
 		}
 	}
 }

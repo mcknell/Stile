@@ -38,7 +38,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable
 			_state = state;
 		}
 
-		public override object CloneFor(object specification)
+		public override object ChainFrom(object specification)
 		{
 			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(_state,
 				specification as
@@ -46,10 +46,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable
 						<TSubject, TResult, IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>>);
 		}
 
-		protected override IFluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem> Builder
-		{
-			get { return this; }
-		}
 		protected override
 			Func
 				<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>,

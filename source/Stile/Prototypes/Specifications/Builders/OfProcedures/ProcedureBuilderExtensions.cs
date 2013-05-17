@@ -42,7 +42,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfProcedures
 			builder = builder.ValidateArgumentIsNotNull();
 			ISource<TSubject> source = builder.Xray.Source.ValidateArgumentIsNotNull();
 			IProcedure<TSubject> procedure = new Procedure<TSubject>(expression, source);
-			return new FluentBoundExceptionFilterBuilder<TSubject>(procedure, null, source);
+			return new FluentBoundExceptionFilterBuilder<TSubject>(procedure, null);
 		}
 
 		[System.Diagnostics.Contracts.Pure]

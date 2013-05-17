@@ -22,27 +22,20 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 		IFluentExceptionFilterBuilder<TSubject>
 	{
 		public FluentExceptionFilterBuilder([NotNull] IProcedure<TSubject> procedure,
-			[CanBeNull] IFaultSpecification<TSubject, IFluentExceptionFilterBuilder<TSubject>> prior,
-			ISource<TSubject> source = null)
-			: base(procedure, prior, source) {}
-
-		public override
-			Func<IExceptionFilter<TSubject>, IFaultSpecification<TSubject, IFluentExceptionFilterBuilder<TSubject>>>
-			Factory
-		{
-			get { return MakeSpecification; }
-		}
+			[CanBeNull] IFaultSpecification<TSubject, IFluentExceptionFilterBuilder<TSubject>> prior)
+			: base(procedure, prior) {}
 
 		public override object ChainFrom(object specification)
 		{
 			return new FluentExceptionFilterBuilder<TSubject>(Inspection,
-				specification as IFaultSpecification<TSubject, IFluentExceptionFilterBuilder<TSubject>>,
-				Source);
+				(IFaultSpecification<TSubject, IFluentExceptionFilterBuilder<TSubject>>) specification);
 		}
 
-		protected override IFluentExceptionFilterBuilder<TSubject> Builder
+		protected override
+			Func<IExceptionFilter<TSubject>, IFaultSpecification<TSubject, IFluentExceptionFilterBuilder<TSubject>>>
+			SpecFactory
 		{
-			get { return this; }
+			get { return Factory; }
 		}
 	}
 }

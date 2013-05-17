@@ -12,7 +12,6 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
@@ -74,11 +73,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 		{
 			var itemsSatisfying = new ItemsSatisfying<TSpecification, TSubject, TResult, TItem>(predicate, this);
 			Predicate<TResult> func = MakePredicate(predicate);
-			var expectation = new Expectation<TSubject, TResult>(_hasState.ExpectationBuilder.Inspection,
-				result => func(result),
-				itemsSatisfying,
-				Negated.False);
-			return _hasState.ExpectationBuilder.Make(expectation);
+			return _hasState.ExpectationBuilder.Make(func, itemsSatisfying, Negated.False);
 		}
 
 		public abstract void Accept(IExpectationVisitor visitor);

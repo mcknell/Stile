@@ -154,7 +154,7 @@
     </Compile>
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\EvaluableExtensions.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\FaultEvaluation.cs" />
-    <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\IChainingConjuction.cs" />
+    <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\ChainingConjuction.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\IAcceptEvaluationVisitors.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\IAcceptExpectationVisitors.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Visitors\IAcceptSpecificationVisitors.cs" />

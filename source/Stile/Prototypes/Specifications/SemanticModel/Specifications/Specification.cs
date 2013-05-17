@@ -165,7 +165,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public TExpectationBuilder AndThen
 		{
-			get { return (TExpectationBuilder) _expectationBuilderState.CloneFor(this); }
+			get { return (TExpectationBuilder) _expectationBuilderState.ChainFrom(this); }
 		}
 
 		public IExpectation<TSubject, TResult> Expectation { get; private set; }

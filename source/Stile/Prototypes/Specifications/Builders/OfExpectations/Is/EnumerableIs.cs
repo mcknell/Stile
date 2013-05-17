@@ -6,14 +6,12 @@
 #region using...
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Types.Enumerables;
 #endregion
@@ -42,7 +40,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		where TSpecification : class, IChainableSpecification, ISpecification<TSubject, TResult>
 		where TResult : class, IEnumerable<TItem>
 	{
-		private static readonly Expression<Predicate<TResult>> _all = x => x.None();
+		private static readonly Predicate<TResult> Predicate = x => x.None();
 
 		[RuleExpansion(Nonterminal.Enum.Is, NonterminalSymbol.IfEnumerable)]
 		public EnumerableIs([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState,
@@ -54,8 +52,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			get
 			{
 				var lastTerm = new Empty<TSpecification, TSubject, TResult>(this);
-				TSpecification specification =
-					BuilderState.Make(Expectation<TSubject>.From(_all, Negated, BuilderState.Inspection, lastTerm));
+				TSpecification specification = BuilderState.Make(Predicate, lastTerm, Negated);
 				return specification;
 			}
 		}

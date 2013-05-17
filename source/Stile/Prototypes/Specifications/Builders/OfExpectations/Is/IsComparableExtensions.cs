@@ -8,7 +8,6 @@ using System;
 using System.Diagnostics.Contracts;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
-using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Types.Comparison;
 #endregion
@@ -73,11 +72,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			where TResult : IComparable<TResult>
 		{
 			var term = new ComparableExpectationTerm<TSpecification, TSubject, TResult>(state, expected, comparison);
-			var expectation = new Expectation<TSubject, TResult>(state.BuilderState.Inspection,
-				x => comparison.PassesFor(x, expected),
-				term,
-				state.Negated);
-			return state.BuilderState.Make(expectation);
+			Predicate<TResult> predicate = x => comparison.PassesFor(x, expected);
+			return state.BuilderState.Make(predicate, term, state.Negated);
 		}
 	}
 }

@@ -29,49 +29,40 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Is
 		[Test]
 		public void ComparablyEquivalentTo()
 		{
-			IEvaluation<int, int> evaluation = Is.ComparablyEquivalentTo(1).Evaluate();
-			AssertFrom0To2(evaluation, Outcome.Failed, Outcome.Succeeded, Outcome.Failed);
-			AssertPastTenseContains(evaluation, "_int should be neither greater nor less than 1");
+			AssertFrom0To2((x, y) => x.ComparablyEquivalentTo(y),
+				Outcome.Failed,
+				Outcome.Succeeded,
+				Outcome.Failed,
+				"neither greater nor less than",
+				"either greater or less than");
 		}
 
 		[Test]
 		public void GreaterThan()
 		{
-			IEvaluation<int, int> evaluation = Is.GreaterThan(1).Evaluate();
-			AssertFrom0To2(evaluation, Outcome.Failed, Outcome.Failed, Outcome.Succeeded);
-			AssertPastTenseContains(evaluation, "_int should be > 1");
+			AssertFrom0To2((x, y) => x.GreaterThan(y), Outcome.Failed, Outcome.Failed, Outcome.Succeeded, ">");
 		}
 
 		[Test]
 		public void GreaterThanOrEqualTo()
 		{
-			IEvaluation<int, int> evaluation = Is.GreaterThanOrEqualTo(1).Evaluate();
-			AssertFrom0To2(evaluation, Outcome.Failed, Outcome.Succeeded, Outcome.Succeeded);
-			AssertPastTenseContains(evaluation, "_int should be >= 1");
+			AssertFrom0To2((x, y) => x.GreaterThanOrEqualTo(y),
+				Outcome.Failed,
+				Outcome.Succeeded,
+				Outcome.Succeeded,
+				">=");
 		}
 
 		[Test]
 		public void LessThan()
 		{
-			IEvaluation<int, int> evaluation = Is.LessThan(1).Evaluate();
-			AssertFrom0To2(evaluation, Outcome.Succeeded, Outcome.Failed, Outcome.Failed);
-			AssertPastTenseContains(evaluation, "_int should be < 1");
+			AssertFrom0To2((x, y) => x.LessThan(y), Outcome.Succeeded, Outcome.Failed, Outcome.Failed, "<");
 		}
 
 		[Test]
 		public void LessThanOrEqualTo()
 		{
-			IEvaluation<int, int> evaluation = Is.LessThanOrEqualTo(1).Evaluate();
-			AssertFrom0To2(evaluation, Outcome.Succeeded, Outcome.Succeeded, Outcome.Failed);
-			AssertPastTenseContains(evaluation, "_int should be <= 1");
-		}
-
-		private
-			INegatableIs
-				<IBoundSpecification<int, int, IFluentBoundExpectationBuilder<int, int>>, int, int,
-					IIs<IBoundSpecification<int, int, IFluentBoundExpectationBuilder<int, int>>, int, int>> Is
-		{
-			get { return Specify.That(() => _int).Is; }
+			AssertFrom0To2((x, y) => x.LessThanOrEqualTo(y), Outcome.Succeeded, Outcome.Succeeded, Outcome.Failed, "<=");
 		}
 
 // ReSharper disable UnusedParameter.Local
@@ -86,9 +77,32 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Is
 			Assert.That(evaluation.ReEvaluate().Outcome == two);
 		}
 
+		private void AssertFrom0To2(Extension extension,
+			Outcome zero,
+			Outcome one,
+			Outcome two,
+			string shouldBe,
+			string shouldNot = null)
+		{
+			IEvaluation<int, int> evaluation = extension.Invoke(Specify.That(() => _int).Is, 1).Evaluate();
+			AssertFrom0To2(evaluation, zero, one, two);
+			IEvaluation<int, int> negative = extension.Invoke(Specify.That(() => _int).Is.Not, 1).Evaluate();
+			AssertFrom0To2(negative, Invert(zero), Invert(one), Invert(two));
+			AssertPastTenseContains(evaluation, string.Format("_int should be {0} 1", shouldBe));
+			AssertPastTenseContains(negative, string.Format("_int should not be {0} 1", shouldNot ?? shouldBe));
+		}
+
 		private static void AssertPastTenseContains(IEvaluation<int, int> evaluation, string substring)
 		{
 			Assert.That(evaluation.ToPastTense(), Contains.Substring(substring));
 		}
+
+		private Outcome Invert(Outcome outcome)
+		{
+			return outcome == Outcome.Succeeded ? Outcome.Failed : Outcome.Succeeded;
+		}
+
+		private delegate IBoundSpecification<int, int, IFluentBoundExpectationBuilder<int, int>> Extension(
+			IIs<IBoundSpecification<int, int, IFluentBoundExpectationBuilder<int, int>>, int, int> negatableIs, int i);
 	}
 }

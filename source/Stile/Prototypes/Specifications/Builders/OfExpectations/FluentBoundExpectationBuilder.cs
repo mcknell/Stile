@@ -28,16 +28,12 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			[CanBeNull] IBoundSpecification<TSubject, TResult, IFluentBoundExpectationBuilder<TSubject, TResult>> prior)
 			: base(instrument, prior) {}
 
-		public override object CloneFor(
-			object specification)
+		public override object ChainFrom(object specification)
 		{
-			return new FluentBoundExpectationBuilder<TSubject, TResult>(Inspection, specification as IBoundSpecification<TSubject, TResult, IFluentBoundExpectationBuilder<TSubject, TResult>>);
+			return new FluentBoundExpectationBuilder<TSubject, TResult>(Inspection,
+				specification as IBoundSpecification<TSubject, TResult, IFluentBoundExpectationBuilder<TSubject, TResult>>);
 		}
 
-		protected override IFluentBoundExpectationBuilder<TSubject, TResult> Builder
-		{
-			get { return this; }
-		}
 		protected override
 			Func
 				<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>,

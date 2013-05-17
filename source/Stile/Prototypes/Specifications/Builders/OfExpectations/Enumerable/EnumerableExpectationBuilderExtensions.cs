@@ -4,13 +4,13 @@
 #endregion
 
 #region using...
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
@@ -27,10 +27,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable
 			where TResult : class, IEnumerable<TItem>
 		{
 			var contains = new Contains<TItem>(item);
-			var expectation = new Expectation<TSubject, TResult>(builder.Xray.Inspection,
-				x => x.Contains(item),
-				contains, Negated.False);
-			return builder.Xray.Make(expectation);
+			Predicate<TResult> predicate = x => x.Contains(item);
+			return builder.Xray.Make(predicate, contains, Negated.False);
 		}
 	}
 }

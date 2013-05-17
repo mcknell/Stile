@@ -16,26 +16,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 	public interface IExceptionFilterBuilder : IChainingConjuction {}
 
 	public interface IExceptionFilterBuilder<out TSpecification, TSubject> : IExceptionFilterBuilder,
-		IHides<IExceptionFilterBuilderState<TSpecification, TSubject>>
-		where TSpecification : class, ISpecification<TSubject>
-	{
-		TSpecification Throws<TException>() where TException : Exception;
-	}
+		IChainingConjuction
+			<TSpecification, TSubject, IExceptionFilterBuilderState<TSpecification, TSubject>, IProcedure<TSubject>>
+		where TSpecification : class, ISpecification<TSubject> {}
 
-	public interface IExceptionFilterBuilderState
-	{
-		[NotNull]
-		object ChainFrom(object specification);
-	}
+	public interface IExceptionFilterBuilderState : IChainingConjuctionState {}
 
 	public interface IExceptionFilterBuilderState<out TSpecification, TSubject> : IExceptionFilterBuilderState,
 		IChainingConjuctionState<TSpecification, IProcedure<TSubject>>
-		where TSpecification : class, ISpecification<TSubject>
-	{
-		Func<IExceptionFilter<TSubject>, TSpecification> Factory { get; }
-		[CanBeNull]
-		ISource<TSubject> Source { get; }
-	}
+		where TSpecification : class, ISpecification<TSubject> {}
 
 	public abstract class ExceptionFilterBuilder<TSpecification, TSubject, TBuilder> :
 		ChainingConjunction
@@ -46,37 +35,26 @@ namespace Stile.Prototypes.Specifications.Builders.OfExceptionFilters
 		where TSpecification : class, IFaultSpecification<TSubject>
 		where TBuilder : class, IExceptionFilterBuilder, IHides<IExceptionFilterBuilderState>
 	{
-		protected ExceptionFilterBuilder([NotNull] IProcedure<TSubject> procedure,
-			[CanBeNull] TSpecification prior,
-			ISource<TSubject> source = null)
-			: base(procedure, prior)
+		protected ExceptionFilterBuilder([NotNull] IProcedure<TSubject> procedure, [CanBeNull] TSpecification prior)
+			: base(procedure, prior) {}
+
+		private TBuilder Builder
 		{
-			Source = source;
+			get { return this as TBuilder; }
 		}
+		protected abstract Func<IExceptionFilter<TSubject>, TSpecification> SpecFactory { get; }
 
-		public abstract Func<IExceptionFilter<TSubject>, TSpecification> Factory { get; }
-
-		public ISource<TSubject> Source { get; private set; }
-		public override IExceptionFilterBuilderState<TSpecification, TSubject> Xray
-		{
-			get { return this; }
-		}
-
-		public abstract object ChainFrom(object specification);
-		protected abstract TBuilder Builder { get; }
-
-		protected IBoundFaultSpecification<TSubject, TBuilder> MakeSpecification(
-			IExceptionFilter<TSubject> exceptionFilter)
+		protected IBoundFaultSpecification<TSubject, TBuilder> Factory(IExceptionFilter<TSubject> exceptionFilter)
 		{
 			return new FaultSpecification<TSubject, TBuilder>(Inspection, exceptionFilter, Builder, Prior);
 		}
 
-		protected override TSpecification SpecFactor(Predicate<Exception> predicate,
+		protected override TSpecification Factory(Predicate<Exception> predicate,
 			IProcedure<TSubject> inspection,
 			Lazy<string> description)
 		{
 			var exceptionFilter = new ExceptionFilter<TSubject>(predicate, inspection, description);
-			return Factory.Invoke(exceptionFilter);
+			return SpecFactory.Invoke(exceptionFilter);
 		}
 	}
 }

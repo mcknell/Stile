@@ -8,6 +8,8 @@ using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.FluentInterface;
+using Stile.Prototypes.Specifications.Grammar;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Readability;
 #endregion
 
@@ -22,10 +24,18 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		where TState : class, IChainingConjuctionState<TSpecification, TInspection>
 		where TInspection : class, IProcedure
 	{
+		[System.Diagnostics.Contracts.Pure]
+		[RuleExpansion(Nonterminal.Enum.Instrument, Nonterminal.Enum.ExceptionFilter)]
 		TSpecification Throws<TException>() where TException : Exception;
 	}
 
-	public interface IChainingConjuctionState<out TSpecification, out TInspection>
+	public interface IChainingConjuctionState
+	{
+		[NotNull]
+		object ChainFrom(object specification);
+	}
+
+	public interface IChainingConjuctionState<out TSpecification, out TInspection> : IChainingConjuctionState
 		where TSpecification : class, IChainableSpecification
 		where TInspection : class, IProcedure
 	{
@@ -39,7 +49,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		IChainingConjuctionState<TSpecification, TInspection>
 		where TSpecification : class, ISpecification<TSubject>
 		where TState : class, IChainingConjuctionState<TSpecification, TInspection>
-		where TInspection : class, IProcedure
+		where TInspection : class, IProcedure<TSubject>
 		where TFilter : class, IExceptionFilter
 	{
 		protected ChainingConjunction(TInspection inspection, TSpecification prior)
@@ -50,26 +60,16 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public TInspection Inspection { get; private set; }
 		public TSpecification Prior { get; private set; }
-		public abstract TState Xray { get; }
+		public TState Xray { get { return this as TState; } }
 
 		public TSpecification Throws<TException>() where TException : Exception
 		{
-			Predicate<Exception> predicate = Predicate<TException>();
-			Lazy<string> description = Description<TException>();
-			return SpecFactor(predicate, Inspection, description);
+			return Factory(x => x is TException, Inspection, typeof(TException).ToLazyDebugString());
 		}
 
-		protected Lazy<string> Description<TException>() where TException : Exception
-		{
-			return typeof(TException).ToLazyDebugString();
-		}
+		public abstract object ChainFrom(object specification);
 
-		protected Predicate<Exception> Predicate<TException>() where TException : Exception
-		{
-			return x => x is TException;
-		}
-
-		protected abstract TSpecification SpecFactor(Predicate<Exception> predicate,
+		protected abstract TSpecification Factory(Predicate<Exception> predicate,
 			TInspection inspection,
 			Lazy<string> description);
 	}

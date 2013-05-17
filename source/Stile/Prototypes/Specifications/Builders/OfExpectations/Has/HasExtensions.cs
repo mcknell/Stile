@@ -4,13 +4,13 @@
 #endregion
 
 #region using...
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifiers;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel;
-using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
@@ -65,11 +65,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		{
 			var hashcode = new Hashcode<TSpecification, TSubject, TResult>(has.Xray, hashCode);
-			var expectation = new Expectation<TSubject, TResult>(has.Xray.ExpectationBuilder.Inspection,
-				x => x.GetHashCode() == hashCode,
-				hashcode,
-				Negated.False);
-			TSpecification specification = has.Xray.ExpectationBuilder.Make(expectation);
+			Predicate<TResult> predicate = x => x.GetHashCode() == hashCode;
+			TSpecification specification = has.Xray.ExpectationBuilder.Make(predicate, hashcode, Negated.False);
 			return specification;
 		}
 

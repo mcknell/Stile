@@ -7,7 +7,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Types.Enumerables;
 #endregion
@@ -54,11 +53,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : class, IEnumerable<TItem>
 		{
-			var expectation = new Expectation<TSubject, TResult>(builder.Xray.BuilderState.Inspection,
-				x => x.SequenceEquals(sequence) == -1,
-				new SequenceEqual<TSpecification, TSubject, TResult, TItem>(builder.Xray, sequence),
-				builder.Xray.Negated);
-			return builder.Xray.BuilderState.Make(expectation);
+			Predicate<TResult> predicate = x => x.SequenceEquals(sequence) == -1;
+			var lastTerm = new SequenceEqual<TSpecification, TSubject, TResult, TItem>(builder.Xray, sequence);
+			return builder.Xray.BuilderState.Make(predicate, lastTerm, builder.Xray.Negated);
 		}
 	}
 }

@@ -5,8 +5,8 @@
 
 #region using...
 using System;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
-using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 using Stile.Prototypes.Specifications.Grammar;
@@ -14,23 +14,15 @@ using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 {
 	public interface IExpectationBuilder : IChainingConjuction {}
 
-	public interface IExpectationBuilder<out TSpecification> : IExpectationBuilder
-		where TSpecification : class, IChainableSpecification
-	{
-		[NotNull]
-		[System.Diagnostics.Contracts.Pure]
-		[RuleExpansion(Nonterminal.Enum.Instrument, Nonterminal.Enum.ExceptionFilter)]
-		TSpecification Throws<TException>() where TException : Exception;
-	}
-
 	public interface IExpectationBuilder<out TSpecification, TSubject, TResult, out THas, out TIs> :
-		IExpectationBuilder<TSpecification>
+		IExpectationBuilder
 		where TSpecification : class, IChainableSpecification
 		where THas : class, IHas<TSpecification, TSubject, TResult>
 		where TIs : class, IIs<TSpecification, TSubject, TResult>
@@ -47,21 +39,25 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		IExpectationBuilder
 			<TSpecification, TSubject, TResult, IHas<TSpecification, TSubject, TResult>,
 				INegatableIs<TSpecification, TSubject, TResult, IIs<TSpecification, TSubject, TResult>>>,
-		IHides<IExpectationBuilderState<TSpecification, TSubject, TResult>>
-		where TSpecification : class, IChainableSpecification {}
+		IChainingConjuction
+			<TSpecification, TSubject, IExpectationBuilderState<TSpecification, TSubject, TResult>,
+				IInstrument<TSubject, TResult>>
+		where TSpecification : class, ISpecification<TSubject> {}
 
-	public interface IExpectationBuilderState
-	{
-		[NotNull]
-		object CloneFor(object specification);
-	}
+	public interface IExpectationBuilderState : IChainingConjuctionState {}
 
 	public interface IExpectationBuilderState<out TSpecification, TSubject, TResult> : IExpectationBuilderState,
 		IChainingConjuctionState<TSpecification, IInstrument<TSubject, TResult>>
 		where TSpecification : class, IChainableSpecification
 	{
-		[NotNull]
-		TSpecification Make([NotNull] IExpectation<TSubject, TResult> expectation,
+		TSpecification Make([NotNull] Expression<Predicate<TResult>> expression,
+			[NotNull] IAcceptExpectationVisitors lastTerm,
+			Negated negated,
+			IExceptionFilter<TSubject, TResult> exceptionFilter = null);
+
+		TSpecification Make([NotNull] Predicate<TResult> predicate,
+			[NotNull] IAcceptExpectationVisitors lastTerm,
+			Negated negated,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null);
 	}
 
@@ -105,12 +101,23 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			}
 		}
 
-		public override IExpectationBuilderState<TSpecification, TSubject, TResult> Xray
+		public TSpecification Make(Expression<Predicate<TResult>> expression,
+			IAcceptExpectationVisitors lastTerm,
+			Negated negated,
+			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
 		{
-			get { return this; }
+			var expectation = new Expectation<TSubject, TResult>(Inspection, expression, lastTerm, negated);
+			return SpecFactory.Invoke(expectation, exceptionFilter);
 		}
 
-		public abstract object CloneFor(object specification);
+		public TSpecification Make(Predicate<TResult> predicate,
+			IAcceptExpectationVisitors lastTerm,
+			Negated negated,
+			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
+		{
+			var expectation = new Expectation<TSubject, TResult>(Inspection, predicate, negated, lastTerm);
+			return SpecFactory.Invoke(expectation, exceptionFilter);
+		}
 
 		public TSpecification Make(IExpectation<TSubject, TResult> expectation,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null)
@@ -118,9 +125,21 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			return SpecFactory.Invoke(expectation, exceptionFilter);
 		}
 
-		protected abstract TBuilder Builder { get; }
+		private TBuilder Builder
+		{
+			get { return this as TBuilder; }
+		}
 		protected abstract
 			Func<IExpectation<TSubject, TResult>, IExceptionFilter<TSubject, TResult>, TSpecification> SpecFactory { get; }
+
+		protected override TSpecification Factory(Predicate<Exception> predicate,
+			IInstrument<TSubject, TResult> inspection,
+			Lazy<string> description)
+		{
+			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(predicate, Inspection, description);
+			var expectation = new Expectation<TSubject, TResult>(inspection, x => true, exceptionFilter, Negated.False);
+			return Make(expectation, exceptionFilter);
+		}
 
 		protected IBoundSpecification<TSubject, TResult, TBuilder> MakeBoundSpecification(
 			IExpectation<TSubject, TResult> expectation, IExceptionFilter<TSubject, TResult> exceptionFilter = null)
@@ -143,15 +162,6 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 				expectation.Xray,
 				Prior,
 				exceptionFilter);
-		}
-
-		protected override TSpecification SpecFactor(Predicate<Exception> predicate,
-			IInstrument<TSubject, TResult> inspection,
-			Lazy<string> description)
-		{
-			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(predicate, Inspection, description);
-			var expectation = new Expectation<TSubject, TResult>(inspection, x => true, exceptionFilter, Negated.False);
-			return Make(expectation, exceptionFilter);
 		}
 	}
 
