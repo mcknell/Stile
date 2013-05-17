@@ -35,8 +35,7 @@ namespace Stile.Tests.Prototypes.Specifications.Construction
 				.AndThen.Is.EqualTo(0);
 			IBoundSpecification<Saboteur, int?, IFluentBoundExpectationBuilder<Saboteur, int?>> spec3 = spec2 //
 				.AndThen.Throws<ArgumentException>();
-			IEvaluation<Saboteur, int?> evaluation = spec3 
-				.Evaluate();
+			IEvaluation<Saboteur, int?> evaluation = spec3.Evaluate();
 			Assert.NotNull(evaluation.Sample);
 			Assert.That(evaluation.Sample.Value, Is.EqualTo(saboteur));
 			Assert.That(evaluation.Outcome, Is.EqualTo(Outcome.Succeeded));

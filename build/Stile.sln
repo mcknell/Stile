@@ -15,6 +15,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stile.DocumentationGenerati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stile.NUnit", "..\source\Stile.NUnit\Stile.NUnit.csproj", "{CF4AC73E-5699-45DA-8DAE-D111F57FE79C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{13BE32D0-1792-4A5F-9537-F1BC5021F10D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specifications", "Specifications", "{E59A32C4-1385-4979-B1F4-B3840DDF813E}"
+	ProjectSection(SolutionItems) = preProject
+		..\docs\Specifications\RRdiagram.xhtml = ..\docs\Specifications\RRdiagram.xhtml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,5 +58,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E59A32C4-1385-4979-B1F4-B3840DDF813E} = {13BE32D0-1792-4A5F-9537-F1BC5021F10D}
 	EndGlobalSection
 EndGlobal

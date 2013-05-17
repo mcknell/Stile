@@ -82,6 +82,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\IsComparableExtensionsTests.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\NullFixture.cs" />
     <Compile Include="Prototypes\Specifications\Construction\ChainedSpecificationAcceptanceTests.cs" />
+    <Compile Include="Prototypes\Specifications\Construction\ChangeSpecificationAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Construction\CollectionSpecifyAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Construction\EnumerableSpecifyAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\SampleObjects\Baz.cs" />

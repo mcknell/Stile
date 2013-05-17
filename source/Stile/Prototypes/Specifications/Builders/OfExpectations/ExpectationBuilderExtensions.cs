@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
+using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations
@@ -45,6 +46,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 			where TResult : class, IEnumerable<TItem>
 		{
 			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(builder.Xray, null);
+		}
+		[Pure]
+		public static ISpecification<TSubject, TResult> WillChangeTo
+			<TSpecification, TSubject, TResult>(
+			this IExpectationBuilder<TSpecification, TSubject, TResult> builder, TResult expected)
+			where TSpecification : class,
+				ISpecification<TSubject, TResult, IExpectationBuilder<TSpecification, TSubject, TResult>>
+		{
+			return builder.Is.Not.EqualTo(expected).AndThen.Is.EqualTo(expected);
 		}
 	}
 }
