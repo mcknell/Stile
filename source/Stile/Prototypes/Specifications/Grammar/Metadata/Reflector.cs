@@ -119,7 +119,16 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 		{
 			Nonterminal nonterminal = GetNonterminal(methodBase, null, ruleExpansion.SymbolToken);
 			List<IClause> clauses = GetClause(methodBase);
-			Clause clause = Clause.Make(nonterminal, clauses.ToArray());
+			IClauseMember member;
+			if (ruleExpansion.Optional)
+			{
+				member = Clause.Make(Cardinality.ZeroOrOne, nonterminal);
+			}
+			else
+			{
+				member = nonterminal;
+			}
+			Clause clause = Clause.Make(member, clauses.ToArray());
 			var follower = new Follower(ruleExpansion.Prior, clause);
 			return follower;
 		}
@@ -187,6 +196,10 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 		{
 			Nonterminal nonterminal = GetNonterminal(methodInfo, attribute.Symbol, attribute.Alias);
 			List<IClause> clauses = GetClause(methodInfo);
+			if (attribute.UseMethodNameAsSymbol)
+			{
+				clauses.Insert(0, Clause.Make(new Nonterminal(methodInfo.Name)));
+			}
 			Clause clause = Clause.Make(clauses);
 			var productionRule = new ProductionRule(nonterminal, clause);
 			if (attribute.StartsGrammar)

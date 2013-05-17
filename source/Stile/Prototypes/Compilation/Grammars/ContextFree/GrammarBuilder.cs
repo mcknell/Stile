@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 	{
 		private readonly HashBucket<Symbol, IClause> _clauses;
 		private readonly HashSet<IFollower> _links;
+		private readonly Dictionary<Symbol, int> _sortOrders;
 		private readonly HashSet<NonterminalSymbol> _symbols;
 
 		public GrammarBuilder(params IProductionRule[] rules)
@@ -30,6 +32,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			_symbols = new HashSet<NonterminalSymbol>();
 			_links = new HashSet<IFollower>();
+			_sortOrders = new Dictionary<Symbol, int>();
 			_clauses = Inline(rules.ValidateArgumentIsNotNull());
 		}
 
@@ -56,9 +59,9 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		public IGrammar Build(bool consolidate = true)
 		{
 			IList<IProductionRule> rules = new List<IProductionRule>();
-			foreach (Symbol leftSymbol in Clauses.Keys)
+			foreach (Symbol leftSymbol in Clauses.Keys.OrderBy(x => _sortOrders[x]))
 			{
-				foreach (IClause clause in Clauses[leftSymbol])
+				foreach (IClause clause in Clauses[leftSymbol].OrderBy(x => x.ToString()))
 				{
 					IClause clauses = BuildClauses(clause);
 					rules.Add(new ProductionRule(leftSymbol, clauses));
@@ -66,7 +69,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			}
 			if (consolidate)
 			{
-				rules = Consolidate(rules);
+				rules = Consolidate(rules, _sortOrders);
 			}
 			return new Grammar(_symbols,
 				new HashSet<TerminalSymbol> {TerminalSymbol.EBNFAlternation, TerminalSymbol.EBNFAssignment},
@@ -74,16 +77,19 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				Nonterminal.Specification);
 		}
 
-		public static IList<IProductionRule> Consolidate(IEnumerable<IProductionRule> rules)
+		public static IList<IProductionRule> Consolidate(IEnumerable<IProductionRule> rules,
+			Dictionary<Symbol, int> sortOrders = null)
 		{
 			HashBucket<Symbol, IClause> hashBucket = rules.ToHashBucket(x => x.Left, x => x.Right);
-			return Consolidate(hashBucket);
+			return Consolidate(hashBucket, sortOrders);
 		}
 
-		public static IList<IProductionRule> Consolidate(IReadOnlyHashBucket<Symbol, IClause> rules)
+		public static IList<IProductionRule> Consolidate(IReadOnlyHashBucket<Symbol, IClause> rules,
+			Dictionary<Symbol, int> sortOrders = null)
 		{
 			var list = new List<IProductionRule>();
-			foreach (Symbol key in rules.Keys)
+			IEnumerable<Symbol> keys = sortOrders == null ? rules.Keys : rules.Keys.OrderBy(x => sortOrders[x]);
+			foreach (Symbol key in keys)
 			{
 				IClause right;
 				if (rules[key].Count == 1)
@@ -224,8 +230,9 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				{
 					clauses.Add(left, right);
 				}
+				RememberSortOrder(rule);
 			}
-			IList<IProductionRule> consolidatedCandidates = Consolidate(candidatesToInline);
+			IList<IProductionRule> consolidatedCandidates = Consolidate(candidatesToInline, _sortOrders);
 			var rulesToInline = new HashSet<IProductionRule>();
 			foreach (IProductionRule rule in consolidatedCandidates)
 			{
@@ -295,6 +302,13 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				}
 			}
 			return Clause.Make(members, clause.Cardinality);
+		}
+
+		private void RememberSortOrder(IProductionRule rule)
+		{
+			int order;
+			_sortOrders.TryGetValue(rule.Left, out order);
+			_sortOrders[rule.Left] = Math.Min(order, rule.SortOrder);
 		}
 	}
 }

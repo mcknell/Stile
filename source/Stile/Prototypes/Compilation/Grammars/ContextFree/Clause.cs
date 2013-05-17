@@ -6,7 +6,6 @@
 #region using...
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
@@ -39,7 +38,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			Cardinality? cardinality = null,
 			ClauseMemberCloner cloner = null)
 		{
-			Members = members.ValidateArgumentIsNotNull().ToArray();
+			Members = members.Validate().EnumerableOf<IClauseMember>().IsNotNullOrEmpty().ToArray();
 			Cardinality = cardinality ?? Cardinality.One;
 			_cloner = cloner ?? DefaultCloner;
 		}

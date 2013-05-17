@@ -7,8 +7,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable;
-using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
+using Stile.Prototypes.Specifications.Grammar;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
+using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
 
 namespace Stile.Prototypes.Specifications.Builders.OfExpectations
@@ -47,10 +49,12 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		{
 			return new FluentEnumerableBoundExpectationBuilder<TSubject, TResult, TItem>(builder.Xray, null);
 		}
+
 		[Pure]
-		public static ISpecification<TSubject, TResult> WillChangeTo
-			<TSpecification, TSubject, TResult>(
-			this IExpectationBuilder<TSpecification, TSubject, TResult> builder, TResult expected)
+		[Rule(Nonterminal.Enum.Expectation, UseMethodNameAsSymbol = true)]
+		public static ISpecification<TSubject, TResult> WillChangeTo<TSpecification, TSubject, TResult>(
+			this IExpectationBuilder<TSpecification, TSubject, TResult> builder,
+			[Symbol(Terminal = true)] TResult expected)
 			where TSpecification : class,
 				ISpecification<TSubject, TResult, IExpectationBuilder<TSpecification, TSubject, TResult>>
 		{

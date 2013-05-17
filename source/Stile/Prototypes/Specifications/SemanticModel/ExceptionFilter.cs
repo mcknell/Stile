@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Patterns.Structural.Hierarchy;
+using Stile.Prototypes.Specifications.Grammar;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
@@ -104,6 +106,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 	public class ExceptionFilter<TSubject, TResult> : ExceptionFilter<TSubject>,
 		IExceptionFilter<TSubject, TResult>
 	{
+		[RuleExpansion(Nonterminal.Enum.Expectation, Optional = true)]
 		public ExceptionFilter([NotNull] Predicate<Exception> predicate,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] Lazy<string> description)

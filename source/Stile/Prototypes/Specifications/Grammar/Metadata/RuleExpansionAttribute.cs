@@ -25,6 +25,8 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			Prior = prior.ToString();
 		}
 
+		public bool Optional { get; set; }
+
 		[NotNull]
 		public string Prior { get; private set; }
 		[CanBeNull]

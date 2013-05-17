@@ -37,19 +37,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 		IAcceptExpectationVisitors LastTerm { get; }
 	}
 
-	public abstract class Expectation<TSubject>
-	{
-		public static Expectation<TSubject, TResult> From<TResult>(Expression<Predicate<TResult>> expression,
-			Negated negated,
-			[NotNull] IInstrument<TSubject, TResult> instrument,
-			IAcceptExpectationVisitors lastTerm)
-		{
-			return new Expectation<TSubject, TResult>(instrument, expression, lastTerm, negated);
-		}
-	}
-
-	public class Expectation<TSubject, TResult> : Expectation<TSubject>,
-		IExpectation<TSubject, TResult>,
+	public class Expectation<TSubject, TResult> : IExpectation<TSubject, TResult>,
 		IExpectationState<TSubject, TResult>
 	{
 		private readonly Lazy<Predicate<IMeasurement<TSubject, TResult>>> _lazyPredicate;
@@ -139,8 +127,8 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			return outcome;
 		}
 
-		public static Expectation<TSubject, TResult> MakeFor<TException>(
-			IInstrument<TSubject, TResult> instrument) where TException : Exception
+		public static Expectation<TSubject, TResult> MakeFor<TException>(IInstrument<TSubject, TResult> instrument)
+			where TException : Exception
 		{
 			Expression<Predicate<TResult>> expression = result => true;
 			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(x => x is TException,
