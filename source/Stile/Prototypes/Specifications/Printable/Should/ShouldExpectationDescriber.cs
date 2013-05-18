@@ -30,6 +30,11 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 		public ShouldExpectationDescriber([CanBeNull] ISource source)
 			: base(source) {}
 
+		public void Visit(IGetsMeasuredState target)
+		{
+			AppendFormat(" {0}", ShouldSpecifications.GetMeasured);
+		}
+
 		public void Visit1<TItem>(IContains<TItem> target)
 		{
 			Append(" ");

@@ -213,6 +213,9 @@
   <data name="Then" xml:space="preserve">
     <value>then</value>
   </data>
+  <data name="GetMeasured" xml:space="preserve">
+    <value>should get measured</value>
+  </data>
   <data name="WhenMeasuredAgain" xml:space="preserve">
     <value>when measured again</value>
   </data>

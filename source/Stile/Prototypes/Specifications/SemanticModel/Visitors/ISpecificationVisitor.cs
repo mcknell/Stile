@@ -18,11 +18,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 		void Visit1<TSubject>([NotNull] IFaultSpecification<TSubject> target);
 		void Visit1<TSubject>([NotNull] IProcedure<TSubject> target);
 		void Visit1<TSubject>([NotNull] ISource<TSubject> target);
-
 		void Visit2<TSubject, TResult>([NotNull] IExceptionFilter<TSubject, TResult> target);
 		void Visit2<TSubject, TResult>([NotNull] IExpectation<TSubject, TResult> target);
 		void Visit2<TSubject, TResult>([NotNull] IInstrument<TSubject, TResult> target);
-		void Visit2<TSubject, TResult>([NotNull] ISpecification<TSubject, TResult> target);
 
 		void Visit3<TSubject, TResult, TExpectationBuilder>(
 			[NotNull] ISpecification<TSubject, TResult, TExpectationBuilder> target)
@@ -35,11 +33,9 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 		TData Visit1<TSubject>([NotNull] IFaultSpecification<TSubject> target, TData data);
 		TData Visit1<TSubject>([NotNull] IProcedure<TSubject> target, TData data);
 		TData Visit1<TSubject>([NotNull] ISource<TSubject> target, TData data);
-
 		TData Visit2<TSubject, TResult>([NotNull] IExceptionFilter<TSubject, TResult> target, TData data);
 		TData Visit2<TSubject, TResult>([NotNull] IExpectation<TSubject, TResult> target, TData data);
 		TData Visit2<TSubject, TResult>([NotNull] IInstrument<TSubject, TResult> target, TData data);
-		TData Visit2<TSubject, TResult>([NotNull] ISpecification<TSubject, TResult> target, TData data);
 
 		TData Visit3<TSubject, TResult, TExpectationBuilder>(
 			[NotNull] ISpecification<TSubject, TResult, TExpectationBuilder> target, TData data)

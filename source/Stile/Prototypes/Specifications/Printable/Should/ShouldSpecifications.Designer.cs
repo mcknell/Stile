@@ -169,6 +169,15 @@ namespace Stile.Prototypes.Specifications.Printable.Should {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to should get measured.
+        /// </summary>
+        internal static string GetMeasured {
+            get {
+                return ResourceManager.GetString("GetMeasured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &gt;.
         /// </summary>
         internal static string GreaterThan {

@@ -80,6 +80,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\NoFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIsTests.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\IsComparableExtensionsTests.cs" />
+    <Compile Include="Prototypes\Specifications\Builders\OfExpectations\GetsMeasuredFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\NullFixture.cs" />
     <Compile Include="Prototypes\Specifications\Construction\ChainedSpecificationAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Construction\ChangeSpecificationAcceptanceTests.cs" />
