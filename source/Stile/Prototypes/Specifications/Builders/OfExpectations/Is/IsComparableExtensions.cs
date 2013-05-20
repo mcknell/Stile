@@ -19,7 +19,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		[Pure]
 		[RuleExpansion(Nonterminal.Enum.ComparableExpectationTerm)]
 		public static TSpecification ComparablyEquivalentTo<TSpecification, TSubject, TResult>(
-			this IIs<TSpecification, TSubject, TResult> builder, [Symbol(Terminal = true)] TResult expected)
+			this IIs<TSpecification, TSubject, TResult> builder, [Symbol] TResult expected)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
@@ -29,7 +29,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		[Pure]
 		[RuleExpansion(Nonterminal.Enum.ComparableExpectationTerm)]
 		public static TSpecification GreaterThan<TSpecification, TSubject, TResult>(
-			this IIs<TSpecification, TSubject, TResult> builder, [Symbol(Terminal = true)] TResult expected)
+			this IIs<TSpecification, TSubject, TResult> builder, [Symbol] TResult expected)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
@@ -39,7 +39,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		[Pure]
 		[RuleExpansion(Nonterminal.Enum.ComparableExpectationTerm)]
 		public static TSpecification GreaterThanOrEqualTo<TSpecification, TSubject, TResult>(
-			this IIs<TSpecification, TSubject, TResult> builder, [Symbol(Terminal = true)] TResult expected)
+			this IIs<TSpecification, TSubject, TResult> builder, [Symbol] TResult expected)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
@@ -49,7 +49,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		[Pure]
 		[RuleExpansion(Nonterminal.Enum.ComparableExpectationTerm)]
 		public static TSpecification LessThan<TSpecification, TSubject, TResult>(
-			this IIs<TSpecification, TSubject, TResult> builder, [Symbol(Terminal = true)] TResult expected)
+			this IIs<TSpecification, TSubject, TResult> builder, [Symbol] TResult expected)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{
@@ -59,7 +59,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		[Pure]
 		[RuleExpansion(Nonterminal.Enum.ComparableExpectationTerm)]
 		public static TSpecification LessThanOrEqualTo<TSpecification, TSubject, TResult>(
-			this IIs<TSpecification, TSubject, TResult> builder, [Symbol(Terminal = true)] TResult expected)
+			this IIs<TSpecification, TSubject, TResult> builder, [Symbol] TResult expected)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : IComparable<TResult>
 		{

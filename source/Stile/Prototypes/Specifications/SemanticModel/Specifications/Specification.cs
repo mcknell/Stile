@@ -137,15 +137,15 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 				reason) {}
 
 		[Rule(StartsGrammar = true)]
-		private Specification([Symbol] [CanBeNull] ISource<TSubject> source,
-			[Symbol] [NotNull] IInstrument<TSubject, TResult> instrument,
-			[Symbol] [NotNull] IExpectation<TSubject, TResult> expectation,
+		private Specification([NonterminalSymbol] [CanBeNull] ISource<TSubject> source,
+			[NonterminalSymbol] [NotNull] IInstrument<TSubject, TResult> instrument,
+			[NonterminalSymbol] [NotNull] IExpectation<TSubject, TResult> expectation,
 			[NotNull] TExpectationBuilder expectationBuilder,
 			[NotNull] IAcceptSpecificationVisitors lastTerm,
 			[CanBeNull] ISpecification<TSubject, TResult> prior,
 			IExceptionFilter<TSubject, TResult> exceptionFilter = null,
-			[Symbol] IDeadline deadline = null,
-			[Symbol] string reason = null)
+			[NonterminalSymbol] IDeadline deadline = null,
+			[NonterminalSymbol] string reason = null)
 			: base(lastTerm, exceptionFilter, deadline, reason)
 		{
 			_source = source;

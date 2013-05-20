@@ -125,19 +125,27 @@ namespace Stile.Types.Enumerables
 			return firstDifference;
 		}
 
-		[NotNull]
+		[System.Diagnostics.Contracts.Pure]
+		public static IEnumerable<TItem> Skip<TItem>([NotNull] this IEnumerable<TItem> items, out TItem item)
+		{
+			TItem d = default(TItem);
+			IEnumerable<TItem> enumerable = items.SkipWith(x => d = x);
+			item = d;
+			return enumerable;
+		}
+
 		[System.Diagnostics.Contracts.Pure]
 		public static IEnumerable<TItem> SkipWith<TItem>([NotNull] this IEnumerable<TItem> items,
 			[NotNull] Action<TItem> action,
 			int count = 1)
 		{
 			IEnumerator<TItem> enumerator = items.ValidateArgumentIsNotNull().GetEnumerator();
-			Action<TItem> validAction = action.ValidateArgumentIsNotNull();
+			action = action.ValidateArgumentIsNotNull();
 			for (int i = 0; i < count; i++)
 			{
 				if (enumerator.MoveNext())
 				{
-					validAction.Invoke(enumerator.Current);
+					action.Invoke(enumerator.Current);
 				}
 				else
 				{

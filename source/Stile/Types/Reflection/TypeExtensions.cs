@@ -1,18 +1,28 @@
-﻿#region License statement
-// NJamb, a specification and delta-specification DSL
-// Copyright (c) 2010-2011, Mark Knell
-// Published under the MIT License; all other rights reserved
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 #endregion
 
 namespace Stile.Types.Reflection
 {
 	public static class TypeExtensions
 	{
+		public static IEnumerable<Tuple<ParameterInfo, TAttribute>> GetParametersWith<TAttribute>(
+			this MethodBase methodInfo) where TAttribute : Attribute
+		{
+			return
+				methodInfo.GetParameters()
+					.Select(x => Tuple.Create(x, x.GetCustomAttribute<TAttribute>()))
+					.Where(t => t.Item2 != null);
+		}
+
 		public static bool Implements<TType>(this Type type)
 		{
 			return type.Implements(typeof(TType));
@@ -70,7 +80,9 @@ namespace Stile.Types.Reflection
 		public static bool IsNullable(this Type type)
 		{
 			if (Nullable.GetUnderlyingType(type) != null)
+			{
 				return true;
+			}
 			return false;
 		}
 

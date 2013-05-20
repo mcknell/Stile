@@ -42,7 +42,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 	{
 		private static readonly Predicate<TResult> Predicate = x => x.None();
 
-		[RuleExpansion(Nonterminal.Enum.Is, NonterminalSymbol.IfEnumerable)]
+		[RuleExpansion(Nonterminal.Enum.Is, alias : NonterminalSymbol.IfEnumerable)]
 		public EnumerableIs([NotNull] IExpectationBuilderState<TSpecification, TSubject, TResult> builderState,
 			Negated negated)
 			: base(builderState, negated) {}

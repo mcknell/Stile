@@ -4,7 +4,6 @@
 #endregion
 
 #region using...
-using System.Collections.Generic;
 using System.Reflection;
 using JetBrains.Annotations;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
@@ -15,27 +14,25 @@ namespace Stile.DocumentationGeneration
 {
 	public class Generator
 	{
-		private readonly Reflector _reflector;
+		private readonly Assembly[] _others;
+		private readonly Assembly _stile;
 
 		public Generator(params Assembly[] others)
 			: this(typeof(VersionedLanguage).Assembly, others) {}
 
 		public Generator([NotNull] Assembly stile, params Assembly[] others)
 		{
-			_reflector = new Reflector(stile, others);
+			_stile = stile;
+			_others = others;
 		}
 
 		[NotNull]
 		public string Generate()
 		{
-			IEnumerable<IProductionRule> rules = _reflector.FindRules();
-
-			var grammarBuilder = new GrammarBuilder(rules);
-
-			foreach (Follower follower in _reflector.FindRuleExpansions())
-			{
-				grammarBuilder.Add(follower);
-			}
+			var grammarBuilder = new GrammarBuilder();
+			var reflector = new Reflector(grammarBuilder, _stile, _others);
+			reflector.FindRules();
+			reflector.FindRuleExpansions();
 
 			IGrammar grammar = grammarBuilder.Build();
 			return GrammarDescriber.Describe(grammar);

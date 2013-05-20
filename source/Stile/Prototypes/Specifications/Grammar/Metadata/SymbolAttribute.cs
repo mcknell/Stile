@@ -14,16 +14,34 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 	/// A symbol on the right of a production rule in the grammar for constructing <see cref="Specification"/> objects.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
-	public class SymbolAttribute : Attribute
+	public class SymbolAttribute : Attribute,
+		IMetadata
 	{
 		public SymbolAttribute(object symbol = null, object alias = null)
 		{
 			Symbol = symbol == null ? null : symbol.ToString();
 			Alias = alias == null ? null : alias.ToString();
+			Terminal = true;
 		}
 
 		public string Alias { get; private set; }
 		public string Symbol { get; private set; }
-		public bool Terminal { get; set; }
+		public virtual bool Terminal { get; set; }
+	}
+
+	/// <summary>
+	/// A nonterminal symbol on the right of a production rule in the grammar for constructing <see cref="Specification"/> objects.
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
+	public class NonterminalSymbolAttribute : SymbolAttribute
+	{
+		public NonterminalSymbolAttribute(object symbol = null, object alias = null)
+			: base(symbol, alias) {}
+
+		public override bool Terminal
+		{
+			get { return false; }
+			set { }
+		}
 	}
 }

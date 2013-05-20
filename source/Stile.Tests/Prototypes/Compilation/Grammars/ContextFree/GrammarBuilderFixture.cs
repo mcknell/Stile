@@ -21,48 +21,24 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		[Test]
 		public void AddsLink()
 		{
-			var rules = new IProductionRule[0];
-			var testSubject = new GrammarBuilder(rules);
+			var testSubject = new GrammarBuilder();
 			Assert.That(testSubject.Links, Is.Empty, "precondition");
 			Assert.That(testSubject.Symbols, Is.Empty, "precondition");
 			Symbol has = Nonterminal.Has;
 			Symbol hashcode = Nonterminal.HashCode;
 
 			// act
-			testSubject.Add(has, hashcode);
+			testSubject.Add(new Link(has, hashcode));
 
 			Assert.That(testSubject.Symbols.Any(x => x.Token == has));
 			Assert.That(testSubject.Symbols.Any(x => x.Token == hashcode));
 			Assert.That(testSubject.Symbols.Count, Is.EqualTo(2));
 
 			Assert.That(testSubject.Links.Count, Is.EqualTo(1));
-			IFollower link = testSubject.Links.FirstOrDefault();
+			ILink link = testSubject.Links.FirstOrDefault();
 			Assert.NotNull(link);
-			Assert.That(link.Prior.Members.First(), Is.EqualTo(has));
-			Assert.That(link.Current.Members.First(), Is.EqualTo(hashcode));
-		}
-
-		[Test]
-		public void BuildsGrammar()
-		{
-			IProductionRule inspection = ProductionRuleLibrary.Inspection;
-			IProductionRule specification = ProductionRuleLibrary.Specification;
-			IProductionRule andLater = ProductionRuleLibrary.AndLater;
-			IProductionRule expectationHas = ProductionRuleLibrary.ExpectationHas;
-			var testSubject = new GrammarBuilder(inspection, specification, andLater, expectationHas);
-			testSubject.Add(Nonterminal.Enum.Has.ToString(), Nonterminal.Enum.HashCode.ToString());
-
-			// act
-			IGrammar grammar = testSubject.Build(false);
-
-			Assert.NotNull(grammar);
-			AssertRuleIsInGrammar(grammar, specification);
-			AssertRuleIsInGrammar(grammar, inspection);
-			AssertRuleIsInGrammar(grammar, andLater);
-			var joinedRule = new ProductionRule(Nonterminal.Expectation,
-				Clause.Make(Clause.Make(Nonterminal.Has), Clause.Make(Nonterminal.HashCode)));
-			AssertRuleIsInGrammar(grammar, joinedRule);
-			Assert.That(grammar.ProductionRules.Count, Is.EqualTo(4));
+			Assert.That(link.Prior, Is.EqualTo(has));
+			Assert.That(link.Symbol, Is.EqualTo(hashcode));
 		}
 
 		[Test]
@@ -99,18 +75,6 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			AssertTrivialConsolidation(ProductionRuleLibrary.ExpectationBefore, 2);
 		}
 
-		[Test]
-		public void ConstructsFromRules()
-		{
-			IProductionRule expectation = ProductionRuleLibrary.ExpectationBefore;
-
-			// act
-			var testSubject = new GrammarBuilder(expectation);
-
-			Assert.That(testSubject.Symbols, Has.Member(Nonterminal.Expectation));
-			Assert.That(testSubject.Symbols, Has.Member(Nonterminal.Before));
-			Assert.That(testSubject.Links.Count, Is.EqualTo(0));
-		}
 
 		[Test]
 		[Explicit("WIP")]

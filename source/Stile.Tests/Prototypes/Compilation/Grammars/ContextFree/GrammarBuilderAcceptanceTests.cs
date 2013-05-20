@@ -4,7 +4,6 @@
 #endregion
 
 #region using...
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Stile.Prototypes.Compilation.Grammars;
@@ -21,8 +20,8 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		[Test]
 		public void Builds()
 		{
-			IEnumerable<IProductionRule> rules = new Reflector().FindRules();
-			var builder = new GrammarBuilder(rules);
+			var builder = new GrammarBuilder();
+			new Reflector(builder).FindRules();
 
 			// act
 			IGrammar grammar = builder.Build();
@@ -31,14 +30,14 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			IProductionRule expectation = grammar.ProductionRules.FirstOrDefault(x => x.Left == Nonterminal.Expectation);
 			Assert.NotNull(expectation);
 			Assert.That(expectation.Right.Members, Has.Member(TerminalSymbol.EBNFAlternation));
-			Assert.That(expectation.Right.Members.Count, Is.EqualTo(11));
+			Assert.That(expectation.Right.Members.Count, Is.EqualTo(9));
 		}
 
 		[Test]
 		public void Prints()
 		{
-			IEnumerable<IProductionRule> rules = new Reflector().FindRules();
-			var builder = new GrammarBuilder(rules);
+			var builder = new GrammarBuilder();
+			new Reflector(builder).FindRules();
 			IGrammar grammar = builder.Build();
 
 			// act

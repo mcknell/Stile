@@ -71,13 +71,13 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 			: this(procedure.Xray.Source, procedure, exceptionFilter, filterBuilder, prior, deadline, reason) {}
 
 		[Rule(Nonterminal.Enum.Specification)]
-		private FaultSpecification([Symbol] [CanBeNull] ISource<TSubject> source,
-			[Symbol] [NotNull] IProcedure<TSubject> procedure,
-			[Symbol] [NotNull] IExceptionFilter<TSubject> exceptionFilter,
+		private FaultSpecification([NonterminalSymbol] [CanBeNull] ISource<TSubject> source,
+			[NonterminalSymbol] [NotNull] IProcedure<TSubject> procedure,
+			[NonterminalSymbol] [NotNull] IExceptionFilter<TSubject> exceptionFilter,
 			[NotNull] TExceptionFilterBuilder filterBuilder,
 			[CanBeNull] IFaultSpecification<TSubject> prior,
-			[Symbol] IDeadline deadline = null,
-			[Symbol] string reason = null)
+			[NonterminalSymbol] IDeadline deadline = null,
+			[NonterminalSymbol] string reason = null)
 			: base(exceptionFilter, exceptionFilter, deadline, reason)
 		{
 			Procedure = procedure.ValidateArgumentIsNotNull();

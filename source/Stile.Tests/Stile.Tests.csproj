@@ -74,7 +74,6 @@
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\GrammarLibrary.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ProductionRuleLibrary.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\SymbolEqualityFixture.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\SymbolLinkFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\EnumerableExpectationBuilderExtensionsFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\HasExtensionsFixture.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Has\Quantifiers\NoFixture.cs" />
@@ -86,6 +85,7 @@
     <Compile Include="Prototypes\Specifications\Construction\ChangeSpecificationAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Construction\CollectionSpecifyAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Construction\EnumerableSpecifyAcceptanceTests.cs" />
+    <Compile Include="Prototypes\Specifications\Grammar\Metadata\ReflectorFixture.cs" />
     <Compile Include="Prototypes\Specifications\SampleObjects\Baz.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\DeadlineFixture.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Past\PastEvaluationDescriberFixture.cs" />

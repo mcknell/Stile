@@ -25,6 +25,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		[NotNull]
 		IClause Clone([NotNull] Func<Symbol, Symbol> symbolCloner);
 
+		NonterminalSymbol GetFirstNonterminal();
+		IClause GetFirstUnitClause();
 		bool Intersects(HashSet<Symbol> symbols);
 	}
 
@@ -60,6 +62,25 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				members.Add(_cloner.Invoke(member, symbolCloner));
 			}
 			return Make(members, Cardinality, _cloner);
+		}
+
+		public NonterminalSymbol GetFirstNonterminal()
+		{
+			return Members.Select(GetSymbol).First(x => x != null);
+		}
+
+		public IClause GetFirstUnitClause()
+		{
+			if (Members.Count == 1)
+			{
+				return this;
+			}
+			var clauses = Members.OfType<IClause>().ToList();
+			if (clauses.None())
+			{
+				return this;
+			}
+			return clauses.Select(x => x.GetFirstUnitClause()).First();
 		}
 
 		public bool Intersects(HashSet<Symbol> symbols)
@@ -158,6 +179,12 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				return clause.Clone(cloner);
 			}
 			throw new ArgumentOutOfRangeException("member");
+		}
+
+		private NonterminalSymbol GetSymbol(IClauseMember member)
+		{
+			var symbol = member as NonterminalSymbol;
+			return symbol ?? ((IClause) member).GetFirstNonterminal();
 		}
 
 		private static int MemberHash(int x, IClauseMember y)

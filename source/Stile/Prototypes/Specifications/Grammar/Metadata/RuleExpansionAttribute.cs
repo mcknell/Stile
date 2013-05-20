@@ -17,19 +17,22 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 	[AttributeUsage(
 		AttributeTargets.Parameter | AttributeTargets.Method | AttributeTargets.Property
 			| AttributeTargets.Constructor, AllowMultiple = false, Inherited = false)]
-	public class RuleExpansionAttribute : Attribute
+	public class RuleExpansionAttribute : Attribute,
+		IMetadata
 	{
-		public RuleExpansionAttribute([NotNull] object prior, object name = null)
+		public RuleExpansionAttribute([NotNull] object prior, object symbol = null, object alias = null)
 		{
-			SymbolToken = (name == null) ? null : name.ToString();
+			Symbol = (symbol == null) ? null : symbol.ToString();
+			Alias = (alias == null) ? null : alias.ToString();
 			Prior = prior.ToString();
 		}
 
+		public string Alias { get; private set; }
 		public bool Optional { get; set; }
 
 		[NotNull]
 		public string Prior { get; private set; }
-		[CanBeNull]
-		public string SymbolToken { get; private set; }
+		public string Symbol { get; private set; }
+		public bool Terminal { get; set; }
 	}
 }

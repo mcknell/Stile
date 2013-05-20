@@ -18,22 +18,28 @@ using Stile.Types.Primitives;
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-	public class GrammarBuilder
+	public interface IGrammarBuilder
+	{
+		void Add(IEnumerable<ILink> links);
+		void Add(ILink link);
+		void Add(IProductionRule rule, params IProductionRule[] rules);
+		Symbol GetOrAdd(Symbol symbol);
+		Symbol GetOrAdd(string token, string alias);
+	}
+
+	public class GrammarBuilder : IGrammarBuilder
 	{
 		private readonly HashBucket<Symbol, IClause> _clauses;
-		private readonly HashSet<IFollower> _links;
+		private readonly HashSet<ILink> _links;
 		private readonly Dictionary<Symbol, int> _sortOrders;
 		private readonly HashSet<NonterminalSymbol> _symbols;
 
-		public GrammarBuilder(params IProductionRule[] rules)
-			: this(rules.AsEnumerable()) {}
-
-		public GrammarBuilder([NotNull] IEnumerable<IProductionRule> rules)
+		public GrammarBuilder()
 		{
 			_symbols = new HashSet<NonterminalSymbol>();
-			_links = new HashSet<IFollower>();
+			_links = new HashSet<ILink>();
 			_sortOrders = new Dictionary<Symbol, int>();
-			_clauses = Inline(rules.ValidateArgumentIsNotNull());
+			_clauses = new HashBucket<Symbol, IClause>();
 		}
 
 		public IReadOnlyHashBucket<Symbol, IClause> Clauses
@@ -41,7 +47,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			get { return _clauses; }
 		}
 
-		public IReadOnlyList<IFollower> Links
+		public IReadOnlyList<ILink> Links
 		{
 			get { return _links.ToArray(); }
 		}
@@ -50,9 +56,60 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			get { return _symbols.ToArray(); }
 		}
 
-		public void Add([NotNull] IFollower follower)
+		public void Add(IEnumerable<ILink> links)
 		{
-			_links.Add(follower.Clone(GetOrAdd));
+			foreach (ILink link in links)
+			{
+				Add(link);
+			}
+		}
+
+		public void Add(ILink link)
+		{
+			_links.Add(link);
+			GetOrAdd(link.Symbol);
+			if (link.Prior != null)
+			{
+				GetOrAdd(link.Prior);
+			}
+		}
+
+		public void Add(IProductionRule rule, params IProductionRule[] rules)
+		{
+			foreach (IProductionRule productionRule in rules.Unshift(rule))
+			{
+				AddOne(productionRule);
+			}
+		}
+
+		public Symbol GetOrAdd(Symbol symbol)
+		{
+			return GetOrAdd(symbol.Token, symbol.Alias);
+		}
+
+		public Symbol GetOrAdd(string token, string alias)
+		{
+			NonterminalSymbol symbol = _symbols.FirstOrDefault(x => x.Token == token);
+			if (symbol != null)
+			{
+				if (symbol.Alias == alias || alias == null)
+				{
+					return symbol;
+				}
+				if (symbol.Alias == null)
+				{
+					_symbols.Remove(symbol);
+				}
+				else
+				{
+					throw new InvalidDataException(ErrorMessages.GrammarBuilder_AliasCollision.InvariantFormat(token,
+						alias,
+						symbol.Alias));
+				}
+			}
+			symbol = new Nonterminal(token, alias);
+			_symbols.Add(symbol);
+			return symbol;
 		}
 
 		[NotNull]
@@ -63,7 +120,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			{
 				foreach (IClause clause in Clauses[leftSymbol].OrderBy(x => x.ToString()))
 				{
-					IClause clauses = BuildClauses(clause);
+					IClause firstUnitClause = clause.GetFirstUnitClause();
+					IClause clauses = BuildClauses(firstUnitClause);
 					rules.Add(new ProductionRule(leftSymbol, clauses));
 				}
 			}
@@ -114,29 +172,30 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			return list;
 		}
 
-		internal void Add(string prior, string symbol, string alias = null)
+		private void AddOne(IProductionRule rule)
 		{
-			Symbol priorSymbol = GetOrAdd(prior, null);
-			Symbol currentSymbol = GetOrAdd(symbol, alias);
-			_links.Add(new Follower(priorSymbol, currentSymbol));
+			Symbol left = GetOrAdd(rule.Left);
+			IClause right = rule.Right.Clone(GetOrAdd);
+			_clauses.Add(left, right);
+			RememberSortOrder(rule);
 		}
 
 		private IClause BuildClauses(IClause clause)
 		{
-			List<IFollower> followers = GetFollowers(clause);
+			List<ILink> followers = GetFollowers(clause);
 			if (followers.Count == 0)
 			{
 				return clause;
 			}
 			if (followers.Count == 1)
 			{
-				return Clause.Make(clause, BuildClauses(followers.First().Current));
+				return Clause.Make(clause, BuildClauses(followers.First().Clause));
 			}
-			List<IClauseMember> clauses = followers.Select(x => BuildClauses(x.Current)) //
-				.ToList() //
-				.Cast<IClauseMember>() //
-				.Interlace(TerminalSymbol.EBNFAlternation) //
-				.ToList();
+			List<IClauseMember> clauses =
+				followers.Select(x => BuildClauses(x.Clause)).ToList().Cast<IClauseMember>() //
+					.Interlace(TerminalSymbol.EBNFAlternation) //
+					.ToList();
+
 			IClause alternatives = Clause.Make(clauses);
 			return Clause.Make(clause, alternatives);
 		}
@@ -169,9 +228,15 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			return clauses;
 		}
 
-		private List<IFollower> GetFollowers(IClause clause)
+		private List<ILink> GetFollowers(Symbol symbol)
 		{
-			return _links.Where(x => x.Prior.Equals(clause)).ToList();
+			return _links.Where(x => symbol.Equals(x.Prior)).ToList();
+		}
+
+		private List<ILink> GetFollowers(IClause clause)
+		{
+			Symbol symbol = clause.GetFirstNonterminal();
+			return GetFollowers(symbol);
 		}
 
 		private static IEnumerable<IClauseMember> GetMiddle(IEnumerable<IClause> clauses,
@@ -184,36 +249,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			return middle.Interlace(TerminalSymbol.EBNFAlternation);
 		}
 
-		private Symbol GetOrAdd(Symbol symbol)
-		{
-			return GetOrAdd(symbol.Token, symbol.Alias);
-		}
-
-		private Symbol GetOrAdd(string token, string alias)
-		{
-			NonterminalSymbol symbol = _symbols.FirstOrDefault(x => x.Token == token);
-			if (symbol != null)
-			{
-				if (symbol.Alias == alias || alias == null)
-				{
-					return symbol;
-				}
-				if (symbol.Alias == null)
-				{
-					_symbols.Remove(symbol);
-				}
-				else
-				{
-					throw new InvalidDataException(ErrorMessages.GrammarBuilder_AliasCollision.InvariantFormat(token,
-						alias,
-						symbol.Alias));
-				}
-			}
-			symbol = new Nonterminal(token, alias);
-			_symbols.Add(symbol);
-			return symbol;
-		}
-
 		private HashBucket<Symbol, IClause> Inline(IEnumerable<IProductionRule> rules)
 		{
 			var clauses = new HashBucket<Symbol, IClause>();
@@ -221,7 +256,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			foreach (IProductionRule rule in rules)
 			{
 				Symbol left = GetOrAdd(rule.Left);
-				IClause right = rule.Right.Clone(GetOrAdd); // GetOrAdd symbols, even if we don't use the clause
+				IClause right = rule.Right; // GetOrAdd symbols, even if we don't use the clause
 				if (rule.CanBeInlined)
 				{
 					candidatesToInline.Add(rule);
@@ -277,7 +312,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			foreach (IProductionRule ruleNeverInlined in rulesToInline.Where(x => symbolsNeverInlined.Contains(x.Left))
 				)
 			{
-				result.Add(GetOrAdd(ruleNeverInlined.Left), ruleNeverInlined.Right.Clone(GetOrAdd));
+				result.Add(GetOrAdd(ruleNeverInlined.Left), ruleNeverInlined.Right);
 			}
 			return result;
 		}

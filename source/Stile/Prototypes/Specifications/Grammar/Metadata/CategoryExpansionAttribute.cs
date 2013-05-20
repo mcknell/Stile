@@ -16,16 +16,17 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor, AllowMultiple = true,
 		Inherited = true)]
-	public class CategoryExpansionAttribute : Attribute
+	public class CategoryExpansionAttribute : Attribute,
+		IMetadataWithPrior
 	{
 		public CategoryExpansionAttribute(object name = null)
 		{
-			SymbolToken = (name == null) ? null : name.ToString();
+			Symbol = (name == null) ? null : name.ToString();
 		}
 
-		[CanBeNull]
+		public string Alias { get; set; }
 		public string Prior { get; set; }
-		[CanBeNull]
-		public string SymbolToken { get; private set; }
+		public string Symbol { get; private set; }
+		public bool Terminal { get; set; }
 	}
 }

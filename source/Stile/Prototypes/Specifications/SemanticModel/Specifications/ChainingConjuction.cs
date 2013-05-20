@@ -60,7 +60,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 
 		public TInspection Inspection { get; private set; }
 		public TSpecification Prior { get; private set; }
-		public TState Xray { get { return this as TState; } }
+		public TState Xray
+		{
+			get { return this as TState; }
+		}
 
 		public TSpecification Throws<TException>() where TException : Exception
 		{

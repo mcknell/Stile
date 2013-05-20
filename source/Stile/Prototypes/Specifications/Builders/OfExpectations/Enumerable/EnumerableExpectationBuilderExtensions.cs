@@ -21,7 +21,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable
 		[Pure]
 		[RuleExpansion(Nonterminal.Enum.EnumerableResult)]
 		public static TSpecification Contains<TSpecification, TSubject, TResult, TItem>(
-			this IExpectationBuilder<TSpecification, TSubject, TResult> builder, [Symbol(Terminal = true)] TItem item)
+			this IExpectationBuilder<TSpecification, TSubject, TResult> builder, [Symbol] TItem item)
 			where TSpecification : class,
 				ISpecification<TSubject, TResult, IExpectationBuilder<TSpecification, TSubject, TResult>>
 			where TResult : class, IEnumerable<TItem>

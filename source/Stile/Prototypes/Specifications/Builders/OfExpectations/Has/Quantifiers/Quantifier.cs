@@ -68,8 +68,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 		}
 
 		[CategoryExpansion]
-		[CategoryExpansion(Prior = "limit")]
-		public TSpecification ItemsSatisfying([Symbol(Terminal = true)] Expression<Func<TItem, bool>> predicate)
+		public TSpecification ItemsSatisfying([Symbol] Expression<Func<TItem, bool>> predicate)
 		{
 			var itemsSatisfying = new ItemsSatisfying<TSpecification, TSubject, TResult, TItem>(predicate, this);
 			Predicate<TResult> func = MakePredicate(predicate);

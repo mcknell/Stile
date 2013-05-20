@@ -21,7 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\CodeAnalysisVS2012.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1699</NoWarn>
   </PropertyGroup>
@@ -99,12 +99,12 @@
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\IAcceptGrammarVisitors.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\IClauseMember.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\IGrammarVisitor.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Link.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\NonterminalSymbol.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\TerminalSymbol.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\Symbol.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\Cardinality.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\GrammarBuilder.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Follower.cs" />
     <Compile Include="Prototypes\Specifications\Builders\Lifecycle\IHasSource.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\FluentBoundExceptionFilterBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExceptionFilters\FluentExceptionFilterBuilder.cs" />
@@ -128,6 +128,7 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\SequenceEqual.cs" />
     <Compile Include="Properties\SharedKeyAttributes.cs" />
     <Compile Include="Patterns\Structural\Hierarchy\ICanGetPredecessors.cs" />
+    <Compile Include="Prototypes\Specifications\Grammar\Metadata\IMetadata.cs" />
     <Compile Include="Types\Comparison\ComparisonRelation.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Empty.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIs.cs" />
@@ -142,7 +143,6 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Nullable.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Metadata\CategoryExpansionAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Metadata\Reflector.cs" />
-    <Compile Include="Prototypes\Specifications\Grammar\Metadata\SpecializationAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Describer.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Nonterminal.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Metadata\RuleExpansionAttribute.cs" />

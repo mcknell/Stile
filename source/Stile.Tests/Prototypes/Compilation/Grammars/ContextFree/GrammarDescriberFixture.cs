@@ -14,12 +14,15 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 	public class GrammarDescriberFixture
 	{
 		[Test]
+		[Ignore("wip")]
 		public void Describes()
 		{
 			IProductionRule inspection = ProductionRuleLibrary.Inspection;
 			IProductionRule specification = ProductionRuleLibrary.Specification;
 			IProductionRule andLater = ProductionRuleLibrary.AndLater;
-			IGrammar grammar = new GrammarBuilder(inspection, specification, andLater).Build();
+			var grammarBuilder = new GrammarBuilder();
+			grammarBuilder.Add(inspection, specification, andLater);
+			IGrammar grammar = grammarBuilder.Build();
 
 			string ebnf = GrammarDescriber.Describe(grammar);
 

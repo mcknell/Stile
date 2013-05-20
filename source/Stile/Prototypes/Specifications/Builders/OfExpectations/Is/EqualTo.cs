@@ -52,7 +52,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		[RuleExpansion(Nonterminal.Enum.Is)]
 		public EqualTo([NotNull] Expression<Predicate<TResult>> expression,
 			[NotNull] IIsState<TSpecification, TSubject, TResult> prior,
-			[Symbol(Terminal = true)] TResult expected)
+			[Symbol] TResult expected)
 			: base(prior)
 		{
 			Expression = expression.ValidateArgumentIsNotNull();

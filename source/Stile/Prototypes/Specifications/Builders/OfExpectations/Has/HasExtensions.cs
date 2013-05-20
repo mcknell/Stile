@@ -21,7 +21,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		[Pure]
 		[RuleExpansion(Nonterminal.Enum.EnumerableHas)]
 		public static IQuantifier<TSpecification, TItem> AtLeast<TSpecification, TSubject, TResult, TItem>(
-			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, [Symbol(Terminal = true)] int limit)
+			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, [Symbol] int limit)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : class, IEnumerable<TItem>
 		{
@@ -31,7 +31,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		[Pure]
 		[RuleExpansion(Nonterminal.Enum.EnumerableHas)]
 		public static IQuantifier<TSpecification, TItem> AtMost<TSpecification, TSubject, TResult, TItem>(
-			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, [Symbol(Terminal = true)] int limit)
+			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, [Symbol] int limit)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : class, IEnumerable<TItem>
 		{
@@ -41,7 +41,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		[Pure]
 		[RuleExpansion(Nonterminal.Enum.EnumerableHas)]
 		public static IQuantifier<TSpecification, TItem> Exactly<TSpecification, TSubject, TResult, TItem>(
-			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, [Symbol(Terminal = true)] int limit)
+			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, [Symbol] int limit)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : class, IEnumerable<TItem>
 		{
@@ -51,7 +51,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		[Pure]
 		[RuleExpansion(Nonterminal.Enum.EnumerableHas)]
 		public static IQuantifier<TSpecification, TItem> FewerThan<TSpecification, TSubject, TResult, TItem>(
-			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, [Symbol(Terminal = true)] int limit)
+			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, [Symbol] int limit)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : class, IEnumerable<TItem>
 		{
@@ -61,7 +61,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		[Pure]
 		[RuleExpansion(Nonterminal.Enum.Has)]
 		public static TSpecification HashCode<TSpecification, TSubject, TResult>(
-			this IHas<TSpecification, TSubject, TResult> has, [Symbol(Terminal = true)] int hashCode)
+			this IHas<TSpecification, TSubject, TResult> has, [Symbol] int hashCode)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		{
 			var hashcode = new Hashcode<TSpecification, TSubject, TResult>(has.Xray, hashCode);
@@ -73,7 +73,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has
 		[Pure]
 		[RuleExpansion(Nonterminal.Enum.EnumerableHas)]
 		public static IQuantifier<TSpecification, TItem> MoreThan<TSpecification, TSubject, TResult, TItem>(
-			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, [Symbol(Terminal = true)] int limit)
+			this IEnumerableHas<TSpecification, TSubject, TResult, TItem> has, [Symbol] int limit)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : class, IEnumerable<TItem>
 		{

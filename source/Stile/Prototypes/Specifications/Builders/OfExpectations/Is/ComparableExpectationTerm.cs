@@ -31,7 +31,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		where TSpecification : class, IChainableSpecification
 		where TResult : IComparable<TResult>
 	{
-		[RuleExpansion(Nonterminal.Enum.Is, NonterminalSymbol.IfComparable)]
+		[RuleExpansion(Nonterminal.Enum.Is, alias : NonterminalSymbol.IfComparable)]
 		public ComparableExpectationTerm([NotNull] IIsState<TSpecification, TSubject, TResult> prior,
 			TResult expected,
 			ComparisonRelation comparison)

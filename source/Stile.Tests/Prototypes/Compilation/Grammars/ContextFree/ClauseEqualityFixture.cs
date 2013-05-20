@@ -4,7 +4,6 @@
 #endregion
 
 #region using...
-using System;
 using NUnit.Framework;
 using Stile.NUnit;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
@@ -14,13 +13,8 @@ using Stile.Prototypes.Specifications.Grammar;
 namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 {
 	[TestFixture]
-	public class ClauseEqualityFixture : EqualityFixtureWithClone<IClause>
+	public class ClauseEqualityFixture : EqualityFixture<IClause>
 	{
-		protected override Func<IClause, IClause> ClonerFactory()
-		{
-			return x => x.Clone(y => y);
-		}
-
 		protected override IClause OtherFactory()
 		{
 			return Clause.Make(Nonterminal.Specification);
