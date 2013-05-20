@@ -1,0 +1,7 @@
+Grammar ::= Production* 
+Production ::= Sequence ( '|' Sequence )* 
+Sequence ::= Item+ 
+Item ::= Primary ( '?' | '*' | '+' )? 
+Primary ::= Nonterminal | Terminal | '(' Production ')' 
+Terminal ::= '"' [^"]* '"' | "'" [^']* "'"
+Nonterminal ::= <TitleCaseStringWithNoSpaces>

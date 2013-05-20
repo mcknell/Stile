@@ -7,6 +7,7 @@
 using NUnit.Framework;
 using Stile.NUnit;
 using Stile.Prototypes.Compilation.Grammars;
+using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Specifications.Grammar;
 #endregion
 

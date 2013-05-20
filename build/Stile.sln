@@ -22,6 +22,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specifications", "Specifica
 		..\docs\Specifications\RRdiagram.xhtml = ..\docs\Specifications\RRdiagram.xhtml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Grammar", "Grammar", "{F663F768-C6C7-4946-91F9-AB9CAD23A0AB}"
+	ProjectSection(SolutionItems) = preProject
+		..\docs\Grammar\Grammar for partial EBNF.txt = ..\docs\Grammar\Grammar for partial EBNF.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,5 +66,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E59A32C4-1385-4979-B1F4-B3840DDF813E} = {13BE32D0-1792-4A5F-9537-F1BC5021F10D}
+		{F663F768-C6C7-4946-91F9-AB9CAD23A0AB} = {13BE32D0-1792-4A5F-9537-F1BC5021F10D}
 	EndGlobalSection
 EndGlobal

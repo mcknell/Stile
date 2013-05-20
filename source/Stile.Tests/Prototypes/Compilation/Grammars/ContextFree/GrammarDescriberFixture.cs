@@ -6,6 +6,7 @@
 #region using...
 using NUnit.Framework;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
+using Stile.Prototypes.Compilation.Grammars.ContextFree.Builders;
 #endregion
 
 namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree

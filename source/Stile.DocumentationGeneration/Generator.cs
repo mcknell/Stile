@@ -7,6 +7,7 @@
 using System.Reflection;
 using JetBrains.Annotations;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
+using Stile.Prototypes.Compilation.Grammars.ContextFree.Builders;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 #endregion
 

@@ -16,7 +16,7 @@ using Stile.Types.Enumerables;
 using Stile.Types.Primitives;
 #endregion
 
-namespace Stile.Prototypes.Compilation.Grammars.ContextFree
+namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
 	public interface IGrammarBuilder
 	{

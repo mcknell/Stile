@@ -12,7 +12,7 @@ using Stile.Types.Enums;
 using Stile.Types.Equality;
 #endregion
 
-namespace Stile.Prototypes.Compilation.Grammars.ContextFree
+namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
 	public interface ILink
 	{

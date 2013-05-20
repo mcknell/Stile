@@ -8,11 +8,12 @@ using System.Linq;
 using NUnit.Framework;
 using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
+using Stile.Prototypes.Compilation.Grammars.ContextFree.Builders;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 #endregion
 
-namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
+namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
 	[TestFixture]
 	public class GrammarBuilderAcceptanceTests

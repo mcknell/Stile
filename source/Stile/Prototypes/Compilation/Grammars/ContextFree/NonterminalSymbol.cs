@@ -9,7 +9,7 @@ using System.Globalization;
 using JetBrains.Annotations;
 #endregion
 
-namespace Stile.Prototypes.Compilation.Grammars
+namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
 	public class NonterminalSymbol : Symbol
 	{

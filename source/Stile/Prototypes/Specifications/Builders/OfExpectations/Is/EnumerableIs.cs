@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Compilation.Grammars;
+using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel;

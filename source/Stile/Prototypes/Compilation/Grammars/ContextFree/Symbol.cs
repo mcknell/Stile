@@ -7,14 +7,13 @@
 using System;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Types.Primitives;
 #endregion
 
-namespace Stile.Prototypes.Compilation.Grammars
+namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
 	public partial class Symbol : IEquatable<Symbol>,
-		IClauseMember
+		IClauseMember, IPrimary
 	{
 		protected Symbol([NotNull] string token, string @alias = null)
 		{
