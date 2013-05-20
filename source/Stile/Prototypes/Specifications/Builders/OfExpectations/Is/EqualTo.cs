@@ -49,10 +49,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		IEqualToState<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
-		[RuleExpansion(Nonterminal.Enum.Is)]
 		public EqualTo([NotNull] Expression<Predicate<TResult>> expression,
 			[NotNull] IIsState<TSpecification, TSubject, TResult> prior,
-			[Symbol] TResult expected)
+			TResult expected)
 			: base(prior)
 		{
 			Expression = expression.ValidateArgumentIsNotNull();

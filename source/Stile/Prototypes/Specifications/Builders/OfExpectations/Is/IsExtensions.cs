@@ -7,6 +7,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Stile.Prototypes.Specifications.Grammar;
+using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Types.Enumerables;
 #endregion
@@ -16,18 +18,16 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 	public static class IsExtensions
 	{
 		[Pure]
+		[RuleExpansion(Nonterminal.Enum.Is)]
 		public static TSpecification EqualTo<TSpecification, TSubject, TResult>(
-			this IIs<TSpecification, TSubject, TResult> builder, TResult result)
+			this IIs<TSpecification, TSubject, TResult> builder, [Symbol] TResult result)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 		{
-			Func<TResult, bool> accepterForDebugging = x =>
-			{
-				return x.Equals(result);
-			};
-			return Is.EqualTo.Make(x => accepterForDebugging.Invoke(x), result, builder.Xray);
+			return Is.EqualTo.Make(x => x.Equals(result), result, builder.Xray);
 		}
 
 		[Pure]
+		[RuleExpansion(Nonterminal.Enum.Is)]
 		public static TSpecification Null<TSpecification, TSubject, TResult>(
 			this IIs<TSpecification, TSubject, TResult?> builder)
 			where TSpecification : class, ISpecification<TSubject, TResult?>, IChainableSpecification
@@ -38,6 +38,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		}
 
 		[Pure]
+		[RuleExpansion(Nonterminal.Enum.Is)]
 		public static TSpecification Null<TSpecification, TSubject, TResult>(
 			this IIs<TSpecification, TSubject, TResult> builder)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
@@ -48,12 +49,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		}
 
 		[Pure]
+		[RuleExpansion(Nonterminal.Enum.EnumerableIs)]
 		public static TSpecification SequenceEqualTo<TSpecification, TSubject, TResult, TItem>(
-			this IEnumerableIs<TSpecification, TSubject, TResult, TItem> builder, IEnumerable<TItem> sequence)
+			this IEnumerableIs<TSpecification, TSubject, TResult, TItem> builder,
+			[Symbol] IEnumerable<TItem> sequence,
+			[Symbol] IEqualityComparer<TItem> equalityComparer = null)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
 			where TResult : class, IEnumerable<TItem>
 		{
-			Predicate<TResult> predicate = x => x.SequenceEquals(sequence) == -1;
+			Predicate<TResult> predicate = x => x.SequenceEquals(sequence, equalityComparer) == -1;
 			var lastTerm = new SequenceEqual<TSpecification, TSubject, TResult, TItem>(builder.Xray, sequence);
 			return builder.Xray.BuilderState.Make(predicate, lastTerm, builder.Xray.Negated);
 		}

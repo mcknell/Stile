@@ -23,9 +23,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		ISequenceEqual<TItem>
 		where TSpecification : class, IChainableSpecification
 	{
-		[RuleExpansion(Nonterminal.Enum.EnumerableIs)]
 		public SequenceEqual(IIsState<TSpecification, TSubject, TResult> prior,
-			[Symbol] IEnumerable<TItem> sequence)
+			IEnumerable<TItem> sequence)
 			: base(prior)
 		{
 			Expected = sequence;

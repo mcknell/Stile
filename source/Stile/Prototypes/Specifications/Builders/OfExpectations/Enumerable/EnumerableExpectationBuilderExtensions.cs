@@ -21,13 +21,15 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable
 		[Pure]
 		[RuleExpansion(Nonterminal.Enum.EnumerableResult)]
 		public static TSpecification Contains<TSpecification, TSubject, TResult, TItem>(
-			this IExpectationBuilder<TSpecification, TSubject, TResult> builder, [Symbol] TItem item)
+			this IExpectationBuilder<TSpecification, TSubject, TResult> builder,
+			[Symbol] TItem item,
+			[Symbol] IEqualityComparer<TItem> equalityComparer = null)
 			where TSpecification : class,
 				ISpecification<TSubject, TResult, IExpectationBuilder<TSpecification, TSubject, TResult>>
 			where TResult : class, IEnumerable<TItem>
 		{
 			var contains = new Contains<TItem>(item);
-			Predicate<TResult> predicate = x => x.Contains(item);
+			Predicate<TResult> predicate = x => x.Contains(item, equalityComparer);
 			return builder.Xray.Make(predicate, contains, Negated.False);
 		}
 	}

@@ -23,8 +23,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		void Add(IEnumerable<ILink> links);
 		void Add(ILink link);
 		void Add(IProductionRule rule, params IProductionRule[] rules);
-		Symbol GetOrAdd(Symbol symbol);
-		Symbol GetOrAdd(string token, string alias);
 	}
 
 	public class GrammarBuilder : IGrammarBuilder
@@ -247,96 +245,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				clauses.Select(
 					x => Clause.Make(x.Members.Skip(frontMatches).Take(x.Members.Count - frontMatches - backMatches)));
 			return middle.Interlace(TerminalSymbol.EBNFAlternation);
-		}
-
-		private HashBucket<Symbol, IClause> Inline(IEnumerable<IProductionRule> rules)
-		{
-			var clauses = new HashBucket<Symbol, IClause>();
-			var candidatesToInline = new HashSet<IProductionRule>();
-			foreach (IProductionRule rule in rules)
-			{
-				Symbol left = GetOrAdd(rule.Left);
-				IClause right = rule.Right; // GetOrAdd symbols, even if we don't use the clause
-				if (rule.CanBeInlined)
-				{
-					candidatesToInline.Add(rule);
-				}
-				else
-				{
-					clauses.Add(left, right);
-				}
-				RememberSortOrder(rule);
-			}
-			IList<IProductionRule> consolidatedCandidates = Consolidate(candidatesToInline, _sortOrders);
-			var rulesToInline = new HashSet<IProductionRule>();
-			foreach (IProductionRule rule in consolidatedCandidates)
-			{
-				bool symbolMatchesRuleThatCannotInline = clauses.ContainsKey(rule.Left);
-				if (symbolMatchesRuleThatCannotInline)
-				{
-					clauses.Add(rule.Left, rule.Right);
-				}
-				else
-				{
-					rulesToInline.Add(rule);
-				}
-			}
-			return Inline(rulesToInline, clauses);
-		}
-
-		private HashBucket<Symbol, IClause> Inline(HashSet<IProductionRule> rulesToInline,
-			HashBucket<Symbol, IClause> clauses)
-		{
-			HashSet<Symbol> symbolsToInline = rulesToInline.Select(y => y.Left).ToHashSet();
-			var symbolsNeverInlined = new HashSet<Symbol>(symbolsToInline);
-			var result = new HashBucket<Symbol, IClause>();
-			foreach (Symbol key in clauses.Keys)
-			{
-				foreach (IClause clause in clauses[key])
-				{
-					if (clause.Intersects(symbolsToInline))
-					{
-						foreach (IProductionRule rule in rulesToInline)
-						{
-							symbolsNeverInlined.Remove(rule.Left);
-							IClause inlined = Inline(rule, clause);
-							result.Add(key, inlined);
-						}
-					}
-					else
-					{
-						result.Add(key, clause);
-					}
-				}
-			}
-			foreach (IProductionRule ruleNeverInlined in rulesToInline.Where(x => symbolsNeverInlined.Contains(x.Left))
-				)
-			{
-				result.Add(GetOrAdd(ruleNeverInlined.Left), ruleNeverInlined.Right);
-			}
-			return result;
-		}
-
-		private IClause Inline(IProductionRule ruleToInline, IClause clause)
-		{
-			var members = new List<IClauseMember>();
-			foreach (IClauseMember member in clause.Members)
-			{
-				var memberAsClause = member as IClause;
-				if (memberAsClause != null)
-				{
-					members.Add(Inline(ruleToInline, memberAsClause));
-				}
-				else if (member.Equals(ruleToInline.Left))
-				{
-					members.Add(ruleToInline.Right);
-				}
-				else
-				{
-					members.Add(member);
-				}
-			}
-			return Clause.Make(members, clause.Cardinality);
 		}
 
 		private void RememberSortOrder(IProductionRule rule)
