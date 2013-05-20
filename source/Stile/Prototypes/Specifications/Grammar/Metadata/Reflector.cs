@@ -128,16 +128,8 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			var symbol = new Nonterminal(methodBase.Name);
 			IEnumerable<Tuple<ParameterInfo, SymbolAttribute>> parameters =
 				methodBase.GetParametersWith<SymbolAttribute>();
-			var clause = MakeParametersClause(parameters, symbol);
+			Clause clause = MakeParametersClause(parameters, symbol);
 			return new Link(prior, symbol, clause : clause);
-		}
-
-		private static Clause MakeParametersClause(IEnumerable<Tuple<ParameterInfo, SymbolAttribute>> parameters, Nonterminal symbol)
-		{
-			IEnumerable<Tuple<Nonterminal, Cardinality>> symbols = GetParameterSymbols(parameters);
-			IEnumerable<Clause> clauses = symbols.Select(x => Clause.Make(x.Item2, x.Item1));
-			Clause clause = Clause.Make(symbol, clauses.ToArray());
-			return clause;
 		}
 
 		internal static IEnumerable<ILink> GetLinks(MethodBase methodBase, RuleExpansionAttribute ruleExpansion)
@@ -174,6 +166,15 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 					yield return link;
 				}
 			}
+		}
+
+		private static IClauseMember GetMember(Nonterminal nonterminal, Cardinality cardinality)
+		{
+			if (cardinality == Cardinality.One)
+			{
+				return nonterminal;
+			}
+			return Clause.Make(cardinality, nonterminal);
 		}
 
 		private IEnumerable<Tuple<MethodBase, TAttribute>> GetMethods<TAttribute>(
@@ -263,14 +264,19 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			return productionRule;
 		}
 
-		private IProductionRule GetRule([NotNull] MethodBase methodInfo, [NotNull] RuleAttribute attribute)
+		internal static IProductionRule GetRule([NotNull] MethodBase methodInfo, [NotNull] RuleAttribute attribute)
 		{
 			Nonterminal nonterminal = GetNonterminal(methodInfo, attribute.Symbol, attribute.Alias);
 			IClause clause;
 			if (attribute.UseMethodNameAsSymbol)
 			{
 				string symbol = GetSymbol(methodInfo, null);
-				clause = Clause.Make(new Nonterminal(symbol));
+
+				IEnumerable<Tuple<ParameterInfo, SymbolAttribute>> parameters =
+					methodInfo.GetParametersWith<SymbolAttribute>().Where(x => x.Item2.Terminal);
+				IEnumerable<Tuple<Nonterminal, Cardinality>> symbols = GetParameterSymbols(parameters);
+				IClauseMember[] members = symbols.Select(tuple => GetMember(tuple.Item1, tuple.Item2)).ToArray();
+				clause = Clause.Make(new Nonterminal(symbol), members);
 			}
 			else
 			{
@@ -329,6 +335,15 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 				symbol = methodInfo.Name;
 			}
 			return symbol;
+		}
+
+		private static Clause MakeParametersClause(IEnumerable<Tuple<ParameterInfo, SymbolAttribute>> parameters,
+			Nonterminal symbol)
+		{
+			IEnumerable<Tuple<Nonterminal, Cardinality>> symbols = GetParameterSymbols(parameters);
+			IEnumerable<Clause> clauses = symbols.Select(x => Clause.Make(x.Item2, x.Item1));
+			Clause clause = Clause.Make(symbol, clauses.ToArray());
+			return clause;
 		}
 	}
 }

@@ -106,7 +106,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel
 	public class ExceptionFilter<TSubject, TResult> : ExceptionFilter<TSubject>,
 		IExceptionFilter<TSubject, TResult>
 	{
-		[RuleExpansion(Nonterminal.Enum.Expectation, Optional = true)]
+		[RuleExpansion(Nonterminal.Enum.Expectation, Nonterminal.Enum.Exception, Optional = true)]
 		public ExceptionFilter([NotNull] Predicate<Exception> predicate,
 			[NotNull] IInstrument<TSubject, TResult> instrument,
 			[NotNull] Lazy<string> description)

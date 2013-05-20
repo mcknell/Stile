@@ -13,16 +13,11 @@ using Stile.Patterns.Structural.FluentInterface;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
-using Stile.Readability;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 {
-	public interface IExpectation : IAcceptSpecificationVisitors
-	{
-		void Accept([NotNull] IExpectationVisitor visitor);
-		TData Accept<TData>([NotNull] IExpectationVisitor<TData> visitor, TData data = default(TData));
-	}
+	public interface IExpectation : IAcceptSpecificationVisitors {}
 
 	public interface IExpectation<TSubject, TResult> : IExpectation,
 		IHides<IExpectationState<TSubject, TResult>>
@@ -78,16 +73,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 			get { return this; }
 		}
 
-		public void Accept(IExpectationVisitor visitor)
-		{
-			visitor.Visit2(this);
-		}
-
-		public TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data)
-		{
-			return visitor.Visit2(this, data);
-		}
-
 		public void Accept(ISpecificationVisitor visitor)
 		{
 			visitor.Visit2(this);
@@ -125,16 +110,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Expectations
 				outcome = Outcome.Failed;
 			}
 			return outcome;
-		}
-
-		public static Expectation<TSubject, TResult> MakeFor<TException>(IInstrument<TSubject, TResult> instrument)
-			where TException : Exception
-		{
-			Expression<Predicate<TResult>> expression = result => true;
-			var exceptionFilter = new ExceptionFilter<TSubject, TResult>(x => x is TException,
-				instrument,
-				typeof(TException).ToLazyDebugString());
-			return new Expectation<TSubject, TResult>(instrument, expression, exceptionFilter, Negated.False);
 		}
 
 		private static Lazy<Predicate<IMeasurement<TSubject, TResult>>> MakeLazyPredicate(

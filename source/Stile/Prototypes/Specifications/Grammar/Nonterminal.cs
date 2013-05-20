@@ -33,7 +33,7 @@ namespace Stile.Prototypes.Specifications.Grammar
 			Reason,
 			All,
 			Procedure,
-			ExceptionFilter,
+			Exception,
 			Contains,
 			ComparableExpectationTerm,
 			EnumerableIs
