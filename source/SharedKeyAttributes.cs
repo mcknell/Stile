@@ -7,4 +7,4 @@
 using System.Reflection;
 #endregion
 
-[assembly: AssemblyKeyFile(@"..\..\..\..\build\Stile.snk")]
+[assembly : AssemblyKeyFile(@"..\..\..\..\build\Stile.snk")]

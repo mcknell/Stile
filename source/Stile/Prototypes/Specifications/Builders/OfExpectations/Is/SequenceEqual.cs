@@ -5,8 +5,6 @@
 
 #region using...
 using System.Collections.Generic;
-using Stile.Prototypes.Specifications.Grammar;
-using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
@@ -23,8 +21,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		ISequenceEqual<TItem>
 		where TSpecification : class, IChainableSpecification
 	{
-		public SequenceEqual(IIsState<TSpecification, TSubject, TResult> prior,
-			IEnumerable<TItem> sequence)
+		public SequenceEqual(IIsState<TSpecification, TSubject, TResult> prior, IEnumerable<TItem> sequence)
 			: base(prior)
 		{
 			Expected = sequence;

@@ -57,6 +57,5 @@ namespace Stile.Tests.Prototypes.Specifications.SemanticModel.Evaluations
 				}
 			}
 		}
-
 	}
 }

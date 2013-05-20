@@ -48,7 +48,6 @@ namespace Stile.Prototypes.Collections.Sorting
 				{
 					yield return visited;
 				}
-				
 			}
 		}
 
@@ -58,7 +57,7 @@ namespace Stile.Prototypes.Collections.Sorting
 			{
 				throw new Exception(string.Format("Cycle detected at item {0}.", item));
 			}
-			if(_permanentlyMarked.Contains(item) == false)
+			if (_permanentlyMarked.Contains(item) == false)
 			{
 				_temporarilyMarked.Add(item);
 				IEnumerable<TItem> neighbors = _adjacencyFunction.Invoke(item);

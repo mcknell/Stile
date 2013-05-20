@@ -91,14 +91,6 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			Visit1(target);
 		}
 
-		public void Visit2<TSubject, TResult>(ISpecification<TSubject, TResult> target)
-		{
-			IAcceptSpecificationVisitors lastTerm = target.ValidateArgumentIsNotNull().Xray.LastTerm;
-			FillStackAndUnwind(lastTerm);
-			ISpecificationState<TSubject, TResult> state = target.Xray;
-			AppendSpecificationAfterthoughts(state);
-		}
-
 		public void Visit3<TSubject, TResult, TExpectationBuilder>(
 			ISpecification<TSubject, TResult, TExpectationBuilder> target)
 			where TExpectationBuilder : class, IExpectationBuilder
@@ -130,6 +122,14 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 				x => describer.Visit2(x.Xray.Expectation));
 		}
 
+		public void Visit2<TSubject, TResult>(ISpecification<TSubject, TResult> target)
+		{
+			IAcceptSpecificationVisitors lastTerm = target.ValidateArgumentIsNotNull().Xray.LastTerm;
+			FillStackAndUnwind(lastTerm);
+			ISpecificationState<TSubject, TResult> state = target.Xray;
+			AppendSpecificationAfterthoughts(state);
+		}
+
 		private void AppendSpecificationAfterthoughts<TSubject>(ISpecificationState<TSubject> state)
 		{
 			Append(DeadlineIfAny(state.Deadline));
@@ -142,8 +142,7 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 			{
 				if (deadline.Timeout > TimeSpan.Zero)
 				{
-					return ", "
-						+ ShouldSpecifications.MeasurableInLessThan.CurrentFormat(deadline.Timeout.ToReadableUnits());
+					return ", " + ShouldSpecifications.MeasurableInLessThan.CurrentFormat(deadline.Timeout.ToReadableUnits());
 				}
 			}
 			return null;

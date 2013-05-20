@@ -47,7 +47,8 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Is
 			IEvaluation<int[], int[]> evaluation = specification.Evaluate();
 
 			Assert.That(evaluation.Outcome == Outcome.Failed);
-			Assert.That(evaluation.ToPastTense(), Contains.Substring("ints should not be sequence equal to int[3] {1, 2, 3}"));
+			Assert.That(evaluation.ToPastTense(),
+				Contains.Substring("ints should not be sequence equal to int[3] {1, 2, 3}"));
 		}
 	}
 }

@@ -1,15 +1,19 @@
 ﻿#region License info...
-// Propter for .NET, Copyright 2011-2012 by Mark Knell
-// Licensed under the MIT License found at the top directory of the Propter project on GitHub
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
+#endregion
+
+#region using...
+using System.Diagnostics.Contracts;
 #endregion
 
 namespace Stile.Patterns.Structural.FluentInterface
 {
-    public interface INegatable {}
+	public interface INegatable {}
 
-    public interface INegatable<out TReturn> : INegatable
-    {
-        [System.Diagnostics.Contracts.Pure]
-        TReturn Not { get; }
-    }
+	public interface INegatable<out TReturn> : INegatable
+	{
+		[Pure]
+		TReturn Not { get; }
+	}
 }

@@ -9,7 +9,6 @@ using NUnit.Framework;
 using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Specifications.Grammar;
-using System.Linq;
 #endregion
 
 namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree

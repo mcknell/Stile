@@ -5,7 +5,6 @@
 
 #region using...
 using System;
-using JetBrains.Annotations;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 #endregion
 

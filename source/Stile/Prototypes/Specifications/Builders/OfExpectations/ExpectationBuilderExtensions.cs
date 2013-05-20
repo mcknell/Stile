@@ -79,8 +79,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		[Pure]
 		[Rule(Nonterminal.Enum.Expectation, UseMethodNameAsSymbol = true)]
 		public static ISpecification<TSubject, TResult> WillChangeTo<TSpecification, TSubject, TResult>(
-			this IExpectationBuilder<TSpecification, TSubject, TResult> builder,
-			[Symbol] TResult expected)
+			this IExpectationBuilder<TSpecification, TSubject, TResult> builder, [Symbol] TResult expected)
 			where TSpecification : class,
 				ISpecification<TSubject, TResult, IExpectationBuilder<TSpecification, TSubject, TResult>>
 		{

@@ -75,7 +75,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			{
 				return this;
 			}
-			var clauses = Members.OfType<IClause>().ToList();
+			List<IClause> clauses = Members.OfType<IClause>().ToList();
 			if (clauses.None())
 			{
 				return this;

@@ -54,10 +54,7 @@ namespace Stile.Prototypes.Collections.Graphs
 				}
 			}
 			_vertices = new HashSet<IVertex<TValue>>();
-			for (int i = 0; i < vertices.Count; i++)
-			{
-				
-			}
+			for (int i = 0; i < vertices.Count; i++) {}
 
 			Vertices = _vertices.ToArray();
 			_edges = new HashSet<DirectedEdge<TValue>>(edges.Select(DirectedEdge.Create),

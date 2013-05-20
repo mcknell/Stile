@@ -39,7 +39,10 @@ namespace Stile.Tests.Prototypes.Specifications.Printable.Should
 		public void Chained()
 		{
 			ISpecification<Foo<int>, Foo<int>, IFluentEnumerableExpectationBuilder<Foo<int>, Foo<int>, int>>
-				specification = Specify.ThatAny<Foo<int>, int>().Has.All.ItemsSatisfying(x => x >= 0).AndThen.Is.Not.Empty.Because("otherwise it ain't right");
+				specification =
+					Specify.ThatAny<Foo<int>, int>()
+						.Has.All.ItemsSatisfying(x => x >= 0)
+						.AndThen.Is.Not.Empty.Because("otherwise it ain't right");
 			Assert.That(specification.ToShould(), Is.EqualTo(@"Any Foo<int> should have all items >= 0 initially,
 then when measured again, should not be empty, because otherwise it ain't right"));
 		}

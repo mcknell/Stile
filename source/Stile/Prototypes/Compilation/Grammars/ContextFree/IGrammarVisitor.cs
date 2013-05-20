@@ -4,7 +4,6 @@
 #endregion
 
 #region using...
-
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree

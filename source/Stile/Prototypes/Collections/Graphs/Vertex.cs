@@ -12,9 +12,9 @@ namespace Stile.Prototypes.Collections.Graphs
 	public interface IVertex<out TValue>
 	{
 		int InDegree { get; }
+		int Index { get; }
 		int OutDegree { get; }
 		TValue Value { get; }
-		int Index { get; }
 	}
 
 	public class Vertex<TValue> : IVertex<TValue>
@@ -38,6 +38,7 @@ namespace Stile.Prototypes.Collections.Graphs
 				return value;
 			}
 		}
+		public int Index { get; private set; }
 		public int OutDegree
 		{
 			get
@@ -47,6 +48,5 @@ namespace Stile.Prototypes.Collections.Graphs
 			}
 		}
 		public TValue Value { get; private set; }
-		public int Index { get; private set; }
 	}
 }

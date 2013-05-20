@@ -4,14 +4,14 @@
 #endregion
 
 #region using...
-using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Visitor;
 using Stile.Patterns.Structural.Hierarchy;
 #endregion
 
 namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 {
-	public interface IAcceptExpectationVisitors : IAcceptVisitors<IExpectationVisitor>, IHasParent<IAcceptExpectationVisitors>
+	public interface IAcceptExpectationVisitors : IAcceptVisitors<IExpectationVisitor>,
+		IHasParent<IAcceptExpectationVisitors>
 	{
 		TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data);
 	}

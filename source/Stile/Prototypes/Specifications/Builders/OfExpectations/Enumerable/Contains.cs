@@ -4,8 +4,6 @@
 #endregion
 
 #region using...
-using Stile.Prototypes.Specifications.Grammar;
-using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Visitors;
 #endregion
 

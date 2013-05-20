@@ -23,7 +23,6 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 	{
 		[NotNull]
 		[System.Diagnostics.Contracts.Pure]
-		IEvaluation<TSubject, TResult> Evaluate([NotNull] ISource<TSubject> source,
-			IDeadline deadline = null);
+		IEvaluation<TSubject, TResult> Evaluate([NotNull] ISource<TSubject> source, IDeadline deadline = null);
 	}
 }

@@ -59,7 +59,7 @@ namespace Stile.Tests.Types.Reflection
 			Assert.That(closure.GetType().IsCapturingClosure(), Is.False);
 
 			_field++;
-				// so nobody will change to (and nothing will automatically refactor to or even suggest) a constant
+			// so nobody will change to (and nothing will automatically refactor to or even suggest) a constant
 			closure = () => _field;
 			Assert.That(closure.GetType().IsCapturingClosure(), Is.False);
 

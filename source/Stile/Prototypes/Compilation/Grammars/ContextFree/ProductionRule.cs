@@ -14,7 +14,8 @@ using Stile.Types.Enumerables;
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-	public interface IProductionRule : IEquatable<ProductionRule>, IAcceptGrammarVisitors
+	public interface IProductionRule : IEquatable<ProductionRule>,
+		IAcceptGrammarVisitors
 	{
 		bool CanBeInlined { get; set; }
 		[NotNull]
@@ -30,7 +31,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			: this(left, rights.Unshift(right).ToList()) {}
 
 		public ProductionRule([NotNull] Symbol left, [NotNull] IEnumerable<Symbol> right)
-			: this(left, Clause.Make(right)) { }
+			: this(left, Clause.Make(right)) {}
 
 		public ProductionRule([NotNull] Symbol left, [NotNull] IClause right)
 		{

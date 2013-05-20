@@ -45,19 +45,19 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		public void Consolidate()
 		{
 			var hashBucket = new HashBucket<Symbol, IClause>();
-			var source = Clause.Make(Cardinality.ZeroOrOne, Nonterminal.Source);
-			var deadline = Clause.Make(Cardinality.ZeroOrOne, Nonterminal.Deadline);
-			var reason = Clause.Make(Cardinality.ZeroOrOne, Nonterminal.Reason);
+			Clause source = Clause.Make(Cardinality.ZeroOrOne, Nonterminal.Source);
+			Clause deadline = Clause.Make(Cardinality.ZeroOrOne, Nonterminal.Deadline);
+			Clause reason = Clause.Make(Cardinality.ZeroOrOne, Nonterminal.Reason);
 			Symbol procedure = Nonterminal.Procedure;
 			hashBucket.Add(Nonterminal.Specification, Clause.Make(source, procedure, deadline, reason));
 			Symbol instrument = Nonterminal.Instrument;
 			Symbol expectation = Nonterminal.Expectation;
 			hashBucket.Add(Nonterminal.Specification, Clause.Make(source, instrument, expectation, deadline, reason));
 
-			var middle = Clause.Make(Clause.Make(procedure),
+			Clause middle = Clause.Make(Clause.Make(procedure),
 				TerminalSymbol.EBNFAlternation,
 				Clause.Make(instrument, expectation));
-			var right = Clause.Make(source, middle, deadline, reason);
+			Clause right = Clause.Make(source, middle, deadline, reason);
 			var expected = new ProductionRule(Nonterminal.Specification, right);
 
 			// act
@@ -74,7 +74,6 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			AssertTrivialConsolidation(ProductionRuleLibrary.ExpectationHas, 1);
 			AssertTrivialConsolidation(ProductionRuleLibrary.ExpectationBefore, 2);
 		}
-
 
 		[Test]
 		[Explicit("WIP")]

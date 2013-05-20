@@ -35,14 +35,12 @@ namespace Stile.Types.Expressions.Printing
 			throw Enumeration.FailedToRecognize(() => language);
 		}
 
-		public Lazy<string> Print(Expression expression,
-				Dictionary<string, string> parameterAliases = null)
+		public Lazy<string> Print(Expression expression, Dictionary<string, string> parameterAliases = null)
 		{
 			return new Lazy<string>(() => LazyPrint(expression, parameterAliases));
 		}
 
-		private string LazyPrint(Expression expression,
-				Dictionary<string, string> parameterAliases = null)
+		private string LazyPrint(Expression expression, Dictionary<string, string> parameterAliases = null)
 		{
 			var session = new Session(_factory, _format, parameterAliases);
 			session.Append(expression);
@@ -85,7 +83,7 @@ namespace Stile.Types.Expressions.Printing
 			public string ParameterAlias(ParameterExpression expression)
 			{
 				string alias = null;
-				if (_parameterAliases != null )
+				if (_parameterAliases != null)
 				{
 					_parameterAliases.TryGetValue(expression.Name, out alias);
 				}

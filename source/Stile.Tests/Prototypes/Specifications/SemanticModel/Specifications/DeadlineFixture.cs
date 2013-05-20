@@ -15,15 +15,6 @@ namespace Stile.Tests.Prototypes.Specifications.SemanticModel.Specifications
 	public class DeadlineFixture
 	{
 		[Test]
-		public void SetDefaultTimeout()
-		{
-			TimeSpan timeout = TimeSpan.FromMilliseconds(10);
-			Assert.That(Deadline.DefaultTimeout, Is.Not.EqualTo(timeout));
-			Deadline.SetDefaultTimeout(timeout);
-			Assert.That(Deadline.DefaultTimeout, Is.EqualTo(timeout));
-		}
-
-		[Test]
 		public void FromTimeSpan()
 		{
 			const bool onThisThread = true;
@@ -31,6 +22,15 @@ namespace Stile.Tests.Prototypes.Specifications.SemanticModel.Specifications
 			var deadline = new Deadline(timeout, onThisThread);
 			Assert.That(deadline.Timeout, Is.EqualTo(timeout));
 			Assert.That(deadline.OnThisThread, Is.EqualTo(onThisThread));
+		}
+
+		[Test]
+		public void SetDefaultTimeout()
+		{
+			TimeSpan timeout = TimeSpan.FromMilliseconds(10);
+			Assert.That(Deadline.DefaultTimeout, Is.Not.EqualTo(timeout));
+			Deadline.SetDefaultTimeout(timeout);
+			Assert.That(Deadline.DefaultTimeout, Is.EqualTo(timeout));
 		}
 	}
 }

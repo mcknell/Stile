@@ -26,9 +26,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Evaluations
 
 	public class Sample<TSubject> : ISample<TSubject>
 	{
-		public Sample(TSubject value,
-			[NotNull] ISource<TSubject> source,
-			DateTime taken)
+		public Sample(TSubject value, [NotNull] ISource<TSubject> source, DateTime taken)
 		{
 			Taken = taken;
 			Value = value;

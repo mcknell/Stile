@@ -53,7 +53,6 @@ namespace Stile.NUnit
 		}
 
 		protected abstract TSubject OtherFactory();
-		protected abstract TSubject TestSubjectFactory();
 
 		protected void RequireDistinctObjects(TSubject subject = default(TSubject))
 		{
@@ -63,6 +62,8 @@ namespace Stile.NUnit
 			}
 			Assert.That(ReferenceEquals(TestSubject, subject), Is.False, Strings.Precondition);
 		}
+
+		protected abstract TSubject TestSubjectFactory();
 	}
 
 	public abstract class EqualityFixtureWithClone<TSubject> : EqualityFixture<TSubject>

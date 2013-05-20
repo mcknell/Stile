@@ -37,7 +37,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 		{
 			get
 			{
-				var clause =
+				Clause clause =
 					Clause.Make(new IClause[]
 					{
 						Clause.Make(Cardinality.ZeroOrOne, Nonterminal.Source),

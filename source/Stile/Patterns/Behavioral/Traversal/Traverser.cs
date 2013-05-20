@@ -1,7 +1,6 @@
-﻿#region License statement
-// Stile
-// Copyright (c) 2010-2012, Mark Knell
-// Published under the MIT License; all other rights reserved
+﻿#region License info...
+// Stile for .NET, Copyright 2011-2013 by Mark Knell
+// Licensed under the MIT License found at the top directory of the Stile project on GitHub
 #endregion
 
 #region using...
@@ -18,14 +17,12 @@ namespace Stile.Patterns.Behavioral.Traversal
 {
 	public abstract class Traverser
 	{
-		#region Move enum
 		public enum Move
 		{
 			Visit,
 			Skip,
 			Halt
 		}
-		#endregion
 	}
 
 	public class Traverser<TItem> : Traverser
@@ -35,8 +32,8 @@ namespace Stile.Patterns.Behavioral.Traversal
 		private readonly Func<IEnumerable<TItem>, IEnumerable<TItem>> _sequencer;
 
 		public Traverser([NotNull] IEnumerable<TItem> items,
-		                 [NotNull] Func<TItem, Move> accepter,
-		                 Func<IEnumerable<TItem>, IEnumerable<TItem>> sequencer = null)
+			[NotNull] Func<TItem, Move> accepter,
+			Func<IEnumerable<TItem>, IEnumerable<TItem>> sequencer = null)
 		{
 			_items = ValidateArgument.IsNotDefault(() => items);
 			_accepter = ValidateArgument.IsNotDefault(() => accepter);

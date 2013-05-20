@@ -80,36 +80,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			}
 		}
 
-		public Symbol GetOrAdd(Symbol symbol)
-		{
-			return GetOrAdd(symbol.Token, symbol.Alias);
-		}
-
-		public Symbol GetOrAdd(string token, string alias)
-		{
-			NonterminalSymbol symbol = _symbols.FirstOrDefault(x => x.Token == token);
-			if (symbol != null)
-			{
-				if (symbol.Alias == alias || alias == null)
-				{
-					return symbol;
-				}
-				if (symbol.Alias == null)
-				{
-					_symbols.Remove(symbol);
-				}
-				else
-				{
-					throw new InvalidDataException(ErrorMessages.GrammarBuilder_AliasCollision.InvariantFormat(token,
-						alias,
-						symbol.Alias));
-				}
-			}
-			symbol = new Nonterminal(token, alias);
-			_symbols.Add(symbol);
-			return symbol;
-		}
-
 		[NotNull]
 		public IGrammar Build(bool consolidate = true)
 		{
@@ -168,6 +138,36 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				list.Add(new ProductionRule(key, right));
 			}
 			return list;
+		}
+
+		public Symbol GetOrAdd(Symbol symbol)
+		{
+			return GetOrAdd(symbol.Token, symbol.Alias);
+		}
+
+		public Symbol GetOrAdd(string token, string alias)
+		{
+			NonterminalSymbol symbol = _symbols.FirstOrDefault(x => x.Token == token);
+			if (symbol != null)
+			{
+				if (symbol.Alias == alias || alias == null)
+				{
+					return symbol;
+				}
+				if (symbol.Alias == null)
+				{
+					_symbols.Remove(symbol);
+				}
+				else
+				{
+					throw new InvalidDataException(ErrorMessages.GrammarBuilder_AliasCollision.InvariantFormat(token,
+						alias,
+						symbol.Alias));
+				}
+			}
+			symbol = new Nonterminal(token, alias);
+			_symbols.Add(symbol);
+			return symbol;
 		}
 
 		private void AddOne(IProductionRule rule)
