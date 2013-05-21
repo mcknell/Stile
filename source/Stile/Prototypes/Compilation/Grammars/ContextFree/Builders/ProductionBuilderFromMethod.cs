@@ -73,7 +73,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			Nonterminal first,
 			IEnumerable<ParameterMetadata> parametersToConsider)
 		{
-			Nonterminal left = ProductionBuilder.GetNonterminal(methodBase, attribute.Symbol, attribute.Alias);
+			Nonterminal left = ProductionBuilder.GetNonterminal(methodBase, attribute.Left, attribute.Alias);
 			Nonterminal prior = first;
 			var fragments = new List<IFragment>();
 			foreach (ParameterMetadata tuple in parametersToConsider)

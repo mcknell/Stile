@@ -253,7 +253,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 
 		private IProductionRule GetRule(PropertyInfo propertyInfo, RuleAttribute attribute)
 		{
-			var left = new Nonterminal(attribute.Symbol);
+			var left = new Nonterminal(attribute.Left);
 			var symbol = new Nonterminal(propertyInfo.Name, attribute.Alias);
 			Clause right = Clause.Make(symbol);
 			var productionRule = new ProductionRule(left, right) {CanBeInlined = attribute.CanBeInlined};
@@ -266,7 +266,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 
 		internal static IProductionRule GetRule([NotNull] MethodBase methodInfo, [NotNull] RuleAttribute attribute)
 		{
-			Nonterminal left = GetNonterminal(methodInfo, attribute.Symbol, attribute.Alias);
+			Nonterminal left = GetNonterminal(methodInfo, attribute.Left, attribute.Alias);
 			IClause clause;
 			if (attribute.NameIsSymbol)
 			{

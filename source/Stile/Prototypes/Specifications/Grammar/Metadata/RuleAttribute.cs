@@ -19,7 +19,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 	{
 		public RuleAttribute(object symbol = null, object alias = null)
 		{
-			Symbol = symbol == null ? null : symbol.ToString();
+			Left = symbol == null ? null : symbol.ToString();
 			Alias = alias == null ? null : alias.ToString();
 			CanBeInlined = true;
 		}
@@ -27,7 +27,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 		public string Alias { get; private set; }
 		public bool CanBeInlined { get; set; }
 		public bool StartsGrammar { get; set; }
-		public string Symbol { get; private set; }
+		public string Left { get; private set; }
 		public bool NameIsSymbol { get; set; }
 	}
 }

@@ -66,6 +66,8 @@
     <Compile Include="Prototypes\Collections\Graphs\GraphExtensionsFixture.cs" />
     <Compile Include="Prototypes\Collections\HashBucketFixture.cs" />
     <Compile Include="Prototypes\Collections\Sorting\ToposortFixture.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\BuilderFixtureBase.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionBuilderFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\TokenFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ChoiceFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ContextFreeFixtureBase.cs" />

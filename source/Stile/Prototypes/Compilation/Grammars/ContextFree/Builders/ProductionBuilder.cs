@@ -105,6 +105,19 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			return symbol;
 		}
 
+		public static ProductionBuilder Make(PropertyInfo propertyInfo, RuleAttribute attribute)
+		{
+			var left = new Nonterminal(attribute.Left);
+			var symbol = new Nonterminal(propertyInfo.Name, attribute.Alias);
+			IChoice right = new Choice(new Sequence(new Item(symbol)));
+			var builder = new ProductionBuilder(left, right, canBeInlined : attribute.CanBeInlined);
+			if (attribute.StartsGrammar)
+			{
+				builder.SortOrder = -1;
+			}
+			return builder;
+		}
+
 		public static class Default
 		{
 			public static readonly IFragment[] Fragments = new IFragment[0];
