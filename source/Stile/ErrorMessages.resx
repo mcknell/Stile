@@ -129,6 +129,12 @@
   <data name="FaultSpecification_ctor_filterBuilder" xml:space="preserve">
     <value>Argument of type {0} must have a {1}</value>
   </data>
+  <data name="Fragment_SequenceMustHaveExactlyOneNonterminal" xml:space="preserve">
+    <value>sequence must have exactly one nonterminal</value>
+  </data>
+  <data name="Fragment_SequenceMustHaveItems" xml:space="preserve">
+    <value>sequence must have items</value>
+  </data>
   <data name="GrammarBuilder_AliasCollision" xml:space="preserve">
     <value>Tried to add token '{0}' with alias '{1}', but found a symbol with that token and alias '{2}' instead.</value>
   </data>
@@ -143,6 +149,9 @@
   </data>
   <data name="Specification_ExpectationBuilderState" xml:space="preserve">
     <value>Argument of type {0} must be convertible to {1}</value>
+  </data>
+  <data name="Token_DefaultCtorInvalid" xml:space="preserve">
+    <value>The default constructor is not permitted.</value>
   </data>
   <data name="ValidateArgument_TryGetParameterName_Column" xml:space="preserve">
     <value>, column {0}</value>

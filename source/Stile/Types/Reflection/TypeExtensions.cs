@@ -14,6 +14,21 @@ namespace Stile.Types.Reflection
 {
 	public static class TypeExtensions
 	{
+		private static readonly MethodInfo GetDefaultGenericDefinition =
+			((Func<object>) GetDefault<object>).Method.GetGenericMethodDefinition();
+
+		public static object GetDefault(this Type type)
+		{
+			MethodInfo genericMethod = GetDefaultGenericDefinition.MakeGenericMethod(type);
+			object invoked = genericMethod.Invoke(null, new object[0]);
+			return invoked;
+		}
+
+		public static T GetDefault<T>()
+		{
+			return default(T);
+		}
+
 		public static IEnumerable<Tuple<ParameterInfo, TAttribute>> GetParametersWith<TAttribute>(
 			this MethodBase methodInfo) where TAttribute : Attribute
 		{

@@ -10,7 +10,6 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
-using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Compilation.Grammars.ContextFree.Builders;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
@@ -73,7 +72,7 @@ namespace Stile.Tests.Prototypes.Specifications.Grammar.Metadata
 		[RuleExpansion(Prior)]
 		private void NoSymbolOrAliasTarget([Symbol] int foo) {}
 
-		[Rule(Prior, UseMethodNameAsSymbol = true)]
+		[Rule(Prior, NameIsSymbol = true)]
 		private void RuleWithNonterminalSymbolTarget([Symbol] int bar = 0) {}
 	}
 }

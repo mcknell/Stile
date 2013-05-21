@@ -4,29 +4,18 @@
 #endregion
 
 #region using...
-using System;
-using System.Globalization;
 using JetBrains.Annotations;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-	public class NonterminalSymbol : Symbol
+	public class NonterminalSymbol : Symbol,
+		IPrimary
 	{
 		public const string IfComparable = "\"(if comparable)\"";
 		public const string IfEnumerable = "\"(if enumerable)\"";
 
 		protected NonterminalSymbol([NotNull] string token, string alias = null)
 			: base(ToTitleCase(token), alias) {}
-
-		protected static string ToTitleCase(string parameterName)
-		{
-			if (string.IsNullOrWhiteSpace(parameterName))
-			{
-				throw new ArgumentOutOfRangeException("parameterName");
-			}
-			string trimmed = parameterName.Trim();
-			return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(trimmed.Substring(0, 1)) + trimmed.Substring(1);
-		}
 	}
 }

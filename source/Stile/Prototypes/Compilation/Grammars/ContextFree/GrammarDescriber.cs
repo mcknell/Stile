@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using System.Collections.Generic;
 using System.Text;
 using Stile.Types.Enumerables;
 #endregion
@@ -20,54 +21,53 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			_stringBuilder = new StringBuilder();
 		}
 
+		public void Visit(IChoice target)
+		{
+			Iterate(target.Sequences, " | ");
+		}
+
 		public void Visit(IGrammar target)
 		{
-			foreach (IProductionRule rule in target.ProductionRules.SkipWith(Visit))
+			Iterate(target.ProductionRules, Environment.NewLine);
+		}
+
+		public void Visit(IItem target)
+		{
+			target.Primary.Accept(this);
+			while (_stringBuilder.Length > 0 && _stringBuilder[_stringBuilder.Length - 1] == ' ')
 			{
-				_stringBuilder.Append(Environment.NewLine);
-				Visit(rule);
+				_stringBuilder.Length--;
 			}
+			_stringBuilder.AppendFormat("{0} ", target.Cardinality.ToEbnfString());
+		}
+
+		public void Visit(IProduction target)
+		{
+			target.Left.Accept(this);
+			_stringBuilder.AppendFormat("{0} ", TerminalSymbol.EBNFAssignment);
+			target.Right.Accept(this);
 		}
 
 		public void Visit(IProductionRule target)
 		{
-			_stringBuilder.AppendFormat("{0} {1}", target.Left, TerminalSymbol.EBNFAssignment);
-			Visit(target.Right);
+			target.Left.Accept(this);
+			_stringBuilder.AppendFormat("{0} ", TerminalSymbol.EBNFAssignment);
+			target.Right.Accept(this);
+		}
+
+		public void Visit(ISequence target)
+		{
+			Iterate(target.Items);
 		}
 
 		public void Visit(IClause target)
 		{
-			_stringBuilder.Append(" ");
-			if (target.Members.Count > 1)
-			{
-				_stringBuilder.Append("(");
-			}
-			foreach (IClauseMember member in target.Members.SkipWith(x => x.Accept(this)))
-			{
-				_stringBuilder.Append(" ");
-				member.Accept(this);
-			}
-			if (target.Members.Count > 1)
-			{
-				_stringBuilder.Append(")");
-			}
-			switch (target.Cardinality)
-			{
-				case Cardinality.OneOrMore:
-					_stringBuilder.Append("+");
-					break;
-				case Cardinality.ZeroOrMore:
-					_stringBuilder.Append("*");
-					break;
-				case Cardinality.ZeroOrOne:
-					_stringBuilder.Append("?");
-					break;
-			}
+			Iterate(target.Members, continuation : () => _stringBuilder.Append(target.Cardinality.ToEbnfString()));
 		}
 
 		public void Visit(Symbol target)
 		{
-			_stringBuilder.Append(target.Alias ?? target.Token);
+			_stringBuilder.AppendFormat("{0} ", target.Alias ?? target.Token);
 		}
 
 		public static string Describe(IGrammar grammar)
@@ -79,7 +79,31 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public override string ToString()
 		{
-			return _stringBuilder.Replace("  ", " ").Replace("( ", "(").ToString();
+			return _stringBuilder.Replace("  ", " ").Replace("( ", "(").Replace(" )", ")").ToString().Trim();
+		}
+
+		private void Iterate<TAccepter>(IReadOnlyList<TAccepter> list,
+			string separator = " ",
+			Action continuation = null) where TAccepter : IAcceptGrammarVisitors
+		{
+			if (list.Count > 1)
+			{
+				_stringBuilder.Append("(");
+			}
+			foreach (TAccepter accepter in list.SkipWith(x => x.Accept(this)))
+			{
+				_stringBuilder.Append(separator);
+				accepter.Accept(this);
+			}
+			if (list.Count > 1)
+			{
+				_stringBuilder.Append(")");
+			}
+			if (continuation != null)
+			{
+				continuation.Invoke();
+			}
+			_stringBuilder.Append(" ");
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 		[CanBeNull]
 		string Alias { get; }
 		[CanBeNull]
-		string Symbol { get; }
+		string Token { get; }
 		bool Terminal { get; }
 	}
 

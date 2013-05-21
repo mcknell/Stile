@@ -30,6 +30,16 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public IReadOnlyList<ISequence> Sequences { get; private set; }
 
+		public void Accept(IGrammarVisitor visitor)
+		{
+			visitor.Visit(this);
+		}
+
+		public TData Accept<TData>(IGrammarVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit(this, data);
+		}
+
 		public override string ToString()
 		{
 			string s = string.Join(" | ", Sequences);

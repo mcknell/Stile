@@ -32,7 +32,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		}
 
 		[Pure]
-		[Rule(Nonterminal.Enum.Expectation, UseMethodNameAsSymbol = true)]
+		[Rule(Nonterminal.Enum.Expectation, NameIsSymbol = true)]
 		public static ISpecification<TSubject, TResult> GetsMeasured<TSpecification, TSubject, TResult>(
 			this IExpectationBuilder<TSpecification, TSubject, TResult> builder)
 			where TSpecification : class,
@@ -77,7 +77,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations
 		}
 
 		[Pure]
-		[Rule(Nonterminal.Enum.Expectation, UseMethodNameAsSymbol = true)]
+		[Rule(Nonterminal.Enum.Expectation, NameIsSymbol = true)]
 		public static ISpecification<TSubject, TResult> WillChangeTo<TSpecification, TSubject, TResult>(
 			this IExpectationBuilder<TSpecification, TSubject, TResult> builder, [Symbol] TResult expected)
 			where TSpecification : class,

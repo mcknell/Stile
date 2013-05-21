@@ -97,6 +97,24 @@ namespace Stile {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to sequence must have exactly one nonterminal.
+        /// </summary>
+        internal static string Fragment_SequenceMustHaveExactlyOneNonterminal {
+            get {
+                return ResourceManager.GetString("Fragment_SequenceMustHaveExactlyOneNonterminal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to sequence must have items.
+        /// </summary>
+        internal static string Fragment_SequenceMustHaveItems {
+            get {
+                return ResourceManager.GetString("Fragment_SequenceMustHaveItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Initial token {0} must be in the set of nonterminals..
         /// </summary>
         internal static string Grammar_InitialToken {
@@ -138,6 +156,15 @@ namespace Stile {
         internal static string Specification_ExpectationBuilderState {
             get {
                 return ResourceManager.GetString("Specification_ExpectationBuilderState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default constructor is not permitted..
+        /// </summary>
+        internal static string Token_DefaultCtorInvalid {
+            get {
+                return ResourceManager.GetString("Token_DefaultCtorInvalid", resourceCulture);
             }
         }
         

@@ -12,7 +12,7 @@ using Stile.Prototypes.Specifications.Grammar;
 namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 {
 	[TestFixture]
-	public class ProductionFixture
+	public class ProductionFixture : ContextFreeFixtureBase
 	{
 		[Test]
 		public void Prints()
@@ -20,7 +20,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			var choice = new Choice(new Sequence(new Item(Nonterminal.Source, Cardinality.ZeroOrOne)));
 			var production = new Production(Nonterminal.Specification, choice);
 
-			Assert.That(production.ToString(), Is.EqualTo("Specification ::= Source?"));
+			AssertPrints(production, "Specification ::= Source?");
 		}
 	}
 }

@@ -101,10 +101,12 @@
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\IClauseMember.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\IGrammarVisitor.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\Link.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\IPrimary.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Item.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Production.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\NonterminalSymbol.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Sequence.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\StringLiteral.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\TerminalSymbol.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Symbol.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Cardinality.cs" />
@@ -132,7 +134,10 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\SequenceEqual.cs" />
     <Compile Include="Properties\SharedKeyAttributes.cs" />
     <Compile Include="Patterns\Structural\Hierarchy\ICanGetPredecessors.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\Fragment.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Metadata\IMetadata.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\Token.cs" />
     <Compile Include="Types\Comparison\ComparisonRelation.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Empty.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIs.cs" />

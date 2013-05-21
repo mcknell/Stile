@@ -19,13 +19,13 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 	{
 		public SymbolAttribute(object symbol = null, object alias = null)
 		{
-			Symbol = symbol == null ? null : symbol.ToString();
+			Token = symbol == null ? null : symbol.ToString();
 			Alias = alias == null ? null : alias.ToString();
 			Terminal = true;
 		}
 
 		public string Alias { get; private set; }
-		public string Symbol { get; private set; }
+		public string Token { get; private set; }
 		public virtual bool Terminal { get; set; }
 	}
 

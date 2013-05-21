@@ -12,16 +12,16 @@ using Stile.Prototypes.Specifications.Grammar;
 namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 {
 	[TestFixture]
-	public class ItemFixture
+	public class ItemFixture : ContextFreeFixtureBase
 	{
 		[Test]
 		public void Prints()
 		{
-			var optional = new Item(Nonterminal.Source, Cardinality.ZeroOrOne);
 			var item = new Item(Nonterminal.Inspection);
+			AssertPrints(item, "Inspection");
 
-			Assert.That(item.ToString(), Is.EqualTo("Inspection"));
-			Assert.That(optional.ToString(), Is.EqualTo("Source?"));
+			var optional = new Item(Nonterminal.Source, Cardinality.ZeroOrOne);
+			AssertPrints(optional, "Source?");
 		}
 	}
 }

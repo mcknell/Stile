@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using System.Globalization;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Types.Primitives;
@@ -13,11 +14,12 @@ using Stile.Types.Primitives;
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
 	public partial class Symbol : IEquatable<Symbol>,
-		IClauseMember, IPrimary
+		IClauseMember
 	{
-		protected Symbol([NotNull] string token, string @alias = null)
+		protected Symbol([NotNull] string token, string alias = null)
 		{
-			Token = token.Trim().Validate().EnumerableOf<char>().IsNotNullOrEmpty();
+			token = token.ValidateIsNotNullOrEmpty();
+			Token = ToTitleCase(token.Trim());
 			Alias = alias;
 		}
 
@@ -30,13 +32,33 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			visitor.Visit(this);
 		}
 
+		public TData Accept<TData>(IGrammarVisitor<TData> visitor, TData data)
+		{
+
+			return visitor.Visit(this, data);
+		}
+
 		public override string ToString()
 		{
 			if (Alias == null)
 			{
 				return Token;
 			}
+			if (Alias.Equals(Token, StringComparison.InvariantCultureIgnoreCase))
+			{
+				return Token;
+			}
 			return "{0} aka {1}".InvariantFormat(Token, Alias);
+		}
+
+		protected static string ToTitleCase(string parameterName)
+		{
+			if (string.IsNullOrWhiteSpace(parameterName))
+			{
+				throw new ArgumentOutOfRangeException("parameterName");
+			}
+			string trimmed = parameterName.Trim();
+			return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(trimmed.Substring(0, 1)) + trimmed.Substring(1);
 		}
 
 		public static implicit operator string(Symbol symbol)

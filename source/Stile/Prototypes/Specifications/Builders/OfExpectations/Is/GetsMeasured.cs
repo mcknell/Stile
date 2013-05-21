@@ -18,7 +18,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 	{
 		private static readonly Lazy<GetsMeasured> LazyInstance = new Lazy<GetsMeasured>(Make);
 
-		[Rule(Nonterminal.Enum.Expectation, UseMethodNameAsSymbol = true)]
+		[Rule(Nonterminal.Enum.Expectation, NameIsSymbol = true)]
 		protected GetsMeasured() {}
 
 		public static GetsMeasured Instance

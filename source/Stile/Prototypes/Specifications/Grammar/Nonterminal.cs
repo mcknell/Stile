@@ -6,7 +6,6 @@
 #region using...
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 #endregion
 

@@ -20,12 +20,12 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 	{
 		public CategoryExpansionAttribute(object name = null)
 		{
-			Symbol = (name == null) ? null : name.ToString();
+			Token = (name == null) ? null : name.ToString();
 		}
 
 		public string Alias { get; set; }
 		public string Prior { get; set; }
-		public string Symbol { get; private set; }
+		public string Token { get; private set; }
 		public bool Terminal { get; set; }
 	}
 }

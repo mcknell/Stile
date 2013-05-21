@@ -11,11 +11,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
 	public class TerminalSymbol : Symbol
 	{
-		public static readonly TerminalSymbol EBNFAlternation = new TerminalSymbol("|");
+		public static readonly TerminalSymbol EBNFAlternation = new TerminalSymbol("Or", "|");
 		public static readonly TerminalSymbol EBNFAssignment = new TerminalSymbol("::=");
 		public static readonly TerminalSymbol UseReflection = new TerminalSymbol(">|");
 
-		public TerminalSymbol([NotNull] string token)
-			: base(token) {}
+		public TerminalSymbol([NotNull] string token, string alias = null)
+			: base(token, alias ?? token) {}
 	}
 }

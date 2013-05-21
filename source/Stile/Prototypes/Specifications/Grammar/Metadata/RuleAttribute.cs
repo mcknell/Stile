@@ -28,6 +28,6 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 		public bool CanBeInlined { get; set; }
 		public bool StartsGrammar { get; set; }
 		public string Symbol { get; private set; }
-		public bool UseMethodNameAsSymbol { get; set; }
+		public bool NameIsSymbol { get; set; }
 	}
 }

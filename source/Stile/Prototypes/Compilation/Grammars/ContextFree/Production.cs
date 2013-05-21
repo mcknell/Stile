@@ -9,7 +9,7 @@ using Stile.Patterns.Behavioral.Validation;
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-	public interface IProduction
+	public interface IProduction : IAcceptGrammarVisitors
 	{
 		NonterminalSymbol Left { get; }
 		IChoice Right { get; }
@@ -26,11 +26,19 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		public NonterminalSymbol Left { get; private set; }
 		public IChoice Right { get; private set; }
 
+		public void Accept(IGrammarVisitor visitor)
+		{
+			visitor.Visit(this);
+		}
+
+		public TData Accept<TData>(IGrammarVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit(this, data);
+		}
+
 		public override string ToString()
 		{
 			return string.Format("{0} {1} {2}", Left, TerminalSymbol.EBNFAssignment, Right);
 		}
 	}
-
-	public interface IPrimary {}
 }

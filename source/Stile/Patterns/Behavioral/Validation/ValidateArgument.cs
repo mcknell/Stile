@@ -5,6 +5,7 @@
 
 #region using...
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -87,6 +88,25 @@ namespace Stile.Patterns.Behavioral.Validation
 			return arg.ValidateArgumentIsNotNull(2);
 		}
 
+		[ContractArgumentValidator]
+		public static TArg ValidateIsNotNullOrEmpty<TArg>(this TArg arg) where TArg : class, IEnumerable
+		{
+			if (arg.ValidateArgumentIsNotNull(2) != null)
+			{
+				if (arg.GetEnumerator().MoveNext() == false)
+				{
+
+					string paramName;
+					if (new StackTrace(true).TryGetParameterName<TArg>(out paramName, 1) == false)
+					{
+						paramName = ErrorMessages.ValidateArgument_ValidateArgumentIsNotNullOrEmpty.InvariantFormat(typeof(TArg).Name);
+					}
+					throw new ArgumentNullException(paramName);
+				}
+			}
+			return arg;
+		}
+
 		private static string FormatParameterInfos(this List<ParameterInfo> list)
 		{
 			IEnumerable<string> strings =
@@ -146,12 +166,11 @@ namespace Stile.Patterns.Behavioral.Validation
 			if (ReferenceEquals(null, arg))
 			{
 				string paramName;
-				if (new StackTrace(true).TryGetParameterName<TArg>(out paramName, stackOffset))
+				if (new StackTrace(true).TryGetParameterName<TArg>(out paramName, stackOffset) == false)
 				{
-					throw new ArgumentNullException(paramName);
+					paramName = ErrorMessages.ValidateArgument_ValidateArgumentIsNotNull.InvariantFormat(typeof(TArg).Name);
 				}
-				throw new ArgumentNullException(
-					ErrorMessages.ValidateArgument_ValidateArgumentIsNotNull.InvariantFormat(typeof(TArg).Name));
+				throw new ArgumentNullException(paramName);
 			}
 			return arg;
 		}

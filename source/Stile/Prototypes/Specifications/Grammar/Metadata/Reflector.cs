@@ -10,7 +10,6 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Compilation.Grammars.ContextFree.Builders;
 using Stile.Types.Enumerables;
@@ -108,7 +107,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 					cardinality = Cardinality.ZeroOrOne;
 				}
 				string name = parameterInfo.Name;
-				string token = symbolAttribute.Symbol ?? name;
+				string token = symbolAttribute.Token ?? name;
 				string alias = symbolAttribute.Alias ?? (symbolAttribute.Terminal ? "\"" + name + "\"" : null);
 				var nonterminal = new Nonterminal(token, alias);
 				clause = Clause.Make(cardinality, nonterminal);
@@ -136,7 +135,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 		internal static IEnumerable<ILink> GetLinks(MethodBase methodBase, RuleExpansionAttribute ruleExpansion)
 		{
 			var prior = new Nonterminal(ruleExpansion.Prior);
-			Nonterminal nonterminal = GetNonterminal(methodBase, ruleExpansion.Symbol, ruleExpansion.Alias);
+			Nonterminal nonterminal = GetNonterminal(methodBase, ruleExpansion.Token, ruleExpansion.Alias);
 			Cardinality cardinality = ruleExpansion.Optional ? Cardinality.ZeroOrOne : Cardinality.One;
 			List<Tuple<ParameterInfo, SymbolAttribute>> parameters =
 				methodBase.GetParametersWith<SymbolAttribute>().ToList();
@@ -161,7 +160,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			Tuple<ParameterInfo, SymbolAttribute> first = parameters.FirstOrDefault();
 			if (first != null)
 			{
-				Nonterminal prior = GetNonterminal(first.Item1, first.Item2.Symbol);
+				Nonterminal prior = GetNonterminal(first.Item1, first.Item2.Token);
 				foreach (ILink link in GetParameterLinks(parameters.Skip(1), prior))
 				{
 					yield return link;
@@ -245,7 +244,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 				{
 					cardinality = Cardinality.ZeroOrOne;
 				}
-				string token = GetSymbol(parameterInfo, attribute.Symbol);
+				string token = GetSymbol(parameterInfo, attribute.Token);
 				string alias = attribute.Alias ?? (attribute.Terminal ? "\"" + parameterInfo.Name + "\"" : null);
 				var nonterminal = new Nonterminal(token, alias);
 				yield return Tuple.Create(nonterminal, cardinality);
@@ -267,9 +266,9 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 
 		internal static IProductionRule GetRule([NotNull] MethodBase methodInfo, [NotNull] RuleAttribute attribute)
 		{
-			Nonterminal nonterminal = GetNonterminal(methodInfo, attribute.Symbol, attribute.Alias);
+			Nonterminal left = GetNonterminal(methodInfo, attribute.Symbol, attribute.Alias);
 			IClause clause;
-			if (attribute.UseMethodNameAsSymbol)
+			if (attribute.NameIsSymbol)
 			{
 				string symbol = GetSymbol(methodInfo, null);
 
@@ -283,7 +282,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			{
 				clause = GetFirstRightClause(methodInfo);
 			}
-			var productionRule = new ProductionRule(nonterminal, clause);
+			var productionRule = new ProductionRule(left, clause);
 			if (attribute.StartsGrammar)
 			{
 				productionRule.SortOrder = -1;

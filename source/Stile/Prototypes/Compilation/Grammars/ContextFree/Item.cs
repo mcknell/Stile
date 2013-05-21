@@ -9,7 +9,7 @@ using Stile.Patterns.Behavioral.Validation;
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-	public interface IItem
+	public interface IItem: IAcceptGrammarVisitors
 	{
 		Cardinality Cardinality { get; }
 		IPrimary Primary { get; }
@@ -25,6 +25,16 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public Cardinality Cardinality { get; private set; }
 		public IPrimary Primary { get; private set; }
+
+		public void Accept(IGrammarVisitor visitor)
+		{
+			visitor.Visit(this);
+		}
+
+		public TData Accept<TData>(IGrammarVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit(this, data);;
+		}
 
 		public override string ToString()
 		{

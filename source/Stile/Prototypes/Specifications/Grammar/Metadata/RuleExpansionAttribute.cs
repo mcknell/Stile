@@ -22,7 +22,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 	{
 		public RuleExpansionAttribute([NotNull] object prior, object symbol = null, object alias = null)
 		{
-			Symbol = (symbol == null) ? null : symbol.ToString();
+			Token = (symbol == null) ? null : symbol.ToString();
 			Alias = (alias == null) ? null : alias.ToString();
 			Prior = prior.ToString();
 		}
@@ -32,7 +32,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 
 		[NotNull]
 		public string Prior { get; private set; }
-		public string Symbol { get; private set; }
+		public string Token { get; private set; }
 		public bool Terminal { get; set; }
 	}
 }

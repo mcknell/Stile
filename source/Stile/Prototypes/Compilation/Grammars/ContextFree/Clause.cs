@@ -53,6 +53,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			visitor.Visit(this);
 		}
 
+		public TData Accept<TData>(IGrammarVisitor<TData> visitor, TData data)
+		{
+			return visitor.Visit(this, data);
+		}
+
 		public IClause Clone(Func<Symbol, Symbol> symbolCloner)
 		{
 			symbolCloner = symbolCloner.ValidateArgumentIsNotNull();

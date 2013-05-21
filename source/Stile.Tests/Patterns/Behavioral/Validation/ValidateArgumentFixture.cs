@@ -77,6 +77,8 @@ namespace Stile.Tests.Patterns.Behavioral.Validation
 			AssertThrows<ArgumentException>(() => ReferenceArgumentNullOrEmpty(new string[0], null), "strings");
 
 			Assert.DoesNotThrow(() => ReferenceArgumentNullOrEmpty(new[] {"hi"}, null));
+
+			AssertThrows(() => ReferenceArgumentNullOrEmpty_Compact(null, null), "strings");
 		}
 
 		private static string AssertThrows(TestDelegate testDelegate, string substring)
@@ -110,6 +112,10 @@ namespace Stile.Tests.Patterns.Behavioral.Validation
 			fixture.ValidateArgumentIsNotNull();
 		}
 
+		private static void ReferenceArgumentNullOrEmpty_Compact(IList<string> strings, string decoy)
+		{
+			strings.ValidateIsNotNullOrEmpty();
+		}
 		private static void ReferenceArgumentNullOrEmpty(IList<string> strings, string decoy)
 		{
 			strings.Validate().EnumerableOf<string>().IsNotNullOrEmpty();
