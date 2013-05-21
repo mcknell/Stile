@@ -17,7 +17,7 @@ using Stile.Prototypes.Specifications.Grammar.Metadata;
 namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
 	[TestFixture]
-	public class ProductionBuilderFixture
+	public class ProductionBuilderFromMethodFixture
 	{
 		private const int Prior = 8;
 
@@ -49,7 +49,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			Assert.That(attribute.NameIsSymbol, Is.EqualTo(nameIsSymbol), "precondition");
 
 			// act
-			ProductionBuilder builder = ProductionBuilder.Make(methodBase, attribute);
+			ProductionBuilder builder = new ProductionBuilderFromMethod(methodBase, attribute).Build();
 
 			Assert.NotNull(builder);
 			Assert.That(builder.Left.Token, Is.EqualTo(Prior.ToString(CultureInfo.InvariantCulture)));

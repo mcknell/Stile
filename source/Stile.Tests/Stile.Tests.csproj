@@ -92,7 +92,7 @@
     <Compile Include="Prototypes\Specifications\Construction\ChangeSpecificationAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Construction\CollectionSpecifyAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Construction\EnumerableSpecifyAcceptanceTests.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionBuilderFixture.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionBuilderFromMethodFixture.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Metadata\ReflectorFixture.cs" />
     <Compile Include="Prototypes\Specifications\SampleObjects\Baz.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\DeadlineFixture.cs" />
