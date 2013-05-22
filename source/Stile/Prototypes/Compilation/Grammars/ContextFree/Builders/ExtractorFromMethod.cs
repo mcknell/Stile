@@ -24,7 +24,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			ParameterInfo parameterInfo = tuple.Item1;
 			SymbolAttribute attribute = tuple.Item2;
 			Cardinality cardinality = ProductionExtractorFromMethod.GetCardinality(parameterInfo);
-			string symbol = ProductionExtractor.GetSymbol(parameterInfo, attribute.Token);
+			string symbol = ProductionBuilder.GetSymbol(parameterInfo, attribute.Token);
 			string alias = attribute.Alias ?? symbol;
 			var terminal = new StringLiteral(alias);
 			Tuple<StringLiteral, Cardinality> terminalTuple1 = Tuple.Create(terminal, cardinality);
@@ -114,7 +114,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			var fragments = new List<IFragment>();
 			foreach (ParameterMetadata metadata in parametersToConsider)
 			{
-				Nonterminal latest = ProductionExtractor.GetNonterminal(metadata.ParameterInfo,
+				Nonterminal latest = ProductionBuilder.GetNonterminal(metadata.ParameterInfo,
 					metadata.Token,
 					metadata.Alias);
 				var fragment = new Fragment(prior, latest);

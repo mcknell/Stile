@@ -69,14 +69,14 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			string alias = null,
 			params SymbolMetadata[] symbols)
 		{
-			AssertAttributeFromMember<RuleCategoryAttribute>(ProductionExtractor.Find, memberInfo, left, alias, symbols);
+			AssertAttributeFromMember<RuleCategoryAttribute>(ProductionBuilder.Find, memberInfo, left, alias, symbols);
 		}
 
 		protected void AssertExpansionFromMember(MemberInfo memberInfo,
 			string left = null,
 			params SymbolMetadata[] symbols)
 		{
-			AssertAttributeFromMember<RuleFragmentAttribute>(ProductionExtractor.Find, memberInfo, left, null, symbols);
+			AssertAttributeFromMember<RuleFragmentAttribute>(ProductionBuilder.Find, memberInfo, left, null, symbols);
 		}
 
 		protected void AssertRuleFromMember<TMember>(TMember memberInfo,
@@ -88,14 +88,14 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			RuleAttribute attribute = memberInfo.GetCustomAttributes<RuleAttribute>(false).Single();
 
 			// act
-			ProductionExtractor extractor = ProductionExtractor.Make(memberInfo, attribute);
+			ProductionBuilder builder = ProductionBuilder.Make(memberInfo, attribute);
 
-			Assert.NotNull(extractor);
-			Assert.That(extractor.CanBeInlined, Is.EqualTo(canBeInlined));
-			Assert.That(extractor.Left.Token, Is.EqualTo(Prior.ToString(CultureInfo.InvariantCulture)));
-			Assert.NotNull(extractor.Right);
-			Assert.That(extractor.Right.Sequences.Count, Is.EqualTo(1));
-			ISequence sequence = extractor.Right.Sequences[0];
+			Assert.NotNull(builder);
+			Assert.That(builder.CanBeInlined, Is.EqualTo(canBeInlined));
+			Assert.That(builder.Left.Token, Is.EqualTo(Prior.ToString(CultureInfo.InvariantCulture)));
+			Assert.NotNull(builder.Right);
+			Assert.That(builder.Right.Sequences.Count, Is.EqualTo(1));
+			ISequence sequence = builder.Right.Sequences[0];
 			Assert.That(sequence.Items.Count, Is.EqualTo(1));
 
 			IItem item = sequence.Items[0];
@@ -120,7 +120,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			Assert.That(nonterminalSymbol.Token, Is.EqualTo(metadata.Token), message);
 			Assert.That(nonterminalSymbol.Alias, Is.EqualTo(metadata.Alias), message);
 
-			Assert.That(extractor.Fragments.Count, Is.EqualTo(symbols.Length - 1));
+			Assert.That(builder.Fragments.Count, Is.EqualTo(symbols.Length - 1));
 
 			SymbolMetadata priorMetadata = metadata;
 			for (int i = 1; i < symbols.Length; i++)
@@ -128,7 +128,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 				metadata = symbols[i];
 				message = metadata.ToString();
 
-				IFragment fragment = extractor.Fragments[i - 1];
+				IFragment fragment = builder.Fragments[i - 1];
 				Assert.That(fragment.Left, Is.EqualTo(priorMetadata.Token), message);
 				Assert.That(fragment.Right.Token, Is.EqualTo(metadata.Token), message);
 				Assert.That(fragment.Right.Alias, Is.EqualTo(metadata.Alias), message);

@@ -16,7 +16,7 @@ using Stile.Types.Reflection;
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
-	public interface IProductionExtractor
+	public interface IProductionBuilder
 	{
 		bool CanBeInlined { get; }
 		IReadOnlyList<IFragment> Fragments { get; }
@@ -26,15 +26,15 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		int SortOrder { get; set; }
 	}
 
-	public class ProductionExtractor : IProductionExtractor
+	public class ProductionBuilder : IProductionBuilder
 	{
-		public ProductionExtractor(Nonterminal left,
+		public ProductionBuilder(Nonterminal left,
 			IChoice right,
 			RuleAttribute attribute,
 			IReadOnlyList<IFragment> fragments = null)
 			: this(left, right, fragments, attribute.StartsGrammar ? -1 : 0, attribute.CanBeInlined) {}
 
-		public ProductionExtractor(Nonterminal left,
+		public ProductionBuilder(Nonterminal left,
 			IChoice right,
 			IReadOnlyList<IFragment> fragments = null,
 			int sortOrder = 0,
@@ -141,7 +141,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			return symbol;
 		}
 
-		public static ProductionExtractor Make(MemberInfo memberInfo, RuleAttribute attribute)
+		public static ProductionBuilder Make(MemberInfo memberInfo, RuleAttribute attribute)
 		{
 			var propertyInfo = memberInfo as PropertyInfo;
 			if (propertyInfo != null)
@@ -156,12 +156,12 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			throw new NotImplementedException();
 		}
 
-		public static ProductionExtractor Make(PropertyInfo propertyInfo, RuleAttribute attribute)
+		public static ProductionBuilder Make(PropertyInfo propertyInfo, RuleAttribute attribute)
 		{
 			var left = new Nonterminal(attribute.Left);
 			var symbol = new Nonterminal(propertyInfo.Name, attribute.Alias);
 			IChoice right = new Choice(new Sequence(new Item(symbol)));
-			var builder = new ProductionExtractor(left, right, canBeInlined : attribute.CanBeInlined);
+			var builder = new ProductionBuilder(left, right, canBeInlined : attribute.CanBeInlined);
 			if (attribute.StartsGrammar)
 			{
 				builder.SortOrder = -1;

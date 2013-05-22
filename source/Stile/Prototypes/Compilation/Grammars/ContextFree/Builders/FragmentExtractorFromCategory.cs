@@ -25,13 +25,13 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			out string firstToken)
 		{
 			firstAlias = Attribute.Alias;
-			firstToken = ProductionExtractor.GetSymbol(MethodBase, Attribute.Token);
+			firstToken = ProductionBuilder.GetSymbol(MethodBase, Attribute.Token);
 			return MethodBase.GetParametersWith<SymbolAttribute>();
 		}
 
 		protected override IReadOnlyList<IFragment> MakeOutput(Nonterminal first, List<IFragment> fragments)
 		{
-			var left = Attribute.Prior ?? ProductionExtractor.GetName(MethodBase.ReflectedType);
+			var left = Attribute.Prior ?? ProductionBuilder.GetName(MethodBase.ReflectedType);
 			var fragment = new Fragment(left, first);
 			fragments.Insert(0, fragment);
 			return fragments;
