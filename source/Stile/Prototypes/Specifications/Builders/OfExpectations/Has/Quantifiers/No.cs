@@ -27,7 +27,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 		where TSpecification : class, ISpecification, IChainableSpecification
 		where TResult : class, IEnumerable<TItem>
 	{
-		[RuleExpansion(Nonterminal.Enum.EnumerableHas)]
+		[RuleFragment(Nonterminal.Enum.EnumerableHas)]
 		public No([NotNull] IHasState<TSpecification, TSubject, TResult> hasState)
 			: base(hasState) {}
 

@@ -14,10 +14,11 @@ using Stile.Types.Reflection;
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
-	public class FragmentExtractorFromMethod :
-		ExtractorFromMethod<RuleFragmentAttribute, IReadOnlyList<IFragment>>
+	public class FragmentExtractorFromCategory :
+		ExtractorFromMethod<RuleCategoryAttribute, IReadOnlyList<IFragment>>
 	{
-		public FragmentExtractorFromMethod(MethodBase methodBase, RuleFragmentAttribute attribute)
+
+		public FragmentExtractorFromCategory(MethodBase methodBase, RuleCategoryAttribute attribute)
 			: base(methodBase, attribute) {}
 
 		protected override IEnumerable<Tuple<ParameterInfo, SymbolAttribute>> GetParameters(out string firstAlias,
@@ -30,8 +31,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 
 		protected override IReadOnlyList<IFragment> MakeOutput(Nonterminal first, List<IFragment> fragments)
 		{
-			Cardinality cardinality = Attribute.Optional ? Cardinality.ZeroOrOne : Cardinality.One;
-			var fragment = new Fragment(Attribute.Prior, first, cardinality);
+			var left = Attribute.Prior ?? ProductionExtractor.GetName(MethodBase.ReflectedType);
+			var fragment = new Fragment(left, first);
 			fragments.Insert(0, fragment);
 			return fragments;
 		}

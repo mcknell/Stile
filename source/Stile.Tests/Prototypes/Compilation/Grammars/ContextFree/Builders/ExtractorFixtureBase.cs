@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -26,26 +27,27 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 		protected const string Token = "tkn";
 		protected const string Alias = "Is Not?";
 
-		protected void AssertExpansionFromMember(MethodBase methodBase, params SymbolMetadata[] symbols)
+		protected void AssertAttributeFromMember<TAttribute>(
+			Func<MemberInfo, TAttribute, IReadOnlyList<IFragment>> func,
+			MemberInfo memberInfo,
+			string left = null,
+			string alias = null,
+			params SymbolMetadata[] symbols) where TAttribute : Attribute, IMetadataWithPrior
 		{
-			RuleExpansionAttribute attribute = methodBase.GetCustomAttributes<RuleExpansionAttribute>(false).Single();
+			TAttribute attribute = memberInfo.GetCustomAttributes<TAttribute>(false).Single();
 
 			// act
-			IReadOnlyList<IFragment> fragments = ProductionExtractor.Find(methodBase, attribute);
+			IReadOnlyList<IFragment> fragments = func.Invoke(memberInfo, attribute);
 
 			Assert.NotNull(fragments);
 			Assert.That(fragments.Count, Is.EqualTo(symbols.Length + 1));
 
 			IFragment fragment = fragments[0];
-			Assert.That(fragment.Left, Is.EqualTo(attribute.Prior));
-			string name = methodBase.IsConstructor
-				// ReSharper disable PossibleNullReferenceException
-				? methodBase.DeclaringType.Name
-				// ReSharper restore PossibleNullReferenceException
-				: methodBase.Name;
+			Assert.That(fragment.Left, Is.EqualTo(left ?? attribute.Prior));
+			string name = GetName(memberInfo);
 			string titleCase = Symbol.ToTitleCase(attribute.Token ?? name);
 			Assert.That(fragment.Right.Token, Is.EqualTo(titleCase));
-			Assert.That(fragment.Right.Alias, Is.EqualTo(attribute.Alias));
+			Assert.That(fragment.Right.Alias, Is.EqualTo(alias ?? attribute.Alias));
 
 			var priorMetadata = new SymbolMetadata(attribute.Token, attribute.Alias);
 			for (int i = 0; i < symbols.Length; i++)
@@ -60,6 +62,21 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 				Assert.That(fragment.Right.Alias, Is.EqualTo(metadata.Alias), message);
 				priorMetadata = metadata;
 			}
+		}
+
+		protected void AssertCategoryFromMember(MemberInfo memberInfo,
+			string left = null,
+			string alias = null,
+			params SymbolMetadata[] symbols)
+		{
+			AssertAttributeFromMember<RuleCategoryAttribute>(ProductionExtractor.Find, memberInfo, left, alias, symbols);
+		}
+
+		protected void AssertExpansionFromMember(MemberInfo memberInfo,
+			string left = null,
+			params SymbolMetadata[] symbols)
+		{
+			AssertAttributeFromMember<RuleFragmentAttribute>(ProductionExtractor.Find, memberInfo, left, null, symbols);
 		}
 
 		protected void AssertRuleFromMember<TMember>(TMember memberInfo,
@@ -117,6 +134,28 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 				Assert.That(fragment.Right.Alias, Is.EqualTo(metadata.Alias), message);
 				priorMetadata = metadata;
 			}
+		}
+
+		protected string GetName(MemberInfo memberInfo)
+		{
+			var methodBase = memberInfo as MethodBase;
+			if (methodBase != null)
+			{
+				return methodBase.IsConstructor
+					// ReSharper disable PossibleNullReferenceException
+					? methodBase.DeclaringType.Name
+					// ReSharper restore PossibleNullReferenceException
+					: methodBase.Name;
+			}
+			return memberInfo.Name;
+		}
+
+		protected static string MakeAlias(Action<int> action, string name = null)
+		{
+			name = name ?? action.Method.Name;
+			string firstParameterName = action.Method.GetParameters()[0].Name;
+			string alias = string.Format("{0} \"{1}\"", name, firstParameterName);
+			return alias;
 		}
 
 		protected class SymbolMetadata

@@ -54,9 +54,40 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		public IChoice Right { get; private set; }
 		public int SortOrder { get; set; }
 
-		public static IReadOnlyList<IFragment> Find(MethodBase methodBase, RuleExpansionAttribute ruleExpansion)
+		public static IReadOnlyList<IFragment> Find(MemberInfo memberInfo, RuleFragmentAttribute ruleFragment)
 		{
-			return new FragmentExtractorFromMethod(methodBase, ruleExpansion).Build();
+			var propertyInfo = memberInfo as PropertyInfo;
+			if (propertyInfo != null)
+			{
+				return Find(propertyInfo, ruleFragment);
+			}
+			var methodBase = memberInfo as MethodBase;
+			if (methodBase != null)
+			{
+				return new FragmentExtractorFromMethod(methodBase, ruleFragment).Build();
+			}
+			throw new NotImplementedException();
+		}
+
+		public static IReadOnlyList<IFragment> Find(MemberInfo memberInfo, RuleCategoryAttribute attribute)
+		{
+			var methodBase = memberInfo as MethodBase;
+			if (methodBase != null)
+			{
+				return new FragmentExtractorFromCategory(methodBase, attribute).Build();
+			}
+			throw new NotImplementedException();
+		}
+
+		public static string GetName(Type baseType)
+		{
+			string name = baseType.Name;
+			if (baseType.IsGenericType)
+			{
+				name = name.Substring(0,
+					name.IndexOf(TypeStringBuilder.GenericArgumentDelimiter, StringComparison.Ordinal));
+			}
+			return name;
 		}
 
 		public static Nonterminal GetNonterminal(ParameterInfo parameterInfo, string symbolToken, string alias)
@@ -136,6 +167,14 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 				builder.SortOrder = -1;
 			}
 			return builder;
+		}
+
+		private static IReadOnlyList<IFragment> Find(PropertyInfo propertyInfo, RuleFragmentAttribute ruleFragment)
+		{
+			var nonterminal = new Nonterminal(ruleFragment.Token ?? propertyInfo.Name, ruleFragment.Alias);
+			Cardinality cardinality = ruleFragment.Optional ? Cardinality.ZeroOrOne : Cardinality.One;
+			var fragment = new Fragment(ruleFragment.Prior, nonterminal, cardinality);
+			return new List<IFragment> {fragment};
 		}
 
 		public static class Default

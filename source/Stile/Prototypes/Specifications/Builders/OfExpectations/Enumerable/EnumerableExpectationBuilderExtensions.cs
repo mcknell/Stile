@@ -19,7 +19,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable
 	public static class EnumerableExpectationBuilderExtensions
 	{
 		[Pure]
-		[RuleExpansion(Nonterminal.Enum.EnumerableResult)]
+		[RuleFragment(Nonterminal.Enum.EnumerableResult)]
 		public static TSpecification Contains<TSpecification, TSubject, TResult, TItem>(
 			this IExpectationBuilder<TSpecification, TSubject, TResult> builder,
 			[Symbol] TItem item,

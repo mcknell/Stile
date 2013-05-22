@@ -18,7 +18,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 	public static class IsExtensions
 	{
 		[Pure]
-		[RuleExpansion(Nonterminal.Enum.Is)]
+		[RuleFragment(Nonterminal.Enum.Is)]
 		public static TSpecification EqualTo<TSpecification, TSubject, TResult>(
 			this IIs<TSpecification, TSubject, TResult> builder, [Symbol] TResult result)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
@@ -27,7 +27,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		}
 
 		[Pure]
-		[RuleExpansion(Nonterminal.Enum.Is)]
+		[RuleFragment(Nonterminal.Enum.Is)]
 		public static TSpecification Null<TSpecification, TSubject, TResult>(
 			this IIs<TSpecification, TSubject, TResult?> builder)
 			where TSpecification : class, ISpecification<TSubject, TResult?>, IChainableSpecification
@@ -38,7 +38,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		}
 
 		[Pure]
-		[RuleExpansion(Nonterminal.Enum.Is)]
+		[RuleFragment(Nonterminal.Enum.Is)]
 		public static TSpecification Null<TSpecification, TSubject, TResult>(
 			this IIs<TSpecification, TSubject, TResult> builder)
 			where TSpecification : class, ISpecification<TSubject, TResult>, IChainableSpecification
@@ -49,7 +49,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		}
 
 		[Pure]
-		[RuleExpansion(Nonterminal.Enum.EnumerableIs)]
+		[RuleFragment(Nonterminal.Enum.EnumerableIs)]
 		public static TSpecification SequenceEqualTo<TSpecification, TSubject, TResult, TItem>(
 			this IEnumerableIs<TSpecification, TSubject, TResult, TItem> builder,
 			[Symbol] IEnumerable<TItem> sequence,

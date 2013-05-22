@@ -22,7 +22,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Is
 		IEmpty<TSpecification, TSubject, TResult>
 		where TSpecification : class, IChainableSpecification
 	{
-		[RuleExpansion(Nonterminal.Enum.EnumerableIs)]
+		[RuleFragment(Nonterminal.Enum.EnumerableIs)]
 		public Empty([NotNull] IIsState<TSpecification, TSubject, TResult> prior)
 			: base(prior) {}
 

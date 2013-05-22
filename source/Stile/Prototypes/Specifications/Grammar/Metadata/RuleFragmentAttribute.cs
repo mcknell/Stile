@@ -17,10 +17,10 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 	[AttributeUsage(
 		AttributeTargets.Parameter | AttributeTargets.Method | AttributeTargets.Property
 			| AttributeTargets.Constructor, AllowMultiple = false, Inherited = false)]
-	public class RuleExpansionAttribute : Attribute,
-		IMetadata
+	public class RuleFragmentAttribute : Attribute,
+		IMetadataWithPrior
 	{
-		public RuleExpansionAttribute([NotNull] object prior, object symbol = null, object alias = null)
+		public RuleFragmentAttribute([NotNull] object prior, object symbol = null, object alias = null)
 		{
 			Token = (symbol == null) ? null : symbol.ToString();
 			Alias = (alias == null) ? null : alias.ToString();

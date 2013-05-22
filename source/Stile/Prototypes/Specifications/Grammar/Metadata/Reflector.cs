@@ -41,16 +41,16 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			{
 				_grammarBuilder.Add(GetLinks(tuple.Item1));
 			}
-			foreach (Tuple<MethodBase, RuleExpansionAttribute> tuple in GetMethods<RuleExpansionAttribute>())
+			foreach (Tuple<MethodBase, RuleFragmentAttribute> tuple in GetMethods<RuleFragmentAttribute>())
 			{
 				_grammarBuilder.Add(GetLinks(tuple.Item1, tuple.Item2));
 			}
 			foreach (
-				Tuple<MethodBase, CategoryExpansionAttribute> tuple in GetMethods<CategoryExpansionAttribute>(false))
+				Tuple<MethodBase, RuleCategoryAttribute> tuple in GetMethods<RuleCategoryAttribute>(false))
 			{
 				_grammarBuilder.Add(GetLink(tuple.Item1, tuple.Item2));
 			}
-			foreach (Tuple<PropertyInfo, RuleExpansionAttribute> tuple in GetProperties<RuleExpansionAttribute>())
+			foreach (Tuple<PropertyInfo, RuleFragmentAttribute> tuple in GetProperties<RuleFragmentAttribute>())
 			{
 				_grammarBuilder.Add(GetLink(tuple.Item1, tuple.Item2));
 			}
@@ -115,15 +115,15 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			return clause;
 		}
 
-		private static Link GetLink(PropertyInfo propertyInfo, RuleExpansionAttribute expansionAttribute)
+		private static Link GetLink(PropertyInfo propertyInfo, RuleFragmentAttribute fragmentAttribute)
 		{
-			var nonterminal = new Nonterminal(propertyInfo.Name, expansionAttribute.Alias);
-			return new Link(new Nonterminal(expansionAttribute.Prior), nonterminal);
+			var nonterminal = new Nonterminal(propertyInfo.Name, fragmentAttribute.Alias);
+			return new Link(new Nonterminal(fragmentAttribute.Prior), nonterminal);
 		}
 
-		private static ILink GetLink(MethodBase methodBase, CategoryExpansionAttribute expansionAttribute)
+		private static ILink GetLink(MethodBase methodBase, RuleCategoryAttribute attribute)
 		{
-			string name = expansionAttribute.Prior ?? GetName(methodBase.ReflectedType);
+			string name = attribute.Prior ?? ProductionExtractor.GetName(methodBase.ReflectedType);
 			var prior = new Nonterminal(name);
 			var symbol = new Nonterminal(methodBase.Name);
 			IEnumerable<Tuple<ParameterInfo, SymbolAttribute>> parameters =
@@ -132,11 +132,11 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			return new Link(prior, symbol, clause : clause);
 		}
 
-		internal static IEnumerable<ILink> GetLinks(MethodBase methodBase, RuleExpansionAttribute ruleExpansion)
+		internal static IEnumerable<ILink> GetLinks(MethodBase methodBase, RuleFragmentAttribute ruleFragment)
 		{
-			var prior = new Nonterminal(ruleExpansion.Prior);
-			Nonterminal nonterminal = GetNonterminal(methodBase, ruleExpansion.Token, ruleExpansion.Alias);
-			Cardinality cardinality = ruleExpansion.Optional ? Cardinality.ZeroOrOne : Cardinality.One;
+			var prior = new Nonterminal(ruleFragment.Prior);
+			Nonterminal nonterminal = GetNonterminal(methodBase, ruleFragment.Token, ruleFragment.Alias);
+			Cardinality cardinality = ruleFragment.Optional ? Cardinality.ZeroOrOne : Cardinality.One;
 			List<Tuple<ParameterInfo, SymbolAttribute>> parameters =
 				methodBase.GetParametersWith<SymbolAttribute>().ToList();
 			if (parameters.Count > 0 && parameters.All(x => x.Item2.Terminal))
@@ -194,17 +194,6 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 					}
 				}
 			}
-		}
-
-		private static string GetName(Type baseType)
-		{
-			string name = baseType.Name;
-			if (baseType.IsGenericType)
-			{
-				name = name.Substring(0,
-					name.IndexOf(TypeStringBuilder.GenericArgumentDelimiter, StringComparison.Ordinal));
-			}
-			return name;
 		}
 
 		private static Nonterminal GetNonterminal(MethodBase methodInfo, string symbolToken, string alias)

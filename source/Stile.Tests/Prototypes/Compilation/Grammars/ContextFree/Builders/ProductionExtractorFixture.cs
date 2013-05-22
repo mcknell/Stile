@@ -16,15 +16,23 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 	[TestFixture]
 	public class ProductionExtractorFixture : ExtractorFixtureBase
 	{
-		[RuleExpansion(Prior, Token, Alias, Optional = true)]
+		[RuleFragment(Prior, Token, Alias, Optional = true)]
 		public ProductionExtractorFixture(int foo) {}
 
 		public ProductionExtractorFixture() {}
 
 		[Test]
-		public void GetFragmentsFromCtor_WithAlias()
+		public void GetFragmentsFromCategory()
 		{
-			// symbol, alias, optional
+			Action<int> action = Category;
+			string firstLeft = GetType().Name;
+			string alias = MakeAlias(action, Alias);
+			AssertCategoryFromMember(action.Method, firstLeft, alias);
+		}
+
+		[Test]
+		public void GetFragmentsFromCtor()
+		{
 			ConstructorInfo constructorInfo = GetType().GetConstructor(new[] {typeof(int)});
 			AssertExpansionFromMember(constructorInfo);
 		}
@@ -33,7 +41,17 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 		public void GetFragmentsFromMethod()
 		{
 			Action<int, int> action = Expansion;
-			AssertExpansionFromMember(action.Method, new SymbolMetadata("Foo", "foo"), new SymbolMetadata("Bar", "bar"));
+			AssertExpansionFromMember(action.Method,
+				null,
+				new SymbolMetadata("Foo", "foo"),
+				new SymbolMetadata("Bar", "bar"));
+		}
+
+		[Test]
+		public void GetFragmentsFromProperty()
+		{
+			PropertyInfo propertyInfo = GetPropertyInfo(x => x.ExpansionProperty);
+			AssertExpansionFromMember(propertyInfo);
 		}
 
 		[Test]
@@ -51,6 +69,12 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			AssertRuleFromMember(propertyInfo, true, new SymbolMetadata(propertyInfo.Name, Alias));
 		}
 
+		[RuleFragment(Prior, Token, Alias, Optional = true)]
+		protected int ExpansionProperty
+		{
+			get { throw new NotImplementedException(); }
+		}
+
 		[Rule(Prior, CanBeInlined = false)]
 		private object NoInline
 		{
@@ -62,12 +86,21 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			get { return null; }
 		}
 
-		[RuleExpansion(Prior, Token, Alias, Optional = true)]
+		[RuleCategory(Token, Alias = Alias)]
+		protected static void Category([Symbol] int foo) {}
+
+		[RuleFragment(Prior, Token, Alias, Optional = true)]
 		protected static void Expansion([NonterminalSymbol] int foo, [NonterminalSymbol] int bar) {}
 
 		private static PropertyInfo GetPropertyInfo(Expression<Func<ProductionExtractorFixture, object>> expression)
 		{
-			var memberExpression = (MemberExpression) expression.Body;
+			Expression body = expression.Body;
+			var unaryExpression = body as UnaryExpression;
+			if (unaryExpression != null)
+			{
+				body = unaryExpression.Operand;
+			}
+			var memberExpression = (MemberExpression) body;
 			var propertyInfo = (PropertyInfo) memberExpression.Member;
 			return propertyInfo;
 		}

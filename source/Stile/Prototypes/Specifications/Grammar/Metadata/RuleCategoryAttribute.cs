@@ -15,12 +15,12 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor, AllowMultiple = true,
 		Inherited = true)]
-	public class CategoryExpansionAttribute : Attribute,
+	public class RuleCategoryAttribute : Attribute,
 		IMetadataWithPrior
 	{
-		public CategoryExpansionAttribute(object name = null)
+		public RuleCategoryAttribute(object token = null)
 		{
-			Token = (name == null) ? null : name.ToString();
+			Token = (token == null) ? null : token.ToString();
 		}
 
 		public string Alias { get; set; }

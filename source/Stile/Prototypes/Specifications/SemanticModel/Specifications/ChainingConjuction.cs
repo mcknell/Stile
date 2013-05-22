@@ -25,7 +25,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 		where TInspection : class, IProcedure
 	{
 		[System.Diagnostics.Contracts.Pure]
-		[RuleExpansion(Nonterminal.Enum.Instrument, Nonterminal.Enum.Exception)]
+		[RuleFragment(Nonterminal.Enum.Instrument, Nonterminal.Enum.Exception)]
 		TSpecification Throws<TException>() where TException : Exception;
 	}
 

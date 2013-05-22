@@ -8,7 +8,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
-using Stile.Prototypes.Compilation.Grammars.ContextFree.Builders;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 #endregion
 
@@ -22,7 +21,10 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 		{
 			Action<int, int> action = RuleWithNonterminalSymbol;
 			AssertNameIsSymbol(false, action.Method);
-			AssertRuleFromMember(action.Method, true, new SymbolMetadata("Foo", "foo"), new SymbolMetadata("Bar", "bar"));
+			AssertRuleFromMember(action.Method,
+				true,
+				new SymbolMetadata("Foo", "foo"),
+				new SymbolMetadata("Bar", "bar"));
 		}
 
 		[Test]
@@ -31,8 +33,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			Action<int> action = RuleWithTerminalSymbol;
 			AssertNameIsSymbol(true, action.Method);
 			string methodName = action.Method.Name;
-			string firstParameterName = action.Method.GetParameters()[0].Name;
-			string alias = string.Format("{0} \"{1}\"", methodName, firstParameterName);
+			string alias = MakeAlias(action);
 			AssertRuleFromMember(action.Method, true, new SymbolMetadata(methodName, alias));
 		}
 

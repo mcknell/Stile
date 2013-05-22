@@ -27,7 +27,7 @@ namespace Stile.Tests.Prototypes.Specifications.Grammar.Metadata
 		{
 			Action<int> action = NoSymbolOrAliasTarget;
 			MethodInfo methodBase = action.Method;
-			RuleExpansionAttribute attribute = methodBase.GetCustomAttributes<RuleExpansionAttribute>(false).First();
+			RuleFragmentAttribute attribute = methodBase.GetCustomAttributes<RuleFragmentAttribute>(false).First();
 
 			// act
 			List<ILink> links = Reflector.GetLinks(methodBase, attribute).ToList();
@@ -69,7 +69,7 @@ namespace Stile.Tests.Prototypes.Specifications.Grammar.Metadata
 			Assert.That(member.Members.Single().ToString(), Is.EqualTo(expected));
 		}
 
-		[RuleExpansion(Prior)]
+		[RuleFragment(Prior)]
 		private void NoSymbolOrAliasTarget([Symbol] int foo) {}
 
 		[Rule(Prior, NameIsSymbol = true)]

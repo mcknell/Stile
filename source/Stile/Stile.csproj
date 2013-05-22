@@ -95,6 +95,7 @@
     <Compile Include="Prototypes\Collections\Graphs\Vertex.cs" />
     <Compile Include="Prototypes\Collections\Sorting\Toposort.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ExtractorFromMethod.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\FragmentExtractorFromCategory.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\FragmentExtractorFromMethod.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionExtractorFromMethod.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Choice.cs" />
@@ -152,11 +153,11 @@
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EqualTo.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Null.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Nullable.cs" />
-    <Compile Include="Prototypes\Specifications\Grammar\Metadata\CategoryExpansionAttribute.cs" />
+    <Compile Include="Prototypes\Specifications\Grammar\Metadata\RuleCategoryAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Metadata\Reflector.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Describer.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Nonterminal.cs" />
-    <Compile Include="Prototypes\Specifications\Grammar\Metadata\RuleExpansionAttribute.cs" />
+    <Compile Include="Prototypes\Specifications\Grammar\Metadata\RuleFragmentAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Should\ShouldExpectationDescriber.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Should\ShouldSpecificationDescriber.cs" />
     <Compile Include="Prototypes\Specifications\Printable\Should\ShouldSpecifications.Designer.cs">
