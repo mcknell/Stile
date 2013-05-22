@@ -6,16 +6,18 @@
 #region using...
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
+using Stile.Types.Equality;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
-	public interface IProductionBuilder
+	public interface IProductionBuilder : IEquatable<IProductionBuilder>
 	{
 		bool CanBeInlined { get; }
 		IReadOnlyList<IFragment> Fragments { get; }
@@ -23,9 +25,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		[CanBeNull]
 		IChoice Right { get; }
 		int SortOrder { get; }
+
+		IProduction Assemble(HashSet<IFragment> fragments);
 	}
 
-	public class ProductionBuilder : IProductionBuilder
+	public partial class ProductionBuilder : IProductionBuilder
 	{
 		public ProductionBuilder(Nonterminal left,
 			IChoice right,
@@ -38,7 +42,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			IReadOnlyList<IFragment> fragments = null,
 			int sortOrder = 0,
 			bool canBeInlined = false)
-
 		{
 			Left = left.ValidateArgumentIsNotNull();
 			CanBeInlined = canBeInlined;
@@ -52,6 +55,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		public Nonterminal Left { get; private set; }
 		public IChoice Right { get; private set; }
 		public int SortOrder { get; set; }
+		public IProduction Assemble(HashSet<IFragment> fragments)
+		{
+			var accumulator = new ProductionAccumulator(fragments, Left, Right);
+			return accumulator.Build();
+		}
 
 		public static IProductionBuilder Make(MemberInfo memberInfo, RuleAttribute attribute)
 		{
@@ -84,6 +92,60 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		public static class Default
 		{
 			public static readonly IFragment[] Fragments = new IFragment[0];
+		}
+	}
+
+	public partial class ProductionBuilder
+	{
+		public bool Equals(IProductionBuilder other)
+		{
+			if (ReferenceEquals(null, other))
+			{
+				return false;
+			}
+			if (ReferenceEquals(this, other))
+			{
+				return true;
+			}
+			return CanBeInlined.Equals(other.CanBeInlined) && Equals(Left, other.Left) && Equals(Right, other.Right)
+				&& SortOrder == other.SortOrder && Fragments.SequenceEqual(other.Fragments);
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (ReferenceEquals(null, obj))
+			{
+				return false;
+			}
+			if (ReferenceEquals(this, obj))
+			{
+				return true;
+			}
+			var other = obj as IProductionBuilder;
+			return other != null && Equals(other);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hashCode = CanBeInlined.GetHashCode();
+				hashCode = (hashCode * 397) ^ Left.GetHashCode();
+				hashCode = (hashCode * 397) ^ (Right != null ? Right.GetHashCode() : 0);
+				hashCode = (hashCode * 397) ^ SortOrder;
+				hashCode = (hashCode * 397) ^ Fragments.Aggregate(0, EqualityExtensions.HashForAccumulation);
+				return hashCode;
+			}
+		}
+
+		public static bool operator ==(ProductionBuilder left, IProductionBuilder right)
+		{
+			return Equals(left, right);
+		}
+
+		public static bool operator !=(ProductionBuilder left, IProductionBuilder right)
+		{
+			return !Equals(left, right);
 		}
 	}
 }

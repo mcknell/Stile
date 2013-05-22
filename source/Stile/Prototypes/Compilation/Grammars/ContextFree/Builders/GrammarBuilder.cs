@@ -23,12 +23,22 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		void Add(IEnumerable<ILink> links);
 		void Add(ILink link);
 		void Add(IProductionRule rule, params IProductionRule[] rules);
+		void Add(IEnumerable<IFragment> fragments);
+		void Add(IFragment fragment);
+		void Add(IProductionBuilder builder, params IProductionBuilder[] builders);
 	}
 
 	public class GrammarBuilder : IGrammarBuilder
 	{
+		private static readonly HashSet<TerminalSymbol> _terminalSymbols = new HashSet<TerminalSymbol>
+		{
+			TerminalSymbol.EBNFAlternation,
+			TerminalSymbol.EBNFAssignment
+		};
 		private readonly HashBucket<Symbol, IClause> _clauses;
+		private readonly HashSet<IFragment> _fragments;
 		private readonly HashSet<ILink> _links;
+		private readonly HashSet<IProductionBuilder> _productionBuilders;
 		private readonly Dictionary<Symbol, int> _sortOrders;
 		private readonly HashSet<NonterminalSymbol> _symbols;
 
@@ -38,6 +48,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			_links = new HashSet<ILink>();
 			_sortOrders = new Dictionary<Symbol, int>();
 			_clauses = new HashBucket<Symbol, IClause>();
+			_fragments = new HashSet<IFragment>();
+			_productionBuilders = new HashSet<IProductionBuilder>();
 		}
 
 		public IReadOnlyHashBucket<Symbol, IClause> Clauses
@@ -80,6 +92,38 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			}
 		}
 
+		public void Add(IEnumerable<IFragment> fragments)
+		{
+			foreach (IFragment fragment in fragments)
+			{
+				_fragments.Add(fragment);
+			}
+		}
+
+		public void Add(IFragment fragment)
+		{
+			_fragments.Add(fragment);
+		}
+
+		public void Add(IProductionBuilder builder, params IProductionBuilder[] builders)
+		{
+			foreach (IProductionBuilder item in builders.Unshift(builder))
+			{
+				_productionBuilders.Add(item);
+			}
+		}
+
+		public IGrammar Buil()
+		{
+			var productions = new List<IProduction>();
+
+			foreach (var builder in _productionBuilders.OrderBy(x => x.SortOrder))
+			{
+				productions.Add(builder.Assemble(_fragments));
+			}
+			return new Grammar(_symbols, _terminalSymbols, Nonterminal.Specification, productions);
+		}
+
 		[NotNull]
 		public IGrammar Build(bool consolidate = true)
 		{
@@ -97,10 +141,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			{
 				rules = Consolidate(rules, _sortOrders);
 			}
-			return new Grammar(_symbols,
-				new HashSet<TerminalSymbol> {TerminalSymbol.EBNFAlternation, TerminalSymbol.EBNFAssignment},
-				rules,
-				Nonterminal.Specification);
+			return new Grammar(_symbols, _terminalSymbols, rules, Nonterminal.Specification);
 		}
 
 		public static IList<IProductionRule> Consolidate(IEnumerable<IProductionRule> rules,

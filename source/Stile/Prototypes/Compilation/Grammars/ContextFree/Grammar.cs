@@ -20,6 +20,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		Symbol InitialToken { get; }
 		IReadOnlyList<Symbol> Nonterminals { get; }
 		IReadOnlyList<IProductionRule> ProductionRules { get; }
+		IReadOnlyList<IProduction> Productions { get; }
 		IReadOnlyList<Symbol> Terminals { get; }
 	}
 
@@ -27,6 +28,15 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 	{
 		private readonly HashSet<NonterminalSymbol> _nonterminals;
 		private readonly HashSet<TerminalSymbol> _terminals;
+
+		public Grammar(HashSet<NonterminalSymbol> nonterminals,
+			HashSet<TerminalSymbol> terminals,
+			Symbol initialToken,
+			IReadOnlyList<IProduction> productions)
+			: this(nonterminals, terminals, new IProductionRule[0], initialToken)
+		{
+			Productions = productions.ValidateArgumentIsNotNull();
+		}
 
 		public Grammar([NotNull] HashSet<NonterminalSymbol> nonterminals,
 			[NotNull] HashSet<TerminalSymbol> terminals,
@@ -59,6 +69,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			get { return _nonterminals.ToArray(); }
 		}
 		public IReadOnlyList<IProductionRule> ProductionRules { get; private set; }
+		public IReadOnlyList<IProduction> Productions { get; private set; }
 		public IReadOnlyList<Symbol> Terminals
 		{
 			get { return _terminals.ToArray(); }

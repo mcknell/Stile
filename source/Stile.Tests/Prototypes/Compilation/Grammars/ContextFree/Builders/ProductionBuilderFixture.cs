@@ -14,12 +14,15 @@ using Stile.Prototypes.Specifications.Grammar.Metadata;
 namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
 	[TestFixture]
-	public class ProductionExtractorFixture : ExtractorFixtureBase
+	public class ProductionBuilderFixture : ExtractorFixtureBase
 	{
 		[RuleFragment(Prior, Token, Alias, Optional = true)]
-		public ProductionExtractorFixture(int foo) {}
+		public ProductionBuilderFixture(int foo) {}
 
-		public ProductionExtractorFixture() {}
+		public ProductionBuilderFixture() {}
+
+		[SetUp]
+		public void Init() {}
 
 		[Test]
 		public void GetFragmentsFromCategory()
@@ -92,7 +95,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 		[RuleFragment(Prior, Token, Alias, Optional = true)]
 		protected static void Expansion([NonterminalSymbol] int foo, [NonterminalSymbol] int bar) {}
 
-		private static PropertyInfo GetPropertyInfo(Expression<Func<ProductionExtractorFixture, object>> expression)
+		private static PropertyInfo GetPropertyInfo(Expression<Func<ProductionBuilderFixture, object>> expression)
 		{
 			Expression body = expression.Body;
 			var unaryExpression = body as UnaryExpression;

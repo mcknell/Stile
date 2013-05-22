@@ -33,7 +33,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public TData Accept<TData>(IGrammarVisitor<TData> visitor, TData data)
 		{
-			return visitor.Visit(this, data);;
+			return visitor.Visit(this, data);
 		}
 
 		public override string ToString()

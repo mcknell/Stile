@@ -1,7 +1,12 @@
 Grammar ::= Production* 
-Production ::= Sequence ( '|' Sequence )* 
+Production ::= Nonterminal '::=' Choice
+Choice ::= Sequence ( '|' Sequence )* 
 Sequence ::= Item+ 
 Item ::= Primary ( '?' | '*' | '+' )? 
-Primary ::= Nonterminal | Terminal | '(' Production ')' 
+Primary ::= Nonterminal | Terminal | '(' Choice ')' 
 Terminal ::= '"' [^"]* '"' | "'" [^']* "'"
 Nonterminal ::= <TitleCaseStringWithNoSpaces>
+
+
+ # Constraints
+ ## A rule expansion should add at most one nonterminal.

@@ -98,6 +98,7 @@
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ExtractorFromMethod.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\FragmentExtractorFromCategory.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\FragmentExtractorFromMethod.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionAccumulator.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionExtractorFromMethod.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Choice.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Clause.cs" />

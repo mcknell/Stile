@@ -10,6 +10,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Types.Enumerables;
+using Stile.Types.Equality;
 using Stile.Types.Primitives;
 #endregion
 
@@ -192,14 +193,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			return symbol ?? ((IClause) member).GetFirstNonterminal();
 		}
 
-		private static int MemberHash(int x, IClauseMember y)
-		{
-			unchecked
-			{
-				return (y.GetHashCode() * 397) ^ x;
-			}
-		}
-
 		private Clause Tidy()
 		{
 			Clause clause = Consolidate();
@@ -249,7 +242,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			unchecked
 			{
-				int aggregateHash = Members.Aggregate(0, MemberHash);
+				int aggregateHash = Members.Aggregate(0, EqualityExtensions.HashForAccumulation);
 				return aggregateHash ^ (int) Cardinality;
 			}
 		}

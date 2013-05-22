@@ -20,7 +20,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		void Visit(Symbol target);
 	}
 
-	public interface IGrammarVisitor<TData> : IGrammarVisitor
+	public interface IGrammarVisitor<TData> 
 	{
 		TData Visit(IClause target, TData data);
 		TData Visit(IChoice target, TData data);

@@ -15,6 +15,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 	public interface ISequence : IAcceptGrammarVisitors
 	{
 		IReadOnlyList<IItem> Items { get; }
+		Symbol FirstSymbol();
 	}
 
 	public class Sequence : ISequence
@@ -38,6 +39,21 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		public TData Accept<TData>(IGrammarVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit(this, data);
+		}
+
+		public Symbol FirstSymbol()
+		{
+			var primary = Items[0].Primary;
+			var nonterminal = primary as NonterminalSymbol;
+			if (nonterminal != null)
+			{
+				return nonterminal;
+			}
+			var terminalSymbol = primary as TerminalSymbol;
+			if (terminalSymbol != null)
+				return terminalSymbol;
+			var choice = (IChoice) primary;
+			return choice.Sequences[0].FirstSymbol();
 		}
 
 		public override string ToString()

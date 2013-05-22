@@ -23,6 +23,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 		private const BindingFlags Everything =
 			BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 		private readonly List<Assembly> _assemblies;
+		private readonly IExtractor _extractor;
 		private readonly IGrammarBuilder _grammarBuilder;
 
 		public Reflector(IGrammarBuilder grammarBuilder)
@@ -33,6 +34,31 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			_grammarBuilder = grammarBuilder.ValidateArgumentIsNotNull();
 			_assemblies = others.Unshift(stile).ToList() //
 				.Validate().EnumerableOf<Assembly>().IsNotNullOrEmpty();
+			_extractor = new Extractor();
+		}
+
+		public void Find()
+		{
+			foreach (Tuple<MethodBase, RuleAttribute> tuple in GetMethods<RuleAttribute>())
+			{
+				_grammarBuilder.Add(ProductionBuilder.Make(tuple.Item1, tuple.Item2));
+			}
+			foreach (Tuple<PropertyInfo, RuleAttribute> tuple in GetProperties<RuleAttribute>())
+			{
+				_grammarBuilder.Add(ProductionBuilder.Make(tuple.Item1, tuple.Item2));
+			}
+			foreach (Tuple<MethodBase, RuleFragmentAttribute> tuple in GetMethods<RuleFragmentAttribute>())
+			{
+				_grammarBuilder.Add(_extractor.Find(tuple.Item1, tuple.Item2));
+			}
+			foreach (Tuple<MethodBase, RuleCategoryAttribute> tuple in GetMethods<RuleCategoryAttribute>(false))
+			{
+				_grammarBuilder.Add(_extractor.Find(tuple.Item1, tuple.Item2));
+			}
+			foreach (Tuple<PropertyInfo, RuleFragmentAttribute> tuple in GetProperties<RuleFragmentAttribute>())
+			{
+				_grammarBuilder.Add(_extractor.Find(tuple.Item1, tuple.Item2));
+			}
 		}
 
 		public void FindRuleExpansions()
@@ -45,8 +71,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			{
 				_grammarBuilder.Add(GetLinks(tuple.Item1, tuple.Item2));
 			}
-			foreach (
-				Tuple<MethodBase, RuleCategoryAttribute> tuple in GetMethods<RuleCategoryAttribute>(false))
+			foreach (Tuple<MethodBase, RuleCategoryAttribute> tuple in GetMethods<RuleCategoryAttribute>(false))
 			{
 				_grammarBuilder.Add(GetLink(tuple.Item1, tuple.Item2));
 			}

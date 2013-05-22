@@ -18,5 +18,13 @@ namespace Stile.Types.Equality
 			}
 			return item.Equals(other);
 		}
+
+		public static int HashForAccumulation<TItem>(int x, TItem y)
+		{
+			unchecked
+			{
+				return (y.GetHashCode() * 397) ^ x;
+			}
+		}
 	}
 }
