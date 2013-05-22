@@ -123,7 +123,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 
 		private static ILink GetLink(MethodBase methodBase, RuleCategoryAttribute attribute)
 		{
-			string name = attribute.Prior ?? ProductionBuilder.GetName(methodBase.ReflectedType);
+			string name = attribute.Prior ?? Extractor.GetName(methodBase.ReflectedType);
 			var prior = new Nonterminal(name);
 			var symbol = new Nonterminal(methodBase.Name);
 			IEnumerable<Tuple<ParameterInfo, SymbolAttribute>> parameters =

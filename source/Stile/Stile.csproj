@@ -94,6 +94,7 @@
     <Compile Include="Prototypes\Collections\Graphs\GraphExtensions.cs" />
     <Compile Include="Prototypes\Collections\Graphs\Vertex.cs" />
     <Compile Include="Prototypes\Collections\Sorting\Toposort.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\Extractor.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ExtractorFromMethod.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\FragmentExtractorFromCategory.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\FragmentExtractorFromMethod.cs" />

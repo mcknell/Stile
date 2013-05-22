@@ -16,7 +16,7 @@ using Stile.Types.Reflection;
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
-	public class ProductionExtractorFromMethod : ExtractorFromMethod<RuleAttribute, ProductionBuilder>
+	public class ProductionExtractorFromMethod : ExtractorFromMethod<RuleAttribute, IProductionBuilder>
 	{
 		public ProductionExtractorFromMethod(MethodBase methodBase, RuleAttribute attribute)
 			: base(methodBase, attribute) {}
@@ -43,7 +43,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			if (Attribute.NameIsSymbol)
 			{
 				firstAlias = Attribute.Alias;
-				firstToken = ProductionBuilder.GetSymbol(MethodBase, null);
+				firstToken = GetSymbol(MethodBase, null);
 			}
 			else
 			{
@@ -58,10 +58,10 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			return parameters;
 		}
 
-		protected override ProductionBuilder MakeOutput(Nonterminal first, List<IFragment> fragments)
+		protected override IProductionBuilder MakeOutput(Nonterminal first, List<IFragment> fragments)
 		{
 			var right = new Choice(new Sequence(new Item(first)));
-			Nonterminal left = ProductionBuilder.GetNonterminal(MethodBase, Attribute.Left, Attribute.Alias);
+			Nonterminal left = GetNonterminal(MethodBase, Attribute.Left, Attribute.Alias);
 			var builder = new ProductionBuilder(left, right, Attribute, fragments);
 			return builder;
 		}

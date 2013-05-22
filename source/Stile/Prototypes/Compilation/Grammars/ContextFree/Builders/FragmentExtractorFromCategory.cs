@@ -17,7 +17,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 	public class FragmentExtractorFromCategory :
 		ExtractorFromMethod<RuleCategoryAttribute, IReadOnlyList<IFragment>>
 	{
-
 		public FragmentExtractorFromCategory(MethodBase methodBase, RuleCategoryAttribute attribute)
 			: base(methodBase, attribute) {}
 
@@ -25,13 +24,13 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			out string firstToken)
 		{
 			firstAlias = Attribute.Alias;
-			firstToken = ProductionBuilder.GetSymbol(MethodBase, Attribute.Token);
+			firstToken = Extractor.GetSymbol(MethodBase, Attribute.Token);
 			return MethodBase.GetParametersWith<SymbolAttribute>();
 		}
 
 		protected override IReadOnlyList<IFragment> MakeOutput(Nonterminal first, List<IFragment> fragments)
 		{
-			var left = Attribute.Prior ?? ProductionBuilder.GetName(MethodBase.ReflectedType);
+			string left = Attribute.Prior ?? Extractor.GetName(MethodBase.ReflectedType);
 			var fragment = new Fragment(left, first);
 			fragments.Insert(0, fragment);
 			return fragments;

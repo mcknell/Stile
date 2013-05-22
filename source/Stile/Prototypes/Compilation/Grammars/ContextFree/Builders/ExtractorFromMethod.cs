@@ -17,14 +17,14 @@ using Stile.Readability;
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
-	public abstract class ExtractorFromMethod
+	public abstract class ExtractorFromMethod : Extractor
 	{
 		protected static string MakeAlias(Tuple<ParameterInfo, SymbolAttribute> tuple)
 		{
 			ParameterInfo parameterInfo = tuple.Item1;
 			SymbolAttribute attribute = tuple.Item2;
 			Cardinality cardinality = ProductionExtractorFromMethod.GetCardinality(parameterInfo);
-			string symbol = ProductionBuilder.GetSymbol(parameterInfo, attribute.Token);
+			string symbol = GetSymbol(parameterInfo, attribute.Token);
 			string alias = attribute.Alias ?? symbol;
 			var terminal = new StringLiteral(alias);
 			Tuple<StringLiteral, Cardinality> terminalTuple1 = Tuple.Create(terminal, cardinality);
@@ -114,9 +114,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			var fragments = new List<IFragment>();
 			foreach (ParameterMetadata metadata in parametersToConsider)
 			{
-				Nonterminal latest = ProductionBuilder.GetNonterminal(metadata.ParameterInfo,
-					metadata.Token,
-					metadata.Alias);
+				Nonterminal latest = GetNonterminal(metadata.ParameterInfo, metadata.Token, metadata.Alias);
 				var fragment = new Fragment(prior, latest);
 				fragments.Add(fragment);
 				// clean up loop

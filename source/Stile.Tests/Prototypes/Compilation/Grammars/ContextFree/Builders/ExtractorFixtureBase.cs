@@ -26,6 +26,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 		protected const int Prior = 8;
 		protected const string Token = "tkn";
 		protected const string Alias = "Is Not?";
+		private readonly IExtractor _extractor = new Extractor();
 
 		protected void AssertAttributeFromMember<TAttribute>(
 			Func<MemberInfo, TAttribute, IReadOnlyList<IFragment>> func,
@@ -69,14 +70,14 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			string alias = null,
 			params SymbolMetadata[] symbols)
 		{
-			AssertAttributeFromMember<RuleCategoryAttribute>(ProductionBuilder.Find, memberInfo, left, alias, symbols);
+			AssertAttributeFromMember<RuleCategoryAttribute>(_extractor.Find, memberInfo, left, alias, symbols);
 		}
 
 		protected void AssertExpansionFromMember(MemberInfo memberInfo,
 			string left = null,
 			params SymbolMetadata[] symbols)
 		{
-			AssertAttributeFromMember<RuleFragmentAttribute>(ProductionBuilder.Find, memberInfo, left, null, symbols);
+			AssertAttributeFromMember<RuleFragmentAttribute>(_extractor.Find, memberInfo, left, null, symbols);
 		}
 
 		protected void AssertRuleFromMember<TMember>(TMember memberInfo,
@@ -88,10 +89,11 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			RuleAttribute attribute = memberInfo.GetCustomAttributes<RuleAttribute>(false).Single();
 
 			// act
-			ProductionBuilder builder = ProductionBuilder.Make(memberInfo, attribute);
+			IProductionBuilder builder = ProductionBuilder.Make(memberInfo, attribute);
 
 			Assert.NotNull(builder);
 			Assert.That(builder.CanBeInlined, Is.EqualTo(canBeInlined));
+			Assert.That(builder.SortOrder, Is.EqualTo(0));
 			Assert.That(builder.Left.Token, Is.EqualTo(Prior.ToString(CultureInfo.InvariantCulture)));
 			Assert.NotNull(builder.Right);
 			Assert.That(builder.Right.Sequences.Count, Is.EqualTo(1));
