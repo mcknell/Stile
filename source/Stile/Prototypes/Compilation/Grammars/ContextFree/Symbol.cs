@@ -18,8 +18,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 	{
 		protected Symbol([NotNull] string token, string alias = null)
 		{
-			token = token.ValidateIsNotNullOrEmpty();
-			Token = ToTitleCase(token.Trim());
+			token = token.ValidateStringNotNullOrEmpty();
+			Token = ToTitleCase(token);
 			Alias = alias;
 		}
 
@@ -51,7 +51,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			return "{0} aka {1}".InvariantFormat(Token, Alias);
 		}
 
-		protected static string ToTitleCase(string parameterName)
+		public static string ToTitleCase(string parameterName)
 		{
 			if (string.IsNullOrWhiteSpace(parameterName))
 			{

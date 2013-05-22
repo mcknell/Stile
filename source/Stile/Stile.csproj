@@ -94,7 +94,9 @@
     <Compile Include="Prototypes\Collections\Graphs\GraphExtensions.cs" />
     <Compile Include="Prototypes\Collections\Graphs\Vertex.cs" />
     <Compile Include="Prototypes\Collections\Sorting\Toposort.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionBuilderFromMethod.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ExtractorFromMethod.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\FragmentExtractorFromMethod.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionExtractorFromMethod.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Choice.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Clause.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\GrammarDescriber.cs" />
@@ -136,9 +138,8 @@
     <Compile Include="Properties\SharedKeyAttributes.cs" />
     <Compile Include="Patterns\Structural\Hierarchy\ICanGetPredecessors.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\Fragment.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionBuilder.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionExtractor.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Metadata\IMetadata.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\Token.cs" />
     <Compile Include="Types\Comparison\ComparisonRelation.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Empty.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\EnumerableIs.cs" />

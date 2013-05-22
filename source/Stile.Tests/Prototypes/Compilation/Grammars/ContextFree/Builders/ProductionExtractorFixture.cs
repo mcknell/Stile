@@ -8,35 +8,47 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using NUnit.Framework;
-using Stile.Prototypes.Compilation.Grammars.ContextFree.Builders;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 #endregion
 
 namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
 	[TestFixture]
-	public class ProductionBuilderFixture : BuilderFixtureBase<PropertyInfo>
+	public class ProductionExtractorFixture : ExtractorFixtureBase
 	{
-		private const string Alias = "Is Not?";
+		[RuleExpansion(Prior, Token, Alias, Optional = true)]
+		public ProductionExtractorFixture(int foo) {}
+
+		public ProductionExtractorFixture() {}
+
+		[Test]
+		public void GetFragmentsFromCtor_WithAlias()
+		{
+			// symbol, alias, optional
+			ConstructorInfo constructorInfo = GetType().GetConstructor(new[] {typeof(int)});
+			AssertExpansionFromMember(constructorInfo);
+		}
+
+		[Test]
+		public void GetFragmentsFromMethod()
+		{
+			Action<int, int> action = Expansion;
+			AssertExpansionFromMember(action.Method, new SymbolMetadata("Foo", "foo"), new SymbolMetadata("Bar", "bar"));
+		}
 
 		[Test]
 		public void GetProductionFromProperty_ThatCannotBeInlined()
 		{
 			PropertyInfo propertyInfo = GetPropertyInfo(x => x.NoInline);
 			string name = propertyInfo.Name;
-			AssertRuleFromMember(propertyInfo, name, false);
+			AssertRuleFromMember(propertyInfo, false, new SymbolMetadata(name));
 		}
 
 		[Test]
 		public void GetProductionFromProperty_WithAlias()
 		{
 			PropertyInfo propertyInfo = GetPropertyInfo(x => x.WithAlias);
-			AssertRuleFromMember(propertyInfo, propertyInfo.Name, true, Alias);
-		}
-
-		protected override Func<PropertyInfo, RuleAttribute, ProductionBuilder> Method
-		{
-			get { return ProductionBuilder.Make; }
+			AssertRuleFromMember(propertyInfo, true, new SymbolMetadata(propertyInfo.Name, Alias));
 		}
 
 		[Rule(Prior, CanBeInlined = false)]
@@ -50,7 +62,10 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			get { return null; }
 		}
 
-		private static PropertyInfo GetPropertyInfo(Expression<Func<ProductionBuilderFixture, object>> expression)
+		[RuleExpansion(Prior, Token, Alias, Optional = true)]
+		protected static void Expansion([NonterminalSymbol] int foo, [NonterminalSymbol] int bar) {}
+
+		private static PropertyInfo GetPropertyInfo(Expression<Func<ProductionExtractorFixture, object>> expression)
 		{
 			var memberExpression = (MemberExpression) expression.Body;
 			var propertyInfo = (PropertyInfo) memberExpression.Member;

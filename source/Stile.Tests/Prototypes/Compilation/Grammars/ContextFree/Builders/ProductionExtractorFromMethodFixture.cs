@@ -15,14 +15,14 @@ using Stile.Prototypes.Specifications.Grammar.Metadata;
 namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
 	[TestFixture]
-	public class ProductionBuilderFromMethodFixture : BuilderFixtureBase<MethodBase>
+	public class ProductionExtractorFromMethodFixture : ExtractorFixtureBase
 	{
 		[Test]
 		public void GetProductionFromMethodWithNonterminalSymbol()
 		{
-			Action<int> action = RuleWithNonterminalSymbol;
+			Action<int, int> action = RuleWithNonterminalSymbol;
 			AssertNameIsSymbol(false, action.Method);
-			AssertRuleFromMember(action.Method, "Foo", true);
+			AssertRuleFromMember(action.Method, true, new SymbolMetadata("Foo", "foo"), new SymbolMetadata("Bar", "bar"));
 		}
 
 		[Test]
@@ -33,12 +33,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			string methodName = action.Method.Name;
 			string firstParameterName = action.Method.GetParameters()[0].Name;
 			string alias = string.Format("{0} \"{1}\"", methodName, firstParameterName);
-			AssertRuleFromMember(action.Method, methodName, true, alias);
-		}
-
-		protected override Func<MethodBase, RuleAttribute, ProductionBuilder> Method
-		{
-			get { return (methodBase, attribute) => new ProductionBuilderFromMethod(methodBase, attribute).Build(); }
+			AssertRuleFromMember(action.Method, true, new SymbolMetadata(methodName, alias));
 		}
 
 		private static void AssertNameIsSymbol(bool nameIsSymbol, MethodInfo methodBase)
@@ -53,7 +48,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 		}
 
 		[Rule(Prior)]
-		private void RuleWithNonterminalSymbol([NonterminalSymbol] int foo = 4) {}
+		private void RuleWithNonterminalSymbol([NonterminalSymbol] int foo = 4, [NonterminalSymbol] int bar = 4) {}
 
 		[Rule(Prior, NameIsSymbol = true)]
 		private void RuleWithTerminalSymbol([Symbol] int foo) {}

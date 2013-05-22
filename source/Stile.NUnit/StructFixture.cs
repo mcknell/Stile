@@ -8,43 +8,44 @@ using System;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
-using Stile.Prototypes.Compilation.Grammars.ContextFree.Builders;
 using Stile.Readability;
 using Stile.Types.Reflection;
 #endregion
 
-namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
+namespace Stile.NUnit
 {
 	[TestFixture]
-	public class TokenFixture
+	public abstract class StructFixture<TStruct>
+		where TStruct : struct
 	{
 		[Test]
 		public void DefaultCtorCreatesInvalidObject()
 		{
 			const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public;
-			var token = new Token();
-			foreach (PropertyInfo propertyInfo in typeof(Token).GetProperties(flags).Where(x => x.CanRead))
+			var @struct = new TStruct();
+			foreach (PropertyInfo propertyInfo in typeof(TStruct).GetProperties(flags).Where(x => x.CanRead))
 			{
 				PropertyInfo copy = propertyInfo;
-				AssertThrowsInvalidOperation(() => copy.GetValue(token));
+				AssertThrowsInvalidOperation(() => copy.GetValue(@struct));
 			}
-			foreach (
-				MethodInfo methodInfo in
-					typeof(Token).GetMethods(flags)
-						.Where(x => x.IsGenericMethod == false && x.DeclaringType == typeof(Token)))
+			foreach (MethodInfo methodInfo in
+				typeof(TStruct).GetMethods(flags)
+					.Where(x => x.IsGenericMethod == false && x.DeclaringType == typeof(TStruct)))
 			{
 				object[] parameters = methodInfo.GetParameters().Select(x => x.ParameterType.GetDefault()).ToArray();
 				MethodInfo copy = methodInfo;
 				Console.WriteLine(copy.Name);
-				AssertThrowsInvalidOperation(() => copy.Invoke(token, parameters));
+				AssertThrowsInvalidOperation(() => copy.Invoke(@struct, parameters));
 			}
 		}
 
-		private static void AssertThrowsInvalidOperation(TestDelegate testDelegate)
+		protected abstract string ExpectedCtorMessage { get; }
+
+		protected void AssertThrowsInvalidOperation(TestDelegate testDelegate)
 		{
 			var exception = Assert.Throws<TargetInvocationException>(testDelegate, testDelegate.ToDebugString());
 			Assert.That(exception.InnerException, Is.InstanceOf<InvalidOperationException>());
-			Assert.That(exception.InnerException.Message, Contains.Substring(ErrorMessages.Token_DefaultCtorInvalid));
+			Assert.That(exception.InnerException.Message, Contains.Substring(ExpectedCtorMessage));
 		}
 	}
 }

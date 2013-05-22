@@ -4,44 +4,30 @@
 #endregion
 
 #region using...
-using System;
-using System.Linq;
 using Stile.Patterns.Behavioral.Validation;
-using Stile.Prototypes.Specifications.Grammar;
-using Stile.Types.Enumerables;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
 	public interface IFragment
 	{
-		Token Left { get; }
-		Token Right { get; }
-		ISequence Sequence { get; }
+		Cardinality Cardinality { get; }
+		string Left { get; }
+		NonterminalSymbol Right { get; }
 	}
 
 	public class Fragment : IFragment
 	{
-		public Fragment(string left, string right, string alias)
-			: this(left, right, new Sequence(new Item(new Nonterminal(right, alias)))) {}
-
-		public Fragment(string left, string right, ISequence sequence)
+		public Fragment(string left, NonterminalSymbol right, Cardinality cardinality = Cardinality.One)
 		{
-			Left = Token.For(left);
-			Right = Token.For(right);
-			Sequence = sequence.ValidateArgumentIsNotNull();
-			if (Sequence.Items.None())
-			{
-				throw new ArgumentException(ErrorMessages.Fragment_SequenceMustHaveItems, "sequence");
-			}
-			if (Sequence.Items.Select(x => x.Primary).OfType<NonterminalSymbol>().SingleOrDefault() == null)
-			{
-				throw new ArgumentException(ErrorMessages.Fragment_SequenceMustHaveExactlyOneNonterminal, "sequence");
-			}
+			Left = left.ValidateStringNotNullOrEmpty();
+			Right = right.ValidateArgumentIsNotNull();
+			Cardinality = cardinality;
 		}
 
-		public Token Left { get; private set; }
-		public Token Right { get; private set; }
-		public ISequence Sequence { get; private set; }
+		public Cardinality Cardinality { get; private set; }
+
+		public string Left { get; private set; }
+		public NonterminalSymbol Right { get; private set; }
 	}
 }

@@ -89,20 +89,52 @@ namespace Stile.Patterns.Behavioral.Validation
 		}
 
 		[ContractArgumentValidator]
-		public static TArg ValidateIsNotNullOrEmpty<TArg>(this TArg arg) where TArg : class, IEnumerable
+		public static string ValidateStringNotNullOrEmpty(this string arg)
+		{
+			if (string.IsNullOrEmpty(arg))
+			{
+				string paramName;
+				if (new StackTrace(true).TryGetParameterName<string>(out paramName, 1) == false)
+				{
+					paramName =
+						ErrorMessages.ValidateArgument_ValidateArgumentIsNotNullOrEmpty.InvariantFormat(typeof(string).Name);
+				}
+				throw new ArgumentNullException(paramName);
+			}
+			return arg;
+		}
+
+		[ContractArgumentValidator]
+		public static TArg ValidateStringNotNullOrEmpty<TArg>(this TArg arg) where TArg : class, IEnumerable
 		{
 			if (arg.ValidateArgumentIsNotNull(2) != null)
 			{
 				if (arg.GetEnumerator().MoveNext() == false)
 				{
-
 					string paramName;
 					if (new StackTrace(true).TryGetParameterName<TArg>(out paramName, 1) == false)
 					{
-						paramName = ErrorMessages.ValidateArgument_ValidateArgumentIsNotNullOrEmpty.InvariantFormat(typeof(TArg).Name);
+						paramName =
+							ErrorMessages.ValidateArgument_ValidateArgumentIsNotNullOrEmpty.InvariantFormat(typeof(TArg).Name);
 					}
 					throw new ArgumentNullException(paramName);
 				}
+			}
+			return arg;
+		}
+
+		[ContractArgumentValidator]
+		public static string ValidateIsNotNullOrWhitespace(this string arg)
+		{
+			if (string.IsNullOrWhiteSpace(arg))
+			{
+				string paramName;
+				if (new StackTrace(true).TryGetParameterName<string>(out paramName, 1) == false)
+				{
+					paramName =
+						ErrorMessages.ValidateArgument_ValidateArgumentIsNotNullOrEmpty.InvariantFormat(typeof(string).Name);
+				}
+				throw new ArgumentNullException(paramName);
 			}
 			return arg;
 		}

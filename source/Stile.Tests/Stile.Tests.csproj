@@ -66,9 +66,8 @@
     <Compile Include="Prototypes\Collections\Graphs\GraphExtensionsFixture.cs" />
     <Compile Include="Prototypes\Collections\HashBucketFixture.cs" />
     <Compile Include="Prototypes\Collections\Sorting\ToposortFixture.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\BuilderFixtureBase.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionBuilderFixture.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\TokenFixture.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ExtractorFixtureBase.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionExtractorFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ChoiceFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ContextFreeFixtureBase.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ItemFixture.cs" />
@@ -94,7 +93,7 @@
     <Compile Include="Prototypes\Specifications\Construction\ChangeSpecificationAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Construction\CollectionSpecifyAcceptanceTests.cs" />
     <Compile Include="Prototypes\Specifications\Construction\EnumerableSpecifyAcceptanceTests.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionBuilderFromMethodFixture.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionExtractorFromMethodFixture.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Metadata\ReflectorFixture.cs" />
     <Compile Include="Prototypes\Specifications\SampleObjects\Baz.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Specifications\DeadlineFixture.cs" />

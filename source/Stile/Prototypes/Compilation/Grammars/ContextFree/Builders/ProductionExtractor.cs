@@ -16,7 +16,7 @@ using Stile.Types.Reflection;
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
-	public interface IProductionBuilder
+	public interface IProductionExtractor
 	{
 		bool CanBeInlined { get; }
 		IReadOnlyList<IFragment> Fragments { get; }
@@ -26,15 +26,15 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		int SortOrder { get; set; }
 	}
 
-	public class ProductionBuilder : IProductionBuilder
+	public class ProductionExtractor : IProductionExtractor
 	{
-		public ProductionBuilder(Nonterminal left,
+		public ProductionExtractor(Nonterminal left,
 			IChoice right,
 			RuleAttribute attribute,
 			IReadOnlyList<IFragment> fragments = null)
 			: this(left, right, fragments, attribute.StartsGrammar ? -1 : 0, attribute.CanBeInlined) {}
 
-		public ProductionBuilder(Nonterminal left,
+		public ProductionExtractor(Nonterminal left,
 			IChoice right,
 			IReadOnlyList<IFragment> fragments = null,
 			int sortOrder = 0,
@@ -53,6 +53,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		public Nonterminal Left { get; private set; }
 		public IChoice Right { get; private set; }
 		public int SortOrder { get; set; }
+
+		public static IReadOnlyList<IFragment> Find(MethodBase methodBase, RuleExpansionAttribute ruleExpansion)
+		{
+			return new FragmentExtractorFromMethod(methodBase, ruleExpansion).Build();
+		}
 
 		public static Nonterminal GetNonterminal(ParameterInfo parameterInfo, string symbolToken, string alias)
 		{
@@ -105,12 +110,27 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			return symbol;
 		}
 
-		public static ProductionBuilder Make(PropertyInfo propertyInfo, RuleAttribute attribute)
+		public static ProductionExtractor Make(MemberInfo memberInfo, RuleAttribute attribute)
+		{
+			var propertyInfo = memberInfo as PropertyInfo;
+			if (propertyInfo != null)
+			{
+				return Make(propertyInfo, attribute);
+			}
+			var methodBase = memberInfo as MethodBase;
+			if (methodBase != null)
+			{
+				return new ProductionExtractorFromMethod(methodBase, attribute).Build();
+			}
+			throw new NotImplementedException();
+		}
+
+		public static ProductionExtractor Make(PropertyInfo propertyInfo, RuleAttribute attribute)
 		{
 			var left = new Nonterminal(attribute.Left);
 			var symbol = new Nonterminal(propertyInfo.Name, attribute.Alias);
 			IChoice right = new Choice(new Sequence(new Item(symbol)));
-			var builder = new ProductionBuilder(left, right, canBeInlined : attribute.CanBeInlined);
+			var builder = new ProductionExtractor(left, right, canBeInlined : attribute.CanBeInlined);
 			if (attribute.StartsGrammar)
 			{
 				builder.SortOrder = -1;

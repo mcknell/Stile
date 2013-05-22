@@ -114,7 +114,7 @@ namespace Stile.Tests.Patterns.Behavioral.Validation
 
 		private static void ReferenceArgumentNullOrEmpty_Compact(IList<string> strings, string decoy)
 		{
-			strings.ValidateIsNotNullOrEmpty();
+			strings.ValidateStringNotNullOrEmpty();
 		}
 		private static void ReferenceArgumentNullOrEmpty(IList<string> strings, string decoy)
 		{

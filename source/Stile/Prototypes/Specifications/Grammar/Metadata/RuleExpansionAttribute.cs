@@ -12,7 +12,7 @@ using Stile.Prototypes.Compilation.Grammars.ContextFree;
 namespace Stile.Prototypes.Specifications.Grammar.Metadata
 {
 	/// <summary>
-	/// Indicates a fragment that expands the right side of a <see cref="IProductionRule"/>.
+	/// Indicates a fragment that expands the right side of a <see cref="Production"/>.
 	/// </summary>
 	[AttributeUsage(
 		AttributeTargets.Parameter | AttributeTargets.Method | AttributeTargets.Property
@@ -25,6 +25,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 			Token = (symbol == null) ? null : symbol.ToString();
 			Alias = (alias == null) ? null : alias.ToString();
 			Prior = prior.ToString();
+			Terminal = false;
 		}
 
 		public string Alias { get; private set; }
@@ -32,7 +33,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 
 		[NotNull]
 		public string Prior { get; private set; }
+		public bool Terminal { get; private set; }
 		public string Token { get; private set; }
-		public bool Terminal { get; set; }
 	}
 }
