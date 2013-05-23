@@ -67,10 +67,10 @@
     <Compile Include="Prototypes\Collections\HashBucketFixture.cs" />
     <Compile Include="Prototypes\Collections\Sorting\ToposortFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ExtractorFixtureBase.cs" />
+    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\FragmentFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionAccumulatorFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionBuilderEqualityFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionBuilderFixture.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\FragmentEqualityFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\SequenceFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ChoiceFixture.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ContextFreeFixtureBase.cs" />

@@ -5,24 +5,34 @@
 
 #region using...
 using System;
+using System.Collections.Generic;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Types.Comparison;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 {
-	public interface IFragment : IEquatable<IFragment>
+	public interface IFragment : IEquatable<IFragment>,
+		IComparable<IFragment>
 	{
 		Cardinality Cardinality { get; }
 		string Left { get; }
 		NonterminalSymbol Right { get; }
+
+		IItem RightAsItem();
 	}
 
 	public partial class Fragment : IFragment
 	{
 		public Fragment(string left, NonterminalSymbol right, Cardinality cardinality = Cardinality.One)
 		{
-			Left = left.ValidateStringNotNullOrEmpty();
+			left = left.ValidateStringNotNullOrEmpty();
+			Left = Symbol.ToTitleCase(left);
 			Right = right.ValidateArgumentIsNotNull();
+			if (Right.Token == Left)
+			{
+				throw new ArgumentException("Left cannot equal the token on the right.");
+			}
 			Cardinality = cardinality;
 		}
 
@@ -30,9 +40,47 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 
 		public string Left { get; private set; }
 		public NonterminalSymbol Right { get; private set; }
+		public IItem RightAsItem()
+		{
+			return new Item(Right, Cardinality);
+		}
 	}
 
-	public partial class Fragment
+	public partial class Fragment // comparison
+	{
+		private static readonly IEqualityComparer<IFragment> _equalityComparer =
+			EqualityComparerHelper.MakeEqualityComparer<IFragment>(Compare);
+		private static readonly IComparer<IFragment> _comparer = ComparerHelper.MakeComparer<IFragment>(Compare);
+
+		public static IComparer<IFragment> Comparer
+		{
+			get { return _comparer; }
+		}
+		public static IEqualityComparer<IFragment> EqualityComparer
+		{
+			get { return _equalityComparer; }
+		}
+
+		public int CompareTo(IFragment other)
+		{
+			if (other.Left == Right.Token)
+			{
+				return -1;
+			}
+			if (Left == other.Right.Token)
+			{
+				return 1;
+			}
+			return 0;
+		}
+
+		private static bool Compare(IFragment left, IFragment right)
+		{
+			return left.CompareTo(right) < 0;
+		}
+	}
+
+	public partial class Fragment // equality
 	{
 		public bool Equals(IFragment other)
 		{

@@ -9,10 +9,12 @@ using Stile.Patterns.Behavioral.Validation;
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-	public interface IItem: IAcceptGrammarVisitors
+	public interface IItem : IAcceptGrammarVisitors
 	{
 		Cardinality Cardinality { get; }
 		IPrimary Primary { get; }
+
+		Symbol PrimaryAsSymbol();
 	}
 
 	public class Item : IItem
@@ -34,6 +36,15 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		public TData Accept<TData>(IGrammarVisitor<TData> visitor, TData data)
 		{
 			return visitor.Visit(this, data);
+		}
+
+		public Symbol PrimaryAsSymbol()
+		{
+			if (Primary is IChoice)
+			{
+				return null;
+			}
+			return (Symbol) Primary;
 		}
 
 		public override string ToString()

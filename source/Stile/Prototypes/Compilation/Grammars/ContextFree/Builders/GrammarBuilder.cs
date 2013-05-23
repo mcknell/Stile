@@ -103,6 +103,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		public void Add(IFragment fragment)
 		{
 			_fragments.Add(fragment);
+			GetOrAdd(fragment.Left, null);
+			GetOrAdd(fragment.Right);
 		}
 
 		public void Add(IProductionBuilder builder, params IProductionBuilder[] builders)
@@ -110,6 +112,12 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			foreach (IProductionBuilder item in builders.Unshift(builder))
 			{
 				_productionBuilders.Add(item);
+				GetOrAdd(item.Left);
+				foreach (ISequence sequence in item.Right.Sequences)
+				{
+					GetOrAdd(sequence.FirstSymbol());
+				}
+				Add(item.Fragments);
 			}
 		}
 

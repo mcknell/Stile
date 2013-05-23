@@ -32,10 +32,11 @@ namespace Stile.DocumentationGeneration
 		{
 			var grammarBuilder = new GrammarBuilder();
 			var reflector = new Reflector(grammarBuilder, _stile, _others);
-			reflector.FindRules();
-			reflector.FindRuleExpansions();
+			//reflector.FindRules();
+			//reflector.FindRuleExpansions();
+			reflector.Find();
 
-			IGrammar grammar = grammarBuilder.Build();
+			IGrammar grammar = grammarBuilder.Buil();
 			return GrammarDescriber.Describe(grammar);
 		}
 	}
