@@ -27,9 +27,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			string symbol = GetSymbol(parameterInfo, attribute.Token);
 			string alias = attribute.Alias ?? symbol;
 			var terminal = new StringLiteral(alias);
-			Tuple<StringLiteral, Cardinality> terminalTuple1 = Tuple.Create(terminal, cardinality);
-			Tuple<StringLiteral, Cardinality> terminalTuple = terminalTuple1;
-			string s = terminalTuple.Item1.Alias.Trim() + terminalTuple.Item2.ToEbnfString();
+			string s = terminal.Alias.Trim() + cardinality.ToEbnfString();
 			return s;
 		}
 

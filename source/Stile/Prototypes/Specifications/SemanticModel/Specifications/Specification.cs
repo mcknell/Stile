@@ -13,6 +13,7 @@ using Stile.Patterns.Structural.FluentInterface;
 using Stile.Patterns.Structural.Hierarchy;
 using Stile.Prototypes.Specifications.Builders.Lifecycle;
 using Stile.Prototypes.Specifications.Builders.OfExpectations;
+using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Prototypes.Specifications.SemanticModel.Evaluations;
 using Stile.Prototypes.Specifications.SemanticModel.Expectations;
@@ -136,7 +137,7 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Specifications
 				deadline,
 				reason) {}
 
-		[Rule(StartsGrammar = true)]
+		[Rule(Nonterminal.Enum.Specification, StartsGrammar = true)]
 		private Specification([NonterminalSymbol] [CanBeNull] ISource<TSubject> source,
 			[NonterminalSymbol] [NotNull] IInstrument<TSubject, TResult> instrument,
 			[NonterminalSymbol] [NotNull] IExpectation<TSubject, TResult> expectation,

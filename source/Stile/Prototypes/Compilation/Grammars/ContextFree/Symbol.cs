@@ -18,7 +18,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 	{
 		protected Symbol([NotNull] string token, string alias = null)
 		{
-			token = token.ValidateStringNotNullOrEmpty();
+			token = token.ValidateNotNullOrEmpty().Trim().Replace(" ", string.Empty);
 			Token = ToTitleCase(token);
 			Alias = alias;
 		}

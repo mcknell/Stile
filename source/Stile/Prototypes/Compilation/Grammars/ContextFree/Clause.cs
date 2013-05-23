@@ -41,7 +41,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			Cardinality? cardinality = null,
 			ClauseMemberCloner cloner = null)
 		{
-			Members = members.Validate().EnumerableOf<IClauseMember>().IsNotNullOrEmpty().ToArray();
+			Members = members.ValidateArgumentIsNotNull().ToArray();
 			Cardinality = cardinality ?? Cardinality.One;
 			_cloner = cloner ?? DefaultCloner;
 		}

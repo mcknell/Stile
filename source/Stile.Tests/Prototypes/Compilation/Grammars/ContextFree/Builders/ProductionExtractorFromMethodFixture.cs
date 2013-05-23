@@ -8,6 +8,8 @@ using System;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
+using Stile.Prototypes.Compilation.Grammars.ContextFree;
+using Stile.Prototypes.Compilation.Grammars.ContextFree.Builders;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 #endregion
 
@@ -16,6 +18,19 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 	[TestFixture]
 	public class ProductionExtractorFromMethodFixture : ExtractorFixtureBase
 	{
+		public ProductionExtractorFromMethodFixture() {}
+
+		[Rule(Prior, NonterminalSymbol.IfEnumerable, NonterminalSymbol.IfEnumerable)]
+		public ProductionExtractorFromMethodFixture([Symbol] int foo) {}
+
+		[Test]
+		public void GetProductionFromCtorWithAliasedTerminalSymbol()
+		{
+			ConstructorInfo constructorInfo = GetType().GetConstructor(new[] { typeof(int) });
+			IProductionBuilder builder = AssertRuleFromMember(constructorInfo, true, new SymbolMetadata("Foo", "foo"));
+
+		}
+
 		[Test]
 		public void GetProductionFromMethodWithNonterminalSymbol()
 		{

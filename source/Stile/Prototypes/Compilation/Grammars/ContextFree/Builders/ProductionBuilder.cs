@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
@@ -22,11 +21,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		bool CanBeInlined { get; }
 		IReadOnlyList<IFragment> Fragments { get; }
 		Nonterminal Left { get; }
-		[CanBeNull]
 		IChoice Right { get; }
 		int SortOrder { get; }
 
-		IProduction Assemble(HashSet<IFragment> fragments);
+		IProduction Assemble(IEnumerable<IFragment> fragments);
+		IProductionBuilder Combine(IProductionBuilder other);
 	}
 
 	public partial class ProductionBuilder : IProductionBuilder
@@ -34,19 +33,19 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		public ProductionBuilder(Nonterminal left,
 			IChoice right,
 			RuleAttribute attribute,
-			IReadOnlyList<IFragment> fragments = null)
+			IEnumerable<IFragment> fragments = null)
 			: this(left, right, fragments, attribute.StartsGrammar ? -1 : 0, attribute.CanBeInlined) {}
 
 		public ProductionBuilder(Nonterminal left,
 			IChoice right,
-			IReadOnlyList<IFragment> fragments = null,
+			IEnumerable<IFragment> fragments = null,
 			int sortOrder = 0,
 			bool canBeInlined = false)
 		{
 			Left = left.ValidateArgumentIsNotNull();
 			CanBeInlined = canBeInlined;
-			Fragments = fragments ?? Default.Fragments;
-			Right = right;
+			Fragments = fragments == null ? Default.Fragments : fragments.ToArray();
+			Right = right.ValidateArgumentIsNotNullOrEmpty();
 			SortOrder = sortOrder;
 		}
 
@@ -55,10 +54,31 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		public Nonterminal Left { get; private set; }
 		public IChoice Right { get; private set; }
 		public int SortOrder { get; set; }
-		public IProduction Assemble(HashSet<IFragment> fragments)
+
+		public IProduction Assemble(IEnumerable<IFragment> fragments)
 		{
 			var accumulator = new ProductionAccumulator(fragments, Left, Right);
 			return accumulator.Build();
+		}
+
+		public IProductionBuilder Combine(IProductionBuilder other)
+		{
+			other = other.ValidateArgumentIsNotNull();
+			if (Left != other.Left)
+			{
+				throw new ArgumentException(
+					string.Format("Cannot combine when Left terminals don't match: this was '{0}' but that was '{1}'",
+						Left,
+						other.Left));
+			}
+			if (Right.Equals(other.Right))
+			{
+				IProductionBuilder result = SortOrder <= other.SortOrder ? this : other;
+				return result;
+			}
+
+			var choice = new Choice(Right.Sequences.Concat(other.Right.Sequences).Distinct());
+			return new ProductionBuilder(Left, choice, sortOrder : Math.Min(SortOrder, other.SortOrder));
 		}
 
 		public static IProductionBuilder Make(MemberInfo memberInfo, RuleAttribute attribute)

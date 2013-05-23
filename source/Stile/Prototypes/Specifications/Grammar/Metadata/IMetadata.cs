@@ -15,7 +15,6 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 		string Alias { get; }
 		[CanBeNull]
 		string Token { get; }
-		bool Terminal { get; }
 	}
 
 	public interface IMetadataWithPrior : IMetadata

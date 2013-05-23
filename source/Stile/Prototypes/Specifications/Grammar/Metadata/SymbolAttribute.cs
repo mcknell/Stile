@@ -17,31 +17,17 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 	public class SymbolAttribute : Attribute,
 		IMetadata
 	{
-		public SymbolAttribute(object symbol = null, object alias = null)
+		public SymbolAttribute(object token = null, object alias = null)
 		{
-			Token = symbol == null ? null : symbol.ToString();
+			Token = token == null ? null : token.ToString();
 			Alias = alias == null ? null : alias.ToString();
+// ReSharper disable DoNotCallOverridableMethodsInConstructor
 			Terminal = true;
+// ReSharper restore DoNotCallOverridableMethodsInConstructor
 		}
 
 		public string Alias { get; private set; }
 		public string Token { get; private set; }
 		public virtual bool Terminal { get; set; }
-	}
-
-	/// <summary>
-	/// A nonterminal symbol on the right of a production rule in the grammar for constructing <see cref="Specification"/> objects.
-	/// </summary>
-	[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
-	public class NonterminalSymbolAttribute : SymbolAttribute
-	{
-		public NonterminalSymbolAttribute(object symbol = null, object alias = null)
-			: base(symbol, alias) {}
-
-		public override bool Terminal
-		{
-			get { return false; }
-			set { }
-		}
 	}
 }

@@ -66,21 +66,6 @@ namespace Stile.Patterns.Behavioral.Validation
 		}
 
 		[ContractArgumentValidator]
-		public static TArg IsNotNullOrEmpty<TArg, TItem>(this FluentEnumerableSource<TArg, TItem> builder)
-			where TArg : class, IEnumerable<TItem>
-		{
-			TArg arg = builder.Arg;
-			arg.ValidateArgumentIsNotNullOrEmpty<TArg, TItem>(builder.StackDepth + 1);
-			return arg;
-		}
-
-		[ContractArgumentValidator]
-		public static FluentValidationBuilder<TArg> Validate<TArg>(this TArg arg)
-		{
-			return new FluentValidationBuilder<TArg>(arg, 1);
-		}
-
-		[ContractArgumentValidator]
 		[NotNull]
 		[System.Diagnostics.Contracts.Pure]
 		public static TArg ValidateArgumentIsNotNull<TArg>(this TArg arg) where TArg : class
@@ -89,36 +74,17 @@ namespace Stile.Patterns.Behavioral.Validation
 		}
 
 		[ContractArgumentValidator]
-		public static string ValidateStringNotNullOrEmpty(this string arg)
+		[NotNull]
+		[System.Diagnostics.Contracts.Pure]
+		public static TArg ValidateArgumentIsNotNullOrEmpty<TArg>(this TArg arg) where TArg : class, IEnumerable
 		{
-			if (string.IsNullOrEmpty(arg))
+			arg.ValidateArgumentIsNotNull(2);
+			if (arg.GetEnumerator().MoveNext() == false)
 			{
 				string paramName;
-				if (new StackTrace(true).TryGetParameterName<string>(out paramName, 1) == false)
-				{
-					paramName =
-						ErrorMessages.ValidateArgument_ValidateArgumentIsNotNullOrEmpty.InvariantFormat(typeof(string).Name);
-				}
-				throw new ArgumentNullException(paramName);
-			}
-			return arg;
-		}
-
-		[ContractArgumentValidator]
-		public static TArg ValidateStringNotNullOrEmpty<TArg>(this TArg arg) where TArg : class, IEnumerable
-		{
-			if (arg.ValidateArgumentIsNotNull(2) != null)
-			{
-				if (arg.GetEnumerator().MoveNext() == false)
-				{
-					string paramName;
-					if (new StackTrace(true).TryGetParameterName<TArg>(out paramName, 1) == false)
-					{
-						paramName =
-							ErrorMessages.ValidateArgument_ValidateArgumentIsNotNullOrEmpty.InvariantFormat(typeof(TArg).Name);
-					}
-					throw new ArgumentNullException(paramName);
-				}
+				new StackTrace(true).TryGetParameterName<TArg>(out paramName, 1);
+				throw new ArgumentException(
+					ErrorMessages.ValidateArgument_ValidateArgumentIsNotNullOrEmpty.InvariantFormat(paramName));
 			}
 			return arg;
 		}
@@ -135,6 +101,41 @@ namespace Stile.Patterns.Behavioral.Validation
 						ErrorMessages.ValidateArgument_ValidateArgumentIsNotNullOrEmpty.InvariantFormat(typeof(string).Name);
 				}
 				throw new ArgumentNullException(paramName);
+			}
+			return arg;
+		}
+
+		[ContractArgumentValidator]
+		public static string ValidateNotNullOrEmpty(this string arg)
+		{
+			if (string.IsNullOrEmpty(arg))
+			{
+				string paramName;
+				if (new StackTrace(true).TryGetParameterName<string>(out paramName, 1) == false)
+				{
+					paramName =
+						ErrorMessages.ValidateArgument_ValidateArgumentIsNotNullOrEmpty.InvariantFormat(typeof(string).Name);
+				}
+				throw new ArgumentNullException(paramName);
+			}
+			return arg;
+		}
+
+		[ContractArgumentValidator]
+		public static TArg ValidateNotNullOrEmpty<TArg>(this TArg arg) where TArg : class, IEnumerable
+		{
+			if (arg.ValidateArgumentIsNotNull(2) != null)
+			{
+				if (arg.GetEnumerator().MoveNext() == false)
+				{
+					string paramName;
+					if (new StackTrace(true).TryGetParameterName<TArg>(out paramName, 1) == false)
+					{
+						paramName =
+							ErrorMessages.ValidateArgument_ValidateArgumentIsNotNullOrEmpty.InvariantFormat(typeof(TArg).Name);
+					}
+					throw new ArgumentNullException(paramName);
+				}
 			}
 			return arg;
 		}
@@ -189,7 +190,7 @@ namespace Stile.Patterns.Behavioral.Validation
 					return true;
 			}
 
-			paramName = "<failed>";
+			paramName = "<failed: could not determine a parameter>";
 			return false;
 		}
 
@@ -205,50 +206,6 @@ namespace Stile.Patterns.Behavioral.Validation
 				throw new ArgumentNullException(paramName);
 			}
 			return arg;
-		}
-
-		private static TEnumerable ValidateArgumentIsNotNullOrEmpty<TEnumerable, TArg>(this TEnumerable arg,
-			int stackDepth) where TEnumerable : class, IEnumerable<TArg>
-		{
-			arg.ValidateArgumentIsNotNull(stackDepth);
-			if (arg.Any() == false)
-			{
-				string paramName;
-				new StackTrace(true).TryGetParameterName<TEnumerable>(out paramName, stackDepth - 1);
-				throw new ArgumentException(
-					ErrorMessages.ValidateArgument_ValidateArgumentIsNotNullOrEmpty.InvariantFormat(paramName));
-			}
-			return arg;
-		}
-
-		public class FluentEnumerableSource<TArg, TItem>
-		{
-			public FluentEnumerableSource(TArg arg, int stackDepth)
-			{
-				Arg = arg;
-				StackDepth = stackDepth;
-				if (typeof(TItem) == typeof(string)) {}
-			}
-
-			public TArg Arg { get; private set; }
-			public int StackDepth { get; private set; }
-		}
-
-		public class FluentValidationBuilder<TArg>
-		{
-			private readonly TArg _arg;
-			private readonly int _stackDepth;
-
-			public FluentValidationBuilder(TArg arg, int stackDepth)
-			{
-				_arg = arg;
-				_stackDepth = stackDepth;
-			}
-
-			public FluentEnumerableSource<TArg, TItem> EnumerableOf<TItem>()
-			{
-				return new FluentEnumerableSource<TArg, TItem>(_arg, _stackDepth + 1);
-			}
 		}
 	}
 }

@@ -20,9 +20,9 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 	public class RuleFragmentAttribute : Attribute,
 		IMetadataWithPrior
 	{
-		public RuleFragmentAttribute([NotNull] object prior, object symbol = null, object alias = null)
+		public RuleFragmentAttribute([NotNull] object prior, object token = null, object alias = null)
 		{
-			Token = (symbol == null) ? null : symbol.ToString();
+			Token = (token == null) ? null : token.ToString();
 			Alias = (alias == null) ? null : alias.ToString();
 			Prior = prior.ToString();
 			Terminal = false;

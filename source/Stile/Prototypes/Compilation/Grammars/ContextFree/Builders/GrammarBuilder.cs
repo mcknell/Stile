@@ -124,8 +124,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		public IGrammar Buil()
 		{
 			var productions = new List<IProduction>();
-
-			foreach (var builder in _productionBuilders.OrderBy(x => x.SortOrder))
+			Reduce();
+			foreach (IProductionBuilder builder in _productionBuilders.OrderBy(x => x.SortOrder))
 			{
 				productions.Add(builder.Assemble(_fragments));
 			}
@@ -294,6 +294,29 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 				clauses.Select(
 					x => Clause.Make(x.Members.Skip(frontMatches).Take(x.Members.Count - frontMatches - backMatches)));
 			return middle.Interlace(TerminalSymbol.EBNFAlternation);
+		}
+
+		internal void Reduce()
+		{
+			if (_productionBuilders.Count < 2)
+			{
+				return;
+			}
+			var processed = new List<IProductionBuilder>();
+			IEnumerable<IGrouping<Nonterminal, IProductionBuilder>> groups = _productionBuilders.GroupBy(x => x.Left);
+			foreach (IGrouping<Nonterminal, IProductionBuilder> grouping in groups)
+			{
+				IProductionBuilder first = grouping.First();
+				if (grouping.Count() == 1)
+				{
+					processed.Add(first);
+					continue;
+				}
+				IProductionBuilder aggregate = grouping.Skip(1).Aggregate(first, (x, y) => x.Combine(y));
+				processed.Add(aggregate);
+			}
+			_productionBuilders.Clear(); 
+			_productionBuilders.UnionWith(processed);
 		}
 
 		private void RememberSortOrder(IProductionRule rule)

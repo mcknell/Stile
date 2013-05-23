@@ -143,6 +143,7 @@
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\Fragment.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionBuilder.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Metadata\IMetadata.cs" />
+    <Compile Include="Prototypes\Specifications\Grammar\Metadata\NonterminalSymbolAttribute.cs" />
     <Compile Include="Types\Comparison\ComparerHelper.cs" />
     <Compile Include="Types\Comparison\ComparisonRelation.cs" />
     <Compile Include="Prototypes\Specifications\Builders\OfExpectations\Is\Empty.cs" />

@@ -15,19 +15,22 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Property,
 		AllowMultiple = false, Inherited = false)]
-	public class RuleAttribute : Attribute
+	public class RuleAttribute : Attribute,
+		IMetadata
 	{
-		public RuleAttribute(object symbol = null, object alias = null)
+		public RuleAttribute(object left, object alias = null, object token = null)
 		{
-			Left = symbol == null ? null : symbol.ToString();
+			Left = left.ToString();
 			Alias = alias == null ? null : alias.ToString();
+			Token = token == null ? null : token.ToString();
 			CanBeInlined = true;
 		}
 
 		public string Alias { get; private set; }
 		public bool CanBeInlined { get; set; }
-		public bool StartsGrammar { get; set; }
 		public string Left { get; private set; }
 		public bool NameIsSymbol { get; set; }
+		public bool StartsGrammar { get; set; }
+		public string Token { get; set; }
 	}
 }

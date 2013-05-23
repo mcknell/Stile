@@ -80,7 +80,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			AssertAttributeFromMember<RuleFragmentAttribute>(_extractor.Find, memberInfo, left, null, symbols);
 		}
 
-		protected void AssertRuleFromMember<TMember>(TMember memberInfo,
+		protected IProductionBuilder AssertRuleFromMember<TMember>(TMember memberInfo,
 			bool canBeInlined,
 			SymbolMetadata symbol,
 			params SymbolMetadata[] symbols) where TMember : MemberInfo
@@ -95,6 +95,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			Assert.That(builder.CanBeInlined, Is.EqualTo(canBeInlined));
 			Assert.That(builder.SortOrder, Is.EqualTo(0));
 			Assert.That(builder.Left.Token, Is.EqualTo(Prior.ToString(CultureInfo.InvariantCulture)));
+			Assert.That(builder.Left.Alias, Is.Null);
 			Assert.NotNull(builder.Right);
 			Assert.That(builder.Right.Sequences.Count, Is.EqualTo(1));
 			ISequence sequence = builder.Right.Sequences[0];
@@ -136,6 +137,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 				Assert.That(fragment.Right.Alias, Is.EqualTo(metadata.Alias), message);
 				priorMetadata = metadata;
 			}
+			return builder;
 		}
 
 		protected string GetName(MemberInfo memberInfo)
@@ -174,7 +176,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 				Cardinality cardinality = Cardinality.One,
 				PrimaryFlavor primary = PrimaryFlavor.Nonterminal)
 			{
-				Token = token.ValidateStringNotNullOrEmpty();
+				Token = token.ValidateNotNullOrEmpty();
 				Alias = alias;
 				Cardinality = cardinality;
 				Primary = primary;

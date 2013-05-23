@@ -22,24 +22,23 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 		public void Builds()
 		{
 			var builder = new GrammarBuilder();
-			new Reflector(builder).FindRules();
+			new Reflector(builder).Find();
 
 			// act
-			IGrammar grammar = builder.Build();
+			IGrammar grammar = builder.Buil();
 
 			Assert.NotNull(grammar);
-			IProductionRule expectation = grammar.ProductionRules.FirstOrDefault(x => x.Left == Nonterminal.Expectation);
+			IProduction expectation = grammar.Productions.FirstOrDefault(x => x.Left == Nonterminal.Expectation);
 			Assert.NotNull(expectation);
-			Assert.That(expectation.Right.Members, Has.Member(TerminalSymbol.EBNFAlternation));
-			Assert.That(expectation.Right.Members.Count, Is.EqualTo(9));
+			Assert.That(expectation.Right.Sequences.Count, Is.EqualTo(5));
 		}
 
 		[Test]
 		public void Prints()
 		{
 			var builder = new GrammarBuilder();
-			new Reflector(builder).FindRules();
-			IGrammar grammar = builder.Build();
+			new Reflector(builder).Find();
+			IGrammar grammar = builder.Buil();
 
 			// act
 			string ebnf = GrammarDescriber.Describe(grammar);

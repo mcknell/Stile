@@ -16,6 +16,15 @@ namespace Stile.Tests.Patterns.Behavioral.Validation
 	public class ValidateArgumentFixture
 	{
 		[Test]
+		public void ArgumentIsNotNullOrEmpty()
+		{
+			AssertThrows(() => ReferenceNullOrEmpty(null, null), "ints");
+			AssertThrows<ArgumentException>(() => ReferenceNullOrEmpty(new List<int>(), null), "ints");
+
+			Assert.DoesNotThrow(() => ReferenceNullOrEmpty(new List<int> {1}, "hi"));
+		}
+
+		[Test]
 		public void IsInEnum()
 		{
 			const DayOfWeek bogus = (DayOfWeek) 40;
@@ -73,12 +82,9 @@ namespace Stile.Tests.Patterns.Behavioral.Validation
 		[Test]
 		public void IsNotNullOrEmpty()
 		{
-			AssertThrows(() => ReferenceArgumentNullOrEmpty(null, null), "strings");
-			AssertThrows<ArgumentException>(() => ReferenceArgumentNullOrEmpty(new string[0], null), "strings");
-
-			Assert.DoesNotThrow(() => ReferenceArgumentNullOrEmpty(new[] {"hi"}, null));
-
 			AssertThrows(() => ReferenceArgumentNullOrEmpty_Compact(null, null), "strings");
+			AssertThrows(() => ReferenceArgumentNullOrEmpty_Compact(new List<string>(), null), "strings");
+			Assert.DoesNotThrow(()=> ReferenceArgumentNullOrEmpty_Compact(new List<string>(){string.Empty}, "hi"));
 		}
 
 		private static string AssertThrows(TestDelegate testDelegate, string substring)
@@ -114,11 +120,7 @@ namespace Stile.Tests.Patterns.Behavioral.Validation
 
 		private static void ReferenceArgumentNullOrEmpty_Compact(IList<string> strings, string decoy)
 		{
-			strings.ValidateStringNotNullOrEmpty();
-		}
-		private static void ReferenceArgumentNullOrEmpty(IList<string> strings, string decoy)
-		{
-			strings.Validate().EnumerableOf<string>().IsNotNullOrEmpty();
+			strings.ValidateNotNullOrEmpty();
 		}
 
 		private static void ReferenceArgumentNull_DiverseArguments(ValidateArgumentFixture fixture, string decoy)
@@ -136,6 +138,11 @@ namespace Stile.Tests.Patterns.Behavioral.Validation
 		private static ValidateArgumentFixture ReferenceArgument_Returns(ValidateArgumentFixture fixture)
 		{
 			return fixture.ValidateArgumentIsNotNull();
+		}
+
+		private static void ReferenceNullOrEmpty(IList<int> ints, string decoy)
+		{
+			ints.ValidateArgumentIsNotNullOrEmpty();
 		}
 
 		private static void ValueArgument(int someNumber)

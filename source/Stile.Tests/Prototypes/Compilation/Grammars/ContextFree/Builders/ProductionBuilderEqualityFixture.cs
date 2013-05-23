@@ -18,7 +18,8 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 	{
 		protected override IProductionBuilder OtherFactory()
 		{
-			return new ProductionBuilder(Nonterminal.Expectation, null);
+			return new ProductionBuilder(Nonterminal.Expectation,
+				new Choice(new Sequence(new Item(Nonterminal.Before), new Item(Nonterminal.Deadline))));
 		}
 
 		protected override IProductionBuilder TestSubjectFactory()

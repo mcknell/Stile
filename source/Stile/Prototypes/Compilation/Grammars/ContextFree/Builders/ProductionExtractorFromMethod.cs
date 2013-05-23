@@ -47,11 +47,21 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			}
 			else
 			{
-				Tuple<ParameterInfo, SymbolAttribute> tuple = parameters.First();
-				firstAlias = tuple.Item2.Alias;
-				firstToken = firstAlias ?? tuple.Item2.Token ?? tuple.Item1.Name;
-				if (tuple.Item2.Terminal == false)
+				Tuple<ParameterInfo, SymbolAttribute> tuple = parameters.FirstOrDefault();
+				if (tuple == null)
 				{
+					firstAlias = Attribute.Alias;
+					firstToken = GetSymbol(MethodBase, Attribute.Token);
+				}
+				else
+				{
+					SymbolAttribute symbolAttribute = tuple.Item2;
+					firstAlias = symbolAttribute.Alias;
+					if (firstAlias != null && symbolAttribute.Terminal)
+					{
+						firstAlias = StringLiteral.QuoteIfNeeded(firstAlias);
+					}
+					firstToken = symbolAttribute.Token ?? tuple.Item1.Name;
 					parameters.RemoveAt(0);
 				}
 			}
@@ -61,7 +71,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		protected override IProductionBuilder MakeOutput(Nonterminal first, List<IFragment> fragments)
 		{
 			var right = new Choice(new Sequence(new Item(first)));
-			Nonterminal left = GetNonterminal(MethodBase, Attribute.Left, Attribute.Alias);
+			Nonterminal left = GetNonterminal(MethodBase, Attribute.Left, null);
 			var builder = new ProductionBuilder(left, right, Attribute, fragments);
 			return builder;
 		}

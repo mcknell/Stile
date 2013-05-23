@@ -8,6 +8,9 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using NUnit.Framework;
+using Stile.Prototypes.Compilation.Grammars.ContextFree;
+using Stile.Prototypes.Compilation.Grammars.ContextFree.Builders;
+using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 #endregion
 
@@ -23,6 +26,22 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 
 		[SetUp]
 		public void Init() {}
+
+		[Test]
+		public void Combine()
+		{
+			var left = new Nonterminal("left");
+			var sequenceRight = new Sequence(new Item(new Nonterminal("right")));
+			var sequenceCame = new Sequence(new Item(new Nonterminal("came"), Cardinality.ZeroOrOne));
+			var builder = new ProductionBuilder(left, new Choice(sequenceRight));
+			var other = new ProductionBuilder(left, new Choice(sequenceCame));
+
+			IProductionBuilder result = builder.Combine(other);
+
+			Assert.NotNull(result);
+			Assert.That(result.Left, Is.EqualTo(left));
+			Assert.That(result.Right, Is.EqualTo(new Choice(sequenceRight, sequenceCame)));
+		}
 
 		[Test]
 		public void GetFragmentsFromCategory()

@@ -26,7 +26,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 	{
 		public Fragment(string left, NonterminalSymbol right, Cardinality cardinality = Cardinality.One)
 		{
-			left = left.ValidateStringNotNullOrEmpty();
+			left = left.ValidateNotNullOrEmpty();
 			Left = Symbol.ToTitleCase(left);
 			Right = right.ValidateArgumentIsNotNull();
 			if (Right.Token == Left)

@@ -33,7 +33,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 		{
 			_grammarBuilder = grammarBuilder.ValidateArgumentIsNotNull();
 			_assemblies = others.Unshift(stile).ToList() //
-				.Validate().EnumerableOf<Assembly>().IsNotNullOrEmpty();
+				.ValidateArgumentIsNotNullOrEmpty();
 			_extractor = new Extractor();
 		}
 

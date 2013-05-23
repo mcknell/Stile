@@ -4,12 +4,13 @@
 #endregion
 
 #region using...
+using System;
 using Stile.Patterns.Behavioral.Validation;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-	public interface IItem : IAcceptGrammarVisitors
+	public interface IItem : IAcceptGrammarVisitors, IEquatable<IItem>
 	{
 		Cardinality Cardinality { get; }
 		IPrimary Primary { get; }
@@ -17,7 +18,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		Symbol PrimaryAsSymbol();
 	}
 
-	public class Item : IItem
+	public partial class Item : IItem
 	{
 		public Item(IPrimary primary, Cardinality cardinality = Cardinality.One)
 		{
@@ -50,6 +51,54 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		public override string ToString()
 		{
 			return Primary + Cardinality.ToEbnfString();
+		}
+	}
+
+	public partial class Item 
+	{
+		public bool Equals(IItem other)
+		{
+			if (ReferenceEquals(null, other))
+			{
+				return false;
+			}
+			if (ReferenceEquals(this, other))
+			{
+				return true;
+			}
+			return Cardinality == other.Cardinality && Primary.Equals(other.Primary);
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (ReferenceEquals(null, obj))
+			{
+				return false;
+			}
+			if (ReferenceEquals(this, obj))
+			{
+				return true;
+			}
+			var other = obj as Item;
+			return other != null && Equals(other);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				return ((int) Cardinality * 397) ^ Primary.GetHashCode();
+			}
+		}
+
+		public static bool operator ==(Item left, Item right)
+		{
+			return Equals(left, right);
+		}
+
+		public static bool operator !=(Item left, Item right)
+		{
+			return !Equals(left, right);
 		}
 	}
 }

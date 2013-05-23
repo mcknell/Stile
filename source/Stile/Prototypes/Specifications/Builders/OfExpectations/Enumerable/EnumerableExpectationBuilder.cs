@@ -6,7 +6,6 @@
 #region using...
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Stile.Prototypes.Compilation.Grammars;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Has;
 using Stile.Prototypes.Specifications.Builders.OfExpectations.Is;
@@ -37,9 +36,8 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Enumerable
 		where TResult : class, IEnumerable<TItem>
 		where TBuilder : class, IExpectationBuilder
 	{
-		[Rule(Nonterminal.Enum.Expectation)]
+		[Rule(Nonterminal.Enum.Expectation, NonterminalSymbol.IfEnumerable, Nonterminal.Enum.EnumerableResult)]
 		protected EnumerableExpectationBuilder(
-			[Symbol(Nonterminal.Enum.EnumerableResult, NonterminalSymbol.IfEnumerable)] //
 			[NotNull] IExpectationBuilderState<IChainableSpecification, TSubject, TResult> state,
 			[CanBeNull] TSpecification prior)
 			: base(state.Inspection, prior) {}

@@ -28,7 +28,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public void Visit(IGrammar target)
 		{
-			Iterate(target.ProductionRules, Environment.NewLine);
+			Iterate(target.Productions, Environment.NewLine);
 		}
 
 		public void Visit(IItem target)
