@@ -11,6 +11,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
 	public interface IAcceptGrammarVisitors : IAcceptVisitors<IGrammarVisitor>
 	{
+		int Count { get; }
 		TData Accept<TData>(IGrammarVisitor<TData> visitor, TData data);
 	}
 }

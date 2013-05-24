@@ -15,6 +15,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 	public class GrammarDescriber : IGrammarVisitor
 	{
 		private readonly StringBuilder _stringBuilder;
+		private bool _suppressParensOnce = true;
 
 		public GrammarDescriber()
 		{
@@ -28,7 +29,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public void Visit(IGrammar target)
 		{
-			Iterate(target.Productions, Environment.NewLine, allowParens : false);
+			Iterate(target.Productions, Environment.NewLine, explicitlyAllowParens : false);
 		}
 
 		public void Visit(IItem target)
@@ -45,6 +46,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			target.Left.Accept(this);
 			_stringBuilder.AppendFormat("{0} ", TerminalSymbol.EBNFAssignment);
+			_suppressParensOnce = true;
 			target.Right.Accept(this);
 		}
 
@@ -79,15 +81,28 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public override string ToString()
 		{
-			return _stringBuilder.Replace("  ", " ").Replace("( ", "(").Replace(" )", ")").ToString().Trim();
+			int oldLength = _stringBuilder.Length;
+			while (_stringBuilder.Replace("  ", " ").Replace("( ", "(").Replace(" )", ")").Length < oldLength)
+			{
+				oldLength = _stringBuilder.Length;
+			}
+			return _stringBuilder.ToString().Trim();
 		}
 
 		private void Iterate<TAccepter>(IReadOnlyList<TAccepter> list,
 			string separator = " ",
 			Action continuation = null,
-			bool allowParens = true) where TAccepter : IAcceptGrammarVisitors
+			bool? explicitlyAllowParens = null) where TAccepter : IAcceptGrammarVisitors
 		{
-			if (allowParens && list.Count > 1)
+			bool explicitlyForbidden = explicitlyAllowParens.HasValue && (explicitlyAllowParens.Value == false);
+			bool allowParens = explicitlyForbidden == false && list.Count > 1;
+			if (_suppressParensOnce && allowParens)
+			{
+				allowParens = false;
+				_suppressParensOnce = false;
+			}
+
+			if (allowParens)
 			{
 				_stringBuilder.Append("(");
 			}
@@ -96,7 +111,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				_stringBuilder.Append(separator);
 				accepter.Accept(this);
 			}
-			if (allowParens && list.Count > 1)
+			if (allowParens)
 			{
 				_stringBuilder.Append(")");
 			}

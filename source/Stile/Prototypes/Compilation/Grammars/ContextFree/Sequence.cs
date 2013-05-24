@@ -32,6 +32,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			items=items.ValidateArgumentIsNotNull();
 			Items = items.SelectMany(x=> x.Flatten()).ToArray();
+			Count = Items.Sum(x => x.Count);
 		}
 
 		public IReadOnlyList<IItem> Items { get; private set; }
@@ -40,6 +41,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			visitor.Visit(this);
 		}
+
+		public int Count { get; private set; }
 
 		public TData Accept<TData>(IGrammarVisitor<TData> visitor, TData data)
 		{

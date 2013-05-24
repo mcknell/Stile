@@ -21,6 +21,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		IEnumerable<ISequence>
 	{
 		IReadOnlyList<ISequence> Sequences { get; }
+
 		IEnumerable<IFragment> Fragments();
 	}
 
@@ -33,6 +34,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			sequences = sequences.ValidateArgumentIsNotNullOrEmpty();
 			Sequences = sequences.OrderBy(x => x.FirstSymbol().Token).ToArray();
+			Count = Sequences.Sum(x => x.Count);
 		}
 
 		public IReadOnlyList<ISequence> Sequences { get; private set; }
@@ -41,6 +43,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			visitor.Visit(this);
 		}
+
+		public int Count { get; private set; }
 
 		public TData Accept<TData>(IGrammarVisitor<TData> visitor, TData data)
 		{

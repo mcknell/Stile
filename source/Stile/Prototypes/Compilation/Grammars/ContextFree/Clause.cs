@@ -44,9 +44,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			Members = members.ValidateArgumentIsNotNull().ToArray();
 			Cardinality = cardinality ?? Cardinality.One;
 			_cloner = cloner ?? DefaultCloner;
+			Count = Members.Sum(x => x.Count);
 		}
 
 		public Cardinality Cardinality { get; private set; }
+		public int Count { get; private set; }
 		public IReadOnlyList<IClauseMember> Members { get; private set; }
 
 		public void Accept(IGrammarVisitor visitor)

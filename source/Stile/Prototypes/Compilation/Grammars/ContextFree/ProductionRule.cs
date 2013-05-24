@@ -37,9 +37,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			Left = left.ValidateArgumentIsNotNull();
 			Right = right.ValidateArgumentIsNotNull();
+			Count = Right.Count + 1;
 		}
 
 		public bool CanBeInlined { get; set; }
+		public int Count { get; private set; }
 		public Symbol Left { get; private set; }
 		public IClause Right { get; private set; }
 		public int SortOrder { get; set; }

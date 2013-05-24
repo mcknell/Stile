@@ -45,6 +45,7 @@ namespace Stile.Prototypes.Specifications.Grammar
 		public static readonly Nonterminal Deadline = new Nonterminal(Enum.Deadline);
 		public static readonly Nonterminal EnumerableHas = new Nonterminal(Enum.EnumerableHas.ToString(),
 			IfEnumerable);
+		public static readonly Nonterminal Exception = new Nonterminal(Enum.Exception);
 		public static readonly Nonterminal Expectation = new Nonterminal(Enum.Expectation);
 		public static readonly Nonterminal Has = new Nonterminal(Enum.Has);
 		public static readonly Nonterminal HashCode = new Nonterminal(Enum.HashCode);

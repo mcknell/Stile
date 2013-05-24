@@ -24,6 +24,10 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		}
 
 		public string Alias { get; private set; }
+		public int Count
+		{
+			get { return 1; }
+		}
 		[NotNull]
 		public string Token { get; private set; }
 
@@ -34,7 +38,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public TData Accept<TData>(IGrammarVisitor<TData> visitor, TData data)
 		{
-
 			return visitor.Visit(this, data);
 		}
 

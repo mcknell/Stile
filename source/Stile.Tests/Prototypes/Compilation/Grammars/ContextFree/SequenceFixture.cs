@@ -20,7 +20,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 			var sequence = new Sequence(new Item(Nonterminal.Source, Cardinality.ZeroOrOne),
 				new Item(Nonterminal.Inspection));
 
-			AssertPrints(sequence, "(Source? Inspection)");
+			AssertPrints(sequence, "Source? Inspection");
 		}
 	}
 }

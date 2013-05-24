@@ -36,6 +36,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			: this(nonterminals, terminals, new IProductionRule[0], initialToken)
 		{
 			Productions = productions.ValidateArgumentIsNotNull();
+			Count = Productions.Sum(x => x.Count);
 		}
 
 		public Grammar([NotNull] HashSet<NonterminalSymbol> nonterminals,
@@ -63,6 +64,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			}
 		}
 
+		public int Count { get; private set; }
 		public Symbol InitialToken { get; private set; }
 		public IReadOnlyList<Symbol> Nonterminals
 		{

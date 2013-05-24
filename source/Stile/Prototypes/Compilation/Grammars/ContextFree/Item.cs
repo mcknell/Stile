@@ -6,9 +6,9 @@
 #region using...
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Compilation.Grammars.ContextFree.Builders;
-using System.Linq;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
@@ -20,7 +20,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		IPrimary Primary { get; }
 
 		IEnumerable<IItem> Flatten();
-			IEnumerable<IFragment> Fragments();
+		IEnumerable<IFragment> Fragments();
 		Symbol PrimaryAsSymbol();
 	}
 
@@ -30,9 +30,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			Primary = primary.ValidateArgumentIsNotNull();
 			Cardinality = cardinality;
+			Count = Primary.Count;
 		}
 
 		public Cardinality Cardinality { get; private set; }
+		public int Count { get; private set; }
 		public IPrimary Primary { get; private set; }
 
 		public void Accept(IGrammarVisitor visitor)
@@ -52,7 +54,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			{
 				return choice.Sequences[0].SelectMany(x => x.Flatten());
 			}
-			return new[]{this};
+			return new[] {this};
 		}
 
 		public IEnumerable<IFragment> Fragments()

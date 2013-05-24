@@ -42,7 +42,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		public IProduction Build()
 		{
 			List<ISequence> sequences = _right.Sequences.Select(Clone).ToList();
-			var choice = new Choice(sequences);
+			var choice = new ProductionConsolidator(new Choice(sequences)).Consolidate();
 			return new Production(_left, choice);
 		}
 

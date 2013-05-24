@@ -21,8 +21,10 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			Left = left.ValidateArgumentIsNotNull();
 			Right = right.ValidateArgumentIsNotNull();
+			Count = Right.Count + 1;
 		}
 
+		public int Count { get; private set; }
 		public NonterminalSymbol Left { get; private set; }
 		public IChoice Right { get; private set; }
 
