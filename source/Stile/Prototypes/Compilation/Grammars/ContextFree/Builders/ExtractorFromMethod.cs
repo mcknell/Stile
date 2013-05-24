@@ -13,6 +13,7 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Readability;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
@@ -48,7 +49,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 
 			public override string ToString()
 			{
-				return string.Format("{0} {1} {2}", Token, Alias.ToDebugString(), ParameterInfo.Name);
+				return "{0} {1} {2}".InvariantFormat(Token, Alias.ToDebugString(), ParameterInfo.Name);
 			}
 		}
 	}

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Types.Comparison;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
@@ -40,6 +41,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 
 		public string Left { get; private set; }
 		public NonterminalSymbol Right { get; private set; }
+
 		public IItem RightAsItem()
 		{
 			return new Item(Right, Cardinality);
@@ -47,14 +49,14 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 
 		public override string ToString()
 		{
-			return string.Format("{0}<-{1}{2}", Left, Right, Cardinality.ToEbnfString());
+			return "{0}<-{1}{2}".InvariantFormat(Left, Right, Cardinality.ToEbnfString());
 		}
 	}
 
 	public partial class Fragment // comparison
 	{
 		private static readonly IEqualityComparer<IFragment> _equalityComparer =
-			EqualityComparerHelper.MakeEqualityComparer<IFragment>((x,y) => x == y);
+			EqualityComparerHelper.MakeEqualityComparer<IFragment>(EqualityCompare);
 		private static readonly IComparer<IFragment> _comparer = ComparerHelper.MakeComparer<IFragment>(Compare);
 
 		public static IComparer<IFragment> Comparer
@@ -79,9 +81,38 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			return 0;
 		}
 
-		private static bool Compare(IFragment left, IFragment right)
+		private static int Compare(IFragment left, IFragment right)
+		{
+			return left.CompareTo(right);
+		}
+
+		private static bool EqualityCompare(IFragment left, IFragment right)
+		{
+			if (left == null)
+			{
+				return right == null;
+			}
+			return left.Equals(right);
+		}
+
+		public static bool operator >(Fragment left, Fragment right)
+		{
+			return left.CompareTo(right) > 0;
+		}
+
+		public static bool operator >=(Fragment left, Fragment right)
+		{
+			return left.CompareTo(right) >= 0;
+		}
+
+		public static bool operator <(Fragment left, Fragment right)
 		{
 			return left.CompareTo(right) < 0;
+		}
+
+		public static bool operator <=(Fragment left, Fragment right)
+		{
+			return left.CompareTo(right) <= 0;
 		}
 	}
 

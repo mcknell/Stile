@@ -60,6 +60,7 @@
     <Compile Include="..\SharedKeyAttributes.cs">
       <Link>Properties\SharedKeyAttributes.cs</Link>
     </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Patterns\Lifetimes\Disposables\DisposableFixture.cs" />
     <Compile Include="Patterns\Behavioral\Traversal\NonrepeatingTraverserFixture.cs" />
     <Compile Include="Patterns\Behavioral\Traversal\TraverserFixture.cs" />

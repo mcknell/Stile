@@ -12,6 +12,7 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Compilation.Grammars.ContextFree.Builders;
 using Stile.Types.Enumerables;
 using Stile.Types.Equality;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
@@ -37,14 +38,14 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			Count = Sequences.Sum(x => x.Count);
 		}
 
+		public int Count { get; private set; }
+
 		public IReadOnlyList<ISequence> Sequences { get; private set; }
 
 		public void Accept(IGrammarVisitor visitor)
 		{
 			visitor.Visit(this);
 		}
-
-		public int Count { get; private set; }
 
 		public TData Accept<TData>(IGrammarVisitor<TData> visitor, TData data)
 		{
@@ -88,7 +89,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		public override string ToString()
 		{
 			string s = string.Join(" | ", Sequences);
-			return Sequences.Count > 1 ? string.Format("({0})", s) : s;
+			return Sequences.Count > 1 ? "({0})".InvariantFormat(s) : s;
 		}
 	}
 

@@ -13,7 +13,7 @@ namespace Stile.Types.Comparison
 {
 	public static class ComparerHelper
 	{
-		public static IComparer<TItem> MakeComparer<TItem>([NotNull] this Func<TItem, TItem, bool> comparer)
+		public static IComparer<TItem> MakeComparer<TItem>([NotNull] this Func<TItem, TItem, int> comparer)
 			where TItem : IComparable<TItem>
 		{
 			return new Comparr<TItem>(comparer);
@@ -22,9 +22,9 @@ namespace Stile.Types.Comparison
 		private class Comparr<TItem> : Comparer<TItem>
 			where TItem : IComparable<TItem>
 		{
-			private readonly Func<TItem, TItem, bool> _comparer;
+			private readonly Func<TItem, TItem, int> _comparer;
 
-			public Comparr(Func<TItem, TItem, bool> comparer)
+			public Comparr(Func<TItem, TItem, int> comparer)
 			{
 				_comparer = comparer;
 			}
@@ -35,7 +35,7 @@ namespace Stile.Types.Comparison
 				{
 					return 0;
 				}
-				return x.CompareTo(y);
+				return _comparer(x, y);
 			}
 		}
 	}

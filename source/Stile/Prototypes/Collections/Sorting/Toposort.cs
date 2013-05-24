@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Prototypes.Collections.Sorting
@@ -66,7 +67,7 @@ namespace Stile.Prototypes.Collections.Sorting
 			var list = new List<TItem>();
 			if (_temporarilyMarked.Contains(item))
 			{
-				throw new Exception(string.Format("Cycle detected at item {0}.", item));
+				throw new Exception("Cycle detected at item {0}.".InvariantFormat(item));
 			}
 			if (_permanentlyMarked.Contains(item) == false)
 			{

@@ -12,6 +12,7 @@ using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 using Stile.Types.Equality;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
@@ -67,9 +68,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			if (Left != other.Left)
 			{
 				throw new ArgumentException(
-					string.Format("Cannot combine when Left terminals don't match: this was '{0}' but that was '{1}'",
-						Left,
-						other.Left));
+					"Cannot combine when Left terminals don't match: this was '{0}' but that was '{1}'".InvariantFormat(
+						Left, other.Left));
 			}
 			if (Right.Equals(other.Right))
 			{

@@ -5,6 +5,7 @@
 
 #region using...
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Types.Primitives;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
@@ -40,7 +41,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public override string ToString()
 		{
-			return string.Format("{0} {1} {2}", Left, TerminalSymbol.EBNFAssignment, Right);
+			return "{0} {1} {2}".InvariantFormat(Left, TerminalSymbol.EBNFAssignment, Right);
 		}
 	}
 }

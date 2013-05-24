@@ -4,6 +4,7 @@
 #endregion
 
 #region using...
+using System;
 using JetBrains.Annotations;
 #endregion
 
@@ -20,11 +21,11 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		public static string QuoteIfNeeded(string s)
 		{
 			s = s.Trim();
-			if (s.StartsWith(DoubleQuote) == false)
+			if (s.StartsWith(DoubleQuote, StringComparison.OrdinalIgnoreCase) == false)
 			{
 				s = DoubleQuote + s;
 			}
-			if (s.EndsWith(DoubleQuote) == false)
+			if (s.EndsWith(DoubleQuote, StringComparison.OrdinalIgnoreCase) == false)
 			{
 				s = s + DoubleQuote;
 			}

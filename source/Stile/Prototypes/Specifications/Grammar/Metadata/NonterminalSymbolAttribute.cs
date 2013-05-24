@@ -19,7 +19,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 		public NonterminalSymbolAttribute(object token = null, object alias = null)
 			: base(token, alias) {}
 
-		public override bool Terminal
+		protected override bool ActualTerminal
 		{
 			get { return false; }
 			set { }

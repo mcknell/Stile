@@ -21,13 +21,17 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 		{
 			Token = token == null ? null : token.ToString();
 			Alias = alias == null ? null : alias.ToString();
-// ReSharper disable DoNotCallOverridableMethodsInConstructor
 			Terminal = true;
-// ReSharper restore DoNotCallOverridableMethodsInConstructor
 		}
 
 		public string Alias { get; private set; }
+		public bool Terminal
+		{
+			get { return ActualTerminal; }
+			set { ActualTerminal = value; }
+		}
 		public string Token { get; private set; }
-		public virtual bool Terminal { get; set; }
+
+		protected virtual bool ActualTerminal { get; set; }
 	}
 }
