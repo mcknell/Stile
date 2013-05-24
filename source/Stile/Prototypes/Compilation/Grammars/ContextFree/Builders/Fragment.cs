@@ -44,12 +44,17 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		{
 			return new Item(Right, Cardinality);
 		}
+
+		public override string ToString()
+		{
+			return string.Format("{0}<-{1}{2}", Left, Right, Cardinality.ToEbnfString());
+		}
 	}
 
 	public partial class Fragment // comparison
 	{
 		private static readonly IEqualityComparer<IFragment> _equalityComparer =
-			EqualityComparerHelper.MakeEqualityComparer<IFragment>(Compare);
+			EqualityComparerHelper.MakeEqualityComparer<IFragment>((x,y) => x == y);
 		private static readonly IComparer<IFragment> _comparer = ComparerHelper.MakeComparer<IFragment>(Compare);
 
 		public static IComparer<IFragment> Comparer

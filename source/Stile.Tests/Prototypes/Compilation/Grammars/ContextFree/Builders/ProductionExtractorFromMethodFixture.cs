@@ -9,7 +9,6 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using Stile.Prototypes.Compilation.Grammars.ContextFree;
-using Stile.Prototypes.Compilation.Grammars.ContextFree.Builders;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
 #endregion
 
@@ -21,14 +20,13 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 		public ProductionExtractorFromMethodFixture() {}
 
 		[Rule(Prior, NonterminalSymbol.IfEnumerable, NonterminalSymbol.IfEnumerable)]
-		public ProductionExtractorFromMethodFixture([Symbol] int foo) {}
+		public ProductionExtractorFromMethodFixture([Symbol(alias: Alias)] int foo) { }
 
 		[Test]
 		public void GetProductionFromCtorWithAliasedTerminalSymbol()
 		{
-			ConstructorInfo constructorInfo = GetType().GetConstructor(new[] { typeof(int) });
-			IProductionBuilder builder = AssertRuleFromMember(constructorInfo, true, new SymbolMetadata("Foo", "foo"));
-
+			ConstructorInfo constructorInfo = GetType().GetConstructor(new[] {typeof(int)});
+			AssertRuleFromMember(constructorInfo, true, new SymbolMetadata("Foo", StringLiteral.QuoteIfNeeded(Alias)));
 		}
 
 		[Test]
@@ -38,8 +36,8 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			AssertNameIsSymbol(false, action.Method);
 			AssertRuleFromMember(action.Method,
 				true,
-				new SymbolMetadata("Foo", "foo"),
-				new SymbolMetadata("Bar", "bar"));
+				new SymbolMetadata("Foo", "Foo?"),
+				new SymbolMetadata("Bar", "Bar?"));
 		}
 
 		[Test]
@@ -48,8 +46,9 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			Action<int> action = RuleWithTerminalSymbol;
 			AssertNameIsSymbol(true, action.Method);
 			string methodName = action.Method.Name;
-			string alias = MakeAlias(action);
-			AssertRuleFromMember(action.Method, true, new SymbolMetadata(methodName, alias));
+			AssertRuleFromMember(action.Method,
+				true,
+				new SymbolMetadata(methodName, string.Format("{0} {1}", methodName, StringLiteral.QuoteIfNeeded(Alias))));
 		}
 
 		private static void AssertNameIsSymbol(bool nameIsSymbol, MethodInfo methodBase)
@@ -67,6 +66,6 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 		private void RuleWithNonterminalSymbol([NonterminalSymbol] int foo = 4, [NonterminalSymbol] int bar = 4) {}
 
 		[Rule(Prior, NameIsSymbol = true)]
-		private void RuleWithTerminalSymbol([Symbol] int foo) {}
+		private void RuleWithTerminalSymbol([Symbol(alias : Alias)] int foo) {}
 	}
 }

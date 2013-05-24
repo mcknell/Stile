@@ -43,7 +43,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			if (Attribute.NameIsSymbol)
 			{
 				firstAlias = Attribute.Alias;
-				firstToken = GetSymbol(MethodBase, null);
+				firstToken = GetToken(MethodBase, null);
 			}
 			else
 			{
@@ -51,16 +51,12 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 				if (tuple == null)
 				{
 					firstAlias = Attribute.Alias;
-					firstToken = GetSymbol(MethodBase, Attribute.Token);
+					firstToken = GetToken(MethodBase, Attribute.Token);
 				}
 				else
 				{
 					SymbolAttribute symbolAttribute = tuple.Item2;
-					firstAlias = symbolAttribute.Alias;
-					if (firstAlias != null && symbolAttribute.Terminal)
-					{
-						firstAlias = StringLiteral.QuoteIfNeeded(firstAlias);
-					}
+					firstAlias = MakeAlias(tuple);
 					firstToken = symbolAttribute.Token ?? tuple.Item1.Name;
 					parameters.RemoveAt(0);
 				}

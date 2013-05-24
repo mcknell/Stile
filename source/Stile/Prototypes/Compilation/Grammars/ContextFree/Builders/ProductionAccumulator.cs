@@ -5,9 +5,11 @@
 
 #region using...
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Stile.Patterns.Behavioral.Validation;
 using Stile.Prototypes.Collections.Sorting;
+using Stile.Types.Enumerables;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
@@ -22,12 +24,14 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 		{
 			_left = left.ValidateArgumentIsNotNull();
 			_right = right.ValidateArgumentIsNotNull();
-			_fragments = new List<IFragment>(fragments);
-			var toposort = new Toposort<IFragment>(_fragments,
-				x => _fragments.Where(y => x.Right.Token == y.Left),
+			List<IFragment> list = fragments.ToList();
+			list.AddRange(_right.Fragments());
+			list.Sort(Fragment.Comparer);
+			var toposort = new Toposort<IFragment>(list,
+				x => list.Where(y => y.Right.Token == x.Left && x.Equals(y) == false).ToList(),
 				Fragment.EqualityComparer);
 			_fragments = new List<IFragment>(toposort.SortDag());
-			_fragments.Sort(Fragment.Comparer);
+			Debug.Assert(list.Count == _fragments.Count);
 		}
 
 		public IReadOnlyList<IFragment> Fragments
@@ -37,34 +41,9 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 
 		public IProduction Build()
 		{
-			IEnumerable<ISequence> sequences = _right.Sequences.Select(Clone);
+			List<ISequence> sequences = _right.Sequences.Select(Clone).ToList();
 			var choice = new Choice(sequences);
 			return new Production(_left, choice);
-		}
-
-		private List<IItem> AlternativesTo(IItem prior, IItem current = null)
-		{
-			var list = new List<IItem>();
-			if (prior != null)
-				// find all the alternatives given by the fragments
-			{
-				Symbol priorSymbol = prior.PrimaryAsSymbol();
-				if (priorSymbol != null)
-				{
-					Symbol currentSymbol = null;
-					if (current != null)
-					{
-						currentSymbol = current.PrimaryAsSymbol();
-					}
-					foreach (
-						IFragment fragment in _fragments.Where(x => x.Left == priorSymbol.Token && x.Right != currentSymbol))
-					{
-						IItem clonedRight = Clone(fragment.RightAsItem());
-						list.Add(clonedRight);
-					}
-				}
-			}
-			return list;
 		}
 
 		private IChoice Clone(IChoice choice)
@@ -74,22 +53,10 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 
 		private ISequence Clone(ISequence sequence)
 		{
-			var items = new List<IItem>();
-			IItem prior = null;
-			foreach (IItem item in sequence.Items)
-			{
-				IItem clone = Clone(item);
-				var alternatives = new List<IItem> {clone};
-				alternatives.AddRange(AlternativesTo(prior, clone));
-				items.Add(Collect(alternatives));
-				// setup next
-				prior = item;
-			}
-			List<IItem> list = AlternativesTo(prior).ToList();
-			if (list.Any())
-			{
-				items.Add(Collect(list));
-			}
+			IItem first = sequence.Items.First();
+			var items = new List<IItem> {first};
+			List<IItem> successors = FindSuccessors(first);
+			items.AddRange(Collect(successors));
 			return new Sequence(items);
 		}
 
@@ -116,16 +83,59 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			return new Item(primary, item.Cardinality);
 		}
 
-		private IItem Collect(IList<IItem> alternatives)
+		private IEnumerable<IItem> Collect(IList<IItem> alternatives)
 		{
-			if (alternatives.Count > 1)
-				// collect the alternatives as a choice
+			switch (alternatives.Count)
 			{
-				IEnumerable<Sequence> sequences = alternatives.Select(x => new Sequence(x));
-				var choice = new Choice(sequences);
-				return new Item(choice);
+				case 0:
+					return alternatives;
+				case 1:
+					return alternatives[0].Flatten();
+				default:
+					// collect the alternatives as a choice
+					IEnumerable<Sequence> sequences = alternatives.Select(x => new Sequence(x));
+					var choice = new Choice(sequences);
+					return new[] { new Item(choice) }; 
 			}
-			return alternatives[0];
+		}
+
+		private List<IItem> FindSuccessors(IItem prior, IItem current = null)
+		{
+			var list = new List<IItem>();
+			if (prior != null)
+				// find all the alternatives given by the fragments
+			{
+				Symbol priorSymbol = prior.PrimaryAsSymbol();
+				if (priorSymbol != null)
+				{
+					Symbol currentSymbol = null;
+					if (current != null)
+					{
+						currentSymbol = current.PrimaryAsSymbol();
+					}
+					foreach (
+						IFragment fragment in _fragments.Where(x => x.Left == priorSymbol.Token && x.Right != currentSymbol))
+					{
+						IItem clonedRight = Clone(fragment.RightAsItem());
+						List<IItem> successors = FindSuccessors(clonedRight);
+						switch (successors.Count)
+						{
+							case 0:
+								list.Add(clonedRight);
+								break;
+							case 1:
+								IEnumerable<IItem> items = successors[0].Flatten();
+								list.Add(new Item(new Choice(new Sequence(items.Unshift(clonedRight)))));
+								break;
+							default:
+								var alternatives = new Item(new Choice(successors.Select(x => new Sequence(x))));
+								list.Add(new Item(new Choice(new Sequence(clonedRight, alternatives))));
+								break;
+						}
+					}
+				}
+			}
+			return list;
 		}
 	}
 }

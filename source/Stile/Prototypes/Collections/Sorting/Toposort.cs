@@ -38,21 +38,32 @@ namespace Stile.Prototypes.Collections.Sorting
 			_permanentlyMarked = new HashSet<TItem>(_comparer);
 		}
 
-		public IEnumerable<TItem> SortDag()
+		public IList<TItem> SortDag()
 		{
+			return Dag();
+		}
+
+		private List<TItem> Dag()
+		{
+			var list = new List<TItem>();
 			_unmarked = new HashSet<TItem>(_items);
 			while (_unmarked.Any())
 			{
 				TItem item = _unmarked.First();
 				foreach (TItem visited in Visit(item))
 				{
-					yield return visited;
+					if (list.Contains(visited) == false)
+					{
+						list.Add(visited);
+					}
 				}
 			}
+			return list;
 		}
 
-		private IEnumerable<TItem> Visit(TItem item)
+		private IList<TItem> Visit(TItem item)
 		{
+			var list = new List<TItem>();
 			if (_temporarilyMarked.Contains(item))
 			{
 				throw new Exception(string.Format("Cycle detected at item {0}.", item));
@@ -65,15 +76,25 @@ namespace Stile.Prototypes.Collections.Sorting
 				{
 					foreach (TItem nextNeighbor in Visit(neighbor))
 					{
-						yield return nextNeighbor;
+						if (list.Contains(nextNeighbor) == false)
+						{
+							list.Add(nextNeighbor);
+						}
 					}
-					yield return neighbor;
+					if (list.Contains(neighbor) == false)
+					{
+						list.Add(neighbor);
+					}
 				}
 				_temporarilyMarked.Remove(item);
 				_permanentlyMarked.Add(item);
 				_unmarked.Remove(item);
-				yield return item;
+				if (list.Contains(item) == false)
+				{
+					list.Add(item);
+				}
 			}
+			return list;
 		}
 	}
 }

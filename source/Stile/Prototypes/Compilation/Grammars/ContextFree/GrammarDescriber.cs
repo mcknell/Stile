@@ -28,7 +28,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public void Visit(IGrammar target)
 		{
-			Iterate(target.Productions, Environment.NewLine);
+			Iterate(target.Productions, Environment.NewLine, allowParens : false);
 		}
 
 		public void Visit(IItem target)
@@ -84,9 +84,10 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		private void Iterate<TAccepter>(IReadOnlyList<TAccepter> list,
 			string separator = " ",
-			Action continuation = null) where TAccepter : IAcceptGrammarVisitors
+			Action continuation = null,
+			bool allowParens = true) where TAccepter : IAcceptGrammarVisitors
 		{
-			if (list.Count > 1)
+			if (allowParens && list.Count > 1)
 			{
 				_stringBuilder.Append("(");
 			}
@@ -95,7 +96,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 				_stringBuilder.Append(separator);
 				accepter.Accept(this);
 			}
-			if (list.Count > 1)
+			if (allowParens && list.Count > 1)
 			{
 				_stringBuilder.Append(")");
 			}

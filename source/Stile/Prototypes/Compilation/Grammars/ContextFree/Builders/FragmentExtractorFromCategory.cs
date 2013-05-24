@@ -24,7 +24,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			out string firstToken)
 		{
 			firstAlias = Attribute.Alias;
-			firstToken = Extractor.GetSymbol(MethodBase, Attribute.Token);
+			firstToken = Extractor.GetToken(MethodBase, Attribute.Token);
 			return MethodBase.GetParametersWith<SymbolAttribute>();
 		}
 

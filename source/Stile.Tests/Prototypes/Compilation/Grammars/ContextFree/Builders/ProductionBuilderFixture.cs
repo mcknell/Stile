@@ -65,8 +65,8 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			Action<int, int> action = Expansion;
 			AssertExpansionFromMember(action.Method,
 				null,
-				new SymbolMetadata("Foo", "foo"),
-				new SymbolMetadata("Bar", "bar"));
+				new SymbolMetadata("Foo", "Foo"),
+				new SymbolMetadata("Bar", "Bar"));
 		}
 
 		[Test]

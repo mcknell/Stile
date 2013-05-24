@@ -13,7 +13,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree
 	[TestFixture]
 	public abstract class ContextFreeFixtureBase
 	{
-		protected void AssertPrints(IAcceptGrammarVisitors accepter, string expected)
+		public static void AssertPrints(IAcceptGrammarVisitors accepter, string expected)
 		{
 			var grammarDescriber = new GrammarDescriber();
 			accepter.Accept(grammarDescriber);

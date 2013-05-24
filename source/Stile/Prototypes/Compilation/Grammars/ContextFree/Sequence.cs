@@ -30,7 +30,8 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public Sequence(IEnumerable<IItem> items)
 		{
-			Items = items.ValidateArgumentIsNotNull().ToArray();
+			items=items.ValidateArgumentIsNotNull();
+			Items = items.SelectMany(x=> x.Flatten()).ToArray();
 		}
 
 		public IReadOnlyList<IItem> Items { get; private set; }

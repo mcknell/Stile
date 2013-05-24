@@ -35,9 +35,15 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 		[Test]
 		public void AssembleExtends()
 		{
-			const Cardinality cardinality = Cardinality.ZeroOrOne;
+			const Cardinality nextCardinality = Cardinality.ZeroOrOne;
+			const Cardinality lastCardinality = Cardinality.OneOrMore;
 			var next = new Nonterminal(Next);
-			var fragments = new HashSet<IFragment> {new Fragment(Right, next, cardinality)};
+			var last = new Nonterminal(Last);
+			var fragments = new HashSet<IFragment>
+			{
+				new Fragment(Right, next, nextCardinality),
+				new Fragment(Next, last, lastCardinality)
+			};
 			var testSubject = new ProductionAccumulator(fragments, _left, _rightChoice);
 
 			// act
@@ -47,8 +53,10 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			Assert.That(production.Left.Token, Is.EqualTo(_left.Token));
 			Assert.That(production.Right.Sequences[0].Items[0].Primary, Is.EqualTo(_right));
 			Assert.That(production.Right.Sequences[0].Items[1].Primary, Is.EqualTo(next));
-			Assert.That(production.Right.Sequences[0].Items[1].Cardinality, Is.EqualTo(cardinality));
-			Assert.That(production.Right.Sequences[0].Items.Count, Is.EqualTo(2));
+			Assert.That(production.Right.Sequences[0].Items[1].Cardinality, Is.EqualTo(nextCardinality));
+			Assert.That(production.Right.Sequences[0].Items[2].Primary, Is.EqualTo(last));
+			Assert.That(production.Right.Sequences[0].Items[2].Cardinality, Is.EqualTo(lastCardinality));
+			Assert.That(production.Right.Sequences[0].Items.Count, Is.EqualTo(3));
 		}
 
 		[Test]
@@ -72,8 +80,8 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			Assert.That(production.Right.Sequences[0].Items[1].Primary, Is.Not.Null);
 			var second = production.Right.Sequences[0].Items[1].Primary as IChoice;
 			Assert.NotNull(second);
-			Assert.That(second.Sequences[0].Items[0].PrimaryAsSymbol(), Is.EqualTo(next));
-			Assert.That(second.Sequences[1].Items[0].PrimaryAsSymbol(), Is.EqualTo(last));
+			Assert.That(second.Sequences.Any(x => x.Items[0].PrimaryAsSymbol() == next));
+			Assert.That(second.Sequences.Any(x => x.Items[0].PrimaryAsSymbol() == last));
 			Assert.That(second.Sequences.Count, Is.EqualTo(2));
 		}
 

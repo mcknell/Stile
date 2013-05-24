@@ -24,10 +24,12 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			ParameterInfo parameterInfo = tuple.Item1;
 			SymbolAttribute attribute = tuple.Item2;
 			Cardinality cardinality = ProductionExtractorFromMethod.GetCardinality(parameterInfo);
-			string symbol = GetSymbol(parameterInfo, attribute.Token);
-			string alias = attribute.Alias ?? symbol;
-			var terminal = new StringLiteral(alias);
-			string s = terminal.Alias.Trim() + cardinality.ToEbnfString();
+			string token = GetToken(parameterInfo, attribute.Token);
+			Symbol symbol = attribute.Terminal
+				? (Symbol) new StringLiteral(token, attribute.Alias)
+				: new Nonterminal(token, attribute.Alias);
+			string s = symbol.Alias ?? symbol.Token;
+			s += cardinality.ToEbnfString();
 			return s;
 		}
 
@@ -75,7 +77,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 			string firstToken;
 			IEnumerable<Tuple<ParameterInfo, SymbolAttribute>> parameterSymbols = GetParameters(out firstAlias,
 				out firstToken);
-			_aliases.Add(firstAlias ?? firstToken);
+			_aliases.Add(firstAlias ?? Symbol.ToTitleCase(firstToken));
 
 			foreach (Tuple<ParameterInfo, SymbolAttribute> tuple in parameterSymbols)
 			{
@@ -90,7 +92,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 					Process(firstToken);
 					// setup next loop
 					_aliases.Clear();
-					_aliases.Add(symbolAttribute.Alias ?? symbolAttribute.Token ?? tuple.Item1.Name);
+					_aliases.Add(MakeAlias(tuple));
 					_priorTuple = tuple;
 				}
 			}

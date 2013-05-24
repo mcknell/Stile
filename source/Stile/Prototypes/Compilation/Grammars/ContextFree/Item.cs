@@ -5,16 +5,22 @@
 
 #region using...
 using System;
+using System.Collections.Generic;
 using Stile.Patterns.Behavioral.Validation;
+using Stile.Prototypes.Compilation.Grammars.ContextFree.Builders;
+using System.Linq;
 #endregion
 
 namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 {
-	public interface IItem : IAcceptGrammarVisitors, IEquatable<IItem>
+	public interface IItem : IAcceptGrammarVisitors,
+		IEquatable<IItem>
 	{
 		Cardinality Cardinality { get; }
 		IPrimary Primary { get; }
 
+		IEnumerable<IItem> Flatten();
+			IEnumerable<IFragment> Fragments();
 		Symbol PrimaryAsSymbol();
 	}
 
@@ -39,6 +45,28 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			return visitor.Visit(this, data);
 		}
 
+		public IEnumerable<IItem> Flatten()
+		{
+			var choice = Primary as IChoice;
+			if (choice != null && choice.Sequences.Count == 1)
+			{
+				return choice.Sequences[0].SelectMany(x => x.Flatten());
+			}
+			return new[]{this};
+		}
+
+		public IEnumerable<IFragment> Fragments()
+		{
+			var choice = Primary as IChoice;
+			if (choice != null)
+			{
+				foreach (IFragment fragment in choice.Fragments())
+				{
+					yield return fragment;
+				}
+			}
+		}
+
 		public Symbol PrimaryAsSymbol()
 		{
 			if (Primary is IChoice)
@@ -54,7 +82,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		}
 	}
 
-	public partial class Item 
+	public partial class Item
 	{
 		public bool Equals(IItem other)
 		{

@@ -61,24 +61,24 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree.Builders
 
 		public static Nonterminal GetNonterminal(ParameterInfo parameterInfo, string symbolToken, string alias)
 		{
-			string symbol = GetSymbol(parameterInfo, symbolToken);
+			string symbol = GetToken(parameterInfo, symbolToken);
 			var nonterminal = new Nonterminal(symbol, alias);
 			return nonterminal;
 		}
 
 		public static Nonterminal GetNonterminal(MethodBase methodInfo, string symbolToken, string alias)
 		{
-			string symbol = GetSymbol(methodInfo, symbolToken);
+			string symbol = GetToken(methodInfo, symbolToken);
 			var nonterminal = new Nonterminal(symbol, alias);
 			return nonterminal;
 		}
 
-		public static string GetSymbol(ParameterInfo parameterInfo, [CanBeNull] string symbolToken)
+		public static string GetToken(ParameterInfo parameterInfo, [CanBeNull] string symbolToken)
 		{
 			return symbolToken ?? parameterInfo.Name;
 		}
 
-		public static string GetSymbol(MethodBase methodInfo, [CanBeNull] string symbolToken)
+		public static string GetToken(MethodBase methodInfo, [CanBeNull] string symbolToken)
 		{
 			var constructorInfo = methodInfo as ConstructorInfo;
 			string symbol;
