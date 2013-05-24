@@ -11,23 +11,19 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 	public interface IGrammarVisitor
 	{
 		void Visit(IChoice target);
-		void Visit(IClause target);
 		void Visit(IGrammar target);
 		void Visit(IItem target);
 		void Visit(IProduction target);
-		void Visit(IProductionRule target);
 		void Visit(ISequence target);
 		void Visit(Symbol target);
 	}
 
-	public interface IGrammarVisitor<TData> 
+	public interface IGrammarVisitor<TData>
 	{
-		TData Visit(IClause target, TData data);
 		TData Visit(IChoice target, TData data);
 		TData Visit(IGrammar target, TData data);
 		TData Visit(IItem target, TData data);
 		TData Visit(IProduction target, TData data);
-		TData Visit(IProductionRule target, TData data);
 		TData Visit(ISequence target, TData data);
 		TData Visit(Symbol target, TData data);
 	}

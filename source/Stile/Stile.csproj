@@ -102,12 +102,10 @@
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionConsolidator.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\ProductionExtractorFromMethod.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Choice.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Clause.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\GrammarDescriber.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\IAcceptGrammarVisitors.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\IClauseMember.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\IGrammarVisitor.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Builders\Link.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\IPrimary.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Item.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Production.cs" />
@@ -210,7 +208,6 @@
     <Compile Include="Prototypes\Specifications\SemanticModel\Negated.cs" />
     <Compile Include="Prototypes\Collections\HashBucket.cs" />
     <Compile Include="Prototypes\Compilation\Grammars\ContextFree\Grammar.cs" />
-    <Compile Include="Prototypes\Compilation\Grammars\ContextFree\ProductionRule.cs" />
     <Compile Include="Prototypes\Specifications\SemanticModel\Evaluations\Error.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Metadata\RuleAttribute.cs" />
     <Compile Include="Prototypes\Specifications\Grammar\Metadata\SymbolAttribute.cs" />

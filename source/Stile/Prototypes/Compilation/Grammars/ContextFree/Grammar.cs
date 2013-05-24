@@ -19,7 +19,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 	{
 		Symbol InitialToken { get; }
 		IReadOnlyList<Symbol> Nonterminals { get; }
-		IReadOnlyList<IProductionRule> ProductionRules { get; }
 		IReadOnlyList<IProduction> Productions { get; }
 		IReadOnlyList<Symbol> Terminals { get; }
 	}
@@ -33,7 +32,7 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			HashSet<TerminalSymbol> terminals,
 			Symbol initialToken,
 			IReadOnlyList<IProduction> productions)
-			: this(nonterminals, terminals, new IProductionRule[0], initialToken)
+			: this(nonterminals, terminals, initialToken)
 		{
 			Productions = productions.ValidateArgumentIsNotNull();
 			Count = Productions.Sum(x => x.Count);
@@ -41,12 +40,10 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 
 		public Grammar([NotNull] HashSet<NonterminalSymbol> nonterminals,
 			[NotNull] HashSet<TerminalSymbol> terminals,
-			[NotNull] IList<IProductionRule> productionRules,
 			[NotNull] Symbol initialToken)
 		{
 			_nonterminals = nonterminals.ValidateArgumentIsNotNull();
 			_terminals = terminals.ValidateArgumentIsNotNull();
-			ProductionRules = productionRules.ValidateArgumentIsNotNull().ToArray();
 			InitialToken = initialToken.ValidateArgumentIsNotNull();
 
 			List<Symbol> overlap = nonterminals.Cast<Symbol>().Intersect(terminals).ToList();
@@ -70,7 +67,6 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 		{
 			get { return _nonterminals.ToArray(); }
 		}
-		public IReadOnlyList<IProductionRule> ProductionRules { get; private set; }
 		public IReadOnlyList<IProduction> Productions { get; private set; }
 		public IReadOnlyList<Symbol> Terminals
 		{

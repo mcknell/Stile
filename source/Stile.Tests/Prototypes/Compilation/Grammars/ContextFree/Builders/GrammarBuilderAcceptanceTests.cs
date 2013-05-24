@@ -25,7 +25,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 			new Reflector(builder).Find();
 
 			// act
-			IGrammar grammar = builder.Buil();
+			IGrammar grammar = builder.Build();
 
 			Assert.NotNull(grammar);
 			IProduction expectation = grammar.Productions.FirstOrDefault(x => x.Left == Nonterminal.Expectation);
@@ -38,7 +38,7 @@ namespace Stile.Tests.Prototypes.Compilation.Grammars.ContextFree.Builders
 		{
 			var builder = new GrammarBuilder();
 			new Reflector(builder).Find();
-			IGrammar grammar = builder.Buil();
+			IGrammar grammar = builder.Build();
 
 			// act
 			string ebnf = GrammarDescriber.Describe(grammar);

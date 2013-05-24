@@ -11,7 +11,7 @@ using Stile.Prototypes.Compilation.Grammars.ContextFree;
 namespace Stile.Prototypes.Specifications.Grammar.Metadata
 {
 	/// <summary>
-	/// Indicates a fragment that expands the right side of a <see cref="IProductionRule"/>.
+	/// Indicates a fragment that expands the right side of a <see cref="IProduction"/>.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor, AllowMultiple = true,
 		Inherited = true)]
@@ -25,7 +25,7 @@ namespace Stile.Prototypes.Specifications.Grammar.Metadata
 
 		public string Alias { get; set; }
 		public string Prior { get; set; }
-		public string Token { get; private set; }
 		public bool Terminal { get; set; }
+		public string Token { get; private set; }
 	}
 }

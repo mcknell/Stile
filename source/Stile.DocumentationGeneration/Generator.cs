@@ -36,7 +36,7 @@ namespace Stile.DocumentationGeneration
 			//reflector.FindRuleExpansions();
 			reflector.Find();
 
-			IGrammar grammar = grammarBuilder.Buil();
+			IGrammar grammar = grammarBuilder.Build();
 			return GrammarDescriber.Describe(grammar);
 		}
 	}

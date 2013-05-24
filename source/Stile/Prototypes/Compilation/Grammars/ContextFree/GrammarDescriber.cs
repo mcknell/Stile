@@ -50,21 +50,9 @@ namespace Stile.Prototypes.Compilation.Grammars.ContextFree
 			target.Right.Accept(this);
 		}
 
-		public void Visit(IProductionRule target)
-		{
-			target.Left.Accept(this);
-			_stringBuilder.AppendFormat("{0} ", TerminalSymbol.EBNFAssignment);
-			target.Right.Accept(this);
-		}
-
 		public void Visit(ISequence target)
 		{
 			Iterate(target.Items);
-		}
-
-		public void Visit(IClause target)
-		{
-			Iterate(target.Members, continuation : () => _stringBuilder.Append(target.Cardinality.ToEbnfString()));
 		}
 
 		public void Visit(Symbol target)
