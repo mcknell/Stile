@@ -69,6 +69,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		void Visit4<TSpecification, TSubject, TResult, TItem>(
+			IItemsFailing<TSpecification, TSubject, TResult, TItem> target)
+			where TSpecification : class, ISpecification, IChainableSpecification;
+
+		void Visit4<TSpecification, TSubject, TResult, TItem>(
 			IFewerThan<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
@@ -122,6 +126,10 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 			where TSpecification : class, IChainableSpecification where TResult : struct;
 
 		TData Visit4<TSpecification, TSubject, TResult, TItem>(
+			IAll<TSpecification, TSubject, TResult, TItem> target, TData data)
+			where TSpecification : class, ISpecification, IChainableSpecification;
+
+		TData Visit4<TSpecification, TSubject, TResult, TItem>(
 			IAtLeast<TSpecification, TSubject, TResult, TItem> target, TData data)
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
@@ -134,11 +142,11 @@ namespace Stile.Prototypes.Specifications.SemanticModel.Visitors
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		TData Visit4<TSpecification, TSubject, TResult, TItem>(
-			IFewerThan<TSpecification, TSubject, TResult, TItem> target, TData data)
+			IItemsFailing<TSpecification, TSubject, TResult, TItem> target, TData data)
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		TData Visit4<TSpecification, TSubject, TResult, TItem>(
-			IAll<TSpecification, TSubject, TResult, TItem> target, TData data)
+			IFewerThan<TSpecification, TSubject, TResult, TItem> target, TData data)
 			where TSpecification : class, ISpecification, IChainableSpecification;
 
 		TData Visit4<TSpecification, TSubject, TResult, TItem>(

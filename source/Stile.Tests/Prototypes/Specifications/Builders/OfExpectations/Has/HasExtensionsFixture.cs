@@ -26,6 +26,7 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
 	{
 		private Expression<Func<int, bool>> _expression;
 		private List<int> _list;
+		private string _quantifier;
 
 		[SetUp]
 		public void Init()
@@ -37,41 +38,56 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
 		[Test]
 		public void AtLeast()
 		{
-			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.AtLeast(1));
-			AssertCountProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Succeeded, Outcome.Succeeded);
-			AssertPastTenseContains(evaluation, "_list should have at least 1 items == 1");
+			_quantifier = "at least";
+			IEvaluation<List<int>, List<int>> evaluation = MakeSatisfyingEvaluation(Has.AtLeast(1));
+			AssertSuccessesProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Succeeded, Outcome.Succeeded);
+
+			evaluation = MakeFailingEvaluation(Has.AtLeast(1));
+			AssertFailuresProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Succeeded, Outcome.Succeeded);
 		}
 
 		[Test]
 		public void AtMost()
 		{
-			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.AtMost(1));
-			AssertCountProgressingFrom0To2(evaluation, Outcome.Succeeded, Outcome.Succeeded, Outcome.Failed);
-			AssertPastTenseContains(evaluation, "_list should have at most 1 items == 1");
+			_quantifier = "at most";
+			IEvaluation<List<int>, List<int>> evaluation = MakeSatisfyingEvaluation(Has.AtMost(1));
+			AssertSuccessesProgressingFrom0To2(evaluation, Outcome.Succeeded, Outcome.Succeeded, Outcome.Failed);
+
+			evaluation = MakeFailingEvaluation(Has.AtMost(1));
+			AssertFailuresProgressingFrom0To2(evaluation, Outcome.Succeeded, Outcome.Succeeded, Outcome.Failed);
 		}
 
 		[Test]
 		public void Exactly()
 		{
-			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.Exactly(1));
-			AssertCountProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Succeeded, Outcome.Failed);
-			AssertPastTenseContains(evaluation, "_list should have exactly 1 items == 1");
+			_quantifier = "exactly";
+			IEvaluation<List<int>, List<int>> evaluation = MakeSatisfyingEvaluation(Has.Exactly(1));
+			AssertSuccessesProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Succeeded, Outcome.Failed);
+			
+			evaluation = MakeFailingEvaluation(Has.Exactly(1));
+			AssertFailuresProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Succeeded, Outcome.Failed);
 		}
 
 		[Test]
 		public void FewerThan()
 		{
-			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.FewerThan(1));
-			AssertCountProgressingFrom0To2(evaluation, Outcome.Succeeded, Outcome.Failed, Outcome.Failed);
-			AssertPastTenseContains(evaluation, "_list should have fewer than 1 items == 1");
+			_quantifier = "fewer than";
+			IEvaluation<List<int>, List<int>> evaluation = MakeSatisfyingEvaluation(Has.FewerThan(1));
+			AssertSuccessesProgressingFrom0To2(evaluation, Outcome.Succeeded, Outcome.Failed, Outcome.Failed);
+			
+			evaluation = MakeFailingEvaluation(Has.FewerThan(1));
+			AssertFailuresProgressingFrom0To2(evaluation, Outcome.Succeeded, Outcome.Failed, Outcome.Failed);
 		}
 
 		[Test]
 		public void MoreThan()
 		{
-			IEvaluation<List<int>, List<int>> evaluation = MakeEvaluation(Has.MoreThan(1));
-			AssertCountProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Failed, Outcome.Succeeded);
-			AssertPastTenseContains(evaluation, "_list should have more than 1 items == 1");
+			_quantifier = "more than";
+			IEvaluation<List<int>, List<int>> evaluation = MakeSatisfyingEvaluation(Has.MoreThan(1));
+			AssertSuccessesProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Failed, Outcome.Succeeded);
+			
+			evaluation = MakeFailingEvaluation(Has.MoreThan(1));
+			AssertFailuresProgressingFrom0To2(evaluation, Outcome.Failed, Outcome.Failed, Outcome.Succeeded);
 		}
 
 		private IEnumerableHas<IBoundSpecification<List<int>, List<int>>, List<int>, List<int>, int> Has
@@ -80,31 +96,70 @@ namespace Stile.Tests.Prototypes.Specifications.Builders.OfExpectations.Has
 		}
 
 // ReSharper disable UnusedParameter.Local
-		private void AssertCountProgressingFrom0To2(IEvaluation<List<int>, List<int>> evaluation,
+
+// ReSharper disable UnusedParameter.Local
+		private void AssertFailuresProgressingFrom0To2(IEvaluation<List<int>, List<int>> evaluation,
 			Outcome zero,
 			Outcome one,
-			Outcome two) // ReSharper restore UnusedParameter.Local
+			Outcome two) //
+// ReSharper restore UnusedParameter.Local
+		{
+			Func<int, bool> failingPredicate = x => _expression.Compile().Invoke(x) == false;
+			_list.Clear();
+
+			Assert.That(_list.Count(failingPredicate), Iz.EqualTo(0), "precondition");
+			Assert.That(evaluation.Outcome, Iz.EqualTo(zero));
+
+			_list.Add(0);
+			Assert.That(_list.Count(failingPredicate), Iz.EqualTo(1), "precondition");
+			Assert.That(evaluation.ReEvaluate().Outcome, Iz.EqualTo(one));
+
+			_list.Add(0);
+			Assert.That(_list.Count(failingPredicate), Iz.EqualTo(2), "precondition");
+			Assert.That(evaluation.ReEvaluate().Outcome == two);
+
+			AssertPastTenseContains(evaluation, "failing the test '== 1'");
+		}
+
+		private void AssertPastTenseContains(IEvaluation<List<int>, List<int>> evaluation, string criterion)
+		{
+			string expected = string.Format("_list should have {0} 1 item {1}", _quantifier, criterion);
+			Assert.That(evaluation.ToPastTense(), Contains.Substring(expected));
+		}
+
+		private void AssertSuccessesProgressingFrom0To2(IEvaluation<List<int>, List<int>> evaluation,
+			Outcome zero,
+			Outcome one,
+			Outcome two) //
+// ReSharper restore UnusedParameter.Local
 		{
 			Func<int, bool> predicate = _expression.Compile();
+			_list.Clear();
 
-			Assert.That(_list.Count(predicate), Iz.EqualTo(0));
-			Assert.That(evaluation.Outcome == zero);
-
-			_list.Add(1);
-			Assert.That(_list.Count(predicate), Iz.EqualTo(1));
-			Assert.That(evaluation.ReEvaluate().Outcome == one);
+			Assert.That(_list.Count(predicate), Iz.EqualTo(0), "precondition");
+			IEvaluation<List<int>, List<int>> reEvaluation = evaluation.ReEvaluate();
+			Assert.That(reEvaluation.Outcome, Iz.EqualTo(zero));
 
 			_list.Add(1);
-			Assert.That(_list.Count(predicate), Iz.EqualTo(2));
-			Assert.That(evaluation.ReEvaluate().Outcome == two);
+			Assert.That(_list.Count(predicate), Iz.EqualTo(1), "precondition");
+			reEvaluation = evaluation.ReEvaluate();
+			Assert.That(reEvaluation.Outcome, Iz.EqualTo(one));
+
+			_list.Add(1);
+			Assert.That(_list.Count(predicate), Iz.EqualTo(2), "precondition");
+			reEvaluation = evaluation.ReEvaluate();
+			Assert.That(reEvaluation.Outcome == two);
+
+			AssertPastTenseContains(evaluation, "== 1");
 		}
 
-		private static void AssertPastTenseContains(IEvaluation<List<int>, List<int>> evaluation, string substring)
+		private IEvaluation<List<int>, List<int>> MakeFailingEvaluation(
+			IQuantifier<IBoundSpecification<List<int>, List<int>>, int> quantifier)
 		{
-			Assert.That(evaluation.ToPastTense(), Contains.Substring(substring));
+			return quantifier.ItemsFailing(_expression).Evaluate();
 		}
 
-		private IEvaluation<List<int>, List<int>> MakeEvaluation(
+		private IEvaluation<List<int>, List<int>> MakeSatisfyingEvaluation(
 			IQuantifier<IBoundSpecification<List<int>, List<int>>, int> quantifier)
 		{
 			return quantifier.ItemsSatisfying(_expression).Evaluate();

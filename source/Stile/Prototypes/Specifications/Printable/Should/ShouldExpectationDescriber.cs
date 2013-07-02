@@ -134,59 +134,78 @@ namespace Stile.Prototypes.Specifications.Printable.Should
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
-			IExactly<TSpecification, TSubject, TResult, TItem> target)
+			IAll<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification
 		{
-			AppendFormat(" {0} {1}", ShouldSpecifications.Exactly, target.Limit);
-		}
-
-		public void Visit4<TSpecification, TSubject, TResult, TItem>(
-			IFewerThan<TSpecification, TSubject, TResult, TItem> target)
-			where TSpecification : class, ISpecification, IChainableSpecification
-		{
-			AppendFormat(" {0} {1}", ShouldSpecifications.FewerThan, target.Limit);
+			AppendFormat(" {0} {1}", ShouldSpecifications.All, ShouldSpecifications.Items);
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
 			IAtLeast<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification
 		{
-			AppendFormat(" {0} {1}", ShouldSpecifications.AtLeast, target.Limit);
+			string item = PluralizeItem(target);
+			AppendFormat(" {0} {1} {2}", ShouldSpecifications.AtLeast, target.Limit, item);
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
 			IAtMost<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification
 		{
-			AppendFormat(" {0} {1}", ShouldSpecifications.AtMost, target.Limit);
+			string item = PluralizeItem(target);
+			AppendFormat(" {0} {1} {2}", ShouldSpecifications.AtMost, target.Limit, item);
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
-			IAll<TSpecification, TSubject, TResult, TItem> target)
+			IExactly<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification
 		{
-			AppendFormat(" {0}", ShouldSpecifications.All);
+			string item = PluralizeItem(target);
+			AppendFormat(" {0} {1} {2}", ShouldSpecifications.Exactly, target.Limit, item);
+		}
+
+		public void Visit4<TSpecification, TSubject, TResult, TItem>(
+			IFewerThan<TSpecification, TSubject, TResult, TItem> target)
+			where TSpecification : class, ISpecification, IChainableSpecification
+		{
+			string item = PluralizeItem(target);
+			AppendFormat(" {0} {1} {2}", ShouldSpecifications.FewerThan, target.Limit, item);
+		}
+
+		public void Visit4<TSpecification, TSubject, TResult, TItem>(
+			IItemsFailing<TSpecification, TSubject, TResult, TItem> target)
+			where TSpecification : class, ISpecification, IChainableSpecification
+		{
+			AppendFormat(" {0} '{1}'", ShouldSpecifications.Failing, target.Description.Value);
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
 			IItemsSatisfying<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification
 		{
-			AppendFormat(" {0} {1}", ShouldSpecifications.Items, target.Description.Value);
+			AppendFormat(" {0}", target.Description.Value);
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
 			IMoreThan<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification
 		{
-			AppendFormat(" {0} {1}", ShouldSpecifications.MoreThan, target.Limit);
+			string item = PluralizeItem(target);
+			AppendFormat(" {0} {1} {2}", ShouldSpecifications.MoreThan, target.Limit, item);
 		}
 
 		public void Visit4<TSpecification, TSubject, TResult, TItem>(
 			INo<TSpecification, TSubject, TResult, TItem> target)
 			where TSpecification : class, ISpecification, IChainableSpecification
 		{
-			AppendFormat(" {0}", ShouldSpecifications.No);
+			AppendFormat(" {0} {1}", ShouldSpecifications.No, ShouldSpecifications.Items);
+		}
+
+		private static string PluralizeItem<TSpecification, TSubject, TResult, TItem>(
+			ICountedLimit<TSpecification, TSubject, TResult, TItem> target)
+			where TSpecification : class, ISpecification, IChainableSpecification
+		{
+			return target.Limit.Pluralize(ShouldSpecifications.Item, ShouldSpecifications.Items);
 		}
 	}
 }

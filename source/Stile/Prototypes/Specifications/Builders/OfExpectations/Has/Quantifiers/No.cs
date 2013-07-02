@@ -6,7 +6,6 @@
 #region using...
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.Grammar;
 using Stile.Prototypes.Specifications.Grammar.Metadata;
@@ -47,10 +46,9 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 			return new No<TSpecification, TSubject, TResult, TItem>(hasState);
 		}
 
-		protected override Predicate<TResult> MakePredicate(Expression<Func<TItem, bool>> expression)
+		protected override Predicate<TResult> GetTest(Func<TItem, bool> predicate)
 		{
-			var func = new Lazy<Func<TItem, bool>>(expression.Compile);
-			return result => result.None(func.Value);
+			return x => x.None(predicate);
 		}
 	}
 }

@@ -7,7 +7,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Stile.Prototypes.Specifications.SemanticModel.Specifications;
 #endregion
@@ -35,12 +34,11 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 
 		public int Limit { get; private set; }
 
-		protected abstract bool Judge(int count);
-
-		protected override Predicate<TResult> MakePredicate(Expression<Func<TItem, bool>> expression)
+		protected override Predicate<TResult> GetTest(Func<TItem, bool> predicate)
 		{
-			var func = new Lazy<Func<TItem, bool>>(expression.Compile);
-			return result => Judge(result.Count(func.Value));
+			return x => Judge(x.Count(predicate));
 		}
+
+		protected abstract bool Judge(int count);
 	}
 }

@@ -219,4 +219,7 @@
   <data name="WhenMeasuredAgain" xml:space="preserve">
     <value>when measured again</value>
   </data>
+  <data name="Failing" xml:space="preserve">
+    <value>failing the test</value>
+  </data>
 </root>

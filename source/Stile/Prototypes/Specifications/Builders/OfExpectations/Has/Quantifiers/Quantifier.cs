@@ -23,7 +23,7 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 	public interface IQuantifier<out TSpecification, TItem> : IQuantifier
 		where TSpecification : class, ISpecification
 	{
-		[System.Diagnostics.Contracts.Pure]
+		TSpecification ItemsFailing(Expression<Func<TItem, bool>> predicate);
 		TSpecification ItemsSatisfying(Expression<Func<TItem, bool>> predicate);
 	}
 
@@ -68,15 +68,31 @@ namespace Stile.Prototypes.Specifications.Builders.OfExpectations.Has.Quantifier
 		}
 
 		[RuleCategory]
+		public TSpecification ItemsFailing([Symbol] Expression<Func<TItem, bool>> predicate)
+		{
+			var itemsSatisfying = new ItemsFailing<TSpecification, TSubject, TResult, TItem>(predicate, this);
+			Predicate<TResult> func = Predicate(predicate, false);
+			return _hasState.ExpectationBuilder.Make(func, itemsSatisfying, Negated.False);
+		}
+
+		[RuleCategory]
 		public TSpecification ItemsSatisfying([Symbol] Expression<Func<TItem, bool>> predicate)
 		{
 			var itemsSatisfying = new ItemsSatisfying<TSpecification, TSubject, TResult, TItem>(predicate, this);
-			Predicate<TResult> func = MakePredicate(predicate);
+			Predicate<TResult> func = Predicate(predicate, true);
 			return _hasState.ExpectationBuilder.Make(func, itemsSatisfying, Negated.False);
 		}
 
 		public abstract void Accept(IExpectationVisitor visitor);
 		public abstract TData Accept<TData>(IExpectationVisitor<TData> visitor, TData data);
-		protected abstract Predicate<TResult> MakePredicate(Expression<Func<TItem, bool>> expression);
+		protected abstract Predicate<TResult> GetTest(Func<TItem, bool> predicate);
+
+		private Predicate<TResult> Predicate(Expression<Func<TItem, bool>> expression, bool shouldSatisfy)
+		{
+			var lazy = new Lazy<Func<TItem, bool>>(expression.Compile);
+			Func<TItem, bool> itemPredicate = x => lazy.Value.Invoke(x) == shouldSatisfy;
+			Predicate<TResult> resultPredicate = GetTest(itemPredicate);
+			return resultPredicate;
+		}
 	}
 }

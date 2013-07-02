@@ -15,7 +15,6 @@ namespace Stile.DocumentationGeneration
 	{
 		public static int Main(string[] args)
 		{
-			//Console.WriteLine("Beginning " + typeof(Program).Assembly.GetName().Name);
 			Assembly[] others = args.Select(Assembly.ReflectionOnlyLoadFrom).ToArray();
 			var generator = new Generator(others);
 			string generated = generator.Generate();
