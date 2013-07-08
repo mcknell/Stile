@@ -27,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Grammar", "Grammar", "{F663
 		..\docs\Grammar\Grammar for partial EBNF.txt = ..\docs\Grammar\Grammar for partial EBNF.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TStile", "..\source\TStile\TStile.csproj", "{5796937F-CE39-41EE-B6F8-EE9034880171}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +62,10 @@ Global
 		{CF4AC73E-5699-45DA-8DAE-D111F57FE79C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF4AC73E-5699-45DA-8DAE-D111F57FE79C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF4AC73E-5699-45DA-8DAE-D111F57FE79C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5796937F-CE39-41EE-B6F8-EE9034880171}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5796937F-CE39-41EE-B6F8-EE9034880171}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5796937F-CE39-41EE-B6F8-EE9034880171}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5796937F-CE39-41EE-B6F8-EE9034880171}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
