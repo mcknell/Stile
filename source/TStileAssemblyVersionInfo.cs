@@ -16,8 +16,8 @@ using System.Runtime.InteropServices;
 //[assembly: AssemblyConfiguration("")]
 
 [assembly : AssemblyCompany("Mark Knell")]
-[assembly : AssemblyProduct("Stile")]
-[assembly : AssemblyCopyright("Copyright © 2010-2013 Mark Knell")]
+[assembly : AssemblyProduct("TStile")]
+[assembly : AssemblyCopyright("Copyright © 2013 Mark Knell")]
 [assembly : AssemblyTrademark("")]
 //[assembly: AssemblyCulture("")]
 //[assembly: NeutralResourcesLanguage("en")]
@@ -33,6 +33,6 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly : AssemblyVersion("0.1.1.0")]
-[assembly : AssemblyFileVersion("0.1.1.0")]
+[assembly : AssemblyVersion("0.1.9.0")]
+[assembly : AssemblyFileVersion("0.1.9.0")]
 [assembly : ComVisible(false)]
