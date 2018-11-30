@@ -169,3 +169,4 @@ pip-log.txt
 
 # nuget package
 *.nupkg
+/build/.vs/Stile/v15/Server/sqlite3
